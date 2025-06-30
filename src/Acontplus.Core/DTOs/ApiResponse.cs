@@ -1,66 +1,110 @@
 ﻿namespace Acontplus.Core.DTOs;
 
-// Base class with dynamic payload
-public class ApiResponse
+/// <summary>
+/// Standardized API response format for modern web applications
+/// </summary>
+/// <typeparam name="T">Type of the payload data</typeparam>
+public sealed class ApiResponse<T>
 {
-    public string Code { get; set; }
-    public string Message { get; set; }
-    public dynamic Payload { get; set; }
+    public required string Status { get; init; }
+    public string? Code { get; init; }
+    public string? Message { get; init; }
+    public T? Data { get; init; }
+    public IEnumerable<ApiError>? Errors { get; init; }
+    public Dictionary<string, object>? Metadata { get; init; }
 
-    public ApiResponse() { }
-
-    public ApiResponse(string code, string message = null, dynamic payload = null)
+    public static ApiResponse<T> Success(
+        T data,
+        string? message = null,
+        string? code = null,
+        Dictionary<string, object>? metadata = null)
     {
-        Code = code;
-        Message = message;
-        Payload = payload;
+        return new ApiResponse<T>
+        {
+            Status = "success",
+            Code = code ?? "200",
+            Message = message ?? "Operation completed successfully",
+            Data = data,
+            Metadata = metadata
+        };
     }
 
-    /// <summary>
-    /// Creates a success response with a default code and message.
-    /// </summary>
-    /// <param name="code"></param> // Default is "1" to success! Excuse me
-    /// <param name="payload"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    public static ApiResponse Success(string code = "1", dynamic payload = null, string message = "Operation successful")
+    public static ApiResponse<T> Failure(
+        IEnumerable<ApiError> errors,
+        string? message = "One or more errors occurred",
+        string? code = "400")
     {
-        return new ApiResponse(code, message, payload);
+        return new ApiResponse<T>
+        {
+            Status = "error",
+            Code = code,
+            Message = message,
+            Errors = errors
+        };
     }
 
-    public static ApiResponse Error(string code, string message)
+    public static ApiResponse<T> Failure(
+        ApiError error,
+        string? message = "An error occurred",
+        string? code = "400")
     {
-        return new ApiResponse(code, message);
+        return Failure(new[] { error }, message, code);
     }
 }
 
-// Generic version for strongly-typed payload
-public class ApiResponse<T> : ApiResponse
+/// <summary>
+/// Non-generic version for operations without return data
+/// </summary>
+public sealed class ApiResponse
 {
-    public new T Payload { get; set; }
+    public required string Status { get; init; }
+    public string? Code { get; init; }
+    public string? Message { get; init; }
+    public IEnumerable<ApiError>? Errors { get; init; }
+    public Dictionary<string, object>? Metadata { get; init; }
 
-    public ApiResponse() { }
-
-    public ApiResponse(string code, string message = null, T payload = default)
-        : base(code, message, null)
+    public static ApiResponse Success(
+        string? message = null,
+        string? code = null,
+        Dictionary<string, object>? metadata = null)
     {
-        Payload = payload;
+        return new ApiResponse
+        {
+            Status = "success",
+            Code = code ?? "200",
+            Message = message ?? "Operation completed successfully",
+            Metadata = metadata
+        };
     }
 
-    /// <summary>
-    /// Creates a success response with a default code and message.
-    /// </summary>
-    /// <param name="payload"></param>
-    /// <param name="code"></param> // Default is "1" to success! Excuse me
-    /// <param name="message"></param>
-    /// <returns></returns>
-    public static ApiResponse<T> Success(T payload, string code = "1", string message = "Operation successful")
+    public static ApiResponse Failure(
+        IEnumerable<ApiError> errors,
+        string? message = "One or more errors occurred",
+        string? code = "400")
     {
-        return new ApiResponse<T>(code, message, payload);
+        return new ApiResponse
+        {
+            Status = "error",
+            Code = code,
+            Message = message,
+            Errors = errors
+        };
     }
 
-    public static new ApiResponse<T> Error(string code, string message)
+    public static ApiResponse Failure(
+        ApiError error,
+        string? message = "An error occurred",
+        string? code = "400")
     {
-        return new ApiResponse<T>(code, message);
+        return Failure(new[] { error }, message, code);
     }
 }
+
+/// <summary>
+/// Standardized error format
+/// </summary>
+public sealed record ApiError(
+    string Code,
+    string Message,
+    string? Target = null,
+    Dictionary<string, string>? Details = null);
