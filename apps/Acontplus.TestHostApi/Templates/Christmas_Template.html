@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .content {
+            padding: 30px 20px;
+            color: #333333;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .greeting {
+            font-size: 24px;
+            color: #c41e3a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .decoration {
+            color: #0b8457;
+            font-size: 24px;
+            text-align: center;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="cid:imgLogo" alt="{{company_name}}" class="logo">
+        </div>
+
+        <div class="content">
+            <div class="decoration">🎄 ⭐ 🎄</div>
+            <div class="greeting">{{greeting | default: "¡Feliz Navidad!"}}</div>
+
+            <p>{{#if is_massive}}Estimados clientes{{else}}Estimado/a {{recipient_name}}{{/if}},</p>
+
+            {{body}}
+
+            <p>
+                Cordialmente,<br>
+                {{company_name}}
+            </p>
+
+            <div class="decoration">❄️ 🎁 ❄️</div>
+        </div>
+
+        <div class="footer">
+            <p>© {{date.year}} {{company_name}}. {{footer | default: "Todos los derechos reservados."}}</p>
+        </div>
+    </div>
+</body>
+</html>

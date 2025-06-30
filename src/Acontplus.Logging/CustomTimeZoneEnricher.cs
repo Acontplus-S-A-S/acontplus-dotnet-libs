@@ -1,4 +1,4 @@
-﻿namespace Common.Logging;
+﻿namespace Acontplus.Logging;
 
 public class CustomTimeZoneEnricher : ILogEventEnricher
 {

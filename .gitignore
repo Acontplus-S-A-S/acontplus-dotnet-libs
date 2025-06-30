@@ -8,3 +8,4 @@ bin-release/
 [Bb]in/
 /.vs
 *.user
+/apps/Acontplus.TestHostApi/appsettings.Development.json

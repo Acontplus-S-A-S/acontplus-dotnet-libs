@@ -1,5 +1,4 @@
 ﻿using Acontplus.Persistence.SqlServer.UnitOfWork;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -18,14 +17,11 @@ public static class SqlServerServiceCollectionExtensions
     /// <returns>The updated IServiceCollection.</returns>
     public static IServiceCollection AddSqlServerPersistence<TContext>(
         this IServiceCollection services,
-        Action<SqlServerDbContextOptionsBuilder> sqlServerOptions,
+        Action<DbContextOptionsBuilder> sqlServerOptions,
         object serviceKey = null)
         where TContext : DbContext
     {
-        services.AddDbContextPool<TContext>((sp, options) =>
-        {
-            options.UseSqlServer(sqlServerOptions);
-        }, poolSize: 128);
+        services.AddDbContextPool<TContext>(sqlServerOptions, poolSize: 128);
 
         if (serviceKey is not null)
         {

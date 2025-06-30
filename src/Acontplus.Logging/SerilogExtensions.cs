@@ -1,6 +1,6 @@
 ﻿using Serilog.Formatting.Display;
 
-namespace Common.Logging;
+namespace Acontplus.Logging;
 
 public static class SerilogExtensions
 {
@@ -89,7 +89,7 @@ public static class SerilogExtensions
             encoding: System.Text.Encoding.UTF8,
             buffered: true,
             shared: false,
-            formatter: (environment == Environments.Development) ? new MessageTemplateTextFormatter("{CustomTimestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") : new CompactJsonFormatter()
+            formatter: environment == Environments.Development ? new MessageTemplateTextFormatter("{CustomTimestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") : new CompactJsonFormatter()
         ));
     }
 
