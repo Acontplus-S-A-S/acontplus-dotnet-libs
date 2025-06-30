@@ -1,7 +1,4 @@
-﻿using Acontplus.Core.DTOs;
-using Acontplus.Core.Enums;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 
 public static class PaginationExtensions

@@ -1,5 +1,4 @@
 ﻿using Acontplus.Core.Base;
-using Acontplus.Core.DTOs;
 using System.Linq.Expressions;
 
 namespace Acontplus.Core.Abstractions.Persistence;

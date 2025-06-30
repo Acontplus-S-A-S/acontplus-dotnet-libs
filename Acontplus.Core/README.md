@@ -62,7 +62,7 @@ if (!validator.IsValidEmail("test@example.com"))
 
 ## Documentation
 
-Full API documentation is available at [https://github.com/Acontplus-S-A-S/acontplus-common/wiki]
+Full API documentation is available at [https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki]
 
 ## Contributing
 

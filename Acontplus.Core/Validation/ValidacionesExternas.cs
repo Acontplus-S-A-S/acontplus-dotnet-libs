@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.DTOs;
-
-namespace Acontplus.Core.Validation;
+﻿namespace Acontplus.Core.Validation;
 
 public class ValidacionesExternas
 

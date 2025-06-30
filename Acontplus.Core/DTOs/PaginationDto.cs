@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Enums;
-
-namespace Acontplus.Core.DTOs;
+﻿namespace Acontplus.Core.DTOs;
 
 public record PaginationDto
 {
