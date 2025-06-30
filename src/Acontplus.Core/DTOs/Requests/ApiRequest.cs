@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs;
+﻿namespace Acontplus.Core.DTOs.Requests;
 
 //Deprecated: Use own DTOs for API requests instead of this generic one
 public class ApiRequest

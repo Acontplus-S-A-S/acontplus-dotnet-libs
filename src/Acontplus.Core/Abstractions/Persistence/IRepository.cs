@@ -1,4 +1,6 @@
 ﻿using Acontplus.Core.Base;
+using Acontplus.Core.DTOs.Requests;
+using Acontplus.Core.DTOs.Responses;
 using System.Linq.Expressions;
 
 namespace Acontplus.Core.Abstractions.Persistence;

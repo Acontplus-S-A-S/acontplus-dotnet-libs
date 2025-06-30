@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Acontplus.Core.Enums;
+namespace Acontplus.Core.Constants;
 
 public static class HttpStatusCodes
 {

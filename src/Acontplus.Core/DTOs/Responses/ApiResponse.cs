@@ -1,8 +1,9 @@
-﻿using Acontplus.Core.Helpers;
+﻿using Acontplus.Core.Constants;
+using Acontplus.Core.Helpers;
 using System.Net;
 using System.Text.Json.Serialization;
 
-namespace Acontplus.Core.DTOs;
+namespace Acontplus.Core.DTOs.Responses;
 
 public sealed class ApiResponse<T>
 {
@@ -207,91 +208,4 @@ public sealed class ApiResponse
 
     [JsonIgnore]
     public bool HasErrors => Errors?.Any() == true;
-}
-
-/// Enhanced error format with additional context for modern frontends
-/// </summary>
-public sealed record ApiError(
-    [property: JsonPropertyName("code")] string Code,
-    [property: JsonPropertyName("message")] string Message,
-    [property: JsonPropertyName("target")] string? Target = null,
-    [property: JsonPropertyName("details")] Dictionary<string, string>? Details = null,
-    [property: JsonPropertyName("severity")] string Severity = "error") // error, warning, info
-{
-    /// <summary>
-    /// Additional context for debugging (only in development)
-    /// </summary>
-    [JsonPropertyName("debug")]
-    public object? Debug { get; init; }
-
-    /// <summary>
-    /// Error category for frontend handling
-    /// </summary>
-    [JsonPropertyName("category")]
-    public string? Category { get; init; } // validation, authorization, business, system
-
-    /// <summary>
-    /// Suggested action for the user
-    /// </summary>
-    [JsonPropertyName("suggestedAction")]
-    public string? SuggestedAction { get; init; }
-}
-
-/// <summary>
-/// Common metadata keys for consistent usage
-/// </summary>
-public static class ApiMetadataKeys
-{
-    public const string Pagination = "pagination";
-    public const string TotalCount = "totalCount";
-    public const string Page = "page";
-    public const string PageSize = "pageSize";
-    public const string HasNextPage = "hasNextPage";
-    public const string HasPreviousPage = "hasPreviousPage";
-    public const string ExecutionTime = "executionTime";
-    public const string Version = "version";
-    public const string Environment = "environment";
-    public const string RequestId = "requestId";
-}
-
-/// <summary>
-/// Extension methods for enhanced usability
-/// </summary>
-public static class ApiResponseExtensions
-{
-    /// <summary>
-    /// Adds pagination metadata
-    /// </summary>
-    public static Dictionary<string, object> WithPagination(
-        this Dictionary<string, object>? metadata,
-        int page,
-        int pageSize,
-        int totalCount)
-    {
-        var result = metadata ?? new Dictionary<string, object>();
-
-        result[ApiMetadataKeys.Pagination] = new
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = totalCount,
-            TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
-            HasNextPage = page * pageSize < totalCount,
-            HasPreviousPage = page > 1
-        };
-
-        return result;
-    }
-
-    /// <summary>
-    /// Adds execution time metadata
-    /// </summary>
-    public static Dictionary<string, object> WithExecutionTime(
-        this Dictionary<string, object>? metadata,
-        TimeSpan executionTime)
-    {
-        var result = metadata ?? new Dictionary<string, object>();
-        result[ApiMetadataKeys.ExecutionTime] = $"{executionTime.TotalMilliseconds}ms";
-        return result;
-    }
 }

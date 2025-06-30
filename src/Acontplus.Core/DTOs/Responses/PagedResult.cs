@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs;
+﻿namespace Acontplus.Core.DTOs.Responses;
 
 public class PagedResult<T>
 {
