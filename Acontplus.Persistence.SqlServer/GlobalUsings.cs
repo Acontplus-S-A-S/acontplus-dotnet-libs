@@ -1,0 +1,12 @@
+﻿global using Acontplus.Core.Abstractions.Persistence;
+global using Acontplus.Core.Base;
+global using Acontplus.Core.DTOs;
+global using Acontplus.Persistence.SqlServer.Ado.Parameters;
+global using Microsoft.Data.SqlClient;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.Logging;
+global using Polly;
+global using Polly.Retry;
+global using System.Collections.Concurrent;
+global using System.Data;
