@@ -1,0 +1,9 @@
+﻿global using Acontplus.Core.DTOs;
+global using Acontplus.Utilities.IO;
+global using Acontplus.Utilities.Security.Helpers;
+global using Acontplus.Utilities.Security.Interfaces;
+global using Microsoft.AspNetCore.DataProtection;
+global using Microsoft.Extensions.Configuration;
+global using System.Data;
+global using System.Text;
+global using System.Xml;

@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Acontplus.Utilities</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Ivan Paz</Authors>
+    <Company>Acontplus S.A.S.</Company>
+    <Description>Cross-cutting utilities and general-purpose tools.</Description>
+    <PackageTags>format;io;security;text;time</PackageTags>
+    <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <!-- Bandera para cambiar entre ProjectReference y PackageReference -->
+    <!--<UseLocalProjects Condition="'$(UseLocalProjects)' == ''">true</UseLocalProjects>-->
+
+    <!-- Versión del paquete dependiente -->
+    <!--<CommonCoreVersion>1.0.0</CommonCoreVersion>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Acontplus.Core" />
+    <PackageReference Include="BCrypt.Net-Next" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Usar referencia local para desarrollo/debug -->
+  <!--<ItemGroup Condition="'$(UseLocalProjects)' == 'true'">
+    <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
+  </ItemGroup>-->
+
+  <!-- Usar paquete NuGet cuando se empaquete para publicación -->
+  <!--<ItemGroup Condition="'$(UseLocalProjects)' != 'true'">
+    <PackageReference Include="Common.Core" Version="$(CommonCoreVersion)" />
+  </ItemGroup>-->
+</Project>
