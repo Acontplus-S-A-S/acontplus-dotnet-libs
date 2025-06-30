@@ -1,14 +1,5 @@
 ﻿namespace Acontplus.Services.Extensions;
 
-public interface IUserContext
-{
-    int GetUserId();
-    T GetClaimValue<T>(string claimName);
-    string GetUserName();
-    string GetEmail();
-    string GetRoleName();
-}
-
 public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
     public int GetUserId() { return httpContextAccessor.HttpContext!.User.GetUserId(); }

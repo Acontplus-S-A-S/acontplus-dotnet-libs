@@ -10,3 +10,7 @@ global using System.Net;
 global using System.Runtime.InteropServices;
 global using System.Security.Claims;
 global using System.Text;
+global using Acontplus.Core.Exceptions;
+global using Acontplus.Core.DTOs.Responses;
+global using Acontplus.Core.Constants;
+global using Acontplus.Core.Abstractions.Context;
