@@ -6,21 +6,21 @@ public class ApiExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ApiExceptionMiddleware> _logger;
-    private readonly IHostEnvironment _env;
+    private readonly bool _includeDebugDetails;
     private readonly JsonSerializerOptions _jsonOptions;
 
     public ApiExceptionMiddleware(
         RequestDelegate next,
         ILogger<ApiExceptionMiddleware> logger,
-        IHostEnvironment env)
+        bool includeDebugDetails = false)
     {
         _next = next;
         _logger = logger;
-        _env = env;
+        _includeDebugDetails = includeDebugDetails;
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = _env.IsDevelopment()
+            WriteIndented = _includeDebugDetails
         };
     }
 
@@ -30,8 +30,7 @@ public class ApiExceptionMiddleware
         {
             await _next(context);
 
-            if (!context.Response.HasStarted &&
-                context.Response.StatusCode >= 400)
+            if (!context.Response.HasStarted && context.Response.StatusCode >= 400)
             {
                 await HandleStatusCodeAsync(context);
             }
@@ -44,18 +43,71 @@ public class ApiExceptionMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
+        context.Response.ContentType = "application/json";
         var correlationId = context.TraceIdentifier;
         LogException(ex, correlationId, context);
 
         var response = ex switch
         {
-            ApiException apiEx => CreateApiErrorResponse(apiEx, correlationId),
-            _ => CreateUnhandledErrorResponse(ex, correlationId)
+            ValidationException validationEx => HandleValidationException(validationEx, correlationId),
+            ApiException apiEx => HandleApiException(apiEx, correlationId),
+            _ => HandleUnhandledException(ex, correlationId)
         };
 
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)response.StatusCode;
+        context.Response.StatusCode = int.Parse(response.Code);
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
+    }
+
+    private ApiResponse HandleValidationException(ValidationException ex, string correlationId)
+    {
+        var errors = ex.Errors
+            .SelectMany(e => e.Value.Select(message =>
+                new ApiError(
+                    Code: "VALIDATION_ERROR",
+                    Message: message,
+                    Target: e.Key,
+                    Category: "validation")))
+            .ToList();
+
+        return ApiResponse.Failure(
+            errors,
+            message: ex.Message,
+            correlationId: correlationId,
+            statusCode: ex.StatusCode);
+    }
+
+    private ApiResponse HandleApiException(ApiException ex, string correlationId)
+    {
+        var error = new ApiError(
+            Code: ex.ErrorCode,
+            Message: ex.Message,
+            Category: GetErrorCategory(ex.StatusCode));
+
+        return ApiResponse.Failure(
+            error,
+            message: ex.Message,
+            correlationId: correlationId,
+            statusCode: ex.StatusCode);
+    }
+
+    private ApiResponse HandleUnhandledException(Exception ex, string correlationId)
+    {
+        var error = new ApiError(
+            Code: "UNHANDLED_ERROR",
+            Message: "An unexpected error occurred",
+            Category: "system",
+            Debug: _includeDebugDetails ? new
+            {
+                type = ex.GetType().Name,
+                message = ex.Message,
+                stackTrace = ex.StackTrace
+            } : null);
+
+        return ApiResponse.Failure(
+            error,
+            message: "An unexpected error occurred",
+            correlationId: correlationId,
+            statusCode: HttpStatusCode.InternalServerError);
     }
 
     private async Task HandleStatusCodeAsync(HttpContext context)
@@ -63,121 +115,35 @@ public class ApiExceptionMiddleware
         var statusCode = (HttpStatusCode)context.Response.StatusCode;
         var correlationId = context.TraceIdentifier;
 
-        var response = new ApiResponse
-        {
-            Status = "error",
-            Code = ((int)statusCode).ToString(),
-            Message = GetStatusMessage(statusCode),
-            CorrelationId = correlationId,
-            Errors = [new ApiError(statusCode.ToString(), GetStatusMessage(statusCode))]
-        };
+        var error = new ApiError(
+            Code: statusCode.ToString(),
+            Message: GetStatusMessage(statusCode),
+            Category: GetErrorCategory(statusCode));
+
+        var response = ApiResponse.Failure(
+            error,
+            message: GetStatusMessage(statusCode),
+            correlationId: correlationId,
+            statusCode: statusCode);
 
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
     }
 
-    private ApiResponse CreateApiErrorResponse(ApiException ex, string correlationId)
-    {
-        var response = new ApiResponse
-        {
-            Status = "error",
-            Code = ex.ErrorCode,
-            Message = ex.Message,
-            CorrelationId = correlationId,
-            Errors = [CreateApiError(ex)]
-        };
-
-        if (ex is ValidationException validationEx)
-        {
-            response.Errors = validationEx.Errors
-                .SelectMany(e => e.Value.Select(m =>
-                    new ApiError("VALIDATION_ERROR", m, e.Key)))
-                .ToList();
-        }
-
-        if (_env.IsDevelopment())
-        {
-            response.Metadata = new Dictionary<string, object>
-            {
-                ["stackTrace"] = ex.StackTrace?.Replace(Environment.NewLine, "\n") ?? string.Empty,
-                ["exceptionType"] = ex.GetType().Name
-            };
-        }
-
-        return response;
-    }
-
-    private ApiResponse CreateUnhandledErrorResponse(Exception ex, string correlationId)
-    {
-        return new ApiResponse
-        {
-            Status = "error",
-            Code = "INTERNAL_ERROR",
-            Message = "An unexpected error occurred",
-            CorrelationId = correlationId,
-            Errors = [new ApiError("SYSTEM_FAILURE", "System failure")],
-            Metadata = _env.IsDevelopment() ? new Dictionary<string, object>
-            {
-                ["stackTrace"] = ex.StackTrace?.Replace(Environment.NewLine, "\n") ?? string.Empty,
-                ["exceptionType"] = ex.GetType().Name,
-                ["detail"] = ex.Message
-            } : null
-        };
-    }
-
-    private ApiError CreateApiError(ApiException ex)
-    {
-        return new ApiError(
-            Code: ex.ErrorCode,
-            Message: ex.Message,
-            Category: ex switch
-            {
-                ValidationException => "validation",
-                NotFoundException => "not_found",
-                UnauthorizedException => "authentication",
-                ConflictException => "conflict",
-                _ => "system"
-            });
-    }
-
     private void LogException(Exception ex, string correlationId, HttpContext context)
     {
-        var logMessage = new StringBuilder()
-            .AppendLine($"CorrelationId: {correlationId}")
-            .AppendLine($"Path: {context.Request.Path}")
-            .AppendLine($"Method: {context.Request.Method}")
-            .AppendLine($"Exception: {ex.GetType().Name}")
-            .AppendLine($"Message: {ex.Message}");
-
-        if (context.Request.Method == HttpMethods.Post ||
-            context.Request.Method == HttpMethods.Put)
-        {
-            logMessage.AppendLine($"Body: {GetRequestBody(context)}");
-        }
-
-        _logger.LogError("{LogMessage}", logMessage.ToString());
-    }
-
-    private string GetRequestBody(HttpContext context)
-    {
-        try
-        {
-            context.Request.EnableBuffering();
-            using var reader = new StreamReader(
-                context.Request.Body,
-                Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: false,
-                bufferSize: 1024,
-                leaveOpen: true);
-
-            var body = reader.ReadToEndAsync().GetAwaiter().GetResult();
-            context.Request.Body.Position = 0;
-            return body;
-        }
-        catch
-        {
-            return "Unable to read request body";
-        }
+        _logger.LogError(ex, """
+            CorrelationId: {CorrelationId}
+            Path: {Path}
+            Method: {Method}
+            Exception: {ExceptionType}
+            Message: {Message}
+            """,
+            correlationId,
+            context.Request.Path,
+            context.Request.Method,
+            ex.GetType().Name,
+            ex.Message);
     }
 
     private static string GetStatusMessage(HttpStatusCode statusCode) => statusCode switch
@@ -189,5 +155,15 @@ public class ApiExceptionMiddleware
         HttpStatusCode.Conflict => "Conflict occurred",
         HttpStatusCode.InternalServerError => "Internal server error",
         _ => statusCode.ToString()
+    };
+
+    private static string GetErrorCategory(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "validation",
+        HttpStatusCode.Unauthorized => "authentication",
+        HttpStatusCode.Forbidden => "authorization",
+        HttpStatusCode.NotFound => "not_found",
+        HttpStatusCode.Conflict => "conflict",
+        _ => "system"
     };
 }
