@@ -1,0 +1,16 @@
+﻿global using Acontplus.Core.Base;
+global using Acontplus.Core.DTOs;
+global using Acontplus.Utilities.Format;
+global using Amazon.Runtime;
+global using Amazon.SimpleEmailV2;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.Logging;
+global using Newtonsoft.Json;
+global using Polly;
+global using Polly.Retry;
+global using Scriban.Runtime;
+global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Net;
+global using System.Net.Mime;
+global using System.Text;
