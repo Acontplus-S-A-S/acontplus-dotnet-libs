@@ -8,7 +8,7 @@ services, and utilities to facilitate integration with SRI (Servicio de Rentas I
 
 ## Overview
 
-Acontplus.Common.FactElect is a specialized .NET package that provides essential tools for electronic invoicing and
+Acontplus.FactElect is a specialized .NET package that provides essential tools for electronic invoicing and
 digital document processing according to Ecuadorian tax regulations. The library handles captcha validation, XML
 document generation, SRI integration, and more.
 
