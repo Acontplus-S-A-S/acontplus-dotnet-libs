@@ -12,11 +12,9 @@ public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEn
 
         ConfigureCreatedAtDefault(builder, providerName);
 
-        builder.Property(x => x.Enabled).HasDefaultValue(true);
         builder.Property(x => x.IsActive).HasDefaultValue(true);
         builder.Property(x => x.FromMobile).HasDefaultValue(false);
         builder.Property(x => x.IsDeleted).HasDefaultValue(false);
-        builder.Property(x => x.Deleted).HasDefaultValue(false);
     }
 
     private string GetDatabaseProvider(EntityTypeBuilder<TEntity> builder)

@@ -60,46 +60,27 @@ public class BaseContext(DbContextOptions options) : DbContext(options)
     // NEW: Method to handle soft delete automatically
     private void HandleSoftDelete(EntityEntry entityEntry, BaseEntity entity)
     {
-        // If IsDeleted is being marked as true and DeletedAt has no value
-        if (entity.IsDeleted && !entity.DeletedAt.HasValue)
+        // Check if IsDeleted was modified
+        var isDeletedModified = entityEntry.Property(nameof(BaseEntity.IsDeleted)).IsModified;
+
+        // Only proceed if IsDeleted was modified or DeletedAt needs to be set
+        if (!isDeletedModified && entity.DeletedAt.HasValue == entity.IsDeleted)
         {
-            entity.DeletedAt = DateTime.UtcNow;
-            // Also update deprecated field for compatibility
-            entity.Deleted = true;
-            entity.Enabled = false; // Optionally disable the entity if it is marked as deleted
-            entity.IsActive = false; // Optionally mark the entity as inactive
-        }
-        // If IsDeleted is being marked as false, clear DeletedAt
-        else if (!entity.IsDeleted && entity.DeletedAt.HasValue)
-        {
-            entity.DeletedAt = null;
-            entity.DeletedByUserId = null;
-            // Also update deprecated field for compatibility
-            entity.Deleted = false;
-            entity.Enabled = true; // Optionally enable the entity if it is marked as not deleted
-            entity.IsActive = true; // Optionally mark the entity as active
+            return;
         }
 
-        // Handle compatibility with deprecated 'Deleted' field
-        // If deprecated field is used, sync with the new one
-        var deletedProperty = entityEntry.Property(nameof(BaseEntity.Deleted));
-        if (deletedProperty.IsModified)
+        if (entity.IsDeleted)
         {
-            if (entity.Deleted && !entity.IsDeleted)
-            {
-                entity.IsDeleted = true;
-                entity.DeletedAt = DateTime.UtcNow;
-                entity.IsActive = false; // Optionally mark the entity as inactive
-                entity.Enabled = false; // Optionally disable the entity
-            }
-            else if (!entity.Deleted && entity.IsDeleted)
-            {
-                entity.IsDeleted = false;
-                entity.DeletedAt = null;
-                entity.DeletedByUserId = null;
-                entity.IsActive = true; // Optionally mark the entity as active
-                entity.Enabled = true; // Optionally enable the entity
-            }
+            // Handle deletion case
+            entity.DeletedAt = DateTime.UtcNow;
+            entity.IsActive = false; // Optionally mark the entity as inactive
+        }
+        else
+        {
+            // Handle undeletion case
+            entity.DeletedAt = null;
+            entity.DeletedByUserId = null;
+            entity.IsActive = true; // Optionally mark the entity as active
         }
     }
 
