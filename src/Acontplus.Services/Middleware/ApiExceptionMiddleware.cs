@@ -1,4 +1,5 @@
 ﻿using Acontplus.Services.Extensions;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace Acontplus.Services.Middleware;
@@ -93,16 +94,19 @@ public class ApiExceptionMiddleware
 
     private ApiResponse HandleUnhandledException(Exception ex, string correlationId)
     {
+        var debugInfo = _options.IncludeDebugDetailsInResponse
+            ? GetSafeDebugInfo(ex)
+            : null;
+
         var error = new ApiError(
             Code: "UNHANDLED_ERROR",
             Message: "An unexpected error occurred",
             Category: "system",
-            Debug: _options.IncludeDebugDetailsInResponse ? new
+            Details: debugInfo != null ? new Dictionary<string, object>
             {
-                type = ex.GetType().Name,
-                message = ex.Message,
-                stackTrace = ex.StackTrace
-            } : null);
+                ["debug"] = debugInfo
+            } : null,
+            TraceId: Activity.Current?.TraceId.ToString());
 
         return ApiResponse.Failure(
             error,
@@ -111,6 +115,30 @@ public class ApiExceptionMiddleware
             statusCode: HttpStatusCode.InternalServerError);
     }
 
+    private static Dictionary<string, object>? GetSafeDebugInfo(Exception ex)
+    {
+        if (!ShouldIncludeDebugInfo())
+            return null;
+
+        return new Dictionary<string, object>
+        {
+            ["type"] = ex.GetType().Name,
+            ["message"] = ex.Message,
+            ["stackTrace"] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
+            ["innerException"] = ex.InnerException != null ? new
+            {
+                type = ex.InnerException.GetType().Name,
+                message = ex.InnerException.Message
+            } : null,
+            ["activityId"] = Activity.Current?.Id ?? "none"
+        };
+    }
+
+    private static bool ShouldIncludeDebugInfo()
+    {
+        return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ||
+               Debugger.IsAttached;
+    }
     private async Task HandleStatusCodeAsync(HttpContext context)
     {
         var statusCode = (HttpStatusCode)context.Response.StatusCode;
