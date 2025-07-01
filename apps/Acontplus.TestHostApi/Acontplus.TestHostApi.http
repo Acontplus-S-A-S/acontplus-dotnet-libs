@@ -1,3 +1,4 @@
+@Acontplus.TestHostApi_HostAddress = https://localhost:7111
 @Common.TestApi_HostAddress = https://localhost:7111
 
 GET {{Common.TestApi_HostAddress}}/weatherforecast/
@@ -13,8 +14,8 @@ POST {{Common.TestApi_HostAddress}}/api/usuario
 Content-Type: application/json
 
 {
-  "username": "jorge",
-  "email": "jorge@gmail.com"
+  "username": "ivan",
+  "email": "ivan@gmail.com"
 }
 
 ###
@@ -60,4 +61,8 @@ DELETE {{Common.TestApi_HostAddress}}/api/usuario/{{id}}
 
 @json="{"startDate": "2025-03-01", "endDate": "2025-03-31"}"
 GET {{Common.TestApi_HostAddress}}/api/ats/download?json={"fromDate":"2025-03-01","toDate":"2025-03-31"}
+###
+
+GET {{Acontplus.TestHostApi_HostAddress}}/api/usuario/ado
+
 ###
