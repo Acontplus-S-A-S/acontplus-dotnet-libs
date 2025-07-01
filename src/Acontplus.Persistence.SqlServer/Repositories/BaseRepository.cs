@@ -3,29 +3,33 @@ using Acontplus.Persistence.SqlServer.Diagnostics;
 using Acontplus.Persistence.SqlServer.Exceptions;
 using Microsoft.EntityFrameworkCore.Query; // Assuming DiagnosticConfig is here
 using System.Linq.Expressions;
+using Acontplus.Core.Domain.Common;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
 
 /// <summary>
 /// A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
 /// </summary>
-/// <typeparam name="T">The entity type, which must derive from BaseEntity.</typeparam>
-public class BaseRepository<T> : IRepository<T> where T : BaseEntity
+/// TEntity: The type of the entity.
+/// TId: The type of the entity's primary key, must be not null.
+public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
+    where TEntity : AuditableEntity<TId>
+    where TId : notnull
 {
     protected readonly DbContext _context;
-    protected readonly DbSet<T> _dbSet;
-    protected readonly ILogger<BaseRepository<T>> _logger;
+    protected readonly DbSet<TEntity> _dbSet;
+    protected readonly ILogger<BaseRepository<TEntity, TId>> _logger;
 
-    public BaseRepository(DbContext context, ILogger<BaseRepository<T>> logger = null)
+    public BaseRepository(DbContext context, ILogger<BaseRepository<TEntity, TId>> logger = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _dbSet = context.Set<T>();
+        _dbSet = context.Set<TEntity>();
         _logger = logger;
     }
 
     #region Query Methods
 
-    public virtual async Task<T> GetByIdAsync(object id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetByIdAsync)}");
         try
@@ -35,15 +39,15 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error getting entity of type {EntityType} by ID: {Id}", typeof(T).Name, id);
+            _logger?.LogError(ex, "Error getting entity of type {EntityType} by ID: {Id}", typeof(TEntity).Name, id);
             throw new RepositoryException($"Error getting entity by ID {id}", ex);
         }
     }
 
-    public virtual async Task<T> GetFirstOrDefaultAsync(
-        Expression<Func<T, bool>> predicate,
+    public virtual async Task<TEntity> GetFirstOrDefaultAsync(
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
-        params Expression<Func<T, object>>[] includeProperties)
+        params Expression<Func<TEntity, object>>[] includeProperties)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetFirstOrDefaultAsync)}");
         try
@@ -54,14 +58,14 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetFirstOrDefaultAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetFirstOrDefaultAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving entity", ex);
         }
     }
 
-    public virtual async Task<IReadOnlyList<T>> GetAllAsync(
+    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(
         CancellationToken cancellationToken = default,
-        params Expression<Func<T, object>>[] includeProperties)
+        params Expression<Func<TEntity, object>>[] includeProperties)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetAllAsync)}");
         try
@@ -71,15 +75,15 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetAllAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetAllAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving all entities", ex);
         }
     }
 
-    public virtual async Task<IReadOnlyList<T>> FindAsync(
-        Expression<Func<T, bool>> predicate,
+    public virtual async Task<IReadOnlyList<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
-        params Expression<Func<T, object>>[] includeProperties)
+        params Expression<Func<TEntity, object>>[] includeProperties)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(FindAsync)}");
         try
@@ -90,13 +94,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in FindAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in FindAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error finding entities", ex);
         }
     }
 
-    public virtual IAsyncEnumerable<T> FindAsyncEnumerable(
-        Expression<Func<T, bool>> predicate,
+    public virtual IAsyncEnumerable<TEntity> FindAsyncEnumerable(
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(FindAsyncEnumerable)}");
@@ -107,27 +111,27 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in FindAsyncEnumerable for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in FindAsyncEnumerable for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error finding entities as async enumerable", ex);
         }
     }
 
-    public virtual Task<PagedResult<T>> GetPagedAsync(
+    public virtual Task<PagedResult<TEntity>> GetPagedAsync(
         PaginationDto pagination,
         CancellationToken cancellationToken = default,
-        Expression<Func<T, object>> orderBy = null,
+        Expression<Func<TEntity, object>> orderBy = null,
         bool orderByDescending = false)
     {
         return GetPagedAsync(pagination, null!, cancellationToken, orderBy, orderByDescending);
     }
 
-    public virtual async Task<PagedResult<T>> GetPagedAsync(
+    public virtual async Task<PagedResult<TEntity>> GetPagedAsync(
         PaginationDto pagination,
-        Expression<Func<T, bool>> predicate,
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
-        Expression<Func<T, object>> orderBy = null,
+        Expression<Func<TEntity, object>> orderBy = null,
         bool orderByDescending = false,
-        params Expression<Func<T, object>>[] includeProperties)
+        params Expression<Func<TEntity, object>>[] includeProperties)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetPagedAsync)}");
         try
@@ -157,21 +161,21 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            return new PagedResult<T>(items, pagination.PageIndex, pagination.PageSize, totalCount);
+            return new PagedResult<TEntity>(items, pagination.PageIndex, pagination.PageSize, totalCount);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetPagedAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetPagedAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving paged results", ex);
         }
     }
 
     public virtual async Task<PagedResult<TProjection>> GetPagedProjectionAsync<TProjection>(
         PaginationDto pagination,
-        Expression<Func<T, TProjection>> projection,
-        Expression<Func<T, bool>> predicate = null,
+        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default,
-        Expression<Func<T, object>> orderBy = null,
+        Expression<Func<TEntity, object>> orderBy = null,
         bool orderByDescending = false)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetPagedProjectionAsync)}");
@@ -209,13 +213,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetPagedProjectionAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetPagedProjectionAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving paged projected results", ex);
         }
     }
 
     public virtual async Task<bool> ExistsAsync(
-        Expression<Func<T, bool>> predicate,
+        Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(ExistsAsync)}");
@@ -226,13 +230,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in ExistsAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in ExistsAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error checking entity existence", ex);
         }
     }
 
     public virtual async Task<int> CountAsync(
-        Expression<Func<T, bool>> predicate = null,
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(CountAsync)}");
@@ -244,13 +248,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in CountAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in CountAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error counting entities", ex);
         }
     }
 
     public virtual async Task<long> LongCountAsync(
-        Expression<Func<T, bool>> predicate = null,
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(LongCountAsync)}");
@@ -262,7 +266,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in LongCountAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in LongCountAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error counting entities", ex);
         }
     }
@@ -271,7 +275,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     #region Persistence Methods
 
-    public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(AddAsync)}");
         try
@@ -282,12 +286,12 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error adding entity of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error adding entity of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error adding entity", ex);
         }
     }
 
-    public virtual Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public virtual Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(AddRangeAsync)}");
         try
@@ -297,12 +301,12 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error adding entity range of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error adding entity range of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error adding entity range", ex);
         }
     }
 
-    public virtual Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(UpdateAsync)}");
         try
@@ -313,39 +317,41 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
             {
                 _dbSet.Attach(entity);
             }
+
             entry.State = EntityState.Modified;
             return Task.FromResult(entity);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error updating entity of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error updating entity of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error updating entity", ex);
         }
     }
 
-    public virtual Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> UpdateRangeAsync(IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(UpdateRangeAsync)}");
         try
         {
             ArgumentNullException.ThrowIfNull(entities);
             var entityList = entities.ToList();
-            if (!entityList.Any()) return Task.FromResult(Enumerable.Empty<T>());
+            if (!entityList.Any()) return Task.FromResult(Enumerable.Empty<TEntity>());
 
             _dbSet.UpdateRange(entityList);
-            return Task.FromResult<IEnumerable<T>>(entityList);
+            return Task.FromResult<IEnumerable<TEntity>>(entityList);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error updating entity range of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error updating entity range of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error updating entity range", ex);
         }
     }
 
-    public virtual Task<T> UpdatePropertiesAsync(
-        T entity,
+    public virtual Task<TEntity> UpdatePropertiesAsync(
+        TEntity entity,
         CancellationToken cancellationToken = default,
-        params Expression<Func<T, object>>[] propertiesToUpdate)
+        params Expression<Func<TEntity, object>>[] propertiesToUpdate)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(UpdatePropertiesAsync)}");
         try
@@ -375,12 +381,12 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error updating specific properties for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error updating specific properties for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error performing partial update on entity.", ex);
         }
     }
 
-    public virtual Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteAsync)}");
         try
@@ -391,12 +397,12 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error deleting entity of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error deleting entity of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error deleting entity", ex);
         }
     }
 
-    public virtual async Task<bool> DeleteByIdAsync(object id, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> DeleteByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteByIdAsync)}");
         try
@@ -408,16 +414,17 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
                 _dbSet.Remove(entity);
                 return true;
             }
+
             return false;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error deleting entity of type {EntityType} by ID: {Id}", typeof(T).Name, id);
+            _logger?.LogError(ex, "Error deleting entity of type {EntityType} by ID: {Id}", typeof(TEntity).Name, id);
             throw new RepositoryException($"Error deleting entity by ID {id}", ex);
         }
     }
 
-    public virtual Task DeleteRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public virtual Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteRangeAsync)}");
         try
@@ -428,12 +435,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error deleting entity range of type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error deleting entity range of type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error deleting entity range", ex);
         }
     }
 
-    public virtual async Task<int> DeleteAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteAsync)}_Predicate");
         try
@@ -444,11 +452,12 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
             {
                 _dbSet.RemoveRange(entities);
             }
+
             return entities.Count;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error deleting entities by predicate for type {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error deleting entities by predicate for type {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error deleting entities by predicate", ex);
         }
     }
@@ -457,7 +466,8 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     #region Bulk Operations
 
-    public virtual async Task<int> BulkDeleteAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<int> BulkDeleteAsync(Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(BulkDeleteAsync)}");
         try
@@ -470,14 +480,14 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in BulkDeleteAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in BulkDeleteAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error performing bulk delete", ex);
         }
     }
 
     public virtual async Task<int> BulkUpdateAsync<TProperty>(
-        Expression<Func<T, bool>> predicate,
-        Expression<Func<T, TProperty>> propertyExpression,
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TProperty>> propertyExpression,
         TProperty newValue,
         CancellationToken cancellationToken = default)
     {
@@ -487,16 +497,19 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
             ArgumentNullException.ThrowIfNull(predicate);
             ArgumentNullException.ThrowIfNull(propertyExpression);
 
-            var setPropertyCalls = Expression.Lambda<Func<SetPropertyCalls<T>, SetPropertyCalls<T>>>(
+            var setPropertyCalls = Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(
                 Expression.Call(
-                    typeof(SetPropertyCalls<T>).GetMethods()
-                        .Single(m => m.Name == nameof(SetPropertyCalls<T>.SetProperty) && m.IsGenericMethod && m.GetParameters().Length == 2 && m.GetParameters()[0].ParameterType.GetGenericArguments().Length == 2)
+                    typeof(SetPropertyCalls<TEntity>).GetMethods()
+                        .Single(m =>
+                            m.Name == nameof(SetPropertyCalls<TEntity>.SetProperty) && m.IsGenericMethod &&
+                            m.GetParameters().Length == 2 &&
+                            m.GetParameters()[0].ParameterType.GetGenericArguments().Length == 2)
                         .MakeGenericMethod(typeof(TProperty)),
-                    Expression.Parameter(typeof(SetPropertyCalls<T>), "s"),
+                    Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "s"),
                     propertyExpression,
                     Expression.Constant(newValue, typeof(TProperty))
                 ),
-                Expression.Parameter(typeof(SetPropertyCalls<T>), "s")
+                Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "s")
             );
 
             return await _dbSet
@@ -506,12 +519,13 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in BulkUpdateAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in BulkUpdateAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error performing bulk update", ex);
         }
     }
 
-    public virtual async Task<int> BulkInsertAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(BulkInsertAsync)}");
         try
@@ -527,7 +541,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in BulkInsertAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in BulkInsertAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error performing bulk insert", ex);
         }
     }
@@ -536,8 +550,8 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     #region Specification Pattern
 
-    public virtual async Task<IReadOnlyList<T>> FindWithSpecificationAsync(
-        ISpecification<T> specification,
+    public virtual async Task<IReadOnlyList<TEntity>> FindWithSpecificationAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(FindWithSpecificationAsync)}");
@@ -548,30 +562,33 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in FindWithSpecificationAsync for {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in FindWithSpecificationAsync for {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving entities with specification", ex);
         }
     }
 
-    public virtual async Task<T> GetFirstOrDefaultWithSpecificationAsync(
-        ISpecification<T> specification,
+    public virtual async Task<TEntity> GetFirstOrDefaultWithSpecificationAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetFirstOrDefaultWithSpecificationAsync)}");
+        using var activity =
+            DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetFirstOrDefaultWithSpecificationAsync)}");
         try
         {
             ArgumentNullException.ThrowIfNull(specification);
-            return await BuildSpecificationQuery(specification).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            return await BuildSpecificationQuery(specification).FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetFirstOrDefaultWithSpecificationAsync for {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetFirstOrDefaultWithSpecificationAsync for {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving entity with specification", ex);
         }
     }
 
-    public virtual async Task<PagedResult<T>> GetPagedWithSpecificationAsync(
-        ISpecification<T> specification,
+    public virtual async Task<PagedResult<TEntity>> GetPagedWithSpecificationAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetPagedWithSpecificationAsync)}");
@@ -586,21 +603,23 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
             var pagedQuery = ApplyPaging(query, specification);
             var items = await pagedQuery.ToListAsync(cancellationToken).ConfigureAwait(false);
 
-            return new PagedResult<T>(items, specification.Pagination.PageIndex, specification.Pagination.PageSize, totalCount);
+            return new PagedResult<TEntity>(items, specification.Pagination.PageIndex,
+                specification.Pagination.PageSize, totalCount);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetPagedWithSpecificationAsync for {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetPagedWithSpecificationAsync for {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving paged results with specification", ex);
         }
     }
 
     public virtual async Task<IReadOnlyList<TProjection>> FindProjectionWithSpecificationAsync<TProjection>(
-        ISpecification<T> specification,
-        Expression<Func<T, TProjection>> projection,
+        ISpecification<TEntity> specification,
+        Expression<Func<TEntity, TProjection>> projection,
         CancellationToken cancellationToken = default)
     {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(FindProjectionWithSpecificationAsync)}");
+        using var activity =
+            DiagnosticConfig.ActivitySource.StartActivity($"{nameof(FindProjectionWithSpecificationAsync)}");
         try
         {
             ArgumentNullException.ThrowIfNull(specification);
@@ -611,13 +630,14 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in FindProjectionWithSpecificationAsync for {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in FindProjectionWithSpecificationAsync for {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving projected results with specification", ex);
         }
     }
 
     public virtual async Task<int> CountWithSpecificationAsync(
-        ISpecification<T> specification,
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(CountWithSpecificationAsync)}");
@@ -629,7 +649,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in CountWithSpecificationAsync for {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in CountWithSpecificationAsync for {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error counting entities with specification", ex);
         }
     }
@@ -638,10 +658,10 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     #region Advanced Query Operations
 
-    public virtual async Task<IReadOnlyList<T>> GetOrderedAsync(
-        Expression<Func<T, bool>> predicate = null,
+    public virtual async Task<IReadOnlyList<TEntity>> GetOrderedAsync(
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default,
-        params (Expression<Func<T, object>> KeySelector, bool Descending)[] orderExpressions)
+        params (Expression<Func<TEntity, object>> KeySelector, bool Descending)[] orderExpressions)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetOrderedAsync)}");
         try
@@ -659,14 +679,14 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetOrderedAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetOrderedAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving ordered entities", ex);
         }
     }
 
     public virtual async Task<TResult> AggregateAsync<TResult>(
-        Expression<Func<IQueryable<T>, TResult>> aggregateExpression,
-        Expression<Func<T, bool>> predicate = null,
+        Expression<Func<IQueryable<TEntity>, TResult>> aggregateExpression,
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(AggregateAsync)}");
@@ -688,14 +708,14 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in AggregateAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in AggregateAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error performing aggregation", ex);
         }
     }
 
     public virtual async Task<IReadOnlyList<TProperty>> GetDistinctAsync<TProperty>(
-        Expression<Func<T, TProperty>> propertySelector,
-        Expression<Func<T, bool>> predicate = null,
+        Expression<Func<TEntity, TProperty>> propertySelector,
+        Expression<Func<TEntity, bool>> predicate = null,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetDistinctAsync)}");
@@ -713,7 +733,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetDistinctAsync for entity {EntityType}", typeof(T).Name);
+            _logger?.LogError(ex, "Error in GetDistinctAsync for entity {EntityType}", typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving distinct values", ex);
         }
     }
@@ -722,9 +742,9 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     #region Helper Methods
 
-    protected virtual IQueryable<T> BuildQuery(
+    protected virtual IQueryable<TEntity> BuildQuery(
         bool tracking = true,
-        params Expression<Func<T, object>>[] includeProperties)
+        params Expression<Func<TEntity, object>>[] includeProperties)
     {
         var query = tracking ? _dbSet.AsQueryable() : _dbSet.AsNoTracking();
 
@@ -736,7 +756,8 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         return query;
     }
 
-    protected virtual IQueryable<T> BuildSpecificationQuery(ISpecification<T> spec, bool ignorePaging = false, bool ignoreOrdering = false)
+    protected virtual IQueryable<TEntity> BuildSpecificationQuery(ISpecification<TEntity> spec,
+        bool ignorePaging = false, bool ignoreOrdering = false)
     {
         var query = spec.IsTrackingEnabled ? _dbSet.AsQueryable() : _dbSet.AsNoTracking();
 
@@ -761,20 +782,21 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
         return query;
     }
 
-    protected virtual IQueryable<T> ApplyPaging(IQueryable<T> query, ISpecification<T> spec)
+    protected virtual IQueryable<TEntity> ApplyPaging(IQueryable<TEntity> query, ISpecification<TEntity> spec)
     {
         return query.Skip((spec.Pagination.PageIndex - 1) * spec.Pagination.PageSize)
-                    .Take(spec.Pagination.PageSize);
+            .Take(spec.Pagination.PageSize);
     }
 
-    protected virtual IQueryable<T> ApplyOrdering(IQueryable<T> query, params (Expression<Func<T, object>> KeySelector, bool Descending)[] orderExpressions)
+    protected virtual IQueryable<TEntity> ApplyOrdering(IQueryable<TEntity> query,
+        params (Expression<Func<TEntity, object>> KeySelector, bool Descending)[] orderExpressions)
     {
         if (orderExpressions is null || orderExpressions.Length == 0)
         {
             return query.OrderBy(e => e.Id); // Default order
         }
 
-        IOrderedQueryable<T> orderedQuery = null;
+        IOrderedQueryable<TEntity> orderedQuery = null;
         foreach (var (keySelector, descending) in orderExpressions)
         {
             if (orderedQuery is null)
@@ -790,6 +812,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
                     : orderedQuery.ThenBy(keySelector);
             }
         }
+
         return orderedQuery ?? query;
     }
 
