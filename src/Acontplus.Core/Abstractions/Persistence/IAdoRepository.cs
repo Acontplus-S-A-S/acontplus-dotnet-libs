@@ -30,7 +30,7 @@ public interface IAdoRepository
         Dictionary<string, object>? parameters = null,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
-        where T : class, new();
+        where T : class;
 
     // Methods for Unit of Work transaction integration
     void SetTransaction(DbTransaction transaction);
