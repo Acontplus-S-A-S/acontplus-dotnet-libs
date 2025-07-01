@@ -1,6 +1,7 @@
 ﻿using Acontplus.Core.Domain.Common;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.DTOs.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -78,7 +79,50 @@ public static class ResultExtensions
         return result.ToActionResult(correlationId);
     }
 
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<TValue, DomainError> result,
+        string? correlationId = null)
+    {
+        return result.Match(
+            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onFailure: error => CreateErrorResult(error, correlationId)
+        );
+    }
+
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<TValue, DomainErrors> result,
+        string? correlationId = null)
+    {
+        return result.Match(
+            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onFailure: errors => CreateErrorResult(errors, correlationId)
+        );
+    }
     // Helper methods for creating responses
+
+    private static IResult CreateErrorResult(DomainError error, string? correlationId)
+    {
+        var statusCode = error.Type.ToHttpStatusCode();
+        var response = ApiResponse.Failure(
+            error.ToApiError(),
+            statusCode: statusCode,
+            correlationId: correlationId);
+
+        return Results.Json(response, statusCode: (int)statusCode);
+    }
+    private static IResult CreateErrorResult(DomainErrors errors, string? correlationId)
+    {
+        var primaryErrorType = errors.GetMostSevereErrorType();
+        var statusCode = primaryErrorType.ToHttpStatusCode();
+
+        var response = ApiResponse.Failure(
+            errors.ToApiErrors(),
+            statusCode: statusCode,
+            correlationId: correlationId,
+            message: errors.GetAggregateErrorMessage());
+
+        return Results.Json(response, statusCode: (int)statusCode);
+    }
     private static IActionResult CreateSuccessResponse<TValue>(TValue value, string? correlationId)
     {
         var response = ApiResponse<TValue>.Success(
