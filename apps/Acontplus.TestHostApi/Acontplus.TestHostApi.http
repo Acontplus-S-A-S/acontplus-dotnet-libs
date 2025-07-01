@@ -25,8 +25,8 @@ PUT {{Common.TestApi_HostAddress}}/api/usuario/{{id}}
 Content-Type: application/json
 
 {
-  "username": "ivan.paz",
-  "email": "ifer343@gmail.dev"
+  "username": "emilio.senguana",
+  "email": "sengua2000@gmail.dev"
 }
 
 ###

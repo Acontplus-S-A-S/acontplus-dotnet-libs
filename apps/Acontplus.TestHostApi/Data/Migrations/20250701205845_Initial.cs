@@ -20,17 +20,17 @@ namespace Acontplus.TestHostApi.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    Email = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    Username = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<int>(type: "int", nullable: true),
-                    FromMobile = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: false),
+                    FromMobile = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,19 +51,43 @@ namespace Acontplus.TestHostApi.Data.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<int>(type: "int", nullable: true),
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: false),
                     FromMobile = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WhatsAppUsage", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WhatsAppUsage_CreatedAt",
+                schema: "Config",
+                table: "WhatsAppUsage",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WhatsAppUsage_CreatedByUserId",
+                schema: "Config",
+                table: "WhatsAppUsage",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WhatsAppUsage_IsActive",
+                schema: "Config",
+                table: "WhatsAppUsage",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WhatsAppUsage_IsDeleted",
+                schema: "Config",
+                table: "WhatsAppUsage",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "UX_WhatsAppUsage_CompanyId",
