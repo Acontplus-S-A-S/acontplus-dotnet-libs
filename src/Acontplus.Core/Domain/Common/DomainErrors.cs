@@ -23,20 +23,6 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
     // Convert to ApiError collection for response
     public IEnumerable<ApiError> ToApiErrors() => Errors.Select(e => e.ToApiError());
 
-    public ApiError ToPrimaryApiError() => Errors.Count switch
-    {
-        0 => throw new InvalidOperationException("No errors present"),
-        1 => Errors[0].ToApiError(),
-        _ => new ApiError(
-            Code: "MULTIPLE_ERRORS",
-            Message: GetAggregateErrorMessage(this),
-            Details: new Dictionary<string, object>
-            {
-                ["errorCount"] = Errors.Count,
-                ["errorTypes"] = Errors.Select(e => e.Type.ToString()).Distinct()
-            })
-    };
-
     public ErrorType GetMostSevereErrorType()
     {
         var severityOrder = new[] {
@@ -56,15 +42,11 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
             .First();
     }
 
-    private static string GetAggregateErrorMessage(DomainErrors errors)
+    public string GetAggregateErrorMessage() => Errors.Count switch
     {
-        if (errors.Errors.Count == 1)
-            return errors.Errors[0].Message;
-
-        var errorTypes = errors.Errors
-            .Select(e => e.Type)
-            .Distinct();
-
-        return $"Multiple errors occurred: {string.Join(", ", errorTypes)}";
-    }
+        0 => "No errors provided",
+        1 => Errors[0].Message,
+        _ => $"Multiple errors occurred ({Errors.Count}): " +
+             string.Join("; ", Errors.Select(e => $"[{e.Type}] {e.Message}"))
+    };
 }

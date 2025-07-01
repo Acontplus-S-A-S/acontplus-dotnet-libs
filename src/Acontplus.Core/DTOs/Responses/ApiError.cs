@@ -1,4 +1,7 @@
-﻿namespace Acontplus.Core.DTOs.Responses;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
+
+namespace Acontplus.Core.DTOs.Responses;
 
 public sealed record ApiError(
     string Code,
@@ -8,4 +11,5 @@ public sealed record ApiError(
     string Severity = "error",
     string Category = "system",
     string? HelpUrl = null,
-    string? SuggestedAction = null);
+    string? SuggestedAction = null,
+    string? TraceId = null);
