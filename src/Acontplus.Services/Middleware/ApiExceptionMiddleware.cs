@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Acontplus.Services.Extensions;
+using System.Text.Json;
 
 namespace Acontplus.Services.Middleware;
 
@@ -6,21 +7,21 @@ public class ApiExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ApiExceptionMiddleware> _logger;
-    private readonly bool _includeDebugDetails;
+    private readonly ExceptionHandlingOptions _options;
     private readonly JsonSerializerOptions _jsonOptions;
 
     public ApiExceptionMiddleware(
         RequestDelegate next,
         ILogger<ApiExceptionMiddleware> logger,
-        bool includeDebugDetails = false)
+        ExceptionHandlingOptions options)
     {
         _next = next;
         _logger = logger;
-        _includeDebugDetails = includeDebugDetails;
+        _options = options;
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = _includeDebugDetails
+            WriteIndented = options.IncludeDebugDetailsInResponse
         };
     }
 
@@ -45,7 +46,7 @@ public class ApiExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
         var correlationId = context.TraceIdentifier;
-        LogException(ex, correlationId, context);
+        await LogException(ex, correlationId, context);
 
         var response = ex switch
         {
@@ -96,7 +97,7 @@ public class ApiExceptionMiddleware
             Code: "UNHANDLED_ERROR",
             Message: "An unexpected error occurred",
             Category: "system",
-            Debug: _includeDebugDetails ? new
+            Debug: _options.IncludeDebugDetailsInResponse ? new
             {
                 type = ex.GetType().Name,
                 message = ex.Message,
@@ -130,22 +131,39 @@ public class ApiExceptionMiddleware
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
     }
 
-    private void LogException(Exception ex, string correlationId, HttpContext context)
+    private async Task LogException(Exception ex, string correlationId, HttpContext context)
     {
-        _logger.LogError(ex, """
-            CorrelationId: {CorrelationId}
-            Path: {Path}
-            Method: {Method}
-            Exception: {ExceptionType}
-            Message: {Message}
-            """,
-            correlationId,
-            context.Request.Path,
-            context.Request.Method,
-            ex.GetType().Name,
-            ex.Message);
-    }
+        var logMessage = new StringBuilder()
+            .AppendLine($"CorrelationId: {correlationId}");
 
+        if (_options.IncludeRequestDetails)
+        {
+            logMessage.AppendLine($"Path: {context.Request.Path}")
+                     .AppendLine($"Method: {context.Request.Method}");
+        }
+
+        if (_options.LogRequestBody && context.Request.Body.CanRead)
+        {
+            logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
+        }
+
+        _logger.LogError(ex, logMessage.ToString());
+    }
+    private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
+    {
+        try
+        {
+            request.EnableBuffering();
+            using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+            var body = await reader.ReadToEndAsync();
+            request.Body.Position = 0;
+            return body;
+        }
+        catch
+        {
+            return "<Unable to read body>";
+        }
+    }
     private static string GetStatusMessage(HttpStatusCode statusCode) => statusCode switch
     {
         HttpStatusCode.BadRequest => "Invalid request",
