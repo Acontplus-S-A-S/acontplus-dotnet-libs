@@ -7,10 +7,7 @@ public static class CompressionUtils
     // Deflate Compression
     public static byte[] CompressDeflate(byte[] data)
     {
-        if (data == null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
+        ArgumentNullException.ThrowIfNull(data);
 
         using var memoryStream = new MemoryStream();
         using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress, true))
@@ -24,10 +21,7 @@ public static class CompressionUtils
     // Deflate Decompression
     public static byte[] DecompressDeflate(byte[] data)
     {
-        if (data == null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
+        ArgumentNullException.ThrowIfNull(data);
 
         using var compressStream = new MemoryStream(data);
         using var deflateStream = new DeflateStream(compressStream, CompressionMode.Decompress);
@@ -41,10 +35,7 @@ public static class CompressionUtils
     // GZip Compression
     public static byte[] CompressGZip(byte[] data)
     {
-        if (data == null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
+        ArgumentNullException.ThrowIfNull(data);
 
         using var memoryStream = new MemoryStream();
         using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
@@ -75,10 +66,7 @@ public static class CompressionUtils
     public static void DecompressColumn(DataSet dataSet, string tableName, string compressedColumnName,
         string decompressedColumnName)
     {
-        if (dataSet == null)
-        {
-            throw new ArgumentNullException(nameof(dataSet));
-        }
+        ArgumentNullException.ThrowIfNull(dataSet);
 
         if (!dataSet.Tables.Contains(tableName))
         {
@@ -89,7 +77,7 @@ public static class CompressionUtils
         DecompressColumn(table, compressedColumnName, decompressedColumnName);
     }
 
-    public static void DecompressColumn(DataTable table, string compressedColumnName, string decompressedColumnName)
+    public static void DecompressColumn(DataTable? table, string compressedColumnName, string decompressedColumnName)
     {
         if (table == null)
         {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Text.RegularExpressions;
+using static System.Text.RegularExpressions.Regex;
 
 namespace Acontplus.Utilities.IO;
 
@@ -7,16 +7,13 @@ public static class FileExtensions
 {
     public static string SanitizeFileName(string fileName)
     {
-        var response = Regex.Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", "");
+        var response = Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", "");
         return response.Replace(" ", string.Empty);
     }
 
     public static string GetBase64FromByte(byte[] valueByte)
     {
-        if (valueByte == null)
-        {
-            throw new ArgumentNullException(nameof(valueByte));
-        }
+        ArgumentNullException.ThrowIfNull(valueByte);
 
         // Using MemoryStream to avoid unnecessary allocations
         using var memoryStream = new MemoryStream();
@@ -30,10 +27,9 @@ public static class FileExtensions
 
     public static byte[] GetBytes(IFormFile file)
     {
-        byte[] fileBytes = null;
         using var ms = new MemoryStream();
         file.CopyTo(ms);
-        fileBytes = ms.ToArray();
+        var fileBytes = ms.ToArray();
         return fileBytes;
     }
 }
