@@ -31,15 +31,24 @@ public static class ResultExtensions
         );
     }
 
-    // Fix for CS1503: Ensure the nullable DomainWarnings is properly handled before passing it to CreateWarningResponse.
+    // Success with warnings handling
     public static IActionResult ToActionResult<TValue>(
         this Result<SuccessWithWarnings<TValue>, DomainError> result,
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: successWithWarnings => successWithWarnings.HasWarnings
-                ? CreateWarningResponse(successWithWarnings.Value, successWithWarnings.Warnings ?? DomainWarnings.Multiple(), correlationId)
-                : CreateSuccessResponse(successWithWarnings.Value, correlationId),
+            onSuccess: successWithWarnings =>
+            {
+                if (successWithWarnings.HasWarnings)
+                {
+                    // We know Warnings is not null here because HasWarnings checked it
+                    return CreateWarningResponse(
+                        successWithWarnings.Value,
+                        successWithWarnings.Warnings!.Value, // Use .Value to get non-null DomainWarnings
+                        correlationId);
+                }
+                return CreateSuccessResponse(successWithWarnings.Value, correlationId);
+            },
             onFailure: error => CreateErrorResponse(error, correlationId)
         );
     }
@@ -82,18 +91,17 @@ public static class ResultExtensions
 
     private static IActionResult CreateWarningResponse<TValue>(
         TValue value,
-        DomainWarnings warnings,
+        DomainWarnings? warnings, // Keep as nullable
         string? correlationId)
     {
         var response = ApiResponse<TValue>.Warning(
             data: value,
-            warnings: warnings.ToApiErrors(),
+            warnings: warnings?.ToApiErrors() ?? Enumerable.Empty<ApiError>(),
             correlationId: correlationId,
             statusCode: HttpStatusCode.OK
         );
         return new OkObjectResult(response);
     }
-
     private static IActionResult CreateErrorResponse(DomainError error, string? correlationId)
     {
         var statusCode = GetHttpStatusCode(error.Type);
