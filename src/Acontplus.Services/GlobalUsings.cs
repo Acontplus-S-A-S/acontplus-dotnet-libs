@@ -1,9 +1,10 @@
-﻿global using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿global using Acontplus.Core.Abstractions.Context;
+global using Acontplus.Core.DTOs.Responses;
+global using Acontplus.Core.Exceptions;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Http;
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.IdentityModel.Tokens;
 global using System.Net;

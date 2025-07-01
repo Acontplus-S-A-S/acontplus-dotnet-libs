@@ -1,4 +1,4 @@
-﻿global using Acontplus.Core.DTOs;
+﻿global using Acontplus.Core.DTOs.Shared;
 global using Acontplus.Utilities.IO;
 global using Acontplus.Utilities.Security.Helpers;
 global using Acontplus.Utilities.Security.Interfaces;

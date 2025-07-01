@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestHostApi.Controllers
+﻿using Acontplus.Utilities.Extensions;
+
+namespace Acontplus.TestHostApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -11,7 +13,7 @@
             var serialized = DataConverters.SerializeObjectCustom<Usuario>(usuario);
 
 
-            return Ok(await usuarioService.AddAsync(usuario));
+            return await usuarioService.AddAsync(usuario).ToActionResultAsync();
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UsuarioDto usuarioDto)
@@ -28,11 +30,32 @@
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResult<UsuarioDto>>>> GetUsers([FromQuery] PaginationDto pagination)
+        [ProducesResponseType<ApiResponse<PagedResult<UsuarioDto>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUsers(
+            [FromQuery] PaginationDto pagination,
+            [FromServices] IUsuarioService usuarioService,
+            [FromServices] ILogger<UsuarioController> logger)
         {
-            var result = await usuarioService.GetPaginatedUsersAsync(pagination);
+            return await usuarioService.GetPaginatedUsersAsync(pagination).ToActionResultAsync();
+        }
+        [HttpGet("ado")]
+        public async Task<IActionResult> GetUsersAdo(
+            [FromServices] IUsuarioService usuarioService,
+            [FromServices] ILogger<UsuarioController> logger)
+        {
+            return await usuarioService.GetLegacySpResponseAsync().ToActionResultAsync();
+        }
 
-            return Ok(ApiResponse<PagedResult<UsuarioDto>>.Success(result));
+        private string CreatePageLink(PaginationDto pagination, int page)
+        {
+            return $"?page={page}&pageSize={pagination.PageSize}";
+        }
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+            return await usuarioService.DeleteAsync(id).ToActionResultAsync(correlationId);
         }
     }
 }

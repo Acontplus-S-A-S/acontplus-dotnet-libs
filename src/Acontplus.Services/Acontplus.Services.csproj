@@ -1,35 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PackageId>Acontplus.Services</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Ivan Paz</Authors>
-    <Company>Acontplus S.A.S.</Company>
-    <Description>Lib to use common services config</Description>
-    <PackageTags>uuthentication;claims;services;api;versioning;middlewares</PackageTags>
-    <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>icon.png</PackageIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Images\icon.png">
-      <PackagePath>\</PackagePath>
-      <Pack>True</Pack>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageId>Acontplus.Services</PackageId>
+		<Version>1.0.2</Version>
+		<Authors>Ivan Paz</Authors>
+		<Company>Acontplus S.A.S.</Company>
+		<Description>Lib to use common services config</Description>
+		<PackageTags>uuthentication;claims;services;api;versioning;middlewares</PackageTags>
+		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="README.md" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Images\icon.png">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Acontplus.Core" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+	</ItemGroup>
 </Project>

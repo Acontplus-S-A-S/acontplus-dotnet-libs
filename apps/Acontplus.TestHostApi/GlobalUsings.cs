@@ -2,8 +2,8 @@
 global using Acontplus.Barcode.Utils;
 global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Base;
-global using Acontplus.Core.DTOs;
-global using Acontplus.Core.DTOs.Ado;
+global using Acontplus.Core.DTOs.Requests;
+global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.Validation;
 global using Acontplus.Data;
 global using Acontplus.FactElect.Helpers;

@@ -13,9 +13,9 @@
             { "json", SqlStringParam.Sanitize(json) },
             { "isMobileUserAgent", "false" }
         };
-            var response = await adoRepository.QuerySingleOrDefaultAsync<ApiResponse>("Config.Print_Get", parameters);
+            //var response = await adoRepository.QuerySingleOrDefaultAsync<ApiResponse>("Config.Print_Get", parameters);
 
-            return Ok(response);
+            return Ok();
         }
     }
 }

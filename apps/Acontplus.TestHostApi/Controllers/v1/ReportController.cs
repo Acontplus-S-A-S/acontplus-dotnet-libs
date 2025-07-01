@@ -1,4 +1,5 @@
-﻿using Notification = Acontplus.TestHostApi.Models.Notification;
+﻿using Acontplus.Core.DTOs.Shared;
+using Notification = Acontplus.TestHostApi.Models.Notification;
 
 namespace Acontplus.TestHostApi.Controllers.v1;
 
