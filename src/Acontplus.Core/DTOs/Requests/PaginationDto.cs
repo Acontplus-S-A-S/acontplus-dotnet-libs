@@ -22,10 +22,10 @@ public record PaginationDto
         };
     }
 
-    public string SortBy { get; init; }
+    public string? SortBy { get; init; }
     public SortDirection SortDirection { get; init; } = SortDirection.Ascending;
-    public string SearchTerm { get; init; }
-    public IReadOnlyDictionary<string, object> Filters { get; init; }
+    public string? SearchTerm { get; init; }
+    public IReadOnlyDictionary<string, object>? Filters { get; init; }
 
     public int Skip => (PageIndex - 1) * PageSize;
     public int Take => PageSize;

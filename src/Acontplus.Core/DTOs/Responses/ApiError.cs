@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.Json.Serialization;
-
-namespace Acontplus.Core.DTOs.Responses;
+﻿namespace Acontplus.Core.DTOs.Responses;
 
 public sealed record ApiError(
     string Code,
