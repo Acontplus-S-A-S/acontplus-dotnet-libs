@@ -41,6 +41,10 @@ public readonly record struct DomainError(
 
     public static DomainError RateLimited(string code, string message, Dictionary<string, object>? details = null) =>
         new(ErrorType.RateLimited, code, message, details);
+    public static DomainError ServiceUnavailable(string code, string message, Dictionary<string, object>? details = null) =>
+        new(ErrorType.ServiceUnavailable, code, message, details);
+    public static DomainError Timeout(string code, string message, Dictionary<string, object>? details = null) =>
+        new(ErrorType.Timeout, code, message, details);
 
     // Convert to ApiError for response
 

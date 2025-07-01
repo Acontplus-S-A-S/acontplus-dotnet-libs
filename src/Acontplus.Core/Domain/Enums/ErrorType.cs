@@ -9,5 +9,7 @@ public enum ErrorType
     Forbidden,
     Internal,
     External,
-    RateLimited
+    RateLimited,
+    ServiceUnavailable,
+    Timeout
 }
