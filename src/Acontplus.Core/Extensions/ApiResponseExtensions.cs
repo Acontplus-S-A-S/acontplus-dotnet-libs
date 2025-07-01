@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Constants;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 /// <summary>
 /// Extension methods for enhanced usability

@@ -1,21 +1,19 @@
 ﻿namespace Acontplus.Core.Domain.Common;
 
-public abstract class Entity<TId> where TId : notnull
+public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
 {
     public TId Id { get; protected init; } = default!;
 
-    private readonly List<IDomainEvent> _domainEvents = new();
+    private readonly List<IDomainEvent> _domainEvents = [];
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    protected void AddDomainEvent(IDomainEvent domainEvent)
-    {
-        _domainEvents.Add(domainEvent);
-    }
+    // Protected for domain logic (only derived classes can call directly)
+    protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
 
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
+    // Explicit implementation for external access (e.g., DbContext)
+    void IEntityWithDomainEvents.AddDomainEvent(IDomainEvent domainEvent) => AddDomainEvent(domainEvent);
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
 
     public override bool Equals(object? obj)
     {

@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Base;
-using System.Data.Common;
+﻿using System.Data.Common;
 
 namespace Acontplus.Core.Abstractions.Persistence;
 

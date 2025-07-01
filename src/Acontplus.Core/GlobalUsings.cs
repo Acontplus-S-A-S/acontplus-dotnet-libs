@@ -1,2 +1,10 @@
 ﻿global using Acontplus.Core.Enums;
 global using System.Data;
+global using Acontplus.Core.Base;
+global using Acontplus.Core.Constants;
+global using Acontplus.Core.Domain.Common;
+global using Acontplus.Core.Domain.Common.Events;
+global using Acontplus.Core.Domain.Enums;
+global using Acontplus.Core.DTOs.Requests;
+global using Acontplus.Core.DTOs.Responses;
+global using Acontplus.Core.Helpers;

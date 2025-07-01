@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Domain.Common.Events;
-
-namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common;
 
 public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
 {

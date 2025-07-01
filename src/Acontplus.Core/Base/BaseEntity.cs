@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-
-namespace Acontplus.Core.Base;
+﻿namespace Acontplus.Core.Base;
 
 public abstract class BaseEntity : AuditableEntity<int>
 {

@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.DTOs.Requests;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 
 public static class PaginationExtensions

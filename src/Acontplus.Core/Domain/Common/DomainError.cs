@@ -1,7 +1,4 @@
-﻿using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.DTOs.Responses;
-
-namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common;
 
 // <summary>
 /// Represents a standardized error for domain operations.
