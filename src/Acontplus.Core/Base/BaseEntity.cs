@@ -1,42 +1,15 @@
-﻿namespace Acontplus.Core.Base;
+﻿using Acontplus.Core.Domain.Common;
 
-public class BaseEntity
+namespace Acontplus.Core.Base;
+
+public abstract class BaseEntity : AuditableEntity<int>
 {
-    public int Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public int? CreatedByUserId { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public int? UpdatedByUserId { get; set; }
-    public bool IsActive { get; set; } = true;
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-    public int? DeletedByUserId { get; set; }
-    public bool FromMobile { get; set; } = false;
-    //[Timestamp]
-    //public byte[] RowVersion { get; set; } // Use in your entity if you need concurrency control
-
-    // Convenience methods for soft delete
-    public void MarkAsDeleted(int? deletedByUserId = null)
+    protected BaseEntity()
     {
-        IsDeleted = true;
-        DeletedByUserId = deletedByUserId;
-        // DeletedAt will be set automatically in SaveChanges
     }
 
-    public void RestoreFromDeleted()
+    protected BaseEntity(int createdByUserId, bool fromMobile = false)
+        : base(createdByUserId, fromMobile)
     {
-        IsDeleted = false;
-        DeletedAt = null;
-        DeletedByUserId = null;
-    }
-
-    public void Deactivate()
-    {
-        IsActive = false;
-    }
-
-    public void Activate()
-    {
-        IsActive = true;
     }
 }
