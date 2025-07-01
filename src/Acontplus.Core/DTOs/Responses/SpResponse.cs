@@ -5,8 +5,8 @@ namespace Acontplus.Core.DTOs.Responses;
 
 public record LegacySpResponse(
     string Code,
-    string Message,
-    string? Payload = null
+    string? Message,
+    dynamic? Payload = null
 )
 {
     [JsonIgnore]
@@ -19,8 +19,8 @@ public record LegacySpResponse(
 
 public record SpResponse(
     string Code,
-    string Message,
-    string? Content = null
+    string? Message,
+    dynamic? Content = null
 )
 {
     [JsonIgnore]
