@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.DTOs.Ado;
-using Acontplus.Persistence.SqlServer.Mapping;
+﻿using Acontplus.Persistence.SqlServer.Mapping;
 using System.Data.Common;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
@@ -224,7 +223,7 @@ public class AdoRepository : IAdoRepository
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
-            DbConnection connectionToClose = null;
+            DbConnection? connectionToClose = null;
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
@@ -274,7 +273,7 @@ public class AdoRepository : IAdoRepository
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
-            DbConnection connectionToClose = null;
+            DbConnection? connectionToClose = null;
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
@@ -300,28 +299,29 @@ public class AdoRepository : IAdoRepository
     /// Executes a SQL query or stored procedure designed to return a single row,
     /// and maps the first row to an object of type T.
     /// </summary>
-    public async Task<T> QuerySingleOrDefaultAsync<T>(
+    public async Task<T?> QuerySingleOrDefaultAsync<T>(
         string sql,
-        Dictionary<string, object> parameters,
-        CommandOptionsDto options,
-        CancellationToken cancellationToken) where T : class, new()
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default) where T : class
     {
         parameters ??= new Dictionary<string, object>();
+        options ??= new CommandOptionsDto();
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
-            DbConnection connectionToClose = null;
+            DbConnection? connectionToClose = null;
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
-
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
                 return await reader.ReadAsync(cancellationToken)
-                    ? await MapToObject<T>(reader) // Cast to SqlDataReader for specific features
-                    : new T(); // Return a new instance if no record, or null if you prefer
+                    ? await MapToObject<T>(reader)
+                    : null; // Return null instead of new instance
             }
             catch (Exception ex)
             {
@@ -360,50 +360,81 @@ public class AdoRepository : IAdoRepository
         });
     }
 
-    /// <summary>
-    /// Maps a single row from a SqlDataReader to an object of type T using reflection.
-    /// </summary>
-    private static async Task<T> MapToObject<T>(SqlDataReader reader) where T : class, new()
+    private static async Task<T?> MapProperties<T>(SqlDataReader reader, T instance) where T : class
     {
-        var result = new T();
-        var properties = typeof(T).GetProperties();
-        // Caching schema table and ordinal lookups can improve performance for repeated calls
-        // For a generic mapper, this is usually acceptable overhead for the first call.
-
-        var schemaTable = await reader.GetSchemaTableAsync();
-        if (schemaTable == null) return result; // Handle case where schema table might be null
-
-        // Pre-cache column ordinals for performance if mapping many rows
+        // Pre-cache column ordinals
         var columnOrdinals = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < reader.FieldCount; i++)
         {
             columnOrdinals[reader.GetName(i)] = i;
         }
 
-        foreach (var property in properties)
+        foreach (var property in typeof(T).GetProperties())
         {
-            // Use pre-cached ordinal if available
-            if (columnOrdinals.TryGetValue(property.Name, out var index))
+            if (columnOrdinals.TryGetValue(property.Name, out var index) && !reader.IsDBNull(index))
             {
-                if (!reader.IsDBNull(index))
+                var value = reader.GetValue(index);
+                try
                 {
-                    // Handle type conversion explicitly to avoid InvalidCastException
-                    var value = reader.GetValue(index);
-                    try
-                    {
-                        var convertedValue = Convert.ChangeType(value, property.PropertyType);
-                        property.SetValue(result, convertedValue);
-                    }
-                    catch (InvalidCastException ex)
-                    {
-                        // Log conversion error but continue if possible
-                        // Consider using a dedicated mapping library like Dapper for robustness
-                        // logger.LogWarning(ex, "Type conversion error for property '{Property}' on '{Type}'. Value: '{Value}'", property.Name, typeof(T).Name, value);
-                    }
+                    var convertedValue = Convert.ChangeType(value, property.PropertyType);
+                    property.SetValue(instance, convertedValue);
+                }
+                catch (InvalidCastException)
+                {
+                    // Handle or ignore conversion errors
                 }
             }
         }
 
-        return result;
+        return instance;
+    }
+
+    private static object? GetDefaultValue(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
+    }
+
+    /// <summary>
+    /// Maps a single row from a SqlDataReader to an object of type T using reflection.
+    /// </summary>
+    private static async Task<T?> MapToObject<T>(SqlDataReader reader) where T : class
+    {
+        try
+        {
+            // Try to get the first constructor and its parameters
+            var ctor = typeof(T).GetConstructors().FirstOrDefault();
+            if (ctor == null) return null;
+
+            var parameters = ctor.GetParameters();
+            var args = new object[parameters.Length];
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var paramName = parameters[i].Name;
+                if (paramName == null) continue;
+
+                try
+                {
+                    var ordinal = reader.GetOrdinal(paramName);
+                    args[i] = reader.IsDBNull(ordinal)
+                        ? GetDefaultValue(parameters[i].ParameterType)
+                        : reader.GetValue(ordinal);
+                }
+                catch
+                {
+                    args[i] = GetDefaultValue(parameters[i].ParameterType);
+                }
+            }
+
+            var instance = (T?)ctor.Invoke(args);
+            if (instance == null) return null;
+
+            // Map remaining properties that weren't set via constructor
+            return await MapProperties(reader, instance);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
