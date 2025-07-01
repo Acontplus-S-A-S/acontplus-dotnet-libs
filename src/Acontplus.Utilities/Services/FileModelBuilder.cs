@@ -4,7 +4,7 @@ namespace Acontplus.Utilities.Services;
 
 public static class FileModelBuilder
 {
-    public static FileModel Create(byte[] content, string contentType, string fileName = null)
+    public static FileModel Create(byte[] content, string contentType, string? fileName = null)
     {
         if (content == null) throw new ArgumentNullException(nameof(content));
 
@@ -16,7 +16,7 @@ public static class FileModelBuilder
         };
     }
 
-    public static FileModel CreateBase64(byte[] content, string contentType, string fileName = null)
+    public static FileModel CreateBase64(byte[] content, string contentType, string? fileName = null)
     {
         if (content == null) throw new ArgumentNullException(nameof(content));
 
