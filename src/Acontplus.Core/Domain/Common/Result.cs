@@ -13,13 +13,13 @@ public readonly record struct Result<TValue, TError>
     private readonly TValue? _value;
     private readonly TError? _error;
 
-    [JsonPropertyName("isSuccess")]
+    [JsonIgnore]
     public bool IsSuccess { get; }
 
-    [JsonPropertyName("value")]
+    [JsonIgnore]
     public TValue Value => IsSuccess ? _value! : throw new InvalidOperationException("Cannot access Value of a failed result");
 
-    [JsonPropertyName("error")]
+    [JsonIgnore]
     public TError Error => !IsSuccess ? _error! : throw new InvalidOperationException("Cannot access Error of a successful result");
 
     [JsonIgnore]

@@ -22,4 +22,49 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
 
     // Convert to ApiError collection for response
     public IEnumerable<ApiError> ToApiErrors() => Errors.Select(e => e.ToApiError());
+
+    public ApiError ToPrimaryApiError() => Errors.Count switch
+    {
+        0 => throw new InvalidOperationException("No errors present"),
+        1 => Errors[0].ToApiError(),
+        _ => new ApiError(
+            Code: "MULTIPLE_ERRORS",
+            Message: GetAggregateErrorMessage(this),
+            Details: new Dictionary<string, object>
+            {
+                ["errorCount"] = Errors.Count,
+                ["errorTypes"] = Errors.Select(e => e.Type.ToString()).Distinct()
+            })
+    };
+
+    public ErrorType GetMostSevereErrorType()
+    {
+        var severityOrder = new[] {
+        ErrorType.Internal,
+        ErrorType.External,
+        ErrorType.Forbidden,
+        ErrorType.Unauthorized,
+        ErrorType.RateLimited,
+        ErrorType.Conflict,
+        ErrorType.NotFound,
+        ErrorType.Validation
+    };
+
+        return Errors
+            .Select(e => e.Type)
+            .OrderBy(t => Array.IndexOf(severityOrder, t))
+            .First();
+    }
+
+    private static string GetAggregateErrorMessage(DomainErrors errors)
+    {
+        if (errors.Errors.Count == 1)
+            return errors.Errors[0].Message;
+
+        var errorTypes = errors.Errors
+            .Select(e => e.Type)
+            .Distinct();
+
+        return $"Multiple errors occurred: {string.Join(", ", errorTypes)}";
+    }
 }

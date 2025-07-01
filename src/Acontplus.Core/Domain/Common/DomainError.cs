@@ -16,6 +16,8 @@ public readonly record struct DomainError(
     string Message,
     Dictionary<string, object>? Details = null)
 {
+    //[SuppressMessage("Design", "CA1000",
+    //    Justification = "Factory methods improve DomainError discoverability")]
     public static DomainError NotFound(string code, string message, Dictionary<string, object>? details = null) =>
         new(ErrorType.NotFound, code, message, details);
 
@@ -41,5 +43,10 @@ public readonly record struct DomainError(
         new(ErrorType.RateLimited, code, message, details);
 
     // Convert to ApiError for response
-    public ApiError ToApiError() => new(Code, Message, null, Details);
+
+    public ApiError ToApiError() => new(
+        Code: Code,
+        Message: Message,
+        Details: Details,
+        HelpUrl: $"https://errors.acontplus.com/{Code}");
 }

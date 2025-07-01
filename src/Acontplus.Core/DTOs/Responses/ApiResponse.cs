@@ -4,35 +4,27 @@ using System.Text.Json.Serialization;
 
 namespace Acontplus.Core.DTOs.Responses;
 
-public class ApiResponse
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(ApiResponse<>))]
+public partial class ApiResponseJsonContext : JsonSerializerContext { }
+
+public record ApiResponse
 {
-    [JsonPropertyName("status")]
     public required string Status { get; init; }
-
-    [JsonPropertyName("code")]
     public required string Code { get; init; }
-
-    [JsonPropertyName("message")]
     public string? Message { get; init; }
-
-    [JsonPropertyName("errors")]
     public IEnumerable<ApiError>? Errors { get; init; }
-
-    [JsonPropertyName("metadata")]
     public Dictionary<string, object>? Metadata { get; init; }
-
-    [JsonPropertyName("timestamp")]
     public string Timestamp { get; init; } = DateTimeOffset.UtcNow.ToString("O");
-
-    [JsonPropertyName("correlationId")]
     public string? CorrelationId { get; init; }
+    public string? TraceId { get; init; } = System.Diagnostics.Activity.Current?.Id;
 
     // Success Factories
     public static ApiResponse Success(
-        string? message = null,
-        Dictionary<string, object>? metadata = null,
-        string? correlationId = null,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+            string? message = null,
+            Dictionary<string, object>? metadata = null,
+            string? correlationId = null,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
     {
         return new ApiResponse
         {
@@ -93,7 +85,7 @@ public class ApiResponse
     [JsonIgnore] public bool HasErrors => Errors?.Any() == true;
 }
 
-public class ApiResponse<T> : ApiResponse
+public record ApiResponse<T> : ApiResponse
 {
     [JsonPropertyName("data")]
     public T? Data { get; init; }
@@ -118,7 +110,7 @@ public class ApiResponse<T> : ApiResponse
     }
 
     // Failure Factories
-    public static ApiResponse<T> Failure(
+    public static new ApiResponse<T> Failure(
         IEnumerable<ApiError> errors,
         string? message = null,
         string? correlationId = null,
@@ -134,7 +126,7 @@ public class ApiResponse<T> : ApiResponse
         };
     }
 
-    public static ApiResponse<T> Failure(
+    public static new ApiResponse<T> Failure(
         ApiError error,
         string? message = null,
         string? correlationId = null,
