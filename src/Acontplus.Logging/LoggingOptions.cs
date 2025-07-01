@@ -10,10 +10,10 @@ public class LoggingOptions
     public int? RetainedFileCountLimit { get; set; } = 7;
     public long? FileSizeLimitBytes { get; set; } = 10 * 1024 * 1024;
     public bool EnableS3Logging { get; set; } = false;
-    public string S3BucketName { get; set; }
-    public string S3AccessKey { get; set; }
-    public string S3SecretKey { get; set; }
+    public string? S3BucketName { get; set; }
+    public string? S3AccessKey { get; set; }
+    public string? S3SecretKey { get; set; }
     public bool EnableDatabaseLogging { get; set; } = false;
-    public string DatabaseConnectionString { get; set; }
+    public string? DatabaseConnectionString { get; set; }
     public string TimeZoneId { get; set; } = "UTC"; // Default to UTC
 }

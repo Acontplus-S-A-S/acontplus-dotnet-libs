@@ -1,7 +1,7 @@
 ﻿using Acontplus.Core.Domain.Common;
+using Acontplus.Core.Extensions;
 using System.Data.Common;
 using System.Linq.Expressions;
-using Acontplus.Core.Extensions;
 
 namespace Acontplus.TestHostApi.Services
 {
@@ -17,7 +17,7 @@ namespace Acontplus.TestHostApi.Services
 
     public class UsuarioService : IUsuarioService
     {
-        private readonly IRepository<Usuario> _usuarioRepository;
+        private readonly IRepository<Usuario, int> _usuarioRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UsuarioService> _logger;
 
@@ -25,7 +25,7 @@ namespace Acontplus.TestHostApi.Services
             IUnitOfWork unitOfWork,
             ILogger<UsuarioService> logger)
         {
-            _usuarioRepository = unitOfWork.GetRepository<Usuario>();
+            _usuarioRepository = unitOfWork.GetRepository<Usuario, int>();
             _unitOfWork = unitOfWork;
             _logger = logger;
         }

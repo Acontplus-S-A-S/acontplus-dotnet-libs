@@ -2,6 +2,7 @@
 using Acontplus.Persistence.SqlServer.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data.Common;
+using Acontplus.Core.Domain.Common;
 
 namespace Acontplus.Persistence.SqlServer.UnitOfWork;
 
@@ -32,12 +33,14 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
     public IAdoRepository AdoRepository => _adoRepository;
     public bool HasActiveTransaction => _efTransaction is not null;
 
-    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+    public IRepository<TEntity, TId> GetRepository<TEntity, TId>()
+        where TEntity : AuditableEntity<TId>
+        where TId : notnull
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        return (IRepository<TEntity>)_repositories.GetOrAdd(typeof(TEntity), static (type, context) =>
-            new BaseRepository<TEntity>(context._context, context._logger as ILogger<BaseRepository<TEntity>>),
+        return (IRepository<TEntity, TId>)_repositories.GetOrAdd(typeof(TEntity), static (type, context) =>
+            new BaseRepository<TEntity, TId>(context._context, context._logger as ILogger<BaseRepository<TEntity, TId>>),
             this);
     }
 

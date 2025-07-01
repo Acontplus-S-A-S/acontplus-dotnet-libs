@@ -1,9 +1,12 @@
-﻿namespace Acontplus.TestHostApi.Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Acontplus.TestHostApi.Entities;
+
+public class Usuario : BaseEntity
 {
-    //[Table("usuario", Schema = "seguridad")]
-    public class Usuario : BaseEntity
-    {
-        public required string Username { get; set; }
-        public required string Email { get; set; }
-    }
+    [MaxLength(50)]
+    public required string Username { get; set; }
+    [MaxLength(100)]
+    public required string Email { get; set; }
 }

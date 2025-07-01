@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.TestHostApi.Repositories.Implementations;
 
-public class UserRepository : BaseRepository<Usuario>, IUserRepository
+public class UserRepository : BaseRepository<Usuario, int>, IUserRepository
 {
     public UserRepository(TestContext context) : base(context)
     {

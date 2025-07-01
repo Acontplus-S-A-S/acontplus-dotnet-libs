@@ -4,7 +4,6 @@ using Acontplus.FactElect.Services.External;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Services.Extensions;
-using Acontplus.Services.Middleware;
 using Acontplus.TestHostApi.Extensions;
 using Scrutor;
 using Serilog;
@@ -57,7 +56,7 @@ try
         {
             // Configure SQL Server options
             sqlServerOptions.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-                x=>x.MigrationsAssembly("Acontplus.TestHostApi"));
+                x => x.MigrationsAssembly("Acontplus.TestHostApi"));
         });
         // Registro para una base de datos de auditoría (con clave)
         //builder.Services.AddDbContextWithUnitOfWork<AuditDbContext>(options =>

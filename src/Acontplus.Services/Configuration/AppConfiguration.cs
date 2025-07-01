@@ -2,7 +2,7 @@
 
 public static class AppConfiguration
 {
-    private static string GetPlatformSharedFolder(IConfiguration baseConfig)
+    private static string? GetPlatformSharedFolder(IConfiguration baseConfig)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
