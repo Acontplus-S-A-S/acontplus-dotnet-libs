@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
-public class SqlServerBaseEntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
+public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
     where TEntity : AuditableEntity<TId>
     where TId : struct
 {
