@@ -56,7 +56,7 @@ namespace Acontplus.TestHostApi.Services
                 return DomainErrors.Single(DomainError.Internal(
                     "DB_INSERT_ERROR",
                     "Failed to create user due to database error",
-                    new Dictionary<string, object> { ["username"] = usuario.Username }));
+                    details: new Dictionary<string, object> { ["username"] = usuario.Username }));
             }
         }
 
@@ -109,7 +109,7 @@ namespace Acontplus.TestHostApi.Services
                 return DomainError.Internal(
                     "DB_DELETE_ERROR",
                     "Failed to delete user",
-                    new Dictionary<string, object> { ["userId"] = id });
+                    details: new Dictionary<string, object> { ["userId"] = id });
             }
         }
 
@@ -260,7 +260,7 @@ namespace Acontplus.TestHostApi.Services
                 return DomainErrors.Single(DomainError.Internal(
                     "DB_UPDATE_ERROR",
                     "Failed to update user",
-                    new Dictionary<string, object> { ["userId"] = id }));
+                    details: new Dictionary<string, object> { ["userId"] = id }));
             }
         }
     }
