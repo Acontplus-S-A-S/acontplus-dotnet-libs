@@ -1,74 +1,79 @@
-﻿using System.Reflection;
+﻿using System.Data;
+using System.Data.Common;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.SqlServer.Mapping;
 
 public static class DbDataReaderMapper
 {
     /// <summary>
-    /// Maps a SqlDataReader to a List of entities of type T
+    /// Maps a DbDataReader to a List of entities of type T with support for records and init-only properties
     /// </summary>
-    /// <typeparam name="T">The type to map to. Must be a reference type or a struct.</typeparam>
-    /// <param name="reader">The SqlDataReader containing the data</param>
-    /// <param name="cancellationToken">Optional cancellation token</param>
-    /// <returns>A list of mapped entities</returns>
-    public static async Task<List<T>> ToListAsync<T>(SqlDataReader reader, CancellationToken cancellationToken = default)
+    public static async Task<List<T>> ToListAsync<T>(this DbDataReader reader, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reader);
 
         var result = new List<T>();
         var type = typeof(T);
+        var isRecord = IsRecordType(type);
 
-        // Get type's properties
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        // Get all public instance properties including init-only
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                           .Where(p => IsWritable(p, isRecord))
+                           .ToArray();
 
-        // Get the column mapping
         var columnMap = BuildColumnMapping(reader, properties);
 
-        // Read all rows
-        while (await reader.ReadAsync(cancellationToken))
+        await foreach (var item in MapRecordsAsync<T>(reader, columnMap, cancellationToken))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Create new instance of T
-            var instance = (T)Activator.CreateInstance(type);
-
-            foreach (var (columnName, property) in columnMap)
-            {
-                var ordinal = reader.GetOrdinal(columnName);
-
-                // Skip if column value is null
-                if (await reader.IsDBNullAsync(ordinal, cancellationToken))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    var value = reader.GetValue(ordinal);
-                    var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-
-                    if (value != DBNull.Value)
-                    {
-                        var convertedValue = Convert.ChangeType(value, propertyType);
-                        property.SetValue(instance, convertedValue);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException(
-                        $"Error mapping column '{columnName}' to property '{property.Name}' of type '{type.FullName}'",
-                        ex);
-                }
-            }
-
-            result.Add(instance);
+            result.Add(item);
         }
 
         return result;
     }
 
+    private static async IAsyncEnumerable<T> MapRecordsAsync<T>(
+        DbDataReader reader,
+        Dictionary<string, PropertyInfo> columnMap,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var columnNames = columnMap.Keys.ToArray();
+
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var instance = CreateInstance<T>();
+
+            foreach (var columnName in columnNames)
+            {
+                var ordinal = reader.GetOrdinal(columnName);
+                if (await reader.IsDBNullAsync(ordinal, cancellationToken))
+                    continue;
+
+                var value = reader.GetValue(ordinal);
+                var property = columnMap[columnName];
+                var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                try
+                {
+                    var convertedValue = ConvertValue(value, propertyType);
+                    property.SetValue(instance, convertedValue);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        $"Error mapping column '{columnName}' to property '{property.Name}'", ex);
+                }
+            }
+
+            yield return instance;
+        }
+    }
+
     private static Dictionary<string, PropertyInfo> BuildColumnMapping(
-        SqlDataReader reader,
+        DbDataReader reader,
         PropertyInfo[] properties)
     {
         var columnMap = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
@@ -76,10 +81,7 @@ public static class DbDataReaderMapper
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var columnName = reader.GetName(i);
-            if (string.IsNullOrEmpty(columnName))
-            {
-                continue;
-            }
+            if (string.IsNullOrEmpty(columnName)) continue;
 
             var property = properties.FirstOrDefault(p =>
                 string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
@@ -93,57 +95,105 @@ public static class DbDataReaderMapper
         return columnMap;
     }
 
-    // Keep the original synchronous method for backward compatibility
-    public static List<T> ToList<T>(IDataReader rdr)
+    private static T CreateInstance<T>()
     {
-        var ret = new List<T>();
-        var typ = typeof(T);
-        var properties = typ.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var columns = new Dictionary<string, PropertyInfo>();
+        var type = typeof(T);
 
-        // Map columns to properties (case-insensitive)
-        for (var index = 0; index < rdr.FieldCount; index++)
+        if (type.IsValueType)
+            return default!;
+
+        if (type.GetConstructor(Type.EmptyTypes) != null)
+            return Activator.CreateInstance<T>();
+
+        // Fallback for records and types without parameterless constructors
+        return (T)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+    }
+
+    private static object ConvertValue(object value, Type targetType)
+    {
+        try
         {
-            var columnName = rdr.GetName(index);
-            var prop = properties.FirstOrDefault(p =>
-                string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
-            if (prop != null)
-            {
-                columns.Add(columnName, prop);
-            }
+            if (targetType.IsEnum)
+                return Enum.ToObject(targetType, value);
+
+            if (targetType == typeof(Guid))
+                return value is string s ? Guid.Parse(s) : (Guid)value;
+
+            if (targetType == typeof(DateTimeOffset))
+                return value is DateTime dt ? new DateTimeOffset(dt) : (DateTimeOffset)value;
+
+            return Convert.ChangeType(value, targetType);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"Failed to convert value '{value}' to type {targetType.Name}", ex);
+        }
+    }
+
+    private static bool IsRecordType(Type type)
+    {
+        // Check for compiler-generated attributes or Clone method
+        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute)) ||
+               type.GetMethods().Any(m => m.Name == "<Clone>$");
+    }
+
+    private static bool IsWritable(PropertyInfo prop, bool isRecord)
+    {
+        // For records, we consider init-only properties as writable during construction
+        if (isRecord)
+        {
+            var setMethod = prop.GetSetMethod(nonPublic: true);
+            return setMethod != null && (setMethod.IsPublic || setMethod.IsAssembly);
         }
 
-        // Loop through all records
-        while (rdr.Read())
+        return prop.CanWrite;
+    }
+
+    // Synchronous version
+    public static List<T> ToList<T>(this DbDataReader reader)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+
+        var result = new List<T>();
+        var type = typeof(T);
+        var isRecord = IsRecordType(type);
+
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                           .Where(p => IsWritable(p, isRecord))
+                           .ToArray();
+
+        var columnMap = BuildColumnMapping(reader, properties);
+
+        while (reader.Read())
         {
-            // Create new instance of T
-            var entity = Activator.CreateInstance<T>();
+            var instance = CreateInstance<T>();
 
-            // Assign values to the entity's properties
-            foreach (var column in columns)
+            foreach (var columnName in columnMap.Keys)
             {
-                var property = column.Value;
-                var columnValue = rdr[column.Key];
+                var ordinal = reader.GetOrdinal(columnName);
+                if (reader.IsDBNull(ordinal))
+                    continue;
 
-                if (columnValue != DBNull.Value)
+                var value = reader.GetValue(ordinal);
+                var property = columnMap[columnName];
+                var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                try
                 {
-                    // Handle nullable types (if applicable)
-                    var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-
-                    // Convert the column value to the property type if needed
-                    var safeValue = Convert.ChangeType(columnValue, propertyType);
-
-                    property.SetValue(entity, safeValue);
+                    var convertedValue = ConvertValue(value, propertyType);
+                    property.SetValue(instance, convertedValue);
                 }
-                else
+                catch (Exception ex)
                 {
-                    property.SetValue(entity, null); // Handle DBNull
+                    throw new InvalidOperationException(
+                        $"Error mapping column '{columnName}' to property '{property.Name}'", ex);
                 }
             }
 
-            ret.Add(entity);
+            result.Add(instance);
         }
 
-        return ret;
+        return result;
     }
 }

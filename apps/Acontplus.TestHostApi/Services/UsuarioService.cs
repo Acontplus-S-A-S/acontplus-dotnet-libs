@@ -11,6 +11,7 @@ namespace Acontplus.TestHostApi.Services
         Task<Result<int, DomainError>> CreateAsync();
         Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(PaginationDto pagination);
         Task<Result<LegacySpResponse, DomainError>> GetLegacySpResponseAsync();
+        Task<Result<List<UsuarioDto>, DomainError>> GetDynamicUserListAsync();
         Task<Result<Usuario, DomainErrors>> UpdateAsync(int id, Usuario usuario);
         Task<Result<bool, DomainError>> DeleteAsync(int id);
     }
@@ -109,6 +110,31 @@ namespace Acontplus.TestHostApi.Services
                     "DB_DELETE_ERROR",
                     "Failed to delete user",
                     new Dictionary<string, object> { ["userId"] = id });
+            }
+        }
+
+        public async Task<Result<List<UsuarioDto>, DomainError>> GetDynamicUserListAsync()
+        {
+            try
+            {
+                var options = new CommandOptionsDto
+                {
+                    CommandType = CommandType.Text,
+                    CommandTimeout = 30
+                };
+
+                var result = await _unitOfWork.AdoRepository.QueryAsync<UsuarioDto>(
+                    "SELECT * FROM dbo.Usuarios",
+                    options: options);
+
+                return Result<List<UsuarioDto>, DomainError>.Success(result);
+            }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Failed to execute raw SQL command");
+                return DomainError.Internal(
+                    "SQL_COMMAND_FAILED",
+                    "Failed to execute database command");
             }
         }
 

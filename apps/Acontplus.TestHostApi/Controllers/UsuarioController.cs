@@ -47,6 +47,14 @@ namespace Acontplus.TestHostApi.Controllers
             return await usuarioService.GetLegacySpResponseAsync().ToActionResultAsync();
         }
 
+        [HttpGet("get-dynamic")]
+        public async Task<IActionResult> GetDynamicUsers(
+    [FromServices] IUsuarioService usuarioService,
+    [FromServices] ILogger<UsuarioController> logger)
+        {
+            return await usuarioService.GetDynamicUserListAsync().ToActionResultAsync();
+        }
+
         private string CreatePageLink(PaginationDto pagination, int page)
         {
             return $"?page={page}&pageSize={pagination.PageSize}";
