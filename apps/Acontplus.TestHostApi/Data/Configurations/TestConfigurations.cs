@@ -2,7 +2,7 @@
 
 namespace Acontplus.TestHostApi.Data.Configurations;
 
-public class WhatsAppUsageConfiguration : SqlServerBaseEntityConfiguration<WhatsAppUsage, int>
+public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUsage, int>
 {
     public override void Configure(EntityTypeBuilder<WhatsAppUsage> builder)
     {

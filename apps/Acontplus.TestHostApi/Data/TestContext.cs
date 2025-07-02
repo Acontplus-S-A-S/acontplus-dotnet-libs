@@ -15,38 +15,35 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        //Basic Registration
+        // 1. Register entities with default conventions and BaseEntityTypeConfiguration
+        // Usuario will be mapped to table "Usuarios" (from DbSet name)
+        SimpleEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
 
-        SqlServerEntityRegistration.RegisterEntities(
-        modelBuilder,
-        typeof(Usuario).Assembly,
-        typeof(TestContext));
+        // 2. Register entities with explicit schema/table names (overrides [Table] attribute)
+        //SimpleEntityRegistration.RegisterEntitiesWithNames(modelBuilder, typeof(TestContext),
+        //    (typeof(Usuario), "seguridad", "usuarios_app"), // Explicitly set schema and table name
+        //    (typeof(Producto), "inventario", null) // Set schema, Producto will be "Productos" (from DbSet name)
+        //);
+        //SimpleEntityRegistration.RegisterEntitiesWithNames(modelBuilder, typeof(TestContext),
+        //    (typeof(Usuario), "seguridad", "usuarios_app"), // Explicitly set schema and table name
+        //    (typeof(Producto), "inventario", null) // Set schema, Producto will be "Productos" (from DbSet name)
+        //);
+        //SimpleEntityRegistration.RegisterEntitiesWithNames(modelBuilder, typeof(TestContext),
+        //    (typeof(Usuario), "seguridad", null) // Explicitly set schema and table name
+        //);
 
-        //With Schema Mapping
+        // 3. Register entities with explicit schemas only
+        // Cliente will be in 'crm' schema, table name will be 'cliente' (from [Table] attribute)
+        // If [Table] was absent, it would try "Clientes" (from DbSet name)
+        //SimpleEntityRegistration.RegisterEntitiesWithSchemas(modelBuilder, typeof(TestContext),
+        //    (typeof(Usuario), "seguridad")
+        //);
 
-        //var schemaMap = new Dictionary<Type, string>
+        //// 4. Register entities with custom IEntityTypeConfiguration
+        //var customConfigs = new Dictionary<Type, Type>
         //{
-        //    { typeof(Usuario), "security" }
-        //    //{ typeof(Product), "inventory" }
+        //    { typeof(Producto), typeof(ProductoConfiguration) }
         //};
-
-        //SqlServerEntityRegistration.RegisterWithSchemas(
-        //    modelBuilder,
-        //    typeof(Usuario).Assembly,
-        //    schemaMap);
-
-        //With Full Table Mapping
-
-        //var tableMap = new Dictionary<Type, (string, string)>
-        //{
-        //    { typeof(Usuario), ("Security", "Usuarios") },
-        //    //{ typeof(Product), ("Inventory", "Products") }
-        //};
-
-        //SqlServerEntityRegistration.RegisterEntities(
-        //    modelBuilder,
-        //    typeof(Usuario).Assembly,
-        //    tableMap: tableMap);
-
+        //SimpleEntityRegistration.RegisterEntitiesWithCustomConfigurations(modelBuilder, typeof(TestContext), customConfigs, typeof(Producto));
     }
 }
