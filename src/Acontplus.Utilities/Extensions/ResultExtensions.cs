@@ -1,5 +1,4 @@
 ﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.DTOs.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -121,22 +120,6 @@ public static class ResultExtensions
             statusCode: HttpStatusCode.OK
         );
         return new OkObjectResult(response);
-    }
-
-    private static IActionResult ToActionResult(this ApiResponse response)
-    {
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => new OkObjectResult(response),
-            HttpStatusCode.BadRequest => new BadRequestObjectResult(response),
-            HttpStatusCode.Unauthorized => new UnauthorizedObjectResult(response),
-            HttpStatusCode.Forbidden => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.Forbidden },
-            HttpStatusCode.NotFound => new NotFoundObjectResult(response),
-            HttpStatusCode.Conflict => new ConflictObjectResult(response),
-            HttpStatusCode.TooManyRequests => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.TooManyRequests },
-            HttpStatusCode.BadGateway => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.BadGateway },
-            _ => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.InternalServerError }
-        };
     }
 
     private static IResult ToMinimalApiResult(this ApiResponse response)

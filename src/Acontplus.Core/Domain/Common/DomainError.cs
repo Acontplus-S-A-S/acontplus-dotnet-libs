@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Extensions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 
 namespace Acontplus.Core.Domain.Common;
