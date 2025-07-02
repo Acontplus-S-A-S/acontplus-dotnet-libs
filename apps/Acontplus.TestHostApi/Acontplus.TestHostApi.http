@@ -66,3 +66,7 @@ GET {{Common.TestApi_HostAddress}}/api/ats/download?json={"fromDate":"2025-03-01
 GET {{Acontplus.TestHostApi_HostAddress}}/api/usuario/ado
 
 ###
+
+GET {{Acontplus.TestHostApi_HostAddress}}/api/usuario/get-dynamic
+
+###
