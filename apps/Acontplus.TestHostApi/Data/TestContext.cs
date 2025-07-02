@@ -1,5 +1,4 @@
 ﻿using Acontplus.Persistence.SqlServer.Context;
-using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Acontplus.TestHostApi.Data;
