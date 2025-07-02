@@ -1,4 +1,6 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿using Acontplus.Core.Extensions;
+
+namespace Acontplus.Core.Domain.Common;
 
 /// <summary>
 /// Represents multiple domain errors that can occur during validation or complex operations.
@@ -19,6 +21,17 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
 
     // Convert to ApiError collection for response
     public IEnumerable<ApiError> ToApiErrors() => Errors.Select(e => e.ToApiError());
+
+    public ApiResponse<T> ToApiResponse<T>(string? correlationId = null)
+    {
+        var primaryError = GetMostSevereErrorType();
+        return ApiResponse<T>.Failure(
+            errors: Errors.ToApiErrors(),
+            message: GetAggregateErrorMessage(),
+            correlationId: correlationId,
+            statusCode: primaryError.ToHttpStatusCode()
+        );
+    }
 
     public ErrorType GetMostSevereErrorType()
     {
