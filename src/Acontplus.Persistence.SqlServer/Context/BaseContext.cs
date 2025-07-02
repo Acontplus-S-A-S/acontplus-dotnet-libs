@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Acontplus.Core.Domain.Common;
+﻿using Acontplus.Core.Domain.Common;
 using Acontplus.Core.Domain.Common.Events;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
 namespace Acontplus.Persistence.SqlServer.Context;

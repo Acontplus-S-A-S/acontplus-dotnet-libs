@@ -1,8 +1,8 @@
-﻿using Acontplus.Persistence.SqlServer.Exceptions;
+﻿using Acontplus.Core.Domain.Common;
+using Acontplus.Persistence.SqlServer.Exceptions;
 using Acontplus.Persistence.SqlServer.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data.Common;
-using Acontplus.Core.Domain.Common;
 
 namespace Acontplus.Persistence.SqlServer.UnitOfWork;
 

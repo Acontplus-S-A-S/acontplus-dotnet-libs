@@ -1,5 +1,4 @@
 ﻿global using Acontplus.Core.Abstractions.Persistence;
-global using Acontplus.Core.Base;
 global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Persistence.SqlServer.Ado.Parameters;
 global using Microsoft.Data.SqlClient;
