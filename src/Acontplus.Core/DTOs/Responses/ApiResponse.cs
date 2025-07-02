@@ -18,12 +18,15 @@ public record ApiResponse
     public string? CorrelationId { get; init; }
     public string? TraceId { get; init; } = System.Diagnostics.Activity.Current?.Id;
 
+    [JsonIgnore]  // Important to not serialize this to clients
+    public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.OK;
+
     // Success Factories
     public static ApiResponse Success(
-            string? message = null,
-            Dictionary<string, object>? metadata = null,
-            string? correlationId = null,
-            HttpStatusCode statusCode = HttpStatusCode.OK)
+        string? message = null,
+        Dictionary<string, object>? metadata = null,
+        string? correlationId = null,
+        HttpStatusCode statusCode = HttpStatusCode.OK)
     {
         return new ApiResponse
         {
@@ -31,7 +34,8 @@ public record ApiResponse
             Code = ((int)statusCode).ToString(),
             Message = message ?? ApiResponseHelpers.GetDefaultSuccessMessage(statusCode),
             Metadata = metadata,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
@@ -48,7 +52,8 @@ public record ApiResponse
             Code = ((int)statusCode).ToString(),
             Message = message ?? ApiResponseHelpers.GetDefaultErrorMessage(statusCode),
             Errors = errors,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
@@ -74,7 +79,8 @@ public record ApiResponse
             Code = ((int)statusCode).ToString(),
             Message = message,
             Errors = warnings,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
@@ -104,7 +110,8 @@ public record ApiResponse<T> : ApiResponse
             Message = message ?? ApiResponseHelpers.GetDefaultSuccessMessage(statusCode),
             Data = data,
             Metadata = metadata,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
@@ -121,7 +128,8 @@ public record ApiResponse<T> : ApiResponse
             Code = ((int)statusCode).ToString(),
             Message = message ?? ApiResponseHelpers.GetDefaultErrorMessage(statusCode),
             Errors = errors,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
@@ -149,7 +157,8 @@ public record ApiResponse<T> : ApiResponse
             Message = message,
             Data = data,
             Errors = warnings,
-            CorrelationId = correlationId
+            CorrelationId = correlationId,
+            StatusCode = statusCode
         };
     }
 
