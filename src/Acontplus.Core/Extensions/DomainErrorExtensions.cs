@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 public static class DomainErrorExtensions
 {
@@ -21,7 +19,6 @@ public static class DomainErrorExtensions
     {
         var errorList = errors.ToList();
         var primaryError = errorList.GetMostSevereError();
-
         return ApiResponse<T>.Failure(
             errors: errorList.ToApiErrors(),
             message: primaryError.Message,
@@ -29,14 +26,10 @@ public static class DomainErrorExtensions
             statusCode: primaryError.Type.ToHttpStatusCode());
     }
 
-    public static IEnumerable<ApiError> ToApiErrors(
-        this IEnumerable<DomainError> errors)
-    {
-        return errors.Select(e => e.ToApiError());
-    }
+    public static IEnumerable<ApiError> ToApiErrors(this IEnumerable<DomainError> errors)
+        => errors.Select(e => e.ToApiError());
 
-    public static DomainError GetMostSevereError(
-        this IEnumerable<DomainError> errors)
+    public static DomainError GetMostSevereError(this IEnumerable<DomainError> errors)
     {
         var severityOrder = new Dictionary<ErrorType, int>
         {
@@ -51,7 +44,6 @@ public static class DomainErrorExtensions
             [ErrorType.Timeout] = 9,
             [ErrorType.Internal] = 10
         };
-
         return errors.MaxBy(e => severityOrder.GetValueOrDefault(e.Type, 0));
     }
 }

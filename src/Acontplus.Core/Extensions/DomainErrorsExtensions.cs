@@ -1,8 +1,4 @@
-﻿using Acontplus.Core.DTOs.Responses;
-using Acontplus.Core.Domain.Common;
-using System.Net;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 public static class DomainErrorsExtensions
 {
