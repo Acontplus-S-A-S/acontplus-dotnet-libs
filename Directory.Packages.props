@@ -12,7 +12,7 @@
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageVersion Include="AWSSDK.Core" Version="4.0.0.14" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.3.2" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.4.1" />
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.0.1.1" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
