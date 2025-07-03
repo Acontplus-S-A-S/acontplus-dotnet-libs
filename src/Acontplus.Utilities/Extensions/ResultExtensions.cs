@@ -121,9 +121,4 @@ public static class ResultExtensions
         );
         return new OkObjectResult(response);
     }
-
-    private static IResult ToMinimalApiResult(this ApiResponse response)
-    {
-        return Results.Json(response, statusCode: (int)response.StatusCode);
-    }
 }
