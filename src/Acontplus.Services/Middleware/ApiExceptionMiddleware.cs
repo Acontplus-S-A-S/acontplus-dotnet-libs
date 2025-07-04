@@ -28,39 +28,45 @@ public class ApiExceptionMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        var correlationId = GetCorrelationId(context);
+        var tenantId = GetTenantId(context);
+
+        context.Items["CorrelationId"] = correlationId;
+        context.Items["TenantId"] = tenantId;
+
         try
         {
             await _next(context);
 
             if (!context.Response.HasStarted && context.Response.StatusCode >= 400)
             {
-                await HandleStatusCodeAsync(context);
+                await HandleStatusCodeAsync(context, correlationId, tenantId);
             }
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            await HandleExceptionAsync(context, ex, correlationId, tenantId);
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex, string correlationId, string tenantId)
     {
         context.Response.ContentType = "application/json";
-        var correlationId = context.TraceIdentifier;
-        await LogException(ex, correlationId, context);
+
+        await LogException(ex, correlationId, tenantId, context);
 
         var response = ex switch
         {
-            ValidationException validationEx => HandleValidationException(validationEx, correlationId),
-            ApiException apiEx => HandleApiException(apiEx, correlationId),
-            _ => HandleUnhandledException(ex, correlationId)
+            ValidationException validationEx => HandleValidationException(validationEx, correlationId, tenantId),
+            ApiException apiEx => HandleApiException(apiEx, correlationId, tenantId),
+            _ => HandleUnhandledException(ex, correlationId, tenantId)
         };
 
         context.Response.StatusCode = int.Parse(response.Code);
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
     }
 
-    private ApiResponse HandleValidationException(ValidationException ex, string correlationId)
+    private ApiResponse HandleValidationException(ValidationException ex, string correlationId, string tenantId)
     {
         var errors = ex.Errors
             .SelectMany(e => e.Value.Select(message =>
@@ -75,10 +81,11 @@ public class ApiExceptionMiddleware
             errors,
             message: ex.Message,
             correlationId: correlationId,
-            statusCode: ex.StatusCode);
+            statusCode: ex.StatusCode,
+            metadata: CreateStandardMetadata(tenantId));
     }
 
-    private ApiResponse HandleApiException(ApiException ex, string correlationId)
+    private ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
     {
         var error = new ApiError(
             Code: ex.ErrorCode,
@@ -89,10 +96,11 @@ public class ApiExceptionMiddleware
             error,
             message: ex.Message,
             correlationId: correlationId,
-            statusCode: ex.StatusCode);
+            statusCode: ex.StatusCode,
+            metadata: CreateStandardMetadata(tenantId));
     }
 
-    private ApiResponse HandleUnhandledException(Exception ex, string correlationId)
+    private ApiResponse HandleUnhandledException(Exception ex, string correlationId, string tenantId)
     {
         var debugInfo = _options.IncludeDebugDetailsInResponse
             ? GetSafeDebugInfo(ex)
@@ -112,8 +120,86 @@ public class ApiExceptionMiddleware
             error,
             message: "An unexpected error occurred",
             correlationId: correlationId,
-            statusCode: HttpStatusCode.InternalServerError);
+            statusCode: HttpStatusCode.InternalServerError,
+            metadata: CreateStandardMetadata(tenantId));
     }
+
+    private async Task HandleStatusCodeAsync(HttpContext context, string correlationId, string tenantId)
+    {
+        var statusCode = (HttpStatusCode)context.Response.StatusCode;
+
+        var error = new ApiError(
+            Code: statusCode.ToString(),
+            Message: GetStatusMessage(statusCode),
+            Category: GetErrorCategory(statusCode));
+
+        var response = ApiResponse.Failure(
+            error,
+            message: GetStatusMessage(statusCode),
+            correlationId: correlationId,
+            statusCode: statusCode,
+            metadata: CreateStandardMetadata(tenantId));
+
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
+    }
+
+    private async Task LogException(Exception ex, string correlationId, string tenantId, HttpContext context)
+    {
+        var logMessage = new StringBuilder()
+            .AppendLine($"CorrelationId: {correlationId}")
+            .AppendLine($"TenantId: {tenantId}");
+
+        if (_options.IncludeRequestDetails)
+        {
+            logMessage.AppendLine($"Path: {context.Request.Path}")
+                      .AppendLine($"Method: {context.Request.Method}");
+        }
+
+        if (_options.LogRequestBody && context.Request.Body.CanRead)
+        {
+            logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
+        }
+
+        _logger.LogError(ex, logMessage.ToString());
+    }
+
+    private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
+    {
+        try
+        {
+            request.EnableBuffering();
+            using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+            var body = await reader.ReadToEndAsync();
+            request.Body.Position = 0;
+            return body;
+        }
+        catch
+        {
+            return "<Unable to read body>";
+        }
+    }
+
+    private static string GetStatusMessage(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "Invalid request",
+        HttpStatusCode.Unauthorized => "Authentication required",
+        HttpStatusCode.Forbidden => "Access denied",
+        HttpStatusCode.NotFound => "Resource not found",
+        HttpStatusCode.Conflict => "Conflict occurred",
+        HttpStatusCode.InternalServerError => "Internal server error",
+        _ => statusCode.ToString()
+    };
+
+    private static string GetErrorCategory(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "validation",
+        HttpStatusCode.Unauthorized => "authentication",
+        HttpStatusCode.Forbidden => "authorization",
+        HttpStatusCode.NotFound => "not_found",
+        HttpStatusCode.Conflict => "conflict",
+        _ => "system"
+    };
 
     private static Dictionary<string, object>? GetSafeDebugInfo(Exception ex)
     {
@@ -139,77 +225,28 @@ public class ApiExceptionMiddleware
         return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ||
                Debugger.IsAttached;
     }
-    private async Task HandleStatusCodeAsync(HttpContext context)
+
+    private static string GetCorrelationId(HttpContext context)
     {
-        var statusCode = (HttpStatusCode)context.Response.StatusCode;
-        var correlationId = context.TraceIdentifier;
-
-        var error = new ApiError(
-            Code: statusCode.ToString(),
-            Message: GetStatusMessage(statusCode),
-            Category: GetErrorCategory(statusCode));
-
-        var response = ApiResponse.Failure(
-            error,
-            message: GetStatusMessage(statusCode),
-            correlationId: correlationId,
-            statusCode: statusCode);
-
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
+        return context.Request.Headers.TryGetValue("X-Correlation-Id", out var headerValue) &&
+               Guid.TryParse(headerValue, out var parsed)
+            ? parsed.ToString()
+            : context.TraceIdentifier;
     }
 
-    private async Task LogException(Exception ex, string correlationId, HttpContext context)
+    private static string GetTenantId(HttpContext context)
     {
-        var logMessage = new StringBuilder()
-            .AppendLine($"CorrelationId: {correlationId}");
-
-        if (_options.IncludeRequestDetails)
-        {
-            logMessage.AppendLine($"Path: {context.Request.Path}")
-                     .AppendLine($"Method: {context.Request.Method}");
-        }
-
-        if (_options.LogRequestBody && context.Request.Body.CanRead)
-        {
-            logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
-        }
-
-        _logger.LogError(ex, logMessage.ToString());
+        return context.Request.Headers.TryGetValue("X-Tenant-Id", out var headerValue)
+            ? headerValue.ToString()
+            : "UNKNOWN";
     }
-    private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
-    {
-        try
-        {
-            request.EnableBuffering();
-            using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
-            var body = await reader.ReadToEndAsync();
-            request.Body.Position = 0;
-            return body;
-        }
-        catch
-        {
-            return "<Unable to read body>";
-        }
-    }
-    private static string GetStatusMessage(HttpStatusCode statusCode) => statusCode switch
-    {
-        HttpStatusCode.BadRequest => "Invalid request",
-        HttpStatusCode.Unauthorized => "Authentication required",
-        HttpStatusCode.Forbidden => "Access denied",
-        HttpStatusCode.NotFound => "Resource not found",
-        HttpStatusCode.Conflict => "Conflict occurred",
-        HttpStatusCode.InternalServerError => "Internal server error",
-        _ => statusCode.ToString()
-    };
 
-    private static string GetErrorCategory(HttpStatusCode statusCode) => statusCode switch
+    private static Dictionary<string, object> CreateStandardMetadata(string tenantId)
     {
-        HttpStatusCode.BadRequest => "validation",
-        HttpStatusCode.Unauthorized => "authentication",
-        HttpStatusCode.Forbidden => "authorization",
-        HttpStatusCode.NotFound => "not_found",
-        HttpStatusCode.Conflict => "conflict",
-        _ => "system"
-    };
+        return new Dictionary<string, object>
+        {
+            ["tenantId"] = tenantId,
+            ["timestampUtc"] = DateTime.UtcNow
+        };
+    }
 }
