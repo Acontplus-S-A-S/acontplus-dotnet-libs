@@ -18,10 +18,10 @@ public record ApiResponse
     public string? CorrelationId { get; init; }
     public string? TraceId { get; init; } = System.Diagnostics.Activity.Current?.Id;
 
-    [JsonIgnore]  // Important to not serialize this to clients
+    [JsonIgnore] // Not serialized to clients
     public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.OK;
 
-    // Success Factories
+    // ✅ SUCCESS
     public static ApiResponse Success(
         string? message = null,
         Dictionary<string, object>? metadata = null,
@@ -39,12 +39,28 @@ public record ApiResponse
         };
     }
 
-    // Failure Factories
+    // ✅ FAILURE (basic)
     public static ApiResponse Failure(
         IEnumerable<ApiError> errors,
         string? message = null,
         string? correlationId = null,
         HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        => Failure(errors, message, correlationId, statusCode, metadata: null);
+
+    public static ApiResponse Failure(
+        ApiError error,
+        string? message = null,
+        string? correlationId = null,
+        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        => Failure([error], message, correlationId, statusCode, metadata: null);
+
+    // ✅ FAILURE (with metadata)
+    public static ApiResponse Failure(
+        IEnumerable<ApiError> errors,
+        string? message,
+        string? correlationId,
+        HttpStatusCode statusCode,
+        Dictionary<string, object>? metadata)
     {
         return new ApiResponse
         {
@@ -53,25 +69,26 @@ public record ApiResponse
             Message = message ?? ApiResponseHelpers.GetDefaultErrorMessage(statusCode),
             Errors = errors,
             CorrelationId = correlationId,
+            Metadata = metadata,
             StatusCode = statusCode
         };
     }
 
     public static ApiResponse Failure(
         ApiError error,
-        string? message = null,
-        string? correlationId = null,
-        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
-    {
-        return Failure([error], message, correlationId, statusCode);
-    }
+        string? message,
+        string? correlationId,
+        HttpStatusCode statusCode,
+        Dictionary<string, object>? metadata)
+        => Failure([error], message, correlationId, statusCode, metadata);
 
-    // Warning Factory
+    // ✅ WARNING
     public static ApiResponse Warning(
         IEnumerable<ApiError> warnings,
         string? message = "Operation completed with warnings",
         string? correlationId = null,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+        HttpStatusCode statusCode = HttpStatusCode.OK,
+        Dictionary<string, object>? metadata = null)
     {
         return new ApiResponse
         {
@@ -80,10 +97,12 @@ public record ApiResponse
             Message = message,
             Errors = warnings,
             CorrelationId = correlationId,
+            Metadata = metadata,
             StatusCode = statusCode
         };
     }
 
+    // Helpers
     [JsonIgnore] public bool IsSuccess => Status == "success";
     [JsonIgnore] public bool IsError => Status == "error";
     [JsonIgnore] public bool HasWarnings => Status == "warning";
@@ -95,7 +114,7 @@ public record ApiResponse<T> : ApiResponse
     [JsonPropertyName("data")]
     public T? Data { get; init; }
 
-    // Success Factories
+    // ✅ SUCCESS
     public static ApiResponse<T> Success(
         T data,
         string? message = null,
@@ -115,12 +134,28 @@ public record ApiResponse<T> : ApiResponse
         };
     }
 
-    // Failure Factories
+    // ✅ FAILURE (basic)
     public static new ApiResponse<T> Failure(
         IEnumerable<ApiError> errors,
         string? message = null,
         string? correlationId = null,
         HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        => Failure(errors, message, correlationId, statusCode, metadata: null);
+
+    public static new ApiResponse<T> Failure(
+        ApiError error,
+        string? message = null,
+        string? correlationId = null,
+        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        => Failure([error], message, correlationId, statusCode, metadata: null);
+
+    // ✅ FAILURE (with metadata)
+    public static ApiResponse<T> Failure(
+        IEnumerable<ApiError> errors,
+        string? message,
+        string? correlationId,
+        HttpStatusCode statusCode,
+        Dictionary<string, object>? metadata)
     {
         return new ApiResponse<T>
         {
@@ -129,26 +164,27 @@ public record ApiResponse<T> : ApiResponse
             Message = message ?? ApiResponseHelpers.GetDefaultErrorMessage(statusCode),
             Errors = errors,
             CorrelationId = correlationId,
+            Metadata = metadata,
             StatusCode = statusCode
         };
     }
 
-    public static new ApiResponse<T> Failure(
+    public static ApiResponse<T> Failure(
         ApiError error,
-        string? message = null,
-        string? correlationId = null,
-        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
-    {
-        return Failure([error], message, correlationId, statusCode);
-    }
+        string? message,
+        string? correlationId,
+        HttpStatusCode statusCode,
+        Dictionary<string, object>? metadata)
+        => Failure([error], message, correlationId, statusCode, metadata);
 
-    // Warning Factory
+    // ✅ WARNING
     public static ApiResponse<T> Warning(
         T data,
         IEnumerable<ApiError> warnings,
         string? message = "Operation completed with warnings",
         string? correlationId = null,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+        HttpStatusCode statusCode = HttpStatusCode.OK,
+        Dictionary<string, object>? metadata = null)
     {
         return new ApiResponse<T>
         {
@@ -158,6 +194,7 @@ public record ApiResponse<T> : ApiResponse
             Data = data,
             Errors = warnings,
             CorrelationId = correlationId,
+            Metadata = metadata,
             StatusCode = statusCode
         };
     }
