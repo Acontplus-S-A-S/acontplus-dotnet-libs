@@ -16,7 +16,7 @@ public class AdoRepository : IAdoRepository
 
     // Polly retry policy for transient SQL errors and timeouts
     private static readonly AsyncRetryPolicy RetryPolicy = Policy
-        .Handle<SqlException>(AdoRepositoryException.IsTransientException)
+        .Handle<SqlException>(SqlServerExceptionHandler.IsTransientException)
         .Or<TimeoutException>()
         .WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
             (ex, timeSpan, retryCount, context) =>
@@ -164,7 +164,7 @@ public class AdoRepository : IAdoRepository
             }
             catch (SqlException ex)
             {
-                AdoRepositoryException.HandleSqlException(ex, _logger, nameof(QueryAsync));
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(QueryAsync));
                 throw; // This line won't be reached, but keeps compiler happy
             }
             catch (Exception ex)
@@ -220,7 +220,7 @@ public class AdoRepository : IAdoRepository
             }
             catch (SqlException ex)
             {
-                AdoRepositoryException.HandleSqlException(ex, _logger, nameof(GetDataSetAsync));
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(GetDataSetAsync));
                 throw;
             }
             catch (Exception ex)
@@ -259,7 +259,7 @@ public class AdoRepository : IAdoRepository
             }
             catch (SqlException ex)
             {
-                AdoRepositoryException.HandleSqlException(ex, _logger, nameof(ExecuteNonQueryAsync));
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(ExecuteNonQueryAsync));
                 throw;
             }
             catch (Exception ex)
@@ -303,7 +303,7 @@ public class AdoRepository : IAdoRepository
             }
             catch (SqlException ex)
             {
-                AdoRepositoryException.HandleSqlException(ex, _logger, nameof(QuerySingleOrDefaultAsync));
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(QuerySingleOrDefaultAsync));
                 throw;
             }
             catch (Exception ex)

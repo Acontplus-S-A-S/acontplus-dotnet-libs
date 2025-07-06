@@ -1,3 +1,5 @@
-﻿namespace Acontplus.Persistence.SqlServer.Exceptions;
+﻿using Acontplus.Core.Domain.Enums;
 
-public record SqlErrorInfo(SqlErrorType Type, string Message, SqlException OriginalException);
+namespace Acontplus.Persistence.SqlServer.Exceptions;
+
+public record SqlErrorInfo(ErrorType Type, string Code, string Message, SqlException OriginalException);
