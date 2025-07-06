@@ -2,10 +2,8 @@
 
 namespace Acontplus.Persistence.SqlServer.Exceptions;
 
-public class SqlDomainException(ErrorType errorType, string code, string message, SqlException originalException)
-    : Exception(message)
+public class SqlDomainException(SqlErrorInfo errorInfo) : Exception(errorInfo.Message, errorInfo.Exception)
 {
-    public ErrorType ErrorType { get; } = errorType;
-    public string Code { get; } = code;
-    public SqlException OriginalException { get; } = originalException;
+    public ErrorType ErrorType { get; } = errorInfo.Type;
+    public string ErrorCode { get; } = errorInfo.Code;
 }
