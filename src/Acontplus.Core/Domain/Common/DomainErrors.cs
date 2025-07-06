@@ -8,15 +8,38 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
 {
     private static readonly ErrorType[] SeverityOrder =
     {
+        // Server Errors (5xx) - highest severity first
         ErrorType.Internal,
         ErrorType.External,
         ErrorType.ServiceUnavailable,
+        ErrorType.Timeout,
+        ErrorType.NotImplemented,
+        ErrorType.HttpVersionNotSupported,
+        ErrorType.InsufficientStorage,
+        ErrorType.LoopDetected,
+        ErrorType.NotExtended,
+        ErrorType.NetworkAuthRequired,
+    
+        // Client Errors (4xx) - higher severity first
+        ErrorType.RequestTimeout,
+        ErrorType.UnavailableForLegal,
         ErrorType.Forbidden,
         ErrorType.Unauthorized,
         ErrorType.RateLimited,
         ErrorType.Conflict,
         ErrorType.NotFound,
-        ErrorType.Validation
+        ErrorType.Validation,
+        ErrorType.BadRequest,
+        ErrorType.MethodNotAllowed,
+        ErrorType.NotAcceptable,
+        ErrorType.PayloadTooLarge,
+        ErrorType.UriTooLong,
+        ErrorType.UnsupportedMediaType,
+        ErrorType.RangeNotSatisfiable,
+        ErrorType.ExpectationFailed,
+        ErrorType.PreconditionFailed,
+        ErrorType.PreconditionRequired,
+        ErrorType.RequestHeadersTooLarge
     };
 
     public static DomainErrors Single(DomainError error) => new([error]);

@@ -6,16 +6,38 @@ public static class DomainErrorExtensions
 {
     private static readonly ImmutableDictionary<ErrorType, int> ErrorSeverity = new Dictionary<ErrorType, int>
     {
+        // Server Errors (5xx) - highest severity
         [ErrorType.Internal] = 100,
-        [ErrorType.External] = 90,
-        [ErrorType.ServiceUnavailable] = 80,
-        [ErrorType.Timeout] = 70,
-        [ErrorType.Forbidden] = 60,
-        [ErrorType.Unauthorized] = 50,
-        [ErrorType.RateLimited] = 40,
-        [ErrorType.Conflict] = 30,
+        [ErrorType.External] = 95,
+        [ErrorType.ServiceUnavailable] = 90,
+        [ErrorType.Timeout] = 85,
+        [ErrorType.NotImplemented] = 80,
+        [ErrorType.HttpVersionNotSupported] = 75,
+        [ErrorType.InsufficientStorage] = 70,
+        [ErrorType.LoopDetected] = 65,
+        [ErrorType.NotExtended] = 60,
+        [ErrorType.NetworkAuthRequired] = 55,
+    
+        // Client Errors (4xx) - lower severity
+        [ErrorType.RequestTimeout] = 50,
+        [ErrorType.UnavailableForLegal] = 45,
+        [ErrorType.Forbidden] = 40,
+        [ErrorType.Unauthorized] = 35,
+        [ErrorType.RateLimited] = 30,
+        [ErrorType.Conflict] = 25,
         [ErrorType.NotFound] = 20,
-        [ErrorType.Validation] = 10
+        [ErrorType.Validation] = 15,
+        [ErrorType.BadRequest] = 10,
+        [ErrorType.MethodNotAllowed] = 9,
+        [ErrorType.NotAcceptable] = 8,
+        [ErrorType.PayloadTooLarge] = 7,
+        [ErrorType.UriTooLong] = 6,
+        [ErrorType.UnsupportedMediaType] = 5,
+        [ErrorType.RangeNotSatisfiable] = 4,
+        [ErrorType.ExpectationFailed] = 3,
+        [ErrorType.PreconditionFailed] = 2,
+        [ErrorType.PreconditionRequired] = 1,
+        [ErrorType.RequestHeadersTooLarge] = 0
     }.ToImmutableDictionary();
 
     public static ApiResponse<T> ToApiResponse<T>(
