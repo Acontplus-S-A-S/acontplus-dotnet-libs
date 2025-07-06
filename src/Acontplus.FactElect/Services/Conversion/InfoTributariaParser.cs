@@ -7,17 +7,17 @@ public class InfoTributariaParser : IInfoTributariaParser
     {
         comprobante.InfoTributaria = new InfoTributaria
         {
-            ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText,
-            tipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText,
-            razonSocial = nodeInfoTrib.SelectSingleNode("razonSocial")?.InnerText,
-            nombreComercial = nodeInfoTrib.SelectSingleNode("nombreComercial")?.InnerText ?? "",
-            ruc = nodeInfoTrib.SelectSingleNode("ruc")?.InnerText,
-            claveAcceso = nodeInfoTrib.SelectSingleNode("claveAcceso")?.InnerText,
-            codDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText,
-            estab = nodeInfoTrib.SelectSingleNode("estab")?.InnerText,
-            ptoEmi = nodeInfoTrib.SelectSingleNode("ptoEmi")?.InnerText,
-            secuencial = nodeInfoTrib.SelectSingleNode("secuencial")?.InnerText,
-            dirMatriz = nodeInfoTrib.SelectSingleNode("dirMatriz")?.InnerText
+            Ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText,
+            TipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText,
+            RazonSocial = nodeInfoTrib.SelectSingleNode("razonSocial")?.InnerText,
+            NombreComercial = nodeInfoTrib.SelectSingleNode("nombreComercial")?.InnerText ?? "",
+            Ruc = nodeInfoTrib.SelectSingleNode("ruc")?.InnerText,
+            ClaveAcceso = nodeInfoTrib.SelectSingleNode("claveAcceso")?.InnerText,
+            CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText,
+            Estab = nodeInfoTrib.SelectSingleNode("estab")?.InnerText,
+            PtoEmi = nodeInfoTrib.SelectSingleNode("ptoEmi")?.InnerText,
+            Secuencial = nodeInfoTrib.SelectSingleNode("secuencial")?.InnerText,
+            DirMatriz = nodeInfoTrib.SelectSingleNode("dirMatriz")?.InnerText
         };
     }
 }

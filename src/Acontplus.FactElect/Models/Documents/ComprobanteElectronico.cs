@@ -2,23 +2,23 @@
 
 public class ComprobanteElectronico
 {
-    public string? VersionComp { get; set; }
+    public string VersionComp { get; set; }
     public string CodDoc { get; set; }
     public string FechaAutorizacion { get; set; }
     public string NumeroAutorizacion { get; set; }
     public InfoTributaria InfoTributaria { get; set; }
 
     public InfoFactura InfoFactura { get; set; }
-    public List<Detalle> detalles { get; set; }
-    public List<Impuesto> impuestos { get; set; }
+    public List<Detalle> Detalles { get; set; }
+    public List<Impuesto> Impuestos { get; set; }
 
-    public InfoCompRetencion infoCompRetencion { get; set; }
-    public List<ImpuestoRetencion> impuestosRetencion { get; set; }
-    public List<DocSustento> docSustentos { get; set; }
+    public InfoCompRetencion InfoCompRetencion { get; set; }
+    public List<ImpuestoRetencion> ImpuestosRetencion { get; set; }
+    public List<DocSustento> DocSustentos { get; set; }
 
-    public InfoNotaCredito infoNotaCredito { get; set; }
+    public InfoNotaCredito InfoNotaCredito { get; set; }
 
-    public List<InfoAdicional> infoAdicional { get; set; }
+    public List<InfoAdicional> InfoAdicional { get; set; }
 
     public void CreateInfoComp(string codDoc, object obj)
     {
@@ -30,57 +30,57 @@ public class ComprobanteElectronico
             case "03":
                 break;
             case "04":
-                infoNotaCredito = obj as InfoNotaCredito;
+                InfoNotaCredito = obj as InfoNotaCredito;
                 break;
             case "05":
                 break;
             case "06":
                 break;
             case "07":
-                infoCompRetencion = obj as InfoCompRetencion;
+                InfoCompRetencion = obj as InfoCompRetencion;
                 break;
         }
     }
 
     public void CreateDetails(object obj)
     {
-        detalles = obj as List<Detalle>;
+        Detalles = obj as List<Detalle>;
     }
 
     public void CreateTaxes(object obj)
     {
-        impuestos = obj as List<Impuesto>;
+        Impuestos = obj as List<Impuesto>;
     }
 
     public void CreateRetencionTaxes(object obj)
     {
-        impuestosRetencion = obj as List<ImpuestoRetencion>;
+        ImpuestosRetencion = obj as List<ImpuestoRetencion>;
     }
 
     public void CreateDocSustentos(object obj)
     {
-        docSustentos = obj as List<DocSustento>;
+        DocSustentos = obj as List<DocSustento>;
     }
 
     public void CreateAdditionalInfo(object obj)
     {
-        infoAdicional = obj as List<InfoAdicional>;
+        InfoAdicional = obj as List<InfoAdicional>;
     }
 }
 
 public class InfoTributaria
 {
-    public string ambiente { get; set; }
-    public string tipoEmision { get; set; }
-    public string razonSocial { get; set; }
-    public string nombreComercial { get; set; }
-    public string ruc { get; set; }
-    public string claveAcceso { get; set; }
-    public string codDoc { get; set; }
-    public string estab { get; set; }
-    public string ptoEmi { get; set; }
-    public string secuencial { get; set; }
-    public string dirMatriz { get; set; }
+    public string Ambiente { get; set; }
+    public string TipoEmision { get; set; }
+    public string RazonSocial { get; set; }
+    public string NombreComercial { get; set; }
+    public string Ruc { get; set; }
+    public string ClaveAcceso { get; set; }
+    public string CodDoc { get; set; }
+    public string Estab { get; set; }
+    public string PtoEmi { get; set; }
+    public string Secuencial { get; set; }
+    public string DirMatriz { get; set; }
 }
 
 public class InfoFactura
