@@ -1,9 +1,11 @@
-﻿using Acontplus.Core.Domain.Enums;
+﻿using Acontplus.Core.Domain.Exceptions;
 
 namespace Acontplus.Persistence.SqlServer.Exceptions;
 
-public class SqlDomainException(SqlErrorInfo errorInfo) : Exception(errorInfo.Message, errorInfo.Exception)
+public class SqlDomainException : DomainException
 {
-    public ErrorType ErrorType { get; } = errorInfo.Type;
-    public string ErrorCode { get; } = errorInfo.Code;
+    public SqlDomainException(SqlErrorInfo errorInfo) 
+        : base(errorInfo.Type, errorInfo.Code, errorInfo.Message, errorInfo.Exception)
+    {
+    }
 }
