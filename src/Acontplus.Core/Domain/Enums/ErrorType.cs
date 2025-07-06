@@ -21,7 +21,7 @@ public enum ErrorType
     RequestHeadersTooLarge,  // 431 - Request Header Fields Too Large
     UnavailableForLegal,     // 451 - Unavailable For Legal Reasons
     RateLimited,             // 429 - Too Many Requests
-    
+
     // Server Errors (5xx)
     Internal,                // 500 - Internal Server Error
     NotImplemented,          // 501 - Not Implemented

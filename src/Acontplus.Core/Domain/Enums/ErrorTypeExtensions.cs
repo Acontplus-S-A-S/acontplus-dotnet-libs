@@ -101,12 +101,6 @@ public static class ErrorTypeExtensions
 
             // System Errors
             ErrorType.Internal => "system",
-            ErrorType.NotImplemented => "system",
-            ErrorType.ServiceUnavailable => "system",
-            ErrorType.HttpVersionNotSupported => "system",
-            ErrorType.InsufficientStorage => "system",
-            ErrorType.LoopDetected => "system",
-            ErrorType.NotExtended => "system",
 
             _ => "system"
         };
