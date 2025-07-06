@@ -2,6 +2,9 @@
 
 public static class DomainErrorsExtensions
 {
+    public static IEnumerable<ApiError> ToApiErrors(this DomainErrors errors)
+        => errors.Errors.Select(e => e.ToApiError());
+
     public static ApiResponse<T> ToApiResponse<T>(
         this DomainErrors errors,
         string? correlationId = null)
@@ -20,7 +23,8 @@ public static class DomainErrorsExtensions
 
     public static Dictionary<string, object>? ToErrorDetails(this DomainErrors errors)
     {
-        if (errors.Errors.Count == 0) return null;
+        if (errors.Errors.Count == 0)
+            return null;
 
         return new Dictionary<string, object>
         {
@@ -30,7 +34,8 @@ public static class DomainErrorsExtensions
                     Index = i,
                     e.Type,
                     e.Code,
-                    e.Target
+                    e.Target,
+                    Severity = e.Type.ToSeverityString()
                 })
                 .ToList()
         };

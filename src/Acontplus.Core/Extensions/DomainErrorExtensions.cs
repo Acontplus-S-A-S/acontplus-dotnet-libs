@@ -1,21 +1,54 @@
-﻿namespace Acontplus.Core.Extensions;
+﻿using System.Collections.Immutable;
+
+namespace Acontplus.Core.Extensions;
 
 public static class DomainErrorExtensions
 {
+    private static readonly ImmutableDictionary<ErrorType, int> ErrorSeverity = new Dictionary<ErrorType, int>
+    {
+        [ErrorType.Internal] = 100,
+        [ErrorType.External] = 90,
+        [ErrorType.ServiceUnavailable] = 80,
+        [ErrorType.Timeout] = 70,
+        [ErrorType.Forbidden] = 60,
+        [ErrorType.Unauthorized] = 50,
+        [ErrorType.RateLimited] = 40,
+        [ErrorType.Conflict] = 30,
+        [ErrorType.NotFound] = 20,
+        [ErrorType.Validation] = 10
+    }.ToImmutableDictionary();
+
     public static ApiResponse<T> ToApiResponse<T>(
         this DomainError error,
-        string? correlationId = null)
+        string? correlationId = null,
+        DomainWarnings? warnings = null)
     {
         return ApiResponse<T>.Failure(
             error: error.ToApiError(),
             message: error.Message,
             correlationId: correlationId,
-            statusCode: error.Type.ToHttpStatusCode());
+            statusCode: error.Type.ToHttpStatusCode(),
+            warnings: warnings?.ToApiErrors());
+    }
+
+    public static ApiResponse<T> ToApiResponse<T>(
+        this DomainErrors errors,
+        string? correlationId = null,
+        DomainWarnings? warnings = null)
+    {
+        var primaryError = errors.GetMostSevereErrorType();
+        return ApiResponse<T>.Failure(
+            errors: errors.ToApiErrors(),
+            message: errors.GetAggregateErrorMessage(),
+            correlationId: correlationId,
+            statusCode: primaryError.ToHttpStatusCode(),
+            warnings: warnings?.ToApiErrors());
     }
 
     public static ApiResponse<T> ToApiResponse<T>(
         this IEnumerable<DomainError> errors,
-        string? correlationId = null)
+        string? correlationId = null,
+        DomainWarnings? warnings = null)
     {
         var errorList = errors.ToList();
         var primaryError = errorList.GetMostSevereError();
@@ -23,7 +56,8 @@ public static class DomainErrorExtensions
             errors: errorList.ToApiErrors(),
             message: primaryError.Message,
             correlationId: correlationId,
-            statusCode: primaryError.Type.ToHttpStatusCode());
+            statusCode: primaryError.Type.ToHttpStatusCode(),
+            warnings: warnings?.ToApiErrors());
     }
 
     public static IEnumerable<ApiError> ToApiErrors(this IEnumerable<DomainError> errors)
@@ -31,19 +65,11 @@ public static class DomainErrorExtensions
 
     public static DomainError GetMostSevereError(this IEnumerable<DomainError> errors)
     {
-        var severityOrder = new Dictionary<ErrorType, int>
+        if (!errors.Any())
         {
-            [ErrorType.Validation] = 1,
-            [ErrorType.NotFound] = 2,
-            [ErrorType.Conflict] = 3,
-            [ErrorType.Unauthorized] = 4,
-            [ErrorType.Forbidden] = 5,
-            [ErrorType.RateLimited] = 6,
-            [ErrorType.External] = 7,
-            [ErrorType.ServiceUnavailable] = 8,
-            [ErrorType.Timeout] = 9,
-            [ErrorType.Internal] = 10
-        };
-        return errors.MaxBy(e => severityOrder.GetValueOrDefault(e.Type, 0));
+            throw new ArgumentException("No errors provided", nameof(errors));
+        }
+
+        return errors.MaxBy(e => ErrorSeverity.GetValueOrDefault(e.Type, 0));
     }
 }
