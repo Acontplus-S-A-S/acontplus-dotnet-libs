@@ -7,7 +7,7 @@ public static class ApiMetadataKeys
     public const string CorrelationId = "correlationId";
     public const string Version = "apiVersion";
     public const string Environment = "env";
-    
+
     // Pagination (structured for client convenience)
     public const string Pagination = "paging";
     public const string Page = "page";
@@ -17,10 +17,10 @@ public static class ApiMetadataKeys
     public const string HasNext = "hasNext";
     public const string HasPrev = "hasPrev";
     public const string Links = "links";  // For HATEOAS when needed
-    
+
     // Performance
     public const string Duration = "durationMs";
-    
+
     // Optional Extended Metadata
     public const string Deprecation = "deprecation";
     public const string RateLimit = "rateLimit";

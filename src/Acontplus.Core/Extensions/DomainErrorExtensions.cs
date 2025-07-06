@@ -17,7 +17,7 @@ public static class DomainErrorExtensions
         [ErrorType.LoopDetected] = 65,
         [ErrorType.NotExtended] = 60,
         [ErrorType.NetworkAuthRequired] = 55,
-    
+
         // Client Errors (4xx) - lower severity
         [ErrorType.RequestTimeout] = 50,
         [ErrorType.UnavailableForLegal] = 45,
