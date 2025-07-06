@@ -71,4 +71,28 @@ public static class SqlExceptionExtensions
                 }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
         };
     }
+
+    /// <summary>
+    /// Converts multiple SqlDomainExceptions to a DomainErrors collection
+    /// </summary>
+    /// <param name="exceptions">Collection of SQL domain exceptions</param>
+    /// <param name="target">Optional target of the errors</param>
+    /// <param name="commonDetails">Optional common details for all errors</param>
+    /// <returns>DomainErrors containing all converted exceptions</returns>
+    public static DomainErrors ToDomainErrors(
+        this IEnumerable<SqlDomainException> exceptions,
+        string? target = null,
+        Dictionary<string, object>? commonDetails = null)
+    {
+        var domainErrors = exceptions
+            .Select(ex => ex.ToDomainError(target, commonDetails))
+            .ToList();
+
+        return domainErrors.Count switch
+        {
+            0 => throw new ArgumentException("No exceptions provided", nameof(exceptions)),
+            1 => DomainErrors.Single(domainErrors[0]),
+            _ => DomainErrors.Multiple(domainErrors)
+        };
+    }
 }
