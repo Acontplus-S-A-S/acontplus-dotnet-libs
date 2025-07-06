@@ -55,7 +55,7 @@ public class DocumentConverter : IDocumentConverter
         // Convertir la imagen a base64 para incluirla en el HTML
         var base64Image = Convert.ToBase64String(imageBytes);
 
-        var dt = (SriDocument)Convert.ToInt32(data.codDoc);
+        var dt = (SriDocument)Convert.ToInt32(data.CodDoc);
         var documentName = dt.DisplayName();
         var doc = @"
                     <div class=""row"">
@@ -67,11 +67,11 @@ public class DocumentConverter : IDocumentConverter
                   $"data:image/png;base64,{base64Image}" +
                   @" alt=""No Logo"" class=""img-fluid"" align=""center"" width=""100"">
 </div>
-                                    <h6>" + data.infoTributaria.razonSocial + @"</h6>
+                                    <h6>" + data.InfoTributaria.razonSocial + @"</h6>
                                     
-                                    <h6>" + data.infoTributaria.nombreComercial + @"</h6>
+                                    <h6>" + data.InfoTributaria.nombreComercial + @"</h6>
                                     <br>
-                                    <h6><label>Dirección Matriz:</label> " + data.infoTributaria.dirMatriz + @"</h6>
+                                    <h6><label>Dirección Matriz:</label> " + data.InfoTributaria.dirMatriz + @"</h6>
                                     <br>
                                     " + GetInfoTrib(data) + @"
                                 </div>
@@ -81,35 +81,35 @@ public class DocumentConverter : IDocumentConverter
                             <div class=""card border border-dark rounded"">
                                 <div class=""card-body"">
                                     <h5><label>RUC: </label> "
-                  + data.infoTributaria.ruc + @"</h5>
+                  + data.InfoTributaria.ruc + @"</h5>
                                     <h4>" + documentName + @"</h4>
                                     <h5>
                                         <label>No.</label>
-                                        " + data.infoTributaria.estab + @"-" + data.infoTributaria.ptoEmi + @"-" +
-                  data.infoTributaria.secuencial + @"
+                                        " + data.InfoTributaria.estab + @"-" + data.InfoTributaria.ptoEmi + @"-" +
+                  data.InfoTributaria.secuencial + @"
                                     </h5>
                                     <label>NÚMERO DE AUTORIZACIÓN</label><br>
                                     <small id=""claveAcceso"">
-                                        " + data.infoTributaria.claveAcceso + @"
+                                        " + data.InfoTributaria.claveAcceso + @"
                                     </small>
                                     <label>FECHA Y HORA DE AUTORIZACIÓN</label>
                                     <small>
-                                        " + data.fechaAutorizacion + @"
+                                        " + data.FechaAutorizacion + @"
                                     </small>
                                     <h5>
                                         <label>AMBIENTE:</label>
-                                         " + (data.infoTributaria.ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
+                                         " + (data.InfoTributaria.ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
                                     </h5>
                                     <h5>
                                         <label>EMISIÓN:</label>
-                                        " + (data.infoTributaria.tipoEmision == "1" ? "NORMAL" : "") + @"
+                                        " + (data.InfoTributaria.tipoEmision == "1" ? "NORMAL" : "") + @"
                                     </h5>
                                     <label>CLAVE DE ACCESSO</label><br />
 <div class=""text-center"">
                                     <img id=""barcodeImg"" src=" +
-                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = data.infoTributaria.claveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = data.infoTributaria.claveAcceso }).Length)}" +
+                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.claveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.claveAcceso }).Length)}" +
                   @" alt="""" align=""center"" class=""img-fluid"" height=""60"" width=""500"">
-                                    <br><small> " + data.infoTributaria.claveAcceso + @"</small></div>
+                                    <br><small> " + data.InfoTributaria.claveAcceso + @"</small></div>
                                 </div>
 
                             </div>
@@ -135,11 +135,11 @@ public class DocumentConverter : IDocumentConverter
 
     private static string GetInfoTrib(ComprobanteElectronico data)
     {
-        var infoTrib = data.codDoc switch
+        var infoTrib = data.CodDoc switch
         {
             "01" => @"<h6>
                                         <label>Dirección Sucursal: </label>
-                                        " + data.infoFactura.dirEstablecimiento + @"
+                                        " + data.InfoFactura.dirEstablecimiento + @"
                                     </h6>
                                     <br>
                                     <h6>
@@ -147,11 +147,11 @@ public class DocumentConverter : IDocumentConverter
                                             Contribuyente
                                             Especial Nro.
                                         </label>
-                                        " + data.infoFactura.contribuyenteEspecial + @"
+                                        " + data.InfoFactura.contribuyenteEspecial + @"
                                     </h6>
                                     <h6>
                                         <label>OBLIGADO A LLEVAR CONTABILIDAD </label>
-                                        " + data.infoFactura.obligadoContabilidad + @"
+                                        " + data.InfoFactura.obligadoContabilidad + @"
                                     </h6>",
             "04" => @"<h5>
                                         <label>Dirección Sucursal: </label>
@@ -194,7 +194,7 @@ public class DocumentConverter : IDocumentConverter
     private static string GetInfoComprobante(ComprobanteElectronico data)
     {
         var infoComp = string.Empty;
-        switch (data.codDoc)
+        switch (data.CodDoc)
         {
             case "01":
                 infoComp = @" <div class=""row"">
@@ -205,22 +205,22 @@ public class DocumentConverter : IDocumentConverter
                                         <div class=""col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8"">
                                             <h5>
                                                 <label>Razón Social / Nombres y Apellidos: </label>
-                                                " + data.infoFactura.razonSocialComprador + @"
+                                                " + data.InfoFactura.razonSocialComprador + @"
                                             </h5>
                                             <br>
                                             <h5>
                                                 <label>Fecha Emisión: </label>
-                                                " + data.infoFactura.fechaEmision + @"
+                                                " + data.InfoFactura.fechaEmision + @"
                                             </h5>
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
                                                 <label>Identificación: </label>
-                                                " + data.infoFactura.identificacionComprador + @"
+                                                " + data.InfoFactura.identificacionComprador + @"
                                             </h5><br>
 
                                                 <h5> <label>Guía Remisión: </label>
-                                                " + data.infoFactura.guiaRemision + @"
+                                                " + data.InfoFactura.guiaRemision + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -233,7 +233,7 @@ public class DocumentConverter : IDocumentConverter
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoFactura.direccionComprador + @"
+                                                " + data.InfoFactura.direccionComprador + @"
                                             </h5>
                                         </div>
                                     </div>                                 </div>
@@ -361,7 +361,7 @@ public class DocumentConverter : IDocumentConverter
     private static string GetDetails(ComprobanteElectronico data)
     {
         var details = string.Empty;
-        details = data.codDoc switch
+        details = data.CodDoc switch
         {
             "01" or "04" => data.detalles.Aggregate(details, (current, item) => current + @"<tr class=""small"">
                                                     <td> " + item.codigoPrincipal + @" </td >
@@ -396,8 +396,8 @@ public class DocumentConverter : IDocumentConverter
                                                 <th>Valor</th>
                                             </tr>
                                         </thead>
-                                        <tbody>", (current, item) => current + @"<tr><td>" + item.nombre + @"</td>
-                <td>" + item.valor + @"</td ></tr>");
+                                        <tbody>", (current, item) => current + @"<tr><td>" + item.Nombre + @"</td>
+                <td>" + item.Valor + @"</td ></tr>");
 
         info += @"</tbody></table></div></div>
                         </div>";
@@ -420,10 +420,10 @@ public class DocumentConverter : IDocumentConverter
                                 <table class=""table table-bordered"">
                                     <tbody>";
 
-        switch (data.codDoc)
+        switch (data.CodDoc)
         {
             case "01":
-                foreach (var item in data.infoFactura.totalImpuestos)
+                foreach (var item in data.InfoFactura.totalImpuestos)
                 {
                     if (item.codigo == "2" && item.codigoPorcentaje == "2")
                         totals += @"<tr>
@@ -465,7 +465,7 @@ public class DocumentConverter : IDocumentConverter
 
                     totals += @"<tr>
                                             <td class=""text-right""><strong>Total Sin Impuestos</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.totalSinImpuestos + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.totalSinImpuestos + @"</td>
                                         </tr>";
                     switch (item.codigo)
                     {
@@ -497,10 +497,10 @@ public class DocumentConverter : IDocumentConverter
                 }
 
                 totals += @" <tr><td class=""text-right""><strong>Propina</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.propina + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.propina + @"</td>
                                         </tr>";
                 totals += @" <tr><td class=""text-right""><strong>Valor Total</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.importeTotal + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.importeTotal + @"</td>
                                         </tr>";
                 break;
             case "04":

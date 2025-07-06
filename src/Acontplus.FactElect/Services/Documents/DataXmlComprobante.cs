@@ -15,60 +15,60 @@ public class DataXmlComprobante
             else
                 return false;
 
-            comp.numeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText;
-            comp.fechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText;
+            comp.NumeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText;
+            comp.FechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText;
 
             var nodeInfoTrib = xmlComp.GetElementsByTagName("infoTributaria")[0];
             if (nodeInfoTrib != null)
             {
-                comp.codDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText;
+                comp.CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText;
                 GetInfoTributaria(comp, nodeInfoTrib);
             }
 
-            switch (comp.codDoc)
+            switch (comp.CodDoc)
             {
                 case "01":
                     var nodeFact = xmlComp.GetElementsByTagName("factura")[0];
-                    comp.versionComp = nodeFact?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeFact?.Attributes?["version"]?.Value;
 
                     var nodeInfoFactura = xmlComp.GetElementsByTagName("infoFactura")[0];
-                    if (nodeInfoFactura != null) GetInfoFactura(comp.codDoc, comp, nodeInfoFactura);
+                    if (nodeInfoFactura != null) GetInfoFactura(comp.CodDoc, comp, nodeInfoFactura);
 
                     GetDetails(comp, xmlComp.GetElementsByTagName("detalles")[0]);
 
                     break;
                 case "03":
                     var nodeLiq = xmlComp.GetElementsByTagName("liquidacionCompra")[0];
-                    comp.versionComp = nodeLiq?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeLiq?.Attributes?["version"]?.Value;
                     break;
                 case "04":
                     var nodeNc = xmlComp.GetElementsByTagName("notaCredito")[0];
-                    comp.versionComp = nodeNc?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeNc?.Attributes?["version"]?.Value;
 
                     var nodeInfoNotaCredito = xmlComp.GetElementsByTagName("infoNotaCredito")[0];
 
-                    if (nodeInfoNotaCredito != null) GetInfoNotaCredito(comp.codDoc, comp, nodeInfoNotaCredito);
+                    if (nodeInfoNotaCredito != null) GetInfoNotaCredito(comp.CodDoc, comp, nodeInfoNotaCredito);
 
                     GetDetails(comp, xmlComp.GetElementsByTagName("detalles")[0]);
 
                     break;
                 case "05":
                     var nodeNd = xmlComp.GetElementsByTagName("notaDebito")[0];
-                    comp.versionComp = nodeNd?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeNd?.Attributes?["version"]?.Value;
                     break;
                 case "06":
                     var nodeGr = xmlComp.GetElementsByTagName("guiaRemision")[0];
-                    comp.versionComp = nodeGr?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeGr?.Attributes?["version"]?.Value;
                     break;
                 case "07":
                     var nodeRet = xmlComp.GetElementsByTagName("comprobanteRetencion")[0];
-                    comp.versionComp = nodeRet?.Attributes?["version"]?.Value;
+                    comp.VersionComp = nodeRet?.Attributes?["version"]?.Value;
 
                     var nodeInfoCompRetencion = xmlComp.GetElementsByTagName("infoCompRetencion")[0];
 
-                    GetInfoCompRetencion(comp.versionComp, comp, nodeInfoCompRetencion);
+                    GetInfoCompRetencion(comp.VersionComp, comp, nodeInfoCompRetencion);
 
-                    if (comp.versionComp == "2.0.0")
+                    if (comp.VersionComp == "2.0.0")
                         GetDocSustento(comp, xmlComp.GetElementsByTagName("docsSustento")[0]);
                     else
                         GetImpuestoRetencion(comp, xmlComp.GetElementsByTagName("impuestos")[0]);
@@ -90,7 +90,7 @@ public class DataXmlComprobante
 
     private void GetInfoTributaria(ComprobanteElectronico ce, XmlNode nodeInfoTrib)
     {
-        ce.infoTributaria = new InfoTributaria
+        ce.InfoTributaria = new InfoTributaria
         {
             ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText,
             tipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText,
@@ -155,8 +155,8 @@ public class DataXmlComprobante
         var infoAdicionals = (from XmlNode item in infoAdi
                               select new InfoAdicional
                               {
-                                  nombre = item.Attributes?.GetNamedItem("nombre")!.Value,
-                                  valor = item.InnerText
+                                  Nombre = item.Attributes?.GetNamedItem("nombre")!.Value,
+                                  Valor = item.InnerText
                               })
             .ToList();
 
@@ -255,7 +255,7 @@ public class DataXmlComprobante
         foreach (XmlNode item in details)
         {
             var detail = new Detalle { idDetalle = idDetalle };
-            if (comp.codDoc == "01")
+            if (comp.CodDoc == "01")
                 detail.codigoPrincipal = item.SelectSingleNode("codigoPrincipal") == null
                     ? ""
                     : item.SelectSingleNode("codigoPrincipal")?.InnerText;
@@ -301,7 +301,7 @@ public class DataXmlComprobante
         comp.CreateDetails(detalles);
     }
 
-    private void GetInfoCompRetencion(string versionComp, ComprobanteElectronico ce, XmlNode nodeInfoCompRetencion)
+    private void GetInfoCompRetencion(string? versionComp, ComprobanteElectronico ce, XmlNode nodeInfoCompRetencion)
     {
         if (nodeInfoCompRetencion != null)
         {

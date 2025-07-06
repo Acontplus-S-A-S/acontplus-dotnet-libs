@@ -11,7 +11,7 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
         try
         {
             var nodeFact = xmlDocument.GetElementsByTagName("factura")[0];
-            comprobante.versionComp = nodeFact?.Attributes?["version"]?.Value;
+            comprobante.VersionComp = nodeFact?.Attributes?["version"]?.Value;
 
             var nodeInfoFactura = xmlDocument.GetElementsByTagName("infoFactura")[0];
             if (nodeInfoFactura != null)
@@ -59,7 +59,7 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
             moneda = nodeInfoFactura.SelectSingleNode("moneda")?.InnerText ?? ""
         };
 
-        ParseTotalTaxes(comprobante.codDoc, infoFac, nodeInfoFactura.SelectSingleNode("totalConImpuestos"));
+        ParseTotalTaxes(comprobante.CodDoc, infoFac, nodeInfoFactura.SelectSingleNode("totalConImpuestos"));
 
         var pagosNode = nodeInfoFactura.SelectSingleNode("pagos");
         if (pagosNode != null)
@@ -67,7 +67,7 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
             ParseInvoicePayments(infoFac, pagosNode);
         }
 
-        comprobante.CreateInfoComp(comprobante.codDoc, infoFac);
+        comprobante.CreateInfoComp(comprobante.CodDoc, infoFac);
     }
 
     private void ParseTotalTaxes(string codDoc, InfoFactura infoFac, XmlNode impuestos)

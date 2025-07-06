@@ -2,13 +2,13 @@
 
 public class ComprobanteElectronico
 {
-    public string versionComp { get; set; }
-    public string codDoc { get; set; }
-    public string fechaAutorizacion { get; set; }
-    public string numeroAutorizacion { get; set; }
-    public InfoTributaria infoTributaria { get; set; }
+    public string? VersionComp { get; set; }
+    public string CodDoc { get; set; }
+    public string FechaAutorizacion { get; set; }
+    public string NumeroAutorizacion { get; set; }
+    public InfoTributaria InfoTributaria { get; set; }
 
-    public InfoFactura infoFactura { get; set; }
+    public InfoFactura InfoFactura { get; set; }
     public List<Detalle> detalles { get; set; }
     public List<Impuesto> impuestos { get; set; }
 
@@ -25,7 +25,7 @@ public class ComprobanteElectronico
         switch (codDoc)
         {
             case "01":
-                infoFactura = obj as InfoFactura;
+                InfoFactura = obj as InfoFactura;
                 break;
             case "03":
                 break;
@@ -347,6 +347,6 @@ public class DetalleImpuesto
 
 public class InfoAdicional
 {
-    public string nombre { get; set; }
-    public string valor { get; set; }
+    public string? Nombre { get; set; }
+    public string? Valor { get; set; }
 }

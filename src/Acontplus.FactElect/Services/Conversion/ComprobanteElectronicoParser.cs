@@ -31,8 +31,8 @@ public class ComprobanteElectronicoParser : IXmlDocumentParser<ComprobanteElectr
             }
 
             // Parse authorization info
-            result.numeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText;
-            result.fechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText;
+            result.NumeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText;
+            result.FechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText;
 
             // Extract and load the comprobante
             var nodeComp = nodeAuth.SelectSingleNode("comprobante");
@@ -49,7 +49,7 @@ public class ComprobanteElectronicoParser : IXmlDocumentParser<ComprobanteElectr
             var nodeInfoTrib = xmlComp.GetElementsByTagName("infoTributaria")[0];
             if (nodeInfoTrib != null)
             {
-                result.codDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText;
+                result.CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText;
                 _infoTributariaParser.Parse(nodeInfoTrib, result);
             }
             else
@@ -59,9 +59,9 @@ public class ComprobanteElectronicoParser : IXmlDocumentParser<ComprobanteElectr
             }
 
             // Find the appropriate parser for the document type
-            if (string.IsNullOrEmpty(result.codDoc) || !_documentTypeParsers.TryGetValue(result.codDoc, out var documentTypeParser))
+            if (string.IsNullOrEmpty(result.CodDoc) || !_documentTypeParsers.TryGetValue(result.CodDoc, out var documentTypeParser))
             {
-                errorMessage = $"Unsupported document type: {result.codDoc}";
+                errorMessage = $"Unsupported document type: {result.CodDoc}";
                 return false;
             }
 

@@ -8,8 +8,8 @@ public class InfoAdicionalParser : IInfoAdicionalParser
         var infoAdicionals = (from XmlNode item in nodeInfoAdicional
                               select new InfoAdicional
                               {
-                                  nombre = (item.Attributes?.GetNamedItem("nombre"))?.Value ?? "",
-                                  valor = item.InnerText ?? ""
+                                  Nombre = (item.Attributes?.GetNamedItem("nombre"))?.Value ?? "",
+                                  Valor = item.InnerText ?? ""
                               })
             .ToList();
 

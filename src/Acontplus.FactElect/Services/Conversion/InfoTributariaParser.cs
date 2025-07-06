@@ -5,7 +5,7 @@ public class InfoTributariaParser : IInfoTributariaParser
 {
     public void Parse(XmlNode nodeInfoTrib, ComprobanteElectronico comprobante)
     {
-        comprobante.infoTributaria = new InfoTributaria
+        comprobante.InfoTributaria = new InfoTributaria
         {
             ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText,
             tipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText,

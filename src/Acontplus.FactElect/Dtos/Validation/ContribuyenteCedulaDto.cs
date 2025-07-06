@@ -2,11 +2,11 @@
 
 public record ContribuyenteCedulaDto
 {
-    public string Identificacion { get; set; }
-    public string NombreCompleto { get; set; }
-    public object FechaDefuncion { get; set; }
+    public required string Identificacion { get; set; }
+    public required string NombreCompleto { get; set; }
+    public object? FechaDefuncion { get; set; }
     // Custom properties
-    public string Direccion { get; set; }
-    public string Email { get; set; }
-    public string Telefono { get; set; }
+    public string? Direccion { get; set; }
+    public string? Email { get; set; }
+    public string? Telefono { get; set; }
 }

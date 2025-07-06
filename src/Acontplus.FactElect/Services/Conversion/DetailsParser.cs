@@ -13,7 +13,7 @@ public class DetailsParser : IDetailsParser
         {
             var detail = new Detalle { idDetalle = idDetalle };
 
-            if (comprobante.codDoc == "01")
+            if (comprobante.CodDoc == "01")
                 detail.codigoPrincipal = item.SelectSingleNode("codigoPrincipal")?.InnerText ?? "";
             else
                 detail.codigoPrincipal = item.SelectSingleNode("codigoInterno")?.InnerText ?? "";
