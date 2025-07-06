@@ -15,6 +15,7 @@ namespace Acontplus.TestHostApi.Controllers
 
             return await usuarioService.AddAsync(usuario).ToActionResultAsync();
         }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UsuarioDto usuarioDto)
         {
@@ -22,12 +23,12 @@ namespace Acontplus.TestHostApi.Controllers
 
             return Ok(await usuarioService.UpdateAsync(id, usuario));
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Put(int id)
-        {
 
-            return Ok(await usuarioService.DeleteAsync(id));
-        }
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> Put(int id)
+        // {
+        //     return Ok(await usuarioService.DeleteAsync(id));
+        // }
 
         [HttpGet]
         [ProducesResponseType<ApiResponse<PagedResult<UsuarioDto>>>(StatusCodes.Status200OK)]
@@ -39,6 +40,7 @@ namespace Acontplus.TestHostApi.Controllers
         {
             return await usuarioService.GetPaginatedUsersAsync(pagination).ToActionResultAsync();
         }
+
         [HttpGet("ado")]
         public async Task<IActionResult> GetUsersAdo(
             [FromServices] IUsuarioService usuarioService,
@@ -49,8 +51,8 @@ namespace Acontplus.TestHostApi.Controllers
 
         [HttpGet("get-dynamic")]
         public async Task<IActionResult> GetDynamicUsers(
-    [FromServices] IUsuarioService usuarioService,
-    [FromServices] ILogger<UsuarioController> logger)
+            [FromServices] IUsuarioService usuarioService,
+            [FromServices] ILogger<UsuarioController> logger)
         {
             return await usuarioService.GetDynamicUserListAsync().ToActionResultAsync();
         }
@@ -59,6 +61,7 @@ namespace Acontplus.TestHostApi.Controllers
         {
             return $"?page={page}&pageSize={pagination.PageSize}";
         }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

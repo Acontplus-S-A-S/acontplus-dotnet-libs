@@ -1,4 +1,7 @@
-﻿namespace Acontplus.TestHostApi.Controllers;
+﻿using Acontplus.FactElect.Dtos.Validation;
+using Acontplus.Utilities.Extensions;
+
+namespace Acontplus.TestHostApi.Controllers;
 
 public class CustomerController(
     IRucService rucService,
@@ -7,11 +10,11 @@ public class CustomerController(
     : BaseApiController
 {
     [HttpGet("GetRucSri")]
-    public async Task<RucModel> GetRucSri(string ruc, bool sriOnly = false)
+    public async Task<IActionResult> GetRucSri(string ruc, bool sriOnly = false)
     {
         if (sriOnly)
         {
-            return await rucService.GetRucSriAsync(ruc);
+            return await rucService.GetRucSriAsync(ruc).ToActionResultAsync();
         }
 
         var parameters = new Dictionary<string, object> { { "id", ruc } };
@@ -21,11 +24,11 @@ public class CustomerController(
 
         var dictionarySimple = new Dictionary<string, object>
         {
-            {"id", 0 },
-            {"tiempo", "sasas" }
+            { "id", 0 },
+            { "tiempo", "sasas" }
         };
 
-        string json = @"{
+        var json = @"{
             ""infoFactura"": {
                 ""idCliente"": 268143,
                 ""idTiempoCredito"": 17,
@@ -108,27 +111,25 @@ public class CustomerController(
         var dictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
 
-
-
         var serializeDictionary = DataConverters.SerializeDictionary(dictionary);
 
         //var serializeDictionary = DataConverters.SerializeDictionary(dictionary);
 
 
-
         if (!DataValidation.DataTableIsNull(dt))
         {
-            return DataTableMapper.MapDataRowToModel<RucModel>(dt.Rows[0]);
+            return Ok(DataTableMapper.MapDataRowToModel<ContribuyenteRucDto>(dt.Rows[0]));
         }
 
-        return await rucService.GetRucSriAsync(ruc);
+        return await rucService.GetRucSriAsync(ruc).ToActionResultAsync();
     }
+
     [HttpGet("GetCedulaSri")]
-    public async Task<CedulaModel> GetCedulaSri(string ruc, bool sriOnly = false)
+    public async Task<IActionResult> GetCedulaSri(string ruc, bool sriOnly = false)
     {
         if (sriOnly)
         {
-            return await cedulaService.GetCedulaSriAsync(ruc);
+            return await cedulaService.GetCedulaSriAsync(ruc).ToActionResultAsync();
         }
 
         var parameters = new Dictionary<string, object> { { "id", ruc }, { "IDType", "05" } };
@@ -136,9 +137,9 @@ public class CustomerController(
 
         if (!DataValidation.DataTableIsNull(dt))
         {
-            return DataTableMapper.MapDataRowToModel<CedulaModel>(dt.Rows[0]);
+            return Ok(DataTableMapper.MapDataRowToModel<ContribuyenteCedulaDto>(dt.Rows[0]));
         }
 
-        return await cedulaService.GetCedulaSriAsync(ruc);
+        return await cedulaService.GetCedulaSriAsync(ruc).ToActionResultAsync();
     }
 }

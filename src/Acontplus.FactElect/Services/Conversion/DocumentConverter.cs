@@ -1,6 +1,4 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Documents;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Acontplus.FactElect.Services.Conversion;
 

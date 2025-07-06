@@ -1,7 +1,4 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Documents;
-
-namespace Acontplus.FactElect.Services.Conversion;
+﻿namespace Acontplus.FactElect.Services.Conversion;
 
 // Implementation of info tributaria parser
 public class InfoTributariaParser : IInfoTributariaParser

@@ -2,5 +2,5 @@
 
 public interface ICaptchaService
 {
-    Task<string> ValidateAsync(string html, CookieContainer cookies);
+    Task<Result<string, DomainError>> ValidateAsync(string captcha, CookieContainer cookies);
 }

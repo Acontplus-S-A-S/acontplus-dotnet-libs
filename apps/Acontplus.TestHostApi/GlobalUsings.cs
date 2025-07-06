@@ -8,7 +8,6 @@ global using Acontplus.Core.Validation;
 global using Acontplus.Data;
 global using Acontplus.FactElect.Helpers;
 global using Acontplus.FactElect.Interfaces.Services;
-global using Acontplus.FactElect.Models.Validation;
 global using Acontplus.FactElect.Services.Documents;
 global using Acontplus.FactElect.Services.Documents.Mapping;
 global using Acontplus.Logging;

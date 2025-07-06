@@ -1,6 +1,4 @@
-﻿using Acontplus.FactElect.Models.Documents;
-
-namespace Acontplus.FactElect.Services.Documents;
+﻿namespace Acontplus.FactElect.Services.Documents;
 
 public class DataXmlComprobante
 {

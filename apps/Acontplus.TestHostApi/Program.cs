@@ -1,6 +1,8 @@
 ﻿using Acontplus.ApiDocumentation;
 using Acontplus.FactElect.Models.Documents;
+using Acontplus.FactElect.Services.Authentication;
 using Acontplus.FactElect.Services.External;
+using Acontplus.FactElect.Services.Validation;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Services.Extensions;
@@ -81,6 +83,10 @@ try
 
         builder.Services.AddScoped<IAtsXmlService, AtsXmlService>();
         builder.Services.AddTransient<IWebServiceSri, WebServiceSri>();
+        builder.Services.AddTransient<IRucService, RucService>();
+        builder.Services.AddTransient<ICookieService, CookieService>();
+        builder.Services.AddTransient<ICaptchaService, CaptchaService>();
+        builder.Services.AddTransient<ICedulaService, CedulaService>();
         builder.Services.AddTransient<ICustomerService, CustomerService>();
         builder.Services.AddTransient<IMailKitService, AmazonSesService>();
         builder.Services.AddDataProtection();
