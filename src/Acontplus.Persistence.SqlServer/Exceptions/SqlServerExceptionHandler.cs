@@ -1,5 +1,4 @@
 ﻿using Acontplus.Core.Domain.Enums;
-using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 
@@ -9,41 +8,29 @@ public static class SqlServerExceptionHandler
 {
     private static class ErrorRanges
     {
-        // SQL Server 2022+ valid custom error range (13000-2147483647, excluding 50000)
-        public const int MinCustomError = 13000;
-        public const int MaxCustomError = int.MaxValue;
-        public const int ReservedError = 50000;
+        // SQL Server valid ranges
+        public const int RaiserrorMin = 13000; // Minimum for RAISERROR custom errors
+        public const int ThrowMin = 50001; // Minimum for THROW custom errors (50000 is reserved)
+        public const int MaxError = int.MaxValue; // Maximum for both
 
-        // Standard transient errors (connection, timeouts, etc.)
+        // Standard transient errors
         public static readonly ImmutableHashSet<int> TransientErrors = ImmutableHashSet.Create(
-            // Connection and timeout errors
-            2, 53, 64, 233, // Basic connection issues
-            10053, 10054, 10060, // Connection aborted/reset/timeout
-            11001, // Host not found
-
-            // Database availability
-            4060, 40197, 40501, 40613,
-
-            // Azure SQL specific
-            40143, 40149, 40544, 40549,
-
-            // Processing errors
-            49918, 49919, 49920,
-
-            // Resource issues
-            8645, 8651,
-
-            // Deadlock
-            1205
+            /* Previous transient error numbers remain the same */
+            2, 53, 64, 233, 10053, 10054, 10060, 11001,
+            4060, 40197, 40501, 40613, 40143, 40149, 40544, 40549,
+            49918, 49919, 49920, 8645, 8651, 1205
         );
 
-        // Error categories for better classification
+        // Error classification ranges
         public static class CustomErrors
         {
-            public const int ValidationStart = 13000;
-            public const int BusinessRuleStart = 14000;
-            public const int DataAccessStart = 15000;
-            public const int SecurityStart = 16000;
+            // For RAISERROR (13000+)
+            public const int RaiserrorValidationStart = 13000;
+            public const int RaiserrorBusinessStart = 14000;
+
+            // For THROW (50000+)
+            public const int ThrowValidationStart = 50001;
+            public const int ThrowBusinessStart = 51000;
         }
     }
 
@@ -101,13 +88,12 @@ public static class SqlServerExceptionHandler
 
     public static SqlErrorInfo MapSqlException(SqlException ex)
     {
-        // Try to get mapped error first
         if (ErrorMappings.TryGetValue(ex.Number, out var errorInfo))
         {
             return errorInfo with { Exception = ex };
         }
 
-        // Handle special constraint cases
+        // Handle constraint violations
         if (ex.Number == 547 && ex.Message.Contains("CHECK constraint"))
         {
             return new SqlErrorInfo(
@@ -117,13 +103,12 @@ public static class SqlServerExceptionHandler
                 ex);
         }
 
-        // Handle modern stored procedure errors (13000+)
+        // Handle custom stored procedure errors
         if (IsCustomStoredProcedureError(ex.Number))
         {
             return HandleCustomStoredProcedureError(ex);
         }
 
-        // Default case
         return new SqlErrorInfo(
             ErrorType.Internal,
             $"SQL_ERROR_{ex.Number}",
@@ -133,23 +118,38 @@ public static class SqlServerExceptionHandler
 
     private static bool IsCustomStoredProcedureError(int errorNumber)
     {
-        return errorNumber >= ErrorRanges.MinCustomError &&
-               errorNumber <= ErrorRanges.MaxCustomError &&
-               errorNumber != ErrorRanges.ReservedError;
+        // Accept both RAISERROR (13000+) and THROW (50000+) ranges
+        return (errorNumber >= ErrorRanges.RaiserrorMin && errorNumber < ErrorRanges.ThrowMin) ||
+               (errorNumber >= ErrorRanges.ThrowMin && errorNumber <= ErrorRanges.MaxError);
     }
 
     private static SqlErrorInfo HandleCustomStoredProcedureError(SqlException ex)
     {
+        // Map stored procedure errors to the closest HTTP-aligned ErrorType
         var errorType = ex.Number switch
         {
-            >= ErrorRanges.CustomErrors.ValidationStart and < ErrorRanges.CustomErrors.BusinessRuleStart
+            // RAISERROR range (13000+)
+            >= ErrorRanges.CustomErrors.RaiserrorValidationStart and < ErrorRanges.CustomErrors.RaiserrorBusinessStart
                 => ErrorType.Validation,
-            >= ErrorRanges.CustomErrors.SecurityStart
-                => ErrorType.Forbidden,
+            >= ErrorRanges.CustomErrors.RaiserrorBusinessStart and < ErrorRanges.ThrowMin
+                => ErrorType.Conflict, // Business rules typically map to Conflict (409)
+
+            // THROW range (50000+)
+            >= ErrorRanges.CustomErrors.ThrowValidationStart and < ErrorRanges.CustomErrors.ThrowBusinessStart
+                => ErrorType.Validation,
+            >= ErrorRanges.CustomErrors.ThrowBusinessStart
+                => ErrorType.Conflict, // Business rules typically map to Conflict (409)
+
             _ => ErrorType.Validation
         };
 
-        var prefix = ex.Class == 16 ? "SP_BUSINESS_" : "SP_";
+        // Determine prefix based on error class
+        var prefix = ex.Class switch
+        {
+            16 => "SP_BUSINESS_", // Severity 16 indicates business logic errors
+            _ => "SP_VALIDATION_"
+        };
+
         return new SqlErrorInfo(
             errorType,
             $"{prefix}{ex.Number}",
