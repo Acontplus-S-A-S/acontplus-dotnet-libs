@@ -8,8 +8,8 @@ using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
 using Acontplus.Services.Extensions;
+using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
-using Acontplus.TestApplication.Interfaces;
 using Acontplus.TestApplication.Services;
 using Acontplus.TestInfrastructure.Persistence;
 using Scrutor;
@@ -73,7 +73,6 @@ try
         [
             "Acontplus.Persistence.SqlServer.Repositories",
             "Acontplus.Reports.Services",
-            "Acontplus.TestHostApi.Services",
             "Acontplus.Core.Security.Services"
         ];
 
@@ -87,14 +86,14 @@ try
 
 
         builder.Services.AddScoped<IAtsXmlService, AtsXmlService>();
-        builder.Services.AddTransient<IWebServiceSri, WebServiceSri>();
-        builder.Services.AddTransient<IRucService, RucService>();
-        builder.Services.AddTransient<ICookieService, CookieService>();
-        builder.Services.AddTransient<ICaptchaService, CaptchaService>();
-        builder.Services.AddTransient<ICedulaService, CedulaService>();
-        builder.Services.AddTransient<ICustomerService, CustomerService>();
-        builder.Services.AddTransient<IMailKitService, AmazonSesService>();
-        builder.Services.AddTransient<IUsuarioService, UsuarioService>();
+        builder.Services.AddScoped<IWebServiceSri, WebServiceSri>();
+        builder.Services.AddScoped<IRucService, RucService>();
+        builder.Services.AddScoped<ICookieService, CookieService>();
+        builder.Services.AddScoped<ICaptchaService, CaptchaService>();
+        builder.Services.AddScoped<ICedulaService, CedulaService>();
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
+        builder.Services.AddScoped<IMailKitService, AmazonSesService>();
+        builder.Services.AddScoped<IUsuarioService, UsuarioService>();
         builder.Services.AddTransient<ISqlExceptionTranslator, SqlExceptionTranslator>();
         builder.Services.AddDataProtection();
         builder.Services.AddApiVersioningAndDocumentation();
@@ -133,6 +132,8 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+    
+    app.MapAllEndpoints();
 
     app.MapGet("/generateats", async (IAtsXmlService atsXmlService) =>
     {

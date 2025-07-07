@@ -6,6 +6,8 @@ public static class ApplicationServicesExtensions
     IConfiguration configuration)
     {
 
+        
+        services.AddHttpContextAccessor();
         //var serviceProvider = services.BuildServiceProvider();
         //var loggingOptions = serviceProvider.GetService<LoggingOptions>();
 

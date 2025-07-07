@@ -1,10 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.TestApplication.DTOs;
-using Acontplus.TestDomain.Entities;
-
-namespace Acontplus.TestApplication.Interfaces;
+﻿namespace Acontplus.TestApplication.Interfaces;
 
 public interface IUsuarioService
 {

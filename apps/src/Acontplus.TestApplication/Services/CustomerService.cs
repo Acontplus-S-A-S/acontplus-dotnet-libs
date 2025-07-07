@@ -1,14 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.TestApplication.Interfaces;
-using System.Data;
-using Acontplus.Core.Domain.Common;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
-using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.TestApplication.DTOs;
-
-namespace Acontplus.TestApplication.Services;
+﻿namespace Acontplus.TestApplication.Services;
 
 public class CustomerService(
     IAdoRepository adoRepository,
@@ -40,17 +30,11 @@ public class CustomerService(
 
             var parameters = new Dictionary<string, object> { { "idCard", idCard } };
             var customer =
-                await adoRepository.QuerySingleOrDefaultAsync<CustomerDto>("Demo.GetCustomerByIdCard", parameters);
+                await adoRepository.QuerySingleOrDefaultAsync<CustomerDto>("dbo.GetCustomerByIdCard", parameters);
 
             if (customer == null)
             {
-                var notFoundError = DomainError.NotFound(
-                    code: "CUSTOMER_NOT_FOUND",
-                    message: "No customer found with the provided ID card",
-                    target: nameof(idCard),
-                    details: new Dictionary<string, object> { ["idCard"] = idCard });
-
-                return Result<CustomerDto, DomainErrors>.Failure(notFoundError);
+                return await GetCustomerSriByIdCardAsync(idCard);
             }
 
             return Result<CustomerDto, DomainErrors>.Success(customer);
@@ -123,6 +107,10 @@ public class CustomerService(
     private async Task<Result<CustomerDto, DomainErrors>> GetRucSriAsync(string idCard)
     {
         var rucInfo = await rucService.GetRucSriAsync(idCard);
+        if (!rucInfo.IsSuccess)
+        {
+            return Result<CustomerDto, DomainErrors>.Failure(rucInfo.Error);
+        }
         var customer = new CustomerDto(IdCard:
             rucInfo.Value.Contribuyente.NumeroRuc,
             BusinessName: rucInfo.Value.Contribuyente.RazonSocial,
@@ -136,6 +124,10 @@ public class CustomerService(
     private async Task<Result<CustomerDto, DomainErrors>> GetCedulaSriAsync(string idCard)
     {
         var rucInfo = await cedulaService.GetCedulaSriAsync(idCard);
+        if (!rucInfo.IsSuccess)
+        {
+            return Result<CustomerDto, DomainErrors>.Failure(rucInfo.Error);
+        }
         var customer = new CustomerDto(IdCard:
             rucInfo.Value.Identificacion,
             BusinessName: rucInfo.Value.NombreCompleto,

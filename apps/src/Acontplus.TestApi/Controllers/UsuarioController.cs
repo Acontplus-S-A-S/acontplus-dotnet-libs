@@ -1,9 +1,4 @@
-﻿using Acontplus.TestApplication.DTOs;
-using Acontplus.TestApplication.Interfaces;
-using Acontplus.TestDomain.Entities;
-using Acontplus.Utilities.Extensions;
-
-namespace Acontplus.TestApi.Controllers
+﻿namespace Acontplus.TestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

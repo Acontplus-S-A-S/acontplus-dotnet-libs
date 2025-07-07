@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Acontplus.TestApplication.Services;
 

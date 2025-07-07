@@ -1,5 +1,3 @@
-using Acontplus.TestApi;
-
 namespace Acontplus.TestApi.Controllers
 {
     [ApiController]
