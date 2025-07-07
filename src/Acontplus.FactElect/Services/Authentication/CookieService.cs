@@ -1,20 +1,17 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Authentication;
-
-namespace Acontplus.FactElect.Services.Authentication;
+﻿namespace Acontplus.FactElect.Services.Authentication;
 
 public class CookieService : ICookieService
 {
-    public async Task<CookieResponse> GetAsync()
+    public async Task<Result<CookieResponse, DomainError>> GetAsync()
     {
-        var cookies = new CookieContainer();
+        var cookie = new CookieContainer();
         var generator = new Random();
         var numeroGenerado = generator.Next(0, 100000000).ToString("D6");
         using var client = new HttpClient(new HttpClientHandler
         {
             Credentials = CredentialCache.DefaultNetworkCredentials,
             UseCookies = true,
-            CookieContainer = cookies
+            CookieContainer = cookie
         });
         var request = new HttpRequestMessage
         {
@@ -28,10 +25,16 @@ public class CookieService : ICookieService
 
         var response = await client.SendAsync(request);
 
-        if (!response.IsSuccessStatusCode) return null;
+        if (!response.IsSuccessStatusCode)
+            return Result<CookieResponse, DomainError>.Failure(new DomainError
+            {
+                Code = "COOKIE_ERROR",
+                Message = "No se pudo consultar la pagina"
+            });
 
         var stream = await response.Content.ReadAsStreamAsync();
-        using var sr = new StreamReader(stream);
-        return new CookieResponse { Cookie = cookies, Html = HttpUtility.HtmlDecode(await sr.ReadToEndAsync()) };
+        using var streamReader = new StreamReader(stream);
+        return Result<CookieResponse, DomainError>.Success(new CookieResponse
+        { Cookie = cookie, Captcha = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync()) });
     }
 }

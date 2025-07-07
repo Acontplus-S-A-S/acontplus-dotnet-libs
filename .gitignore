@@ -10,3 +10,4 @@ bin-release/
 *.user
 /apps/Acontplus.TestHostApi/appsettings.Development.json
 /apps/Acontplus.TestHostApi/appsettings.Development.json
+apps/src/Acontplus.TestHostApi/appsettings.Development.json

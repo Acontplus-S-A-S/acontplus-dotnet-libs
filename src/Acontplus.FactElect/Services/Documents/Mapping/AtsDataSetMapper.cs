@@ -1,6 +1,4 @@
-﻿using Acontplus.FactElect.Models.Documents;
-
-namespace Acontplus.FactElect.Services.Documents.Mapping;
+﻿namespace Acontplus.FactElect.Services.Documents.Mapping;
 
 public class AtsDataSetMapper
 {

@@ -1,6 +1,4 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Documents;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Acontplus.FactElect.Services.Conversion;
 
@@ -57,7 +55,7 @@ public class DocumentConverter : IDocumentConverter
         // Convertir la imagen a base64 para incluirla en el HTML
         var base64Image = Convert.ToBase64String(imageBytes);
 
-        var dt = (SriDocument)Convert.ToInt32(data.codDoc);
+        var dt = (SriDocument)Convert.ToInt32(data.CodDoc);
         var documentName = dt.DisplayName();
         var doc = @"
                     <div class=""row"">
@@ -69,11 +67,11 @@ public class DocumentConverter : IDocumentConverter
                   $"data:image/png;base64,{base64Image}" +
                   @" alt=""No Logo"" class=""img-fluid"" align=""center"" width=""100"">
 </div>
-                                    <h6>" + data.infoTributaria.razonSocial + @"</h6>
+                                    <h6>" + data.InfoTributaria.RazonSocial + @"</h6>
                                     
-                                    <h6>" + data.infoTributaria.nombreComercial + @"</h6>
+                                    <h6>" + data.InfoTributaria.NombreComercial + @"</h6>
                                     <br>
-                                    <h6><label>Dirección Matriz:</label> " + data.infoTributaria.dirMatriz + @"</h6>
+                                    <h6><label>Dirección Matriz:</label> " + data.InfoTributaria.DirMatriz + @"</h6>
                                     <br>
                                     " + GetInfoTrib(data) + @"
                                 </div>
@@ -83,35 +81,35 @@ public class DocumentConverter : IDocumentConverter
                             <div class=""card border border-dark rounded"">
                                 <div class=""card-body"">
                                     <h5><label>RUC: </label> "
-                  + data.infoTributaria.ruc + @"</h5>
+                  + data.InfoTributaria.Ruc + @"</h5>
                                     <h4>" + documentName + @"</h4>
                                     <h5>
                                         <label>No.</label>
-                                        " + data.infoTributaria.estab + @"-" + data.infoTributaria.ptoEmi + @"-" +
-                  data.infoTributaria.secuencial + @"
+                                        " + data.InfoTributaria.Estab + @"-" + data.InfoTributaria.PtoEmi + @"-" +
+                  data.InfoTributaria.Secuencial + @"
                                     </h5>
                                     <label>NÚMERO DE AUTORIZACIÓN</label><br>
                                     <small id=""claveAcceso"">
-                                        " + data.infoTributaria.claveAcceso + @"
+                                        " + data.InfoTributaria.ClaveAcceso + @"
                                     </small>
                                     <label>FECHA Y HORA DE AUTORIZACIÓN</label>
                                     <small>
-                                        " + data.fechaAutorizacion + @"
+                                        " + data.FechaAutorizacion + @"
                                     </small>
                                     <h5>
                                         <label>AMBIENTE:</label>
-                                         " + (data.infoTributaria.ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
+                                         " + (data.InfoTributaria.Ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
                                     </h5>
                                     <h5>
                                         <label>EMISIÓN:</label>
-                                        " + (data.infoTributaria.tipoEmision == "1" ? "NORMAL" : "") + @"
+                                        " + (data.InfoTributaria.TipoEmision == "1" ? "NORMAL" : "") + @"
                                     </h5>
                                     <label>CLAVE DE ACCESSO</label><br />
 <div class=""text-center"">
                                     <img id=""barcodeImg"" src=" +
-                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = data.infoTributaria.claveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = data.infoTributaria.claveAcceso }).Length)}" +
+                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.ClaveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.ClaveAcceso }).Length)}" +
                   @" alt="""" align=""center"" class=""img-fluid"" height=""60"" width=""500"">
-                                    <br><small> " + data.infoTributaria.claveAcceso + @"</small></div>
+                                    <br><small> " + data.InfoTributaria.ClaveAcceso + @"</small></div>
                                 </div>
 
                             </div>
@@ -137,11 +135,11 @@ public class DocumentConverter : IDocumentConverter
 
     private static string GetInfoTrib(ComprobanteElectronico data)
     {
-        var infoTrib = data.codDoc switch
+        var infoTrib = data.CodDoc switch
         {
             "01" => @"<h6>
                                         <label>Dirección Sucursal: </label>
-                                        " + data.infoFactura.dirEstablecimiento + @"
+                                        " + data.InfoFactura.DirEstablecimiento + @"
                                     </h6>
                                     <br>
                                     <h6>
@@ -149,15 +147,15 @@ public class DocumentConverter : IDocumentConverter
                                             Contribuyente
                                             Especial Nro.
                                         </label>
-                                        " + data.infoFactura.contribuyenteEspecial + @"
+                                        " + data.InfoFactura.ContribuyenteEspecial + @"
                                     </h6>
                                     <h6>
                                         <label>OBLIGADO A LLEVAR CONTABILIDAD </label>
-                                        " + data.infoFactura.obligadoContabilidad + @"
+                                        " + data.InfoFactura.ObligadoContabilidad + @"
                                     </h6>",
             "04" => @"<h5>
                                         <label>Dirección Sucursal: </label>
-                                        " + data.infoNotaCredito.dirEstablecimiento + @"
+                                        " + data.InfoNotaCredito.DirEstablecimiento + @"
                                     </h5>
                                     <br>
                                     <h5 ng-show="""">
@@ -165,15 +163,15 @@ public class DocumentConverter : IDocumentConverter
                                             Contribuyente
                                             Especial Nro.
                                         </label>
-                                        " + data.infoNotaCredito.contribuyenteEspecial + @"
+                                        " + data.InfoNotaCredito.ContribuyenteEspecial + @"
                                     </h5>
                                     <h5>
                                         <label>OBLIGADO A LLEVAR CONTABILIDAD </label>
-                                        " + data.infoNotaCredito.obligadoContabilidad + @"
+                                        " + data.InfoNotaCredito.ObligadoContabilidad + @"
                                     </h5>",
             "07" => @"<h5>
                                         <label>Dirección Sucursal: </label>
-                                        " + data.infoCompRetencion.dirEstablecimiento + @"
+                                        " + data.InfoCompRetencion.DirEstablecimiento + @"
                                     </h5>
                                     <br>
                                     <h5 ng-show="""">
@@ -181,11 +179,11 @@ public class DocumentConverter : IDocumentConverter
                                             Contribuyente
                                             Especial Nro.
                                         </label>
-                                        " + data.infoCompRetencion.contribuyenteEspecial + @"
+                                        " + data.InfoCompRetencion.ContribuyenteEspecial + @"
                                     </h5>
                                     <h5>
                                         <label>OBLIGADO A LLEVAR CONTABILIDAD </label>
-                                        " + data.infoCompRetencion.obligadoContabilidad + @"
+                                        " + data.InfoCompRetencion.ObligadoContabilidad + @"
                                     </h5>",
             _ => string.Empty
         };
@@ -196,7 +194,7 @@ public class DocumentConverter : IDocumentConverter
     private static string GetInfoComprobante(ComprobanteElectronico data)
     {
         var infoComp = string.Empty;
-        switch (data.codDoc)
+        switch (data.CodDoc)
         {
             case "01":
                 infoComp = @" <div class=""row"">
@@ -207,22 +205,22 @@ public class DocumentConverter : IDocumentConverter
                                         <div class=""col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8"">
                                             <h5>
                                                 <label>Razón Social / Nombres y Apellidos: </label>
-                                                " + data.infoFactura.razonSocialComprador + @"
+                                                " + data.InfoFactura.RazonSocialComprador + @"
                                             </h5>
                                             <br>
                                             <h5>
                                                 <label>Fecha Emisión: </label>
-                                                " + data.infoFactura.fechaEmision + @"
+                                                " + data.InfoFactura.FechaEmision + @"
                                             </h5>
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
                                                 <label>Identificación: </label>
-                                                " + data.infoFactura.identificacionComprador + @"
+                                                " + data.InfoFactura.IdentificacionComprador + @"
                                             </h5><br>
 
                                                 <h5> <label>Guía Remisión: </label>
-                                                " + data.infoFactura.guiaRemision + @"
+                                                " + data.InfoFactura.GuiaRemision + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -235,7 +233,7 @@ public class DocumentConverter : IDocumentConverter
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoFactura.direccionComprador + @"
+                                                " + data.InfoFactura.DireccionComprador + @"
                                             </h5>
                                         </div>
                                     </div>                                 </div>
@@ -271,18 +269,18 @@ public class DocumentConverter : IDocumentConverter
                                         <div class=""col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8"">
                                             <h5>
                                                 <label>Razón Social / Nombres y Apellidos: </label>
-                                                " + data.infoNotaCredito.razonSocialComprador + @"
+                                                " + data.InfoNotaCredito.RazonSocialComprador + @"
                                             </h5>
                                             <br>
                                             <h5>
                                                 <label>Fecha Emisión: </label>
-                                                " + data.infoNotaCredito.fechaEmision + @"
+                                                " + data.InfoNotaCredito.FechaEmision + @"
                                             </h5>
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
                                                 <label>Identificación: </label>
-                                                " + data.infoNotaCredito.identificacionComprador + @"
+                                                " + data.InfoNotaCredito.IdentificacionComprador + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -295,12 +293,12 @@ public class DocumentConverter : IDocumentConverter
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoNotaCredito.codDocModificado + @"
+                                                " + data.InfoNotaCredito.CodDocModificado + @"
                                             </h5>
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoNotaCredito.numDocModificado + @"
+                                                " + data.InfoNotaCredito.NumDocModificado + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -313,7 +311,7 @@ public class DocumentConverter : IDocumentConverter
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoNotaCredito.fechaEmisionDocSustento + @"
+                                                " + data.InfoNotaCredito.FechaEmisionDocSustento + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -325,7 +323,7 @@ public class DocumentConverter : IDocumentConverter
                                         </div>
                                         <div class=""col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4"">
                                             <h5>
-                                                " + data.infoNotaCredito.motivo + @"
+                                                " + data.InfoNotaCredito.Motivo + @"
                                             </h5>
                                         </div>
                                     </div>
@@ -363,19 +361,19 @@ public class DocumentConverter : IDocumentConverter
     private static string GetDetails(ComprobanteElectronico data)
     {
         var details = string.Empty;
-        details = data.codDoc switch
+        details = data.CodDoc switch
         {
-            "01" or "04" => data.detalles.Aggregate(details, (current, item) => current + @"<tr class=""small"">
-                                                    <td> " + item.codigoPrincipal + @" </td >
-                                                    <td> " + item.codigoAuxiliar + @" </td >
-                                                    <td> " + item.cantidad + @" </td>
-                                                    <td> " + item.descripcion + @" </td >
+            "01" or "04" => data.Detalles.Aggregate(details, (current, item) => current + @"<tr class=""small"">
+                                                    <td> " + item.CodigoPrincipal + @" </td >
+                                                    <td> " + item.CodigoAuxiliar + @" </td >
+                                                    <td> " + item.Cantidad + @" </td>
+                                                    <td> " + item.Descripcion + @" </td >
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td class=""text-right"">" + item.precioUnitario + @"</td>
-                                                    <td class=""text-right"">" + item.descuento + @"</td>
-                                                    <td class=""text-right"">" + item.precioTotalSinImpuesto + @"</td>
+                                                    <td class=""text-right"">" + item.PrecioUnitario + @"</td>
+                                                    <td class=""text-right"">" + item.Descuento + @"</td>
+                                                    <td class=""text-right"">" + item.PrecioTotalSinImpuesto + @"</td>
                                                 </tr>"),
             _ => details
         };
@@ -385,9 +383,9 @@ public class DocumentConverter : IDocumentConverter
 
     private static string GetInfoAdicional(ComprobanteElectronico data)
     {
-        if (data.infoAdicional == null) return string.Empty;
+        if (data.InfoAdicional == null) return string.Empty;
 
-        var info = data.infoAdicional.Aggregate(
+        var info = data.InfoAdicional.Aggregate(
             @"<div class=""col-xl-7 col-lg-7 col-md-7 col-sm-7 col-7""><div class=""card border border-dark rounded"" ng-show=""infoAdicional.length > 0"">
                                 <div class=""card-body"">
 
@@ -398,8 +396,8 @@ public class DocumentConverter : IDocumentConverter
                                                 <th>Valor</th>
                                             </tr>
                                         </thead>
-                                        <tbody>", (current, item) => current + @"<tr><td>" + item.nombre + @"</td>
-                <td>" + item.valor + @"</td ></tr>");
+                                        <tbody>", (current, item) => current + @"<tr><td>" + item.Nombre + @"</td>
+                <td>" + item.Valor + @"</td ></tr>");
 
         info += @"</tbody></table></div></div>
                         </div>";
@@ -422,68 +420,68 @@ public class DocumentConverter : IDocumentConverter
                                 <table class=""table table-bordered"">
                                     <tbody>";
 
-        switch (data.codDoc)
+        switch (data.CodDoc)
         {
             case "01":
-                foreach (var item in data.infoFactura.totalImpuestos)
+                foreach (var item in data.InfoFactura.TotalImpuestos)
                 {
-                    if (item.codigo == "2" && item.codigoPorcentaje == "2")
+                    if (item.Codigo == "2" && item.CodigoPorcentaje == "2")
                         totals += @"<tr>
                                             <td class=""text-right""><strong>SubTotal Iva 12%</strong></td>
                                             <td class=""text-right"">" +
-                                  Convert.ToString(subtotal12 += Convert.ToDouble(item.baseImponible),
+                                  Convert.ToString(subtotal12 += Convert.ToDouble(item.BaseImponible),
                                       CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
-                    if (item.codigo == "2" && item.codigoPorcentaje == "4")
+                    if (item.Codigo == "2" && item.CodigoPorcentaje == "4")
                         totals += @"<tr>
                                             <td class=""text-right""><strong>SubTotal Iva 15%</strong></td>
                                             <td class=""text-right"">" +
-                                  Convert.ToString(subtotal12 += Convert.ToDouble(item.baseImponible),
+                                  Convert.ToString(subtotal12 += Convert.ToDouble(item.BaseImponible),
                                       CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
 
-                    if (item.codigo == "2" && item.codigoPorcentaje == "0")
+                    if (item.Codigo == "2" && item.CodigoPorcentaje == "0")
                         totals += @"<tr>
                                             <td class=""text-right""><strong>SubTotal Iva 0%</strong></td>
                                             <td class=""text-right"">" +
-                                  Convert.ToString(subtotalIva0 += Convert.ToDouble(item.baseImponible),
+                                  Convert.ToString(subtotalIva0 += Convert.ToDouble(item.BaseImponible),
                                       CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
 
-                    if (item.codigo == "2" && item.codigoPorcentaje == "6")
+                    if (item.Codigo == "2" && item.CodigoPorcentaje == "6")
                         totals += @"<tr>
                                             <td class=""text-right""><strong>SubTotal No Objeto Iva</strong></td>
                                             <td class=""text-right"">" +
-                                  Convert.ToString(subtotalNoObjetoIva += Convert.ToDouble(item.baseImponible), CultureInfo.InvariantCulture) +
+                                  Convert.ToString(subtotalNoObjetoIva += Convert.ToDouble(item.BaseImponible), CultureInfo.InvariantCulture) +
                                   @"</td>
                                         </tr>";
 
-                    if (item.codigo == "2" && item.codigoPorcentaje == "7")
+                    if (item.Codigo == "2" && item.CodigoPorcentaje == "7")
                         totals += @"<tr>
                                             <td class=""text-right""><strong>SubTotal Excento Iva</strong></td>
                                             <td class=""text-right"">" +
-                                  Convert.ToString(subtotalExcentoIva += Convert.ToDouble(item.baseImponible), CultureInfo.InvariantCulture) + @"</td>
+                                  Convert.ToString(subtotalExcentoIva += Convert.ToDouble(item.BaseImponible), CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
 
                     totals += @"<tr>
                                             <td class=""text-right""><strong>Total Sin Impuestos</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.totalSinImpuestos + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.TotalSinImpuestos + @"</td>
                                         </tr>";
-                    switch (item.codigo)
+                    switch (item.Codigo)
                     {
                         case "3":
                             totals += @"<tr>
                                             <td class=""text-right""><strong>ICE</strong></td>
                                             <td class=""text-right"">" +
-                                      Convert.ToString(ice += Convert.ToDouble(item.valor),
+                                      Convert.ToString(ice += Convert.ToDouble(item.Valor),
                                           CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
                             break;
-                        case "2" when item.codigoPorcentaje == "2":
+                        case "2" when item.CodigoPorcentaje == "2":
                             totals += @"<tr>
                                             <td class=""text-right""><strong>IVA 12%</strong></td>
                                             <td class=""text-right"">" +
-                                      Convert.ToString(iva12 += Convert.ToDouble(item.valor),
+                                      Convert.ToString(iva12 += Convert.ToDouble(item.Valor),
                                           CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
                             break;
@@ -491,7 +489,7 @@ public class DocumentConverter : IDocumentConverter
                             totals += @"<tr>
                                             <td class=""text-right""><strong>IRBPNR</strong></td>
                                             <td class=""text-right"">" +
-                                      Convert.ToString(irbpnr += Convert.ToDouble(item.valor),
+                                      Convert.ToString(irbpnr += Convert.ToDouble(item.Valor),
                                           CultureInfo.InvariantCulture) + @"</td>
                                         </tr>";
                             break;
@@ -499,10 +497,10 @@ public class DocumentConverter : IDocumentConverter
                 }
 
                 totals += @" <tr><td class=""text-right""><strong>Propina</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.propina + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.Propina + @"</td>
                                         </tr>";
                 totals += @" <tr><td class=""text-right""><strong>Valor Total</strong></td>
-                                            <td class=""text-right"">" + data.infoFactura.importeTotal + @"</td>
+                                            <td class=""text-right"">" + data.InfoFactura.ImporteTotal + @"</td>
                                         </tr>";
                 break;
             case "04":

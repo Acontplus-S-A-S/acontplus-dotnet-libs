@@ -195,4 +195,79 @@ public static class DbDataReaderMapper
 
         return result;
     }
+    private static Task<T> MapProperties<T>(SqlDataReader reader, T instance) where T : class
+    {
+        // Pre-cache column ordinals
+        var columnOrdinals = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < reader.FieldCount; i++)
+        {
+            columnOrdinals[reader.GetName(i)] = i;
+        }
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (!columnOrdinals.TryGetValue(property.Name, out var index) || reader.IsDBNull(index)) continue;
+            var value = reader.GetValue(index);
+            try
+            {
+                var convertedValue = Convert.ChangeType(value, property.PropertyType);
+                property.SetValue(instance, convertedValue);
+            }
+            catch (InvalidCastException)
+            {
+                // Handle or ignore conversion errors
+            }
+        }
+
+        return Task.FromResult(instance);
+    }
+
+    private static object? GetDefaultValue(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
+    }
+
+    /// <summary>
+    /// Maps a single row from a SqlDataReader to an object of type T using reflection.
+    /// </summary>
+    public static async Task<T?> MapToObject<T>(SqlDataReader reader) where T : class
+    {
+        try
+        {
+            // Try to get the first constructor and its parameters
+            var ctor = typeof(T).GetConstructors().FirstOrDefault();
+            if (ctor == null) return null;
+
+            var parameters = ctor.GetParameters();
+            var args = new object[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var paramName = parameters[i].Name;
+                if (paramName == null) continue;
+
+                try
+                {
+                    var ordinal = reader.GetOrdinal(paramName);
+                    args[i] = reader.IsDBNull(ordinal)
+                        ? GetDefaultValue(parameters[i].ParameterType)
+                        : reader.GetValue(ordinal);
+                }
+                catch
+                {
+                    args[i] = GetDefaultValue(parameters[i].ParameterType);
+                }
+            }
+
+            var instance = (T?)ctor.Invoke(args);
+            if (instance == null) return null;
+
+            // Map remaining properties that weren't set via constructor
+            return await MapProperties(reader, instance);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }

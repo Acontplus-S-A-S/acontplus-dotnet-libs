@@ -1,7 +1,4 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Documents;
-
-namespace Acontplus.FactElect.Services.Documents;
+﻿namespace Acontplus.FactElect.Services.Documents;
 
 public class ElectronicDocumentService(IXmlDocumentParser<ComprobanteElectronico> parser) : IElectronicDocumentService
 {

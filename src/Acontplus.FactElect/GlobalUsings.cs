@@ -1,8 +1,15 @@
 ﻿global using Acontplus.Barcode.Models;
 global using Acontplus.Barcode.Utils;
+global using Acontplus.Core.Domain.Common;
 global using Acontplus.Core.Enums;
 global using Acontplus.Core.Extensions;
 global using Acontplus.Core.Validation;
+global using Acontplus.FactElect.Dtos.Validation;
+global using Acontplus.FactElect.Interfaces.Services;
+global using Acontplus.FactElect.Models.Authentication;
+global using Acontplus.FactElect.Models.Documents;
+global using Acontplus.FactElect.Models.Responses;
+global using Acontplus.Utilities.Format;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Newtonsoft.Json;

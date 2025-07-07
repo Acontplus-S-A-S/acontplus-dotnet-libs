@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Extensions;
-
-namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common;
 
 /// <summary>
 /// Represents multiple domain errors that can occur during validation or complex operations.
@@ -8,6 +6,42 @@ namespace Acontplus.Core.Domain.Common;
 /// <param name="Errors">Collection of individual domain errors.</param>
 public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
 {
+    private static readonly ErrorType[] SeverityOrder =
+    {
+        // Server Errors (5xx) - highest severity first
+        ErrorType.Internal,
+        ErrorType.External,
+        ErrorType.ServiceUnavailable,
+        ErrorType.Timeout,
+        ErrorType.NotImplemented,
+        ErrorType.HttpVersionNotSupported,
+        ErrorType.InsufficientStorage,
+        ErrorType.LoopDetected,
+        ErrorType.NotExtended,
+        ErrorType.NetworkAuthRequired,
+    
+        // Client Errors (4xx) - higher severity first
+        ErrorType.RequestTimeout,
+        ErrorType.UnavailableForLegal,
+        ErrorType.Forbidden,
+        ErrorType.Unauthorized,
+        ErrorType.RateLimited,
+        ErrorType.Conflict,
+        ErrorType.NotFound,
+        ErrorType.Validation,
+        ErrorType.BadRequest,
+        ErrorType.MethodNotAllowed,
+        ErrorType.NotAcceptable,
+        ErrorType.PayloadTooLarge,
+        ErrorType.UriTooLong,
+        ErrorType.UnsupportedMediaType,
+        ErrorType.RangeNotSatisfiable,
+        ErrorType.ExpectationFailed,
+        ErrorType.PreconditionFailed,
+        ErrorType.PreconditionRequired,
+        ErrorType.RequestHeadersTooLarge
+    };
+
     public static DomainErrors Single(DomainError error) => new([error]);
     public static DomainErrors Multiple(params DomainError[] errors) => new(errors);
     public static DomainErrors Multiple(IEnumerable<DomainError> errors) => new(errors.ToList());
@@ -19,38 +53,10 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
     public bool HasErrorsOfType(ErrorType type) => Errors.Any(e => e.Type == type);
     public IEnumerable<DomainError> GetErrorsOfType(ErrorType type) => Errors.Where(e => e.Type == type);
 
-    // Convert to ApiError collection for response
-    public IEnumerable<ApiError> ToApiErrors() => Errors.Select(e => e.ToApiError());
-
-    public ApiResponse<T> ToApiResponse<T>(string? correlationId = null)
-    {
-        var primaryError = GetMostSevereErrorType();
-        return ApiResponse<T>.Failure(
-            errors: Errors.ToApiErrors(),
-            message: GetAggregateErrorMessage(),
-            correlationId: correlationId,
-            statusCode: primaryError.ToHttpStatusCode()
-        );
-    }
-
-    public ErrorType GetMostSevereErrorType()
-    {
-        var severityOrder = new[] {
-        ErrorType.Internal,
-        ErrorType.External,
-        ErrorType.Forbidden,
-        ErrorType.Unauthorized,
-        ErrorType.RateLimited,
-        ErrorType.Conflict,
-        ErrorType.NotFound,
-        ErrorType.Validation
-    };
-
-        return Errors
-            .Select(e => e.Type)
-            .OrderBy(t => Array.IndexOf(severityOrder, t))
-            .First();
-    }
+    public ErrorType GetMostSevereErrorType() => Errors
+        .Select(e => e.Type)
+        .OrderBy(t => Array.IndexOf(SeverityOrder, t))
+        .FirstOrDefault();
 
     public string GetAggregateErrorMessage() => Errors.Count switch
     {

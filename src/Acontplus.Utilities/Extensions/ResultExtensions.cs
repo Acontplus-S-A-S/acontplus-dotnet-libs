@@ -1,5 +1,7 @@
 ﻿using Acontplus.Core.Domain.Common;
+using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.DTOs.Responses;
+using Acontplus.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -95,6 +97,54 @@ public static class ResultExtensions
             onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
             onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
+    }
+    public static ProblemDetails ToProblemDetails(this DomainErrors errors)
+    {
+        var mostSevereError = errors.GetMostSevereErrorType();
+        return new ProblemDetails
+        {
+            Title = "Multiple errors occurred",
+            Detail = errors.GetAggregateErrorMessage(),
+            Status = (int)mostSevereError.ToHttpStatusCode(),
+            Extensions = errors.ToErrorDetails() ?? new Dictionary<string, object>()
+        };
+    }
+
+    public static ProblemDetails ToProblemDetails(
+        this DomainError error,
+        string? instance = null,
+        Dictionary<string, object>? extensions = null)
+    {
+        var details = new ProblemDetails
+        {
+            Title = error.Code,
+            Detail = error.Message,
+            Status = (int)error.Type.ToHttpStatusCode(),
+            Instance = instance
+        };
+
+        if (error.Target != null)
+        {
+            details.Extensions["target"] = error.Target;
+        }
+
+        if (error.Details != null)
+        {
+            foreach (var kvp in error.Details)
+            {
+                details.Extensions[kvp.Key] = kvp.Value;
+            }
+        }
+
+        if (extensions != null)
+        {
+            foreach (var kvp in extensions)
+            {
+                details.Extensions[kvp.Key] = kvp.Value;
+            }
+        }
+
+        return details;
     }
 
     // Helper methods
