@@ -1,10 +1,4 @@
-﻿using Acontplus.Core.Constants;
-using Acontplus.Core.DTOs.Responses;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-
-namespace Acontplus.Utilities.Extensions;
+﻿namespace Acontplus.Utilities.Extensions;
 
 public static class ApiResponseExtensions
 {
@@ -57,21 +51,6 @@ public static class ApiResponseExtensions
             (HttpStatusCode)511 => new ObjectResult(response) { StatusCode = 511 }, // NetworkAuthenticationRequired
 
             _ => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.InternalServerError }
-        };
-    }
-    public static IResult ToMinimalApiResult(this ApiResponse response)
-    {
-        return response.StatusCode switch
-        {
-            HttpStatusCode.OK => TypedResults.Ok(response),
-            HttpStatusCode.BadRequest => TypedResults.BadRequest(response),
-            HttpStatusCode.Unauthorized => TypedResults.Unauthorized(),
-            HttpStatusCode.Forbidden => TypedResults.Forbid(),
-            HttpStatusCode.NotFound => TypedResults.NotFound(response),
-            HttpStatusCode.Conflict => TypedResults.Conflict(response),
-            HttpStatusCode.TooManyRequests => TypedResults.StatusCode((int)HttpStatusCode.TooManyRequests),
-            HttpStatusCode.BadGateway => TypedResults.StatusCode((int)HttpStatusCode.BadGateway),
-            _ => TypedResults.StatusCode((int)HttpStatusCode.InternalServerError)
         };
     }
 

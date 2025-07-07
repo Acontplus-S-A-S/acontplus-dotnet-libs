@@ -8,6 +8,7 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\..\..\src\Acontplus.Data\Acontplus.Data.csproj" />
+	  <ProjectReference Include="..\..\..\src\Acontplus.FactElect\Acontplus.FactElect.csproj" />
 	  <ProjectReference Include="..\Acontplus.TestDomain\Acontplus.TestDomain.csproj" />
   </ItemGroup>
 

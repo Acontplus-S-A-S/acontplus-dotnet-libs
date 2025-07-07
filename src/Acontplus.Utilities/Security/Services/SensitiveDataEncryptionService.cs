@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace Acontplus.Utilities.Security.Services;
+﻿namespace Acontplus.Utilities.Security.Services;
 
 public class SensitiveDataEncryptionService : ISensitiveDataEncryptionService
 {

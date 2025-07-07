@@ -1,11 +1,4 @@
-﻿using Acontplus.Core.DTOs.Requests;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.Persistence.SqlServer.Repositories;
-using Acontplus.TestDomain.Entities;
-using Acontplus.TestInfrastructure.Persistence.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-
-namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
+﻿namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
 
 public class UserRepository : BaseRepository<Usuario, int>, IUserRepository
 {

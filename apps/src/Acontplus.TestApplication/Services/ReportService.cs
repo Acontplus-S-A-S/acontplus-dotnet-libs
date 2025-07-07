@@ -1,9 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.TestApplication.Interfaces;
-using System.Data;
-
-namespace Acontplus.TestApplication.Services;
+﻿namespace Acontplus.TestApplication.Services;
 
 
 public class ReportService(IAdoRepository adoRepository) : IReportService

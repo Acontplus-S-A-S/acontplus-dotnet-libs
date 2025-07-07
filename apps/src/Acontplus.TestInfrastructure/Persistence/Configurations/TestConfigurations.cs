@@ -1,9 +1,4 @@
-﻿using Acontplus.Notifications.Entities;
-using Acontplus.Persistence.SqlServer.Configurations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace Acontplus.TestInfrastructure.Persistence.Configurations;
+﻿namespace Acontplus.TestInfrastructure.Persistence.Configurations;
 
 public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUsage, int>
 {

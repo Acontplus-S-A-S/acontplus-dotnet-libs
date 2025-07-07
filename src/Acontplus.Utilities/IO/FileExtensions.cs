@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using static System.Text.RegularExpressions.Regex;
+﻿using static System.Text.RegularExpressions.Regex;
 
 namespace Acontplus.Utilities.IO;
 

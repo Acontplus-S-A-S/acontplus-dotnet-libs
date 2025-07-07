@@ -1,16 +1,20 @@
-﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.Core.Extensions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-
-namespace Acontplus.Utilities.Extensions;
+﻿namespace Acontplus.Utilities.Extensions;
 
 public static class ResultExtensions
 {
-    // Single error handling
+    #region Configuration
+
+    private static Action<ApiResponse>? ConfigureResponse { get; set; }
+
+    public static void ConfigureApiResponses(Action<ApiResponse> configureAction)
+    {
+        ConfigureResponse = configureAction;
+    }
+
+    #endregion
+
+    #region Action Results (Controller-style)
+
     public static IActionResult ToActionResult<TValue>(
         this Result<TValue, DomainError> result,
         string? correlationId = null)
@@ -21,7 +25,6 @@ public static class ResultExtensions
         );
     }
 
-    // Multiple errors handling
     public static IActionResult ToActionResult<TValue>(
         this Result<TValue, DomainErrors> result,
         string? correlationId = null)
@@ -32,28 +35,20 @@ public static class ResultExtensions
         );
     }
 
-    // Success with warnings handling
     public static IActionResult ToActionResult<TValue>(
         this Result<SuccessWithWarnings<TValue>, DomainError> result,
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: successWithWarnings =>
-            {
-                if (successWithWarnings.HasWarnings)
-                {
-                    return CreateWarningResponse(
-                        successWithWarnings.Value,
-                        successWithWarnings.Warnings!.Value,
-                        correlationId);
-                }
-                return CreateSuccessResponse(successWithWarnings.Value, correlationId);
-            },
+            onSuccess: successWithWarnings => successWithWarnings.ToActionResult(correlationId),
             onFailure: error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
     }
 
-    // Async variants
+    #endregion
+
+    #region Async Action Results
+
     public static async Task<IActionResult> ToActionResultAsync<TValue>(
         this Task<Result<TValue, DomainError>> resultTask,
         string? correlationId = null)
@@ -78,13 +73,16 @@ public static class ResultExtensions
         return result.ToActionResult(correlationId);
     }
 
-    // Minimal API support
+    #endregion
+
+    #region Minimal API Results (IResult)
+
     public static IResult ToMinimalApiResult<TValue>(
         this Result<TValue, DomainError> result,
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onSuccess: value => CreateSuccessResult(value, correlationId),
             onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
@@ -94,60 +92,81 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onSuccess: value => CreateSuccessResult(value, correlationId),
             onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
-    public static ProblemDetails ToProblemDetails(this DomainErrors errors)
+
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<SuccessWithWarnings<TValue>, DomainError> result,
+        string? correlationId = null)
     {
-        var mostSevereError = errors.GetMostSevereErrorType();
-        return new ProblemDetails
-        {
-            Title = "Multiple errors occurred",
-            Detail = errors.GetAggregateErrorMessage(),
-            Status = (int)mostSevereError.ToHttpStatusCode(),
-            Extensions = errors.ToErrorDetails() ?? new Dictionary<string, object>()
-        };
+        return result.Match(
+            onSuccess: successWithWarnings => successWithWarnings.ToMinimalApiResult(correlationId),
+            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+        );
     }
 
-    public static ProblemDetails ToProblemDetails(
-        this DomainError error,
-        string? instance = null,
-        Dictionary<string, object>? extensions = null)
+    #endregion
+
+    #region Async Minimal API Results
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainError>> resultTask,
+        string? correlationId = null)
     {
-        var details = new ProblemDetails
-        {
-            Title = error.Code,
-            Detail = error.Message,
-            Status = (int)error.Type.ToHttpStatusCode(),
-            Instance = instance
-        };
-
-        if (error.Target != null)
-        {
-            details.Extensions["target"] = error.Target;
-        }
-
-        if (error.Details != null)
-        {
-            foreach (var kvp in error.Details)
-            {
-                details.Extensions[kvp.Key] = kvp.Value;
-            }
-        }
-
-        if (extensions != null)
-        {
-            foreach (var kvp in extensions)
-            {
-                details.Extensions[kvp.Key] = kvp.Value;
-            }
-        }
-
-        return details;
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
     }
 
-    // Helper methods
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainErrors>> resultTask,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
+    }
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<SuccessWithWarnings<TValue>, DomainError>> resultTask,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
+    }
+
+    #endregion
+
+    #region SuccessWithWarnings Extensions
+
+    public static IActionResult ToActionResult<TValue>(
+        this SuccessWithWarnings<TValue> successWithWarnings,
+        string? correlationId = null)
+    {
+        return successWithWarnings.HasWarnings
+            ? CreateWarningResponse(
+                successWithWarnings.Value,
+                successWithWarnings.Warnings!.Value,
+                correlationId)
+            : CreateSuccessResponse(successWithWarnings.Value, correlationId);
+    }
+
+    public static IResult ToMinimalApiResult<TValue>(
+        this SuccessWithWarnings<TValue> successWithWarnings,
+        string? correlationId = null)
+    {
+        return successWithWarnings.HasWarnings
+            ? CreateWarningResult(
+                successWithWarnings.Value,
+                successWithWarnings.Warnings!.Value,
+                correlationId)
+            : CreateSuccessResult(successWithWarnings.Value, correlationId);
+    }
+
+    #endregion
+
+    #region Helper Methods
+
     private static IActionResult CreateSuccessResponse<TValue>(TValue value, string? correlationId)
     {
         var response = ApiResponse<TValue>.Success(
@@ -155,6 +174,7 @@ public static class ResultExtensions
             correlationId: correlationId,
             statusCode: HttpStatusCode.OK
         );
+        ConfigureResponse?.Invoke(response);
         return new OkObjectResult(response);
     }
 
@@ -169,6 +189,35 @@ public static class ResultExtensions
             correlationId: correlationId,
             statusCode: HttpStatusCode.OK
         );
+        ConfigureResponse?.Invoke(response);
         return new OkObjectResult(response);
     }
+
+    private static IResult CreateSuccessResult<TValue>(TValue value, string? correlationId)
+    {
+        var response = ApiResponse<TValue>.Success(
+            data: value,
+            correlationId: correlationId,
+            statusCode: HttpStatusCode.OK
+        );
+        ConfigureResponse?.Invoke(response);
+        return TypedResults.Ok(response);
+    }
+
+    private static IResult CreateWarningResult<TValue>(
+        TValue value,
+        DomainWarnings warnings,
+        string? correlationId)
+    {
+        var response = ApiResponse<TValue>.Warning(
+            data: value,
+            warnings: warnings.ToApiErrors(),
+            correlationId: correlationId,
+            statusCode: HttpStatusCode.OK
+        );
+        ConfigureResponse?.Invoke(response);
+        return TypedResults.Ok(response);
+    }
+
+    #endregion
 }

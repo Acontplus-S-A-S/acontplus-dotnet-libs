@@ -1,7 +1,4 @@
-﻿using Acontplus.Core.DTOs.Responses;
-using System.Data;
-
-namespace Acontplus.TestApplication.Interfaces;
+﻿namespace Acontplus.TestApplication.Interfaces;
 
 public interface IAtsService
 {

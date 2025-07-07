@@ -1,27 +1,23 @@
-﻿using Acontplus.Core.DTOs.Shared;
-using Acontplus.TestApplication.Interfaces;
-using Notification = Acontplus.TestDomain.Models.Notification;
+﻿namespace Acontplus.TestApi.Controllers.v1;
 
-namespace Acontplus.TestHostApi.Controllers.v2;
-
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 public class ReportController(
     IReportService reportService,
     IRdlcReportService rdlcReportService,
     IEmailService emailService,
-    IConfiguration configuration) : Controller
+    IConfiguration configuration,
+    IMailKitService mailKitService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var cantidad = Convert.ToInt32(configuration.GetSection("cantidad").Value);
-        var dt = await emailService.GetAsync(cantidad);
+        var dt = await emailService.GetAsync(1);
         var dataRow = dt.Rows[0];
 
         var mainParams = JsonConvert.DeserializeObject<Notification>(dataRow.Field<string>("params"));
-        var emailData = JsonConvert.DeserializeObject<EmailModel>(dataRow.Field<string>("emailData"));
+        var emailData = DataTableMapper.MapDataRowToModel<EmailModel>(dataRow);
 
 
         if (mainParams.hasFile)
@@ -31,9 +27,20 @@ public class ReportController(
             var files = new List<FileModel> { reportFile };
             emailData.Files = files;
         }
+        //else
+        //{
+        //    return Ok("Success");
+        //}
 
-        return File(emailData.Files[0].Content, "application/pdf", emailData.Files[0].FileName);
+        if (await mailKitService.SendAsync(emailData))
+        {
+        }
+
+        return Ok("Success");
+
+        //return File(emailData.Files[0].Content, "application/pdf", emailData.Files[0].FileName);
     }
+
 
     private async Task HandleReportGeneration(Notification mainParams, FileModel reportFile)
     {
