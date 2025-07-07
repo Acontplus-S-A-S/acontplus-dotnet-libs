@@ -1,4 +1,4 @@
-namespace Acontplus.TestHostApi
+namespace Acontplus.TestApi
 {
     public class WeatherForecast
     {

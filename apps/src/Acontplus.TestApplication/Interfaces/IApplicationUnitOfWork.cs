@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-
-namespace Acontplus.TestApplication.Interfaces;
+﻿namespace Acontplus.TestApplication.Interfaces;
 
 // Interfaz específica para tu contexto de aplicación
 public interface IApplicationUnitOfWork : IUnitOfWork

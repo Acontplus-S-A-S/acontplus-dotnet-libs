@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestHostApi.Controllers
+﻿namespace Acontplus.TestApi.Controllers
 {
     public class SecurityController : BaseApiController
     {

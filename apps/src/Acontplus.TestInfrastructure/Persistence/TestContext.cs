@@ -1,9 +1,4 @@
-﻿using Acontplus.Notifications.Entities;
-using Acontplus.Persistence.SqlServer.Configurations;
-using Acontplus.Persistence.SqlServer.Context;
-using Acontplus.TestDomain.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Acontplus.TestInfrastructure.Persistence;
 

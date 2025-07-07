@@ -1,16 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.Domain.Common;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.Core.Extensions;
-using Acontplus.Data;
-using Acontplus.TestApplication.DTOs;
-using Acontplus.TestApplication.Interfaces;
-using Acontplus.TestDomain.Entities;
-using Microsoft.Extensions.Logging;
-using System.Data;
+﻿using Microsoft.Extensions.Logging;
 using System.Data.Common;
 using System.Linq.Expressions;
 

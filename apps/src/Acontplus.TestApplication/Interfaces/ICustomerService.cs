@@ -1,8 +1,6 @@
-﻿using System.Data;
-
-namespace Acontplus.TestApplication.Interfaces;
+﻿namespace Acontplus.TestApplication.Interfaces;
 
 public interface ICustomerService
 {
-    Task<DataTable> GetByIdCardAsync(Dictionary<string, object> parameters);
+    Task<Result<CustomerDto, DomainErrors>> GetByIdCardAsync(string idCard, bool sriOnly = false);
 }

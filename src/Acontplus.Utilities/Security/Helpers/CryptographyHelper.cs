@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace Acontplus.Utilities.Security.Helpers;
+﻿namespace Acontplus.Utilities.Security.Helpers;
 public static class CryptographyHelper
 {
     public static byte[] DeriveKey(string passphrase, int keySize, byte[] salt)
