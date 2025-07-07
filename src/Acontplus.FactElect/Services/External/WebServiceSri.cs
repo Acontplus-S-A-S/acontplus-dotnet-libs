@@ -1,7 +1,4 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Responses;
-
-namespace Acontplus.FactElect.Services.External;
+﻿namespace Acontplus.FactElect.Services.External;
 
 public class WebServiceSri : IWebServiceSri
 {

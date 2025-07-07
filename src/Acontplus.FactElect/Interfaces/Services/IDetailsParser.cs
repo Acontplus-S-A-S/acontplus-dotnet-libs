@@ -1,6 +1,4 @@
-﻿using Acontplus.FactElect.Models.Documents;
-
-namespace Acontplus.FactElect.Interfaces.Services;
+﻿namespace Acontplus.FactElect.Interfaces.Services;
 
 // Interface for details parser
 public interface IDetailsParser

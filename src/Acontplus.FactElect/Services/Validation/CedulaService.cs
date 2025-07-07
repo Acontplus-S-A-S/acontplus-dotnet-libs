@@ -1,31 +1,58 @@
-﻿using Acontplus.FactElect.Interfaces.Services;
-using Acontplus.FactElect.Models.Authentication;
-using Acontplus.FactElect.Models.Validation;
-
-namespace Acontplus.FactElect.Services.Validation;
+﻿namespace Acontplus.FactElect.Services.Validation;
 
 public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
 {
-    public async Task<CedulaModel> GetCedulaSriAsync(string numeroCedula)
+    public async Task<Result<ContribuyenteCedulaDto, DomainErrors>> GetCedulaSriAsync(string cedula)
     {
-        if (!await CheckExistenceAsync(numeroCedula)) return new CedulaModel { error = "Cedula No existe" };
+        var errors = new List<DomainError>();
+
+        if (string.IsNullOrWhiteSpace(cedula))
+        {
+            errors.Add(DomainError.Validation("CEDULA_REQUIRED", "Cédula es requerido"));
+        }
+        else if (cedula.Length != 10)
+        {
+            errors.Add(DomainError.Validation("CEDULA_INVALID_LENGTH", "Cédula debe tener 10 dígitos"));
+        }
+
+        if (errors.Count > 0)
+        {
+            return Result<ContribuyenteCedulaDto, DomainErrors>.Failure(DomainErrors.Multiple(errors));
+        }
+
+        var checkExistence = await CheckExistenceAsync(cedula);
+        if (!checkExistence.IsSuccess)
+        {
+            return Result<ContribuyenteCedulaDto, DomainErrors>.Failure(checkExistence.Error);
+        }
 
         using var scope = serviceProvider.CreateScope();
         var cookieService = scope.ServiceProvider.GetRequiredService<ICookieService>();
 
         var cookieContainer = await cookieService.GetAsync();
 
-        if (cookieContainer == null) return new CedulaModel { error = "No se pudo consultar la pagina" };
+        if (!cookieContainer.IsSuccess)
+        {
+            return Result<ContribuyenteCedulaDto, DomainErrors>.Failure(cookieContainer.Error);
+        }
+
         var captchaService = scope.ServiceProvider.GetRequiredService<ICaptchaService>();
 
-        var htmlResponse = await captchaService.ValidateAsync(cookieContainer.Html, cookieContainer.Cookie);
+        var captchaResponse =
+            await captchaService.ValidateAsync(cookieContainer.Value.Captcha, cookieContainer.Value.Cookie);
 
-        return htmlResponse == null
-            ? new CedulaModel { error = "No se pudo validar el captcha" }
-            : await GetCedulaSriAsync(numeroCedula, cookieContainer.Cookie, htmlResponse);
+        if (!captchaResponse.IsSuccess)
+        {
+            return Result<ContribuyenteCedulaDto, DomainErrors>.Failure(captchaResponse.Error);
+        }
+
+        var response = await GetCedulaSriAsync(cedula, cookieContainer.Value.Cookie, captchaResponse.Value);
+        return !response.IsSuccess
+            ? Result<ContribuyenteCedulaDto, DomainErrors>.Failure(response.Error)
+            : Result<ContribuyenteCedulaDto, DomainErrors>.Success(response.Value);
     }
 
-    private async Task<bool> CheckExistenceAsync(string cedula)
+    private async Task<Result<bool, DomainError>> CheckExistenceAsync(string cedula)
     {
         using var client =
             new HttpClient(new HttpClientHandler { Credentials = CredentialCache.DefaultNetworkCredentials });
@@ -41,25 +68,34 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
             "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
 
         var response = await client.SendAsync(request);
-        if (!response.IsSuccessStatusCode) return false;
+        if (!response.IsSuccessStatusCode)
+            return Result<bool, DomainError>.Failure(new DomainError
+            {
+                Code = "CEDULA_CHECK_ERROR",
+                Message = "No se pudo consultar la existencia de la cédula"
+            });
 
         var stream = await response.Content.ReadAsStreamAsync();
         using var sr = new StreamReader(stream);
         var html = HttpUtility.HtmlDecode(await sr.ReadToEndAsync());
-        return html == "true";
+        if (html == "true")
+        {
+            return Result<bool, DomainError>.Success(true);
+        }
+
+        return Result<bool, DomainError>.Failure(new DomainError
+        {
+            Code = "CEDULA_NOT_FOUND",
+            Message = "No existe contribuyente con esa cédula"
+        });
     }
 
-    private async Task<CedulaModel> GetCedulaSriAsync(string numeroCedula, CookieContainer cookies, string html)
+    private async Task<Result<ContribuyenteCedulaDto, DomainError>> GetCedulaSriAsync(string cedula, CookieContainer cookies,
+        string captcha)
     {
-        var personaDatosError = new CedulaModel();
-        var objToken = JsonConvert.DeserializeObject<TokenSri>(html);
+        var captchaDeserialized = JsonConvert.DeserializeObject<TokenSri>(captcha);
 
-        var strtoken = objToken.mensaje;
-        if (string.IsNullOrEmpty(html))
-        {
-            personaDatosError.error = " No existe contribuyente con ese Ruc";
-            return personaDatosError;
-        }
+        var tokenSri = captchaDeserialized.mensaje;
 
         using var client = new HttpClient(new HttpClientHandler
         {
@@ -72,26 +108,28 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
             RequestUri =
                 new Uri(
                     "https://srienlinea.sri.gob.ec/sri-registro-civil-servicio-internet/rest/DatosRegistroCivil/obtenerDatosCompletosPorNumeroIdentificacionConToken?numeroIdentificacion=" +
-                    numeroCedula),
+                    cedula),
             Method = HttpMethod.Get
         };
         client.DefaultRequestHeaders.Add("User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
         const string contentType = "application/json";
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
-        client.DefaultRequestHeaders.Add("Authorization", strtoken);
+        client.DefaultRequestHeaders.Add("Authorization", tokenSri);
         var response = await client.SendAsync(request);
         if (!response.IsSuccessStatusCode) throw new Exception();
 
         var stream = await response.Content.ReadAsStreamAsync();
-        using var sr = new StreamReader(stream);
-        html = HttpUtility.HtmlDecode(await sr.ReadToEndAsync());
-        html = html.Replace("[", "");
-        html = html.Replace("]", "");
-        personaDatosError = JsonConvert.DeserializeObject<CedulaModel>(html);
-        if (personaDatosError != null) return personaDatosError;
-
-        personaDatosError = new CedulaModel { error = " No existe contribuyente con ese Ruc" };
-        return personaDatosError;
+        using var streamReader = new StreamReader(stream);
+        var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
+        sriResponse = sriResponse.Replace("[", "");
+        sriResponse = sriResponse.Replace("]", "");
+        var result = JsonConvert.DeserializeObject<ContribuyenteCedulaDto>(sriResponse);
+        if (result != null) return Result<ContribuyenteCedulaDto, DomainError>.Success(result);
+        return Result<ContribuyenteCedulaDto, DomainError>.Failure(new DomainError
+        {
+            Code = "CEDULA_NOT_FOUND",
+            Message = "No existe contribuyente con esa cédula"
+        });
     }
 }

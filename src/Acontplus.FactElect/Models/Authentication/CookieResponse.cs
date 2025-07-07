@@ -2,6 +2,6 @@
 
 public class CookieResponse
 {
-    public CookieContainer Cookie { get; set; }
-    public string Html { get; set; }
+    public required CookieContainer Cookie { get; set; }
+    public required string Captcha { get; set; }
 }

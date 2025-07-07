@@ -1,8 +1,6 @@
-﻿using Acontplus.FactElect.Models.Validation;
-
-namespace Acontplus.FactElect.Interfaces.Services;
+﻿namespace Acontplus.FactElect.Interfaces.Services;
 
 public interface ICedulaService
 {
-    Task<CedulaModel> GetCedulaSriAsync(string numeroCedula);
+    Task<Result<ContribuyenteCedulaDto, DomainErrors>> GetCedulaSriAsync(string cedula);
 }
