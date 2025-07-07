@@ -1,6 +1,6 @@
 ﻿using Acontplus.TestApplication.Interfaces;
 
-namespace Acontplus.TestHostApi.Controllers;
+namespace Acontplus.TestApi.Controllers;
 
 public class BarcodeController(IUsuarioService usuarioService) : BaseApiController
 {

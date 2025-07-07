@@ -47,6 +47,7 @@ public static class ResultExtensions
                         successWithWarnings.Warnings!.Value,
                         correlationId);
                 }
+
                 return CreateSuccessResponse(successWithWarnings.Value, correlationId);
             },
             onFailure: error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
@@ -98,6 +99,7 @@ public static class ResultExtensions
             onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
+
     public static ProblemDetails ToProblemDetails(this DomainErrors errors)
     {
         var mostSevereError = errors.GetMostSevereErrorType();

@@ -2,7 +2,7 @@
 using Acontplus.TestApplication.Interfaces;
 using Acontplus.Utilities.Extensions;
 
-namespace Acontplus.TestHostApi.Controllers;
+namespace Acontplus.TestApi.Controllers;
 
 public class CustomerController(
     IRucService rucService,

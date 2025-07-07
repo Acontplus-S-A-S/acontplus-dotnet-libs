@@ -2,7 +2,7 @@
 using Acontplus.TestApplication.Interfaces;
 using Acontplus.Utilities.Extensions;
 
-namespace Acontplus.TestHostApi.Endpoints.Customer;
+namespace Acontplus.TestApi.Endpoints.Customer;
 
 public static class IdentificationEndpoints
 {

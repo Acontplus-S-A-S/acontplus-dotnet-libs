@@ -3,7 +3,7 @@ using Acontplus.TestApplication.Interfaces;
 using Acontplus.TestDomain.Entities;
 using Acontplus.Utilities.Extensions;
 
-namespace Acontplus.TestHostApi.Controllers
+namespace Acontplus.TestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

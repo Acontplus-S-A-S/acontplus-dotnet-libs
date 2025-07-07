@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestHostApi.Extensions;
+﻿namespace Acontplus.TestApi.Extensions;
 
 public static class ApplicationServicesExtensions
 {

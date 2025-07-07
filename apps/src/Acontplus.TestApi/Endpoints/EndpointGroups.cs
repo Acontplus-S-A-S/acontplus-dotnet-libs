@@ -1,6 +1,6 @@
-﻿using Acontplus.TestHostApi.Endpoints.Customer;
+﻿using Acontplus.TestApi.Endpoints.Customer;
 
-namespace Acontplus.TestHostApi.Endpoints;
+namespace Acontplus.TestApi.Endpoints;
 
 public static class EndpointGroups
 {
