@@ -150,7 +150,24 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         var result = await resultTask;
-        return result.ToMinimalApiResult(correlationId);
+    
+        return result.Match<IResult>(
+            onSuccess: value => 
+            {
+                var response = ApiResponse<TValue>.Success(value, correlationId: correlationId);
+                return response.ToMinimalApiResult();
+            },
+            onFailure: errors => 
+            {
+                var statusCode = errors.GetMostSevereErrorType().ToHttpStatusCode();
+                var apiResponse = ApiResponse<TValue>.Failure(
+                    errors.ToApiErrors(),
+                    statusCode: statusCode,
+                    correlationId: correlationId);
+            
+                return apiResponse.ToMinimalApiResult();
+            }
+        );
     }
 
     public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
