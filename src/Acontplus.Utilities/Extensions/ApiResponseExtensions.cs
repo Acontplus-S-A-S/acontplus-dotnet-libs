@@ -1,10 +1,4 @@
-﻿using Acontplus.Core.Constants;
-using Acontplus.Core.DTOs.Responses;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-
-namespace Acontplus.Utilities.Extensions;
+﻿namespace Acontplus.Utilities.Extensions;
 
 public static class ApiResponseExtensions
 {

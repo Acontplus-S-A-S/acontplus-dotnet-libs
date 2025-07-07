@@ -1,9 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.Core.Helpers;
-using Microsoft.AspNetCore.Http;
-
-namespace Acontplus.Utilities.Adapters;
+﻿namespace Acontplus.Utilities.Adapters;
 
 public static class SqlResponseAdapter
 {

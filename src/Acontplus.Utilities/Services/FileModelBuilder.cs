@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Acontplus.Utilities.Services;
+﻿namespace Acontplus.Utilities.Services;
 
 public static class FileModelBuilder
 {
