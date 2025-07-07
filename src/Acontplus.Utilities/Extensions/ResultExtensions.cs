@@ -10,6 +10,8 @@ namespace Acontplus.Utilities.Extensions;
 
 public static class ResultExtensions
 {
+    #region Action Results (Controller-style)
+
     // Single error handling
     public static IActionResult ToActionResult<TValue>(
         this Result<TValue, DomainError> result,
@@ -54,7 +56,10 @@ public static class ResultExtensions
         );
     }
 
-    // Async variants
+    #endregion
+
+    #region Async Action Results
+
     public static async Task<IActionResult> ToActionResultAsync<TValue>(
         this Task<Result<TValue, DomainError>> resultTask,
         string? correlationId = null)
@@ -79,26 +84,86 @@ public static class ResultExtensions
         return result.ToActionResult(correlationId);
     }
 
-    // Minimal API support
+    #endregion
+
+    #region Minimal API Results (IResult)
+
+    // Single error handling
     public static IResult ToMinimalApiResult<TValue>(
         this Result<TValue, DomainError> result,
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onSuccess: value => Results.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
             onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
 
+    // Multiple errors handling
     public static IResult ToMinimalApiResult<TValue>(
         this Result<TValue, DomainErrors> result,
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => TypedResults.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
+            onSuccess: value => Results.Ok(ApiResponse<TValue>.Success(value, correlationId: correlationId)),
             onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
+
+    // Success with warnings handling
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<SuccessWithWarnings<TValue>, DomainError> result,
+        string? correlationId = null)
+    {
+        return result.Match(
+            onSuccess: successWithWarnings =>
+            {
+                if (successWithWarnings.HasWarnings)
+                {
+                    return Results.Ok(ApiResponse<TValue>.Warning(
+                        data: successWithWarnings.Value,
+                        warnings: successWithWarnings.Warnings!.Value.ToApiErrors(),
+                        correlationId: correlationId
+                    ));
+                }
+
+                return Results.Ok(ApiResponse<TValue>.Success(successWithWarnings.Value, correlationId: correlationId));
+            },
+            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+        );
+    }
+
+    #endregion
+
+    #region Async Minimal API Results
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainError>> resultTask,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
+    }
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainErrors>> resultTask,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
+    }
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<SuccessWithWarnings<TValue>, DomainError>> resultTask,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(correlationId);
+    }
+
+    #endregion
+
+    #region Problem Details Conversion
 
     public static ProblemDetails ToProblemDetails(this DomainErrors errors)
     {
@@ -149,7 +214,10 @@ public static class ResultExtensions
         return details;
     }
 
-    // Helper methods
+    #endregion
+
+    #region Helper Methods
+
     private static IActionResult CreateSuccessResponse<TValue>(TValue value, string? correlationId)
     {
         var response = ApiResponse<TValue>.Success(
@@ -173,4 +241,6 @@ public static class ResultExtensions
         );
         return new OkObjectResult(response);
     }
+
+    #endregion
 }
