@@ -9,15 +9,19 @@ namespace Acontplus.TestApplication.Services
         private readonly IRepository<Usuario, int> _usuarioRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UsuarioService> _logger;
+        private readonly IAdoRepository _adoRepository;
         private readonly ISqlExceptionTranslator _exceptionTranslator;
 
         public UsuarioService(
             IUnitOfWork unitOfWork,
-            ILogger<UsuarioService> logger, ISqlExceptionTranslator exceptionTranslator)
+            ILogger<UsuarioService> logger,
+            IAdoRepository adoRepository,
+            ISqlExceptionTranslator exceptionTranslator)
         {
             _usuarioRepository = unitOfWork.GetRepository<Usuario, int>();
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _adoRepository = adoRepository;
             _exceptionTranslator = exceptionTranslator;
         }
 
@@ -118,13 +122,6 @@ namespace Acontplus.TestApplication.Services
 
                 return Result<List<UsuarioDto>, DomainError>.Success(result);
             }
-            // catch (DbException ex)
-            // {
-            //     _logger.LogError(ex, "Failed to execute raw SQL command");
-            //     return DomainError.Internal(
-            //         "SQL_COMMAND_FAILED",
-            //         "Failed to execute database command");
-            // }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to execute raw SQL command");
@@ -143,9 +140,14 @@ namespace Acontplus.TestApplication.Services
                     CommandType = CommandType.Text,
                     CommandTimeout = 30
                 };
+                var parameters = new Dictionary<string, object>
+                {
+                    ["@Id"] = 123
+                };
 
-                var result = await _unitOfWork.AdoRepository.QuerySingleOrDefaultAsync<LegacySpResponse>(
+                var result = await _adoRepository.QuerySingleOrDefaultAsync<LegacySpResponse>(
                     "dbo.sp_Test",
+                    parameters: parameters,
                     options: options);
 
                 return result.IsSuccess
@@ -193,7 +195,7 @@ namespace Acontplus.TestApplication.Services
             }
         }
         public async Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(
-            PaginationDto paginationDto)
+            PaginationDto pagination)
         {
             try
             {
@@ -201,7 +203,7 @@ namespace Acontplus.TestApplication.Services
                 Expression<Func<Usuario, object>> orderBy = u => u.CreatedAt;
 
                 var pagedResult = await _usuarioRepository.GetPagedAsync(
-                    pagination: paginationDto,
+                    pagination: pagination,
                     predicate: filter,
                     orderBy: orderBy,
                     orderByDescending: true);
@@ -212,7 +214,7 @@ namespace Acontplus.TestApplication.Services
 
                 var links = pagedResult.BuildPaginationLinks(
                     baseRoute: "/api/users",
-                    pageSize: paginationDto.PageSize);
+                    pageSize: pagination.PageSize);
 
                 var metadata = new Dictionary<string, object>
                 {
@@ -236,8 +238,8 @@ namespace Acontplus.TestApplication.Services
                     message: "Failed to retrieve paginated users",
                     details: new Dictionary<string, object>
                     {
-                        ["page"] = paginationDto.PageIndex,
-                        ["pageSize"] = paginationDto.PageSize
+                        ["page"] = pagination.PageIndex,
+                        ["pageSize"] = pagination.PageSize
                     });
             }
         }
