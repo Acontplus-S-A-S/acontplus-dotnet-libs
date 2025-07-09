@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Acontplus.TestHostApi.Data.Migrations
+namespace Acontplus.TestInfrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -29,7 +30,7 @@ namespace Acontplus.TestHostApi.Data.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedByUserId = table.Column<int>(type: "int", nullable: false),
-                    FromMobile = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -57,7 +58,7 @@ namespace Acontplus.TestHostApi.Data.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedByUserId = table.Column<int>(type: "int", nullable: false),
-                    FromMobile = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
