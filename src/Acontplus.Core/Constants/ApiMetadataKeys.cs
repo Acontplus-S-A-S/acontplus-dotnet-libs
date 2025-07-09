@@ -4,7 +4,10 @@ public static class ApiMetadataKeys
 {
     // Core Response Metadata
     public const string TraceId = "traceId";
+    public const string RequestId = "requestId";
     public const string CorrelationId = "correlationId";
+    public const string ClientId = "clientId";
+    public const string Issuer = "issuer";
     public const string Version = "apiVersion";
     public const string Environment = "env";
 

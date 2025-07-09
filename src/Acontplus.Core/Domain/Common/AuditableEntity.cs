@@ -10,17 +10,17 @@ public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
     public TId? DeletedByUserId { get; set; }
-    public bool FromMobile { get; set; } = false;
+    public bool IsMobileRequest { get; set; }
 
     protected AuditableEntity()
     {
     }
 
-    protected AuditableEntity(TId createdByUserId, bool fromMobile = false)
+    protected AuditableEntity(TId createdByUserId, bool isMobileRequest = false)
     {
         CreatedAt = DateTime.UtcNow;
         CreatedByUserId = createdByUserId;
-        FromMobile = fromMobile;
+        IsMobileRequest = isMobileRequest;
     }
 
     public void MarkAsDeleted(TId? deletedByUserId = default)
