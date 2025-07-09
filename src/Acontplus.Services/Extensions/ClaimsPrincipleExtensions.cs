@@ -2,17 +2,17 @@
 
 public static class ClaimsPrincipalExtensions
 {
-    public static string GetUsername(this ClaimsPrincipal user)
+    public static string? GetUsername(this ClaimsPrincipal user)
     {
         return user.FindFirst(ClaimTypes.Name)?.Value;
     }
 
-    public static string GetEmail(this ClaimsPrincipal user)
+    public static string? GetEmail(this ClaimsPrincipal user)
     {
         return user.FindFirstValue(ClaimTypes.Email);
     }
 
-    public static string GetRoleName(this ClaimsPrincipal user)
+    public static string? GetRoleName(this ClaimsPrincipal user)
     {
         return user.FindFirst(ClaimTypes.Role)?.Value;
     }
@@ -22,17 +22,14 @@ public static class ClaimsPrincipalExtensions
         return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
     }
 
-    // Método genérico para obtener claims
-    // Obtener claims personalizados
-    //int companyId = user.GetClaimValue<int>("companyId");
-    //string idCardCompany = user.GetClaimValue<string>("idCardCompany");
-    //bool isActive = user.GetClaimValue<bool>("isActive");
-    //Guid tenantId = user.GetClaimValue<Guid>("tenantId");
-
-    // Obtener claims estándar
-    //string email = user.GetClaimValue<string>(ClaimTypes.Email);
-    //int userId = user.GetClaimValue<int>(ClaimTypes.NameIdentifier);
-    public static T GetClaimValue<T>(this ClaimsPrincipal user, string claimName)
+    /// <summary>
+    /// Retrieves the value of a specific claim from the ClaimsPrincipal and converts it to the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to which the claim value will be converted.</typeparam>
+    /// <param name="user">The ClaimsPrincipal instance from which the claim will be retrieved.</param>
+    /// <param name="claimName">The name of the claim to retrieve.</param>
+    /// <returns>The value of the claim converted to the specified type, or the default value of the type if the claim does not exist or cannot be converted.</returns>
+    public static T? GetClaimValue<T>(this ClaimsPrincipal user, string claimName)
     {
         var claim = user.FindFirst(claimName)?.Value;
         if (claim == null)
@@ -56,7 +53,6 @@ public static class ClaimsPrincipalExtensions
             if (typeof(T) == typeof(Guid))
                 return (T)(object)Guid.Parse(claim);
 
-            // Para otros tipos, intenta una conversión genérica
             return (T)Convert.ChangeType(claim, typeof(T));
         }
         catch
