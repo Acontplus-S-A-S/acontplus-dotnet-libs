@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Acontplus.Barcode" Version="1.0.1" />
-    <PackageVersion Include="Acontplus.Core" Version="1.1.10" />
+    <PackageVersion Include="Acontplus.Core" Version="1.1.11" />
     <PackageVersion Include="Acontplus.Data" Version="1.0.1" />
     <PackageVersion Include="Acontplus.Utilities" Version="1.0.11" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
