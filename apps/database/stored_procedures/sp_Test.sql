@@ -33,6 +33,8 @@ THROW 50001, 'Id Card parameter cannot be empty', 1;
         
         -- Commit if successful
         --COMMIT TRANSACTION;
+
+		SELECT '0' AS Code, 'Test' AS 'Message'
     END TRY
     BEGIN CATCH
         -- Rollback any open transaction
@@ -62,7 +64,8 @@ THROW 50001, 'Id Card parameter cannot be empty', 1;
                    ' | Line: ', @ErrorLine,
                    ' | Error: ', @ErrorMessage);
         
-        THROW @ErrorNumber, @FullErrorMessage, @ErrorState;
+        --THROW @ErrorNumber, @FullErrorMessage, @ErrorState;
+		THROW;
     END CATCH
 END
 GO
