@@ -7,6 +7,7 @@ using Acontplus.FactElect.Services.Validation;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
+using Acontplus.Services.Configuration;
 using Acontplus.Services.Extensions;
 using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
@@ -44,6 +45,17 @@ try
     //    This is where builder.Services (an IServiceCollection) is available.
     builder.Services.AddAdvancedLoggingOptions(builder.Configuration);
 
+    builder.Services.Configure<RequestContextOptions>(options =>
+    {
+        options.EnableSecurityHeaders = true;
+        options.FrameOptionsDeny = true;
+        options.ReferrerPolicy = "strict-origin-when-cross-origin";
+        options.RequireClientId = true;
+        options.AnonymousClientId = "guest-client";
+        options.AllowedClientIds = new List<string> { "app-client-1", "dashboard-client" }; // Example allowed clients
+    });
+
+
     // --- Start new try-catch block for service registration ---
     try
     {
@@ -63,7 +75,7 @@ try
         {
             // Configure SQL Server options
             sqlServerOptions.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-                x => x.MigrationsAssembly("Acontplus.TestHostApi"));
+                x => x.MigrationsAssembly("Acontplus.TestInfrastructure"));
         });
         // Registro para una base de datos de auditoría (con clave)
         //builder.Services.AddDbContextWithUnitOfWork<AuditDbContext>(options =>
