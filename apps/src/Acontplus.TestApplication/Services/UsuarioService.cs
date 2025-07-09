@@ -200,7 +200,7 @@ namespace Acontplus.TestApplication.Services
             try
             {
                 Expression<Func<Usuario, bool>> filter = u => !u.IsDeleted;
-                Expression<Func<Usuario, object>> orderBy = u => u.CreatedAt;
+                Expression<Func<Usuario, object>>? orderBy = u => u.CreatedAt;
 
                 var pagedResult = await _usuarioRepository.GetPagedAsync(
                     pagination: pagination,

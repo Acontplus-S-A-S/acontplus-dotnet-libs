@@ -1,0 +1,71 @@
+@Acontplus.TestApi_HostAddress = https://localhost:7111
+
+GET {{Acontplus.TestApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/barcode
+
+###
+
+POST {{Acontplus.TestApi_HostAddress}}/api/usuario
+Content-Type: application/json
+
+{
+  "username": "ivan",
+  "email": "ivan@gmail.com"
+}
+
+###
+
+@id=1
+PUT {{Acontplus.TestApi_HostAddress}}/api/usuario/{{id}}
+Content-Type: application/json
+
+{
+  "username": "emilio.senguana",
+  "email": "sengua2000@gmail.dev"
+}
+
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/report
+
+###
+
+@ruc=1105246605001
+@sriOnly=false
+GET {{Acontplus.TestApi_HostAddress}}/api/customer/GetRucSri?ruc={{ruc}}&sriOnly={{sriOnly}}
+
+###
+
+@ci=1105246605
+GET {{Acontplus.TestApi_HostAddress}}/api/customer/GetCedulaSri?ruc={{ci}}&sriOnly={{sriOnly}}
+
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/simplemodel/map-data-list
+
+###
+@pageIndex = 1
+@pageSize = 10
+GET {{Acontplus.TestApi_HostAddress}}/api/usuario
+
+###
+
+DELETE {{Acontplus.TestApi_HostAddress}}/api/usuario/{{id}}
+
+###
+
+@json="{"startDate": "2025-03-01", "endDate": "2025-03-31"}"
+GET {{Acontplus.TestApi_HostAddress}}/api/ats/download?json={"fromDate":"2025-03-01","toDate":"2025-03-31"}
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/usuario/ado
+
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/usuario/get-dynamic
+
+###

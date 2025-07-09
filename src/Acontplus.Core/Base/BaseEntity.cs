@@ -6,8 +6,8 @@ public abstract class BaseEntity : AuditableEntity<int>
     {
     }
 
-    protected BaseEntity(int createdByUserId, bool fromMobile = false)
-        : base(createdByUserId, fromMobile)
+    protected BaseEntity(int createdByUserId, bool isMobileRequest = false)
+        : base(createdByUserId, isMobileRequest)
     {
     }
 }
