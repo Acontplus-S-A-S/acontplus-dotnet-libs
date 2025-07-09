@@ -54,7 +54,7 @@ public interface IRepository<TEntity, TId>
     Task<PagedResult<TEntity>> GetPagedAsync(
         PaginationDto pagination,
         CancellationToken cancellationToken = default,
-        Expression<Func<TEntity, object>> orderBy = null,
+        Expression<Func<TEntity, object>>? orderBy = null,
         bool orderByDescending = false);
 
     /// <summary>
@@ -64,7 +64,7 @@ public interface IRepository<TEntity, TId>
         PaginationDto pagination,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
-        Expression<Func<TEntity, object>> orderBy = null,
+        Expression<Func<TEntity, object>>? orderBy = null,
         bool orderByDescending = false,
         params Expression<Func<TEntity, object>>[] includeProperties);
 
@@ -74,9 +74,9 @@ public interface IRepository<TEntity, TId>
     Task<PagedResult<TProjection>> GetPagedProjectionAsync<TProjection>(
         PaginationDto pagination,
         Expression<Func<TEntity, TProjection>> projection,
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default,
-        Expression<Func<TEntity, object>> orderBy = null,
+        Expression<Func<TEntity, object>>? orderBy = null,
         bool orderByDescending = false);
 
     /// <summary>
@@ -90,14 +90,14 @@ public interface IRepository<TEntity, TId>
     /// Counts entities matching the predicate.
     /// </summary>
     Task<int> CountAsync(
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Counts entities matching the predicate as a long for large datasets.
     /// </summary>
     Task<long> LongCountAsync(
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     #endregion
@@ -224,7 +224,7 @@ public interface IRepository<TEntity, TId>
     /// Gets entities with complex ordering options.
     /// </summary>
     Task<IReadOnlyList<TEntity>> GetOrderedAsync(
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default,
         params (Expression<Func<TEntity, object>> KeySelector, bool Descending)[] orderExpressions);
 
@@ -233,7 +233,7 @@ public interface IRepository<TEntity, TId>
     /// </summary>
     Task<TResult> AggregateAsync<TResult>(
         Expression<Func<IQueryable<TEntity>, TResult>> aggregateExpression,
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -241,7 +241,7 @@ public interface IRepository<TEntity, TId>
     /// </summary>
     Task<IReadOnlyList<TProperty>> GetDistinctAsync<TProperty>(
         Expression<Func<TEntity, TProperty>> propertySelector,
-        Expression<Func<TEntity, bool>> predicate = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     #endregion

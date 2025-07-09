@@ -4,27 +4,16 @@ using System.Text.Json;
 
 namespace Acontplus.Services.Middleware;
 
-public class ApiExceptionMiddleware
+public class ApiExceptionMiddleware(
+    RequestDelegate next,
+    ILogger<ApiExceptionMiddleware> logger,
+    ExceptionHandlingOptions options)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ApiExceptionMiddleware> _logger;
-    private readonly ExceptionHandlingOptions _options;
-    private readonly JsonSerializerOptions _jsonOptions;
-
-    public ApiExceptionMiddleware(
-        RequestDelegate next,
-        ILogger<ApiExceptionMiddleware> logger,
-        ExceptionHandlingOptions options)
+    private readonly JsonSerializerOptions _jsonOptions = new()
     {
-        _next = next;
-        _logger = logger;
-        _options = options;
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = options.IncludeDebugDetailsInResponse
-        };
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = options.IncludeDebugDetailsInResponse
+    };
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -36,7 +25,7 @@ public class ApiExceptionMiddleware
 
         try
         {
-            await _next(context);
+            await next(context);
 
             if (!context.Response.HasStarted && context.Response.StatusCode >= 400)
             {
@@ -66,7 +55,7 @@ public class ApiExceptionMiddleware
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));
     }
 
-    private ApiResponse HandleValidationException(ValidationException ex, string correlationId, string tenantId)
+    private static ApiResponse HandleValidationException(ValidationException ex, string correlationId, string tenantId)
     {
         var errors = ex.Errors
             .SelectMany(e => e.Value.Select(message =>
@@ -85,7 +74,7 @@ public class ApiExceptionMiddleware
             metadata: CreateStandardMetadata(tenantId));
     }
 
-    private ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
+    private static ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
     {
         var error = new ApiError(
             Code: ex.ErrorCode,
@@ -102,7 +91,7 @@ public class ApiExceptionMiddleware
 
     private ApiResponse HandleUnhandledException(Exception ex, string correlationId, string tenantId)
     {
-        var debugInfo = _options.IncludeDebugDetailsInResponse
+        var debugInfo = options.IncludeDebugDetailsInResponse
             ? GetSafeDebugInfo(ex)
             : null;
 
@@ -110,10 +99,12 @@ public class ApiExceptionMiddleware
             Code: "UNHANDLED_ERROR",
             Message: "An unexpected error occurred",
             Category: "system",
-            Details: debugInfo != null ? new Dictionary<string, object>
-            {
-                ["debug"] = debugInfo
-            } : null,
+            Details: debugInfo != null
+                ? new Dictionary<string, object>
+                {
+                    ["debug"] = debugInfo
+                }
+                : null,
             TraceId: Activity.Current?.TraceId.ToString());
 
         return ApiResponse.Failure(
@@ -150,18 +141,18 @@ public class ApiExceptionMiddleware
             .AppendLine($"CorrelationId: {correlationId}")
             .AppendLine($"TenantId: {tenantId}");
 
-        if (_options.IncludeRequestDetails)
+        if (options.IncludeRequestDetails)
         {
             logMessage.AppendLine($"Path: {context.Request.Path}")
-                      .AppendLine($"Method: {context.Request.Method}");
+                .AppendLine($"Method: {context.Request.Method}");
         }
 
-        if (_options.LogRequestBody && context.Request.Body.CanRead)
+        if (options.LogRequestBody && context.Request.Body.CanRead)
         {
             logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
         }
 
-        _logger.LogError(ex, logMessage.ToString());
+        logger.LogError(ex, logMessage.ToString());
     }
 
     private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
@@ -211,11 +202,13 @@ public class ApiExceptionMiddleware
             ["type"] = ex.GetType().Name,
             ["message"] = ex.Message,
             ["stackTrace"] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
-            ["innerException"] = ex.InnerException != null ? new
-            {
-                type = ex.InnerException.GetType().Name,
-                message = ex.InnerException.Message
-            } : null,
+            ["innerException"] = ex.InnerException != null
+                ? new
+                {
+                    type = ex.InnerException.GetType().Name,
+                    message = ex.InnerException.Message
+                }
+                : null,
             ["activityId"] = Activity.Current?.Id ?? "none"
         };
     }
@@ -228,7 +221,7 @@ public class ApiExceptionMiddleware
 
     private static string GetCorrelationId(HttpContext context)
     {
-        return context.Request.Headers.TryGetValue("X-Correlation-Id", out var headerValue) &&
+        return context.Request.Headers.TryGetValue("Correlation-Id", out var headerValue) &&
                Guid.TryParse(headerValue, out var parsed)
             ? parsed.ToString()
             : context.TraceIdentifier;
@@ -236,7 +229,7 @@ public class ApiExceptionMiddleware
 
     private static string GetTenantId(HttpContext context)
     {
-        return context.Request.Headers.TryGetValue("X-Tenant-Id", out var headerValue)
+        return context.Request.Headers.TryGetValue("Tenant-Id", out var headerValue)
             ? headerValue.ToString()
             : "UNKNOWN";
     }

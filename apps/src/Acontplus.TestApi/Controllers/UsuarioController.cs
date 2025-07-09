@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApi.Controllers
+﻿using Acontplus.Services.Extensions;
+
+namespace Acontplus.TestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -36,6 +38,7 @@
             [FromServices] IUsuarioService usuarioService,
             [FromServices] ILogger<UsuarioController> logger)
         {
+            var isMobileRequest = HttpContext.GetIsMobileRequest();
             return await usuarioService.GetPaginatedUsersAsync(pagination).ToActionResultAsync();
         }
 

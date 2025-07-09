@@ -28,7 +28,7 @@ public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguratio
         builder.Property(x => x.IsDeleted)
             .HasDefaultValue(false);
 
-        builder.Property(x => x.FromMobile)
+        builder.Property(x => x.IsMobileRequest)
             .HasDefaultValue(false);
 
         // Configure query filter for soft delete
