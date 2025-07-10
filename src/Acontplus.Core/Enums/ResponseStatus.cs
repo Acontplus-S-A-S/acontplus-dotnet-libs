@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Acontplus.Core.Enums;
+﻿namespace Acontplus.Core.Enums;
 
 public enum ResponseStatus
 {
