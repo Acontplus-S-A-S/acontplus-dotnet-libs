@@ -23,7 +23,7 @@ public interface ISpecification<T>
 public abstract class BaseSpecification<T> : ISpecification<T>
 {
     // Criteria is now settable by the derived class, allowing it to be built dynamically.
-    public Expression<Func<T, bool>> Criteria { get; protected set; }
+    public Expression<Func<T, bool>> Criteria { get; protected set; } = null!;
 
     public IReadOnlyList<Expression<Func<T, object>>> Includes => _includes.AsReadOnly();
     public IReadOnlyList<string> IncludeStrings => _includeStrings.AsReadOnly();
@@ -36,9 +36,9 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     private readonly List<string> _includeStrings = [];
     private readonly List<OrderByExpression<T>> _orderByExpressions = [];
 
-    protected BaseSpecification(Expression<Func<T, bool>> criteria = null)
+    protected BaseSpecification(Expression<Func<T, bool>>? criteria = null)
     {
-        Criteria = criteria;
+        Criteria = criteria ?? (x => true);
     }
 
     protected virtual void AddInclude(Expression<Func<T, object>> includeExpression)

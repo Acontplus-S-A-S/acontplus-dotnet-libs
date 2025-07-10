@@ -1,8 +1,12 @@
 ﻿namespace Acontplus.Core.Domain.Common;
 
+/// <summary>
+/// Base entity class with domain event support and modern .NET 9+ features.
+/// </summary>
+/// <typeparam name="TId">The type of the entity's primary key.</typeparam>
 public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
 {
-    public TId Id { get; protected init; } = default!;
+    public required TId Id { get; init; }
 
     private readonly List<IDomainEvent> _domainEvents = [];
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
@@ -46,4 +50,14 @@ public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
     public static bool operator !=(Entity<TId>? a, Entity<TId>? b) => !(a == b);
 
     public override int GetHashCode() => HashCode.Combine(GetType(), Id);
+
+    /// <summary>
+    /// Creates a new entity with the specified ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <returns>A new entity instance.</returns>
+    protected static T Create<T>(TId id) where T : Entity<TId>, new()
+    {
+        return new T { Id = id };
+    }
 }

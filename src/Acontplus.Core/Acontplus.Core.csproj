@@ -5,19 +5,29 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Core</PackageId>
-    <Version>1.1.11</Version>
+    <Version>1.2.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Basic and fundamental components that all projects need.</Description>
-    <PackageTags>abstractions;entities;dtos;enums;models;validations</PackageTags>
+    <Description>Modern .NET 9+ foundational components for enterprise applications. Includes domain-driven design patterns, comprehensive error handling, specification pattern, and modern C# features.</Description>
+    <PackageTags>dotnet9;domain-driven-design;ddd;enterprise;abstractions;entities;dtos;enums;models;validations;specification-pattern;error-handling</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Updated for .NET 9+ with modern C# features, improved error handling, and enhanced documentation</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
