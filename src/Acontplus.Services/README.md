@@ -83,6 +83,51 @@ services.AddHttpContextAccessor();
 services.AddScoped<IUserContext, UserContext>();
 ```
 
+### JsonConfigurationService
+
+Centralizes and standardizes `System.Text.Json` options for your application.
+
+```csharp
+using Acontplus.Services.Configuration;
+
+// Get default options for serialization
+var options = JsonConfigurationService.GetDefaultOptions();
+
+// For pretty-printing (development)
+var prettyOptions = JsonConfigurationService.GetPrettyOptions();
+
+// For strict API validation
+var strictOptions = JsonConfigurationService.GetStrictOptions();
+```
+
+#### Integrate with ASP.NET Core
+
+```csharp
+// In Program.cs or Startup.cs
+using Acontplus.Services.Configuration;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Use default or strict options for all controllers and minimal APIs
+JsonConfigurationService.ConfigureAspNetCore(builder.Services, useStrictMode: false);
+
+// Or, environment-aware:
+JsonConfigurationService.ConfigureAspNetCore(builder.Services, builder.Environment.IsDevelopment());
+```
+
+#### Dependency Injection
+
+```csharp
+// Register as singleton for DI
+JsonConfigurationService.RegisterJsonConfiguration(services);
+
+// Then inject IJsonConfigurationProvider wherever needed
+public class MyService
+{
+    public MyService(IJsonConfigurationProvider jsonConfig) { ... }
+}
+```
+
 ## 📚 API Documentation
 
 - `AppConfiguration` - Platform/environment config loader
