@@ -32,6 +32,51 @@
             <param name="message">The error message.</param>
             <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.</returns>
         </member>
+        <member name="T:Acontplus.Utilities.Data.DataConverters">
+            <summary>
+            Data Converters
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.GetDefaultOptions">
+            <summary>
+            Get default JSON serialization options with camelCase naming
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.DataTableToJson(System.Data.DataTable)">
+            <summary>
+            Converts a DataTable to JSON string
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.DataSetToJson(System.Data.DataSet)">
+            <summary>
+            Converts a DataSet to JSON string
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.JsonToDataTable(System.String)">
+            <summary>
+            Converts a JSON string to DataTable
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.SanitizeValueForSerialization(System.Object)">
+            <summary>
+            Helper method to sanitize values for serialization
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.ConvertDataTableToList(System.Data.DataTable)">
+            <summary>
+            Helper method to convert DataTable to a list of dictionaries
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.DictionaryToString``2(System.Collections.Generic.IDictionary{``0,``1})">
+            <summary>
+            Convert dictionary to string representation
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Data.DataConverters.SerializeObjectCustom``1(System.Object)">
+            <summary>
+            Generic method to serialize any object to JSON
+            </summary>
+        </member>
         <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
             <summary>
             Converts ApiResponse to IActionResult with full status code support
@@ -169,6 +214,136 @@
             </summary>
             <param name="file">The uploaded file to read.</param>
             <returns>A byte array containing the file's contents.</returns>
+        </member>
+        <member name="T:Acontplus.Utilities.Json.JsonHelper">
+            <summary>
+            Advanced JSON utilities building on core JSON functionality
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonHelper.ValidateJson(System.String)">
+            <summary>
+            Validate JSON and return validation result with error details
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonHelper.GetJsonProperty``1(System.String,System.String)">
+            <summary>
+            Get JSON property value with strongly typed return
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonHelper.MergeJson(System.String,System.String)">
+            <summary>
+            Merge two JSON objects (second object properties overwrite first)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonHelper.AreEqual(System.String,System.String)">
+            <summary>
+            Compare two JSON strings for equality (ignoring property order)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Json.JsonHelper.JsonValidationResult">
+            <summary>
+            Result of JSON validation
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonHelper.JsonValidationResult.#ctor(System.Boolean,System.String)">
+            <summary>
+            Result of JSON validation
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Json.JsonManipulationExtensions">
+            <summary>
+            JSON manipulation extensions
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonManipulationExtensions.IsValidJson(System.String)">
+            <summary>
+            Extension method to validate JSON string
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonManipulationExtensions.GetJsonProperty``1(System.String,System.String)">
+            <summary>
+            Extension method to get JSON property
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonManipulationExtensions.MergeJson(System.String,System.String)">
+            <summary>
+            Extension method to merge JSON
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Json.JsonManipulationExtensions.JsonEquals(System.String,System.String)">
+            <summary>
+            Extension method to compare JSON
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Mapping.ObjectMapper">
+            <summary>
+            A lightweight object mapper that provides AutoMapper-like functionality.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.CreateMap``2">
+            <summary>
+            Creates a mapping configuration between source and target types.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.Map``2(``0)">
+            <summary>
+            Maps a source object to a new instance of a target type.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.Map``2(``0,``1)">
+            <summary>
+            Maps a source object to an existing target object.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.CreateInstance``2(``0)">
+            <summary>
+            Creates an instance of the target type, using constructor parameters matched from the source if necessary.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MapProperties``2(``0,``1)">
+            <summary>
+            Maps an object to another type without using a predefined mapping configuration.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration">
+            <summary>
+            Base mapping configuration class.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2">
+            <summary>
+            Mapping configuration for source and target types.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.ForMember``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Configures a custom mapping for a target property.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.ForMember``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Func{`0,``0})">
+            <summary>
+            Configures a custom mapping function for a target property.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.ForCtorParam(System.String,System.String)">
+            <summary>
+            Maps a source property to a constructor parameter.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.ForCtorParam``1(System.String,System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Maps a source property to a constructor parameter using expressions.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.Ignore``1(System.Linq.Expressions.Expression{System.Func{`1,``0}})">
+            <summary>
+            Ignores a specific property during mapping.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Mapping.ObjectMapper.MappingConfiguration`2.IgnoreUnmappedProperties">
+            <summary>
+            Ignores all unmapped properties.
+            </summary>
         </member>
         <member name="T:Acontplus.Utilities.Security.Interfaces.ISensitiveDataEncryptionService">
             <summary>
