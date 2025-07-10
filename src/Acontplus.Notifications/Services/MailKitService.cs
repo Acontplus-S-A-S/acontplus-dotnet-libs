@@ -1,4 +1,5 @@
-﻿using Acontplus.Notifications.Abstractions;
+﻿using Acontplus.Core.Extensions;
+using Acontplus.Notifications.Abstractions;
 using Acontplus.Notifications.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
@@ -8,7 +9,6 @@ using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Security.Authentication;
 using System.Text.Json;
-using Acontplus.Core.Extensions;
 
 namespace Acontplus.Notifications.Services;
 

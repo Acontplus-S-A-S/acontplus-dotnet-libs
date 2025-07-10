@@ -1,12 +1,11 @@
-﻿using Acontplus.Notifications.Abstractions;
+﻿using Acontplus.Core.Extensions;
+using Acontplus.Notifications.Abstractions;
 using Acontplus.Notifications.Models;
 using Amazon.SimpleEmailV2.Model;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using Acontplus.Core.Extensions;
 using Template = Scriban.Template;
 
 namespace Acontplus.Notifications.Services;
