@@ -1,25 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Utilities</PackageId>
-    <Version>1.0.12</Version>
+    <Version>1.0.13</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Cross-cutting utilities and general-purpose tools.</Description>
-    <PackageTags>format;io;security;text;time</PackageTags>
+    <Description>Cross-cutting utilities and general-purpose tools for modern .NET 9+ applications. Includes encryption, IO, text, time, and API helpers.</Description>
+    <PackageTags>dotnet9;utilities;format;io;security;text;time;api;helpers</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <!-- Bandera para cambiar entre ProjectReference y PackageReference -->
-    <!--<UseLocalProjects Condition="'$(UseLocalProjects)' == ''">true</UseLocalProjects>-->
-
-    <!-- Versión del paquete dependiente -->
-    <!--<CommonCoreVersion>1.0.0</CommonCoreVersion>-->
+    <PackageReleaseNotes>Updated for .NET 9+ with async/await, extension methods, and enhanced documentation.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,14 +36,4 @@
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
-  <!-- Usar referencia local para desarrollo/debug -->
-  <!--<ItemGroup Condition="'$(UseLocalProjects)' == 'true'">
-    <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
-  </ItemGroup>-->
-
-  <!-- Usar paquete NuGet cuando se empaquete para publicación -->
-  <!--<ItemGroup Condition="'$(UseLocalProjects)' != 'true'">
-    <PackageReference Include="Common.Core" Version="$(CommonCoreVersion)" />
-  </ItemGroup>-->
 </Project>

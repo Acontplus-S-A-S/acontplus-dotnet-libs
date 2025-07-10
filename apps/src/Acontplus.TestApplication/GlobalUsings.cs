@@ -1,6 +1,5 @@
 ﻿// Global using directives
 
-global using System.Data;
 global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Domain.Common;
 global using Acontplus.Core.Domain.Enums;
@@ -13,3 +12,4 @@ global using Acontplus.FactElect.Interfaces.Services;
 global using Acontplus.TestApplication.DTOs;
 global using Acontplus.TestApplication.Interfaces;
 global using Acontplus.TestDomain.Entities;
+global using System.Data;

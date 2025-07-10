@@ -1,6 +1,6 @@
-﻿namespace Acontplus.Utilities.Extensions;
+namespace Acontplus.Utilities.Extensions;
 
-public static class ResultExtensions
+public static class ResultApiExtensions
 {
     #region Configuration
 
@@ -20,8 +20,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => CreateSuccessResponse(value, correlationId),
-            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
+            value => CreateSuccessResponse(value, correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
     }
 
@@ -30,8 +30,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => CreateSuccessResponse(value, correlationId),
-            onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToActionResult()
+            value => CreateSuccessResponse(value, correlationId),
+            errors => errors.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
     }
 
@@ -40,8 +40,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: successWithWarnings => successWithWarnings.ToActionResult(correlationId),
-            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
+            successWithWarnings => successWithWarnings.ToActionResult(correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
     }
 
@@ -82,8 +82,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => CreateSuccessResult(value, correlationId),
-            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+            value => CreateSuccessResult(value, correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
 
@@ -92,8 +92,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: value => CreateSuccessResult(value, correlationId),
-            onFailure: errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+            value => CreateSuccessResult(value, correlationId),
+            errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
 
@@ -102,8 +102,8 @@ public static class ResultExtensions
         string? correlationId = null)
     {
         return result.Match(
-            onSuccess: successWithWarnings => successWithWarnings.ToMinimalApiResult(correlationId),
-            onFailure: error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+            successWithWarnings => successWithWarnings.ToMinimalApiResult(correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
 

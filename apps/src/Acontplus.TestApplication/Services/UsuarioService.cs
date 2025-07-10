@@ -161,17 +161,16 @@ namespace Acontplus.TestApplication.Services
                 // Handle validation errors first
                 if (domainEx.ErrorType == ErrorType.Validation)
                 {
-                    return Result.Failure<LegacySpResponse>(
+                    return
                         DomainError.Validation(
                             code: domainEx.ErrorCode,
-                            message: domainEx.Message));
+                            message: domainEx.Message);
                 }
 
                 // Then handle transient errors
                 if (_exceptionTranslator.IsTransient(ex))
                 {
-                    return Result.Failure<LegacySpResponse>(
-                        DomainError.ServiceUnavailable(
+                    return DomainError.ServiceUnavailable(
                             code: "DB_TRANSIENT_ERROR",
                             message: "Database temporarily unavailable",
                             // shouldRetry: true,
@@ -179,11 +178,11 @@ namespace Acontplus.TestApplication.Services
                             {
                                 ["procedure"] = "dbo.sp_Test",
                                 ["error"] = ex.Message
-                            }));
+                            });
                 }
 
                 // Fallback to internal error
-                return Result.Failure<LegacySpResponse>(
+                return
                     DomainError.Internal(
                         code: "SP_EXECUTION_ERROR",
                         message: "Failed to execute stored procedure",
@@ -191,7 +190,7 @@ namespace Acontplus.TestApplication.Services
                         {
                             ["procedure"] = "dbo.sp_Test",
                             ["error"] = ex.Message
-                        }));
+                        });
             }
         }
         public async Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(

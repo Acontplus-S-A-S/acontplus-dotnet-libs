@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.Services</name>
+    </assembly>
+    <members>
+        <member name="T:Acontplus.Services.Configuration.RequestContextOptions">
+            <summary>
+            Options for configuring request context and security headers.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.EnableSecurityHeaders">
+            <summary>
+            Enables security headers for all responses. Default: true.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.FrameOptionsDeny">
+            <summary>
+            Denies framing of the site (X-Frame-Options: DENY). Default: true.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.ReferrerPolicy">
+            <summary>
+            The referrer policy to use. Default: "strict-origin-when-cross-origin".
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.RequireClientId">
+            <summary>
+            Requires a client ID for requests. Default: false.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.AnonymousClientId">
+            <summary>
+            The default anonymous client ID. Default: "anonymous".
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.RequestContextOptions.AllowedClientIds">
+            <summary>
+            List of allowed client IDs for whitelisting.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.ClaimsPrincipalExtensions.GetClaimValue``1(System.Security.Claims.ClaimsPrincipal,System.String)">
+            <summary>
+            Retrieves the value of a specific claim from the ClaimsPrincipal and converts it to the specified type.
+            </summary>
+            <typeparam name="T">The type to which the claim value will be converted.</typeparam>
+            <param name="user">The ClaimsPrincipal instance from which the claim will be retrieved.</param>
+            <param name="claimName">The name of the claim to retrieve.</param>
+            <returns>The value of the claim converted to the specified type, or the default value of the type if the claim does not exist or cannot be converted.</returns>
+        </member>
+        <member name="T:Acontplus.Services.Extensions.ExceptionHandlingExtensions">
+            <summary>
+            Provides extension methods for configuring global exception handling middleware.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.ExceptionHandlingExtensions.UseAcontplusExceptionHandling(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Action{Acontplus.Services.Extensions.ExceptionHandlingOptions})">
+            <summary>
+            Adds the Acontplus exception handling middleware to the application pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+            <param name="configure">Optional configuration for exception handling options.</param>
+            <returns>The application builder.</returns>
+        </member>
+        <member name="P:Acontplus.Services.Extensions.ExceptionHandlingOptions.IncludeRequestDetails">
+            <summary>
+            Includes HTTP request details (Method, Path, etc.) in logs. Default: true.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Extensions.ExceptionHandlingOptions.LogRequestBody">
+            <summary>
+            Logs the request body when an error occurs (caution: sensitive data). Default: false.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Extensions.ExceptionHandlingOptions.IncludeDebugDetailsInResponse">
+            <summary>
+            Includes stack traces and exception details in API responses (for debugging). Default: false.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.Extensions.UserContext">
+            <summary>
+            Provides access to user claims and identity information from the current HTTP context.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Provides access to user claims and identity information from the current HTTP context.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.GetUserId">
+            <summary>
+            Gets the user ID from the current user claims.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.GetClaimValue``1(System.String)">
+            <summary>
+            Gets a claim value of the specified type from the current user claims.
+            </summary>
+            <typeparam name="T">The type of the claim value.</typeparam>
+            <param name="claimName">The name of the claim.</param>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.GetUserName">
+            <summary>
+            Gets the user name from the current user claims.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.GetEmail">
+            <summary>
+            Gets the email from the current user claims.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.UserContext.GetRoleName">
+            <summary>
+            Gets the role name from the current user claims.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.Middleware.ApiExceptionMiddleware">
+            <summary>
+            Middleware for centralized API exception handling, logging, and standardized error responses.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Middleware.ApiExceptionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Acontplus.Services.Middleware.ApiExceptionMiddleware},Acontplus.Services.Extensions.ExceptionHandlingOptions)">
+            <summary>
+            Middleware for centralized API exception handling, logging, and standardized error responses.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Middleware.ApiExceptionMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Handles the HTTP request and catches exceptions, returning standardized error responses.
+            </summary>
+            <param name="context">The HTTP context.</param>
+        </member>
+    </members>
+</doc>

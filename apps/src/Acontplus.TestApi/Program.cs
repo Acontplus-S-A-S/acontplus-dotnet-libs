@@ -13,6 +13,7 @@ using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
 using Acontplus.TestApplication.Services;
 using Acontplus.TestInfrastructure.Persistence;
+using Microsoft.Extensions.Options;
 using Scrutor;
 using Serilog;
 
@@ -144,7 +145,7 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
-    
+
     app.MapAllEndpoints();
 
     app.MapGet("/generateats", async (IAtsXmlService atsXmlService) =>
@@ -263,6 +264,19 @@ try
             return Results.Problem("Error generating ATS XML", statusCode: 500);
         }
     });
+
+    app.Use(async (context, next) =>
+    {
+        var serializer = context.RequestServices.GetService<JsonSerializer>(); // Newtonsoft.Json
+        var jsonOptions = context.RequestServices.GetService<IOptions<JsonOptions>>(); // System.Text.Json
+        Console.WriteLine($"Using Newtonsoft.Json: {serializer != null}");
+        Console.WriteLine($"Using System.Text.Json: {jsonOptions != null}");
+        await next();
+    });
+
+    app.MapGet("/minimal-test", () =>
+    //Results.Json(new ApiResponse { Status = ResponseStatus.Success }));
+    Results.Json(ApiResponse.Success()));
 
     await app.RunAsync();
 }

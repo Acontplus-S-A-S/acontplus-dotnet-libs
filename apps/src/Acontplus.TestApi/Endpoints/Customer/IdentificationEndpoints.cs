@@ -27,7 +27,7 @@ public static class IdentificationEndpoints
             // Get correlation ID from headers if needed
             var correlationId = httpContextAccessor.HttpContext?
                 .Request.Headers["X-Correlation-Id"].FirstOrDefault();
-            
+
             // Use the extension method directly
             return await customerService.GetByIdCardAsync(idCard, sriOnly)
                 .ToMinimalApiResultAsync(correlationId);

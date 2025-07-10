@@ -2,14 +2,27 @@
 
 namespace Acontplus.Utilities.IO;
 
+/// <summary>
+/// Provides extension methods for file name sanitization and file data conversion.
+/// </summary>
 public static class FileExtensions
 {
+    /// <summary>
+    /// Removes invalid characters from a file name and trims whitespace.
+    /// </summary>
+    /// <param name="fileName">The file name to sanitize.</param>
+    /// <returns>A sanitized file name containing only valid characters.</returns>
     public static string SanitizeFileName(string fileName)
     {
         var response = Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", "");
         return response.Replace(" ", string.Empty);
     }
 
+    /// <summary>
+    /// Converts a byte array to a Base64-encoded string.
+    /// </summary>
+    /// <param name="valueByte">The byte array to convert.</param>
+    /// <returns>A Base64-encoded string representation of the byte array.</returns>
     public static string GetBase64FromByte(byte[] valueByte)
     {
         ArgumentNullException.ThrowIfNull(valueByte);
@@ -24,6 +37,11 @@ public static class FileExtensions
         return Convert.ToBase64String(memoryStream.ToArray());
     }
 
+    /// <summary>
+    /// Reads the contents of an <see cref="IFormFile"/> and returns it as a byte array.
+    /// </summary>
+    /// <param name="file">The uploaded file to read.</param>
+    /// <returns>A byte array containing the file's contents.</returns>
     public static byte[] GetBytes(IFormFile file)
     {
         using var ms = new MemoryStream();

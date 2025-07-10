@@ -1,80 +1,109 @@
 # Acontplus.Persistence.SqlServer
 
-A .NET library providing common infrastructure components for database access and data operations.
+[![NuGet](https://img.shields.io/nuget/v/Acontplus.Persistence.SqlServer.svg)](https://www.nuget.org/packages/Acontplus.Persistence.SqlServer)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## Overview
+A modern .NET 9+ library for SQL Server persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling for robust data access.
 
-Acontplus.Persistece.SqlServer is a utility library that provides common persistence components and database access functionality for .NET applications. It's built on .NET 8.0 and integrates with Entity Framework Core.
+## 🚀 Features
 
-## Installation
+- **Database context management** - Base context and factory for EF Core
+- **Repository pattern** - Generic and ADO.NET repositories
+- **SQL Server integration** - Optimized for SQL Server
+- **Data reader mapping utilities** - Fast mapping from DbDataReader
+- **Parameter handling helpers** - Safe and flexible parameterization
+- **Advanced error handling** - Custom exceptions and translators
 
-Install the package via NuGet Package Manager:
+## 📦 Installation
 
+### NuGet Package Manager
+```bash
+Install-Package Acontplus.Persistence.SqlServer
+```
+
+### .NET CLI
 ```bash
 dotnet add package Acontplus.Persistence.SqlServer
 ```
 
-Or via the NuGet Package Manager Console:
-
-```powershell
-Install-Package Acontplus.Persistence.SqlServer
+### PackageReference
+```xml
+<ItemGroup>
+  <PackageReference Include="Acontplus.Persistence.SqlServer" Version="1.0.14" />
+</ItemGroup>
 ```
 
-## Dependencies
+## 🎯 Quick Start
 
-- FastMember
-- Microsoft.Data.SqlClient
-- Microsoft.EntityFrameworkCore
-- Microsoft.EntityFrameworkCore.SqlServer
+### 1. Register DbContext and Repository
+```csharp
+services.AddDbContext<BaseContext>(options =>
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+services.AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>));
+```
 
-## Features
+### 2. Use ADO.NET Repository
+```csharp
+var repo = serviceProvider.GetRequiredService<IAdoRepository>();
+var result = await repo.ExecuteQueryAsync("SELECT * FROM MyTable");
+```
 
-- Database context management
-- Repository pattern implementation
-- SQL Server integration
-- Data reader mapping utilities
-- Parameter handling helpers
+## 🔧 Advanced Usage
 
-## Project Structure
+### Custom Exception Handling
+```csharp
+try {
+    // ... data access code ...
+} catch (RepositoryException ex) {
+    // handle repository errors
+}
+```
 
-- BaseContext.cs - Base database context implementation
-- DbContextFactory.cs - Factory for creating database contexts
-- Repository/ - Repository pattern implementations
-  - AdoRepository.cs - ADO.NET based repository
-  - AdoSqlServer.cs - SQL Server specific implementations
-  - IAdoRepository.cs - Repository interfaces
-- Utils/ - Utility classes for data operations
+### DataTable Mapping
+```csharp
+var entities = DbDataReaderMapper.MapToList<MyEntity>(reader);
+```
 
-## License
+## 📚 API Documentation
 
-This project is licensed under the MIT License.
+- `BaseContext` - EF Core base context
+- `DbContextFactory` - Context factory
+- `BaseRepository` / `AdoRepository` - Repository implementations
+- `RepositoryException`, `SqlDomainException`, `UnitOfWorkException` - Error handling
+- `DbDataReaderMapper` - Data reader mapping
+- `DataTableNameMapper` - Table name helpers
 
-## Author
+## 🤝 Contributing
 
-Ivan Paz
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-## Company
+### Development Setup
+```bash
+git clone https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs.git
+cd acontplus-dotnet-libs
+dotnet restore
+dotnet build
+```
 
-Acontplus S.A.S.
+## 📄 License
 
-## Repository
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-[GitHub Repository]https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs)
+## 🆘 Support
 
-## Tags
+- 📧 Email: proyectos@acontplus.com
+- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
+- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
 
-database;ado-net;data-access;sql;orm;micro-orm;query;crud
+## 👨‍💻 Author
 
-## Contributing
-We welcome contributions! Please submit any issues or feature requests via our GitHub repository, or feel free to fork the project and submit pull requests.
+**Ivan Paz** - [@iferpaz7](https://linktr.ee/iferpaz7)
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 🏢 Company
 
-## Author
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
 
-[Ivan Paz](https://linktr.ee/iferpaz7)
+---
 
-## Company
-
-[Acontplus S.A.S.](https://acontplus.com.ec)
+**Built with ❤️ for the .NET community**

@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.Utilities</name>
+    </assembly>
+    <members>
+        <member name="T:Acontplus.Utilities.Adapters.SqlResponseAdapter">
+            <summary>
+            Provides extension methods to adapt SQL stored procedure responses to API results.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.ToApiResult(Acontplus.Core.DTOs.Responses.SpResponse)">
+            <summary>
+            Converts a <see cref="T:Acontplus.Core.DTOs.Responses.SpResponse"/> to an <see cref="T:Microsoft.AspNetCore.Http.IResult"/> suitable for Minimal APIs, mapping SQL errors to HTTP status codes and error messages.
+            </summary>
+            <param name="response">The stored procedure response to convert.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Http.IResult"/> representing the API response.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlServerError(System.String,System.String)">
+            <summary>
+            Maps a SQL Server error code and message to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.
+            </summary>
+            <param name="errorCode">The SQL error code as a string.</param>
+            <param name="message">The error message.</param>
+            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlErrorNumber(System.Int32,System.String)">
+            <summary>
+            Maps a SQL Server error number to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.DomainError"/> with a user-friendly message.
+            </summary>
+            <param name="sqlErrorNumber">The SQL Server error number.</param>
+            <param name="message">The error message.</param>
+            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
+            <summary>
+            Converts ApiResponse to IActionResult with full status code support
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
+            <summary>
+            Converts ApiResponse to IResult for Minimal APIs with full status code support
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithPagination(System.Collections.Generic.Dictionary{System.String,System.Object},System.Int32,System.Int32,System.Int64,System.Func{System.Int32,System.String})">
+            <summary>
+            Adds pagination metadata with enhanced details
+            </summary> 
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithExecutionTime(System.Collections.Generic.Dictionary{System.String,System.Object},System.TimeSpan,System.Int32)">
+            <summary>
+            Adds execution time metadata with precision control
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithCorrelationId(System.Collections.Generic.Dictionary{System.String,System.Object},System.String)">
+            <summary>
+            Adds correlation ID to metadata if not already present
+            </summary>
+        </member>
+        <member name="T:Acontplus.Utilities.Format.CompressionUtils">
+            <summary>
+            Provides utility methods for compressing and decompressing data using Deflate and GZip algorithms, and for decompressing DataTable columns.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.CompressDeflate(System.Byte[])">
+            <summary>
+            Compresses a byte array using the Deflate algorithm.
+            </summary>
+            <param name="data">The byte array to compress.</param>
+            <returns>The compressed byte array.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.DecompressDeflate(System.Byte[])">
+            <summary>
+            Decompresses a byte array that was compressed using the Deflate algorithm.
+            </summary>
+            <param name="data">The compressed byte array.</param>
+            <returns>The decompressed byte array.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.CompressGZip(System.Byte[])">
+            <summary>
+            Compresses a byte array using the GZip algorithm.
+            </summary>
+            <param name="data">The byte array to compress.</param>
+            <returns>The compressed byte array.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.DecompressGZip(System.Byte[])">
+            <summary>
+            Decompresses a byte array that was compressed using the GZip algorithm.
+            </summary>
+            <param name="data">The compressed byte array.</param>
+            <returns>The decompressed byte array.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.DecompressColumn(System.Data.DataSet,System.String,System.String,System.String)">
+            <summary>
+            Decompresses a column in a <see cref="T:System.Data.DataSet"/> table from GZip-compressed byte arrays to UTF-8 strings.
+            </summary>
+            <param name="dataSet">The <see cref="T:System.Data.DataSet"/> containing the table.</param>
+            <param name="tableName">The name of the table to process.</param>
+            <param name="compressedColumnName">The name of the column containing compressed data.</param>
+            <param name="decompressedColumnName">The name of the column to store decompressed strings.</param>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.CompressionUtils.DecompressColumn(System.Data.DataTable,System.String,System.String)">
+            <summary>
+            Decompresses a column in a <see cref="T:System.Data.DataTable"/> from GZip-compressed byte arrays to UTF-8 strings.
+            </summary>
+            <param name="table">The <see cref="T:System.Data.DataTable"/> to process.</param>
+            <param name="compressedColumnName">The name of the column containing compressed data.</param>
+            <param name="decompressedColumnName">The name of the column to store decompressed strings.</param>
+        </member>
+        <member name="T:Acontplus.Utilities.Format.XmlTextWriterExtensions">
+            <summary>
+            Provides extension methods for writing XML elements with optional values.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Format.XmlTextWriterExtensions.WriteElement(System.Xml.XmlTextWriter,System.String,System.String)">
+            <summary>
+            Writes an XML element with the specified name and value, writing an empty string if the value is null.
+            </summary>
+            <param name="writer">The <see cref="T:System.Xml.XmlTextWriter"/> to write to.</param>
+            <param name="elementName">The name of the XML element.</param>
+            <param name="value">The value to write inside the element, or null for an empty element.</param>
+        </member>
+        <member name="T:Acontplus.Utilities.IO.DirectoryHelper">
+            <summary>
+            Provides helper methods for working with application directories.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.IO.DirectoryHelper.GetRuntimeDirectory">
+            <summary>
+            Gets the directory of the currently executing entry assembly at runtime.
+            </summary>
+            <returns>The absolute path to the runtime directory.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the runtime directory cannot be determined.</exception>
+        </member>
+        <member name="T:Acontplus.Utilities.IO.EnvironmentHelper">
+            <summary>
+            Provides helper methods for retrieving the current application environment.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.IO.EnvironmentHelper.GetEnvironment">
+            <summary>
+            Gets the current ASP.NET Core environment as an <see cref="T:Acontplus.Core.Enums.EnvironmentEnums"/> value.
+            </summary>
+            <returns>The current environment as an <see cref="T:Acontplus.Core.Enums.EnvironmentEnums"/> enum.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the environment variable is not set.</exception>
+        </member>
+        <member name="T:Acontplus.Utilities.IO.FileExtensions">
+            <summary>
+            Provides extension methods for file name sanitization and file data conversion.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.IO.FileExtensions.SanitizeFileName(System.String)">
+            <summary>
+            Removes invalid characters from a file name and trims whitespace.
+            </summary>
+            <param name="fileName">The file name to sanitize.</param>
+            <returns>A sanitized file name containing only valid characters.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.IO.FileExtensions.GetBase64FromByte(System.Byte[])">
+            <summary>
+            Converts a byte array to a Base64-encoded string.
+            </summary>
+            <param name="valueByte">The byte array to convert.</param>
+            <returns>A Base64-encoded string representation of the byte array.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.IO.FileExtensions.GetBytes(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Reads the contents of an <see cref="T:Microsoft.AspNetCore.Http.IFormFile"/> and returns it as a byte array.
+            </summary>
+            <param name="file">The uploaded file to read.</param>
+            <returns>A byte array containing the file's contents.</returns>
+        </member>
+        <member name="T:Acontplus.Utilities.Security.Interfaces.ISensitiveDataEncryptionService">
+            <summary>
+            Defines asynchronous methods for encrypting and decrypting sensitive data.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Interfaces.ISensitiveDataEncryptionService.EncryptToBytesAsync(System.String,System.String)">
+            <summary>
+            Asynchronously encrypts the provided plaintext string using the specified key and returns the encrypted data as a byte array.
+            </summary>
+            <param name="passphrase">The encryption key (must be 16, 24, or 32 bytes long).</param>
+            <param name="data">The plaintext string to encrypt.</param>
+            <returns>A Task containing a byte array with the IV followed by the encrypted data.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Interfaces.ISensitiveDataEncryptionService.DecryptFromBytesAsync(System.String,System.Byte[])">
+            <summary>
+            Asynchronously decrypts the provided byte array using the specified key and returns the decrypted plaintext string.
+            </summary>
+            <param name="passphrase">The decryption key (must match the key used for encryption).</param>
+            <param name="encryptedData">The byte array containing the IV followed by the encrypted data.</param>
+            <returns>A Task containing the decrypted plaintext string.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Services.SensitiveDataEncryptionService.EncryptToBytesAsync(System.String,System.String)">
+            <summary>
+            Encrypts the provided data using AES encryption and returns the encrypted byte array.
+            </summary>
+            <param name="passphrase">The encryption key (must be 16, 24, or 32 bytes long).</param> 
+            <param name="data">The plaintext data to encrypt.</param>
+            <returns>A byte array containing the IV followed by the encrypted data.</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Services.SensitiveDataEncryptionService.DecryptFromBytesAsync(System.String,System.Byte[])">
+            <summary>
+            Decrypts the provided byte array using AES encryption and returns the plaintext string.
+            </summary>
+            <param name="passphrase">The decryption key (must match the key used for encryption).</param>
+            <param name="encryptedData">The byte array containing the IV followed by the encrypted data.</param>
+            <returns>The decrypted plaintext string.</returns>
+        </member>
+        <member name="T:Acontplus.Utilities.Text.TextHandlers">
+            <summary>
+            Provides text manipulation utilities for string formatting and splitting.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Text.TextHandlers.StringSplit(System.String,System.Int32)">
+            <summary>
+            Splits a string into lines of a specified length, inserting a newline (\\n) after each segment.
+            </summary>
+            <param name="input">The input string to split.</param>
+            <param name="length">The maximum length of each line segment.</param>
+            <returns>The formatted string with line breaks.</returns>
+        </member>
+        <member name="T:Acontplus.Utilities.Time.NullableDateTimeConverter">
+            <summary>
+            Converter for nullable DateTime values
+            </summary>
+        </member>
+    </members>
+</doc>

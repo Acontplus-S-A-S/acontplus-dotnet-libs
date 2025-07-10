@@ -2,18 +2,26 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Reports</PackageId>
-    <Version>1.0.14</Version>
+    <Version>1.0.15</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Acontplus.Reports.Application is a .NET library designed to simplify the generation of RDLC (Report Definition Language Client-side) reports. It includes features for creating, exporting, and managing reports using RDLC in your .NET applications.</Description>
-    <PackageTags>reports, rdl, rdlc, reporting, .NET, RDLC-Reports, ReportViewer, Acontplus</PackageTags>
+    <Description>Modern .NET 9+ library for RDLC report generation, export, and management. Includes PDF/Excel export, template support, and ReportViewer integration.</Description>
+    <PackageTags>dotnet9;reports;rdl;rdlc;reporting;reportviewer;pdf;excel;templates;Acontplus</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Updated for .NET 9+ with async/await, PDF/Excel export, and enhanced documentation.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="README.md" />
