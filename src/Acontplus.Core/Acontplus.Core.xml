@@ -298,16 +298,6 @@
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
         </member>
-        <member name="T:Acontplus.Core.DTOs.Responses.ApiResponseOptions">
-            <summary>
-            Configuration object for creating API responses (input only)
-            </summary>
-        </member>
-        <member name="T:Acontplus.Core.DTOs.Responses.ApiResponse`1">
-            <summary>
-            Standard API response wrapper for all endpoints
-            </summary>
-        </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
             Modern JSON extensions for .NET enterprise applications
