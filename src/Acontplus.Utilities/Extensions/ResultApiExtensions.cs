@@ -1,6 +1,6 @@
-﻿namespace Acontplus.Utilities.Extensions;
+namespace Acontplus.Utilities.Extensions;
 
-public static class ResultExtensions
+public static class ResultApiExtensions
 {
     #region Configuration
 
