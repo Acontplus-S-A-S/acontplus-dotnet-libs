@@ -1,18 +1,12 @@
 ﻿# Acontplus.FactElect
 
-[![NuGet](https://img.shields.io/nuget/v/Acontplus.FactElect.svg)](https://www.nuget.org/packages/Acontplus.FactElect/)
+[![NuGet](https://img.shields.io/nuget/v/Acontplus.FactElect.svg)](https://www.nuget.org/packages/Acontplus.FactElect)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive .NET library for electronic invoicing and digital document handling in Ecuador, providing models,
-services, and utilities to facilitate integration with SRI (Servicio de Rentas Internas) systems.
+A comprehensive .NET 9+ library for electronic invoicing and digital document handling in Ecuador, providing models, services, and utilities to facilitate integration with SRI (Servicio de Rentas Internas) systems.
 
-## Overview
-
-Acontplus.FactElect is a specialized .NET package that provides essential tools for electronic invoicing and
-digital document processing according to Ecuadorian tax regulations. The library handles captcha validation, XML
-document generation, SRI integration, and more.
-
-## Features
+## 🚀 Features
 
 - Electronic document models (invoices, credit notes, etc.)
 - XML document generation, validation, and parsing
@@ -24,33 +18,34 @@ document generation, SRI integration, and more.
 - Token-based authentication management
 - Dependency Injection support
 
-## Installation
+## 📦 Installation
 
-Install the package via NuGet Package Manager:
-
+### NuGet Package Manager
 ```bash
 Install-Package Acontplus.FactElect
 ```
 
-Or via .NET CLI:
-
+### .NET CLI
 ```bash
 dotnet add package Acontplus.FactElect
 ```
 
-## Quick Start
+### PackageReference
+```xml
+<ItemGroup>
+  <PackageReference Include="Acontplus.FactElect" Version="1.0.17" />
+</ItemGroup>
+```
 
-### Configure Services
+## 🎯 Quick Start
 
-Add FactElect services to your dependency injection container:
-
+### 1. Configure Services
 ```csharp
 // In Startup.cs or Program.cs
 services.AddFactElectServices(Configuration);
 ```
 
-### Configuration in appsettings.json
-
+### 2. Configuration in appsettings.json
 ```json
 {
   "FactElect": {
@@ -73,139 +68,91 @@ services.AddFactElectServices(Configuration);
 }
 ```
 
-### Usage Examples
+### 3. Usage Examples
 
-#### Validating an Ecuadorian ID Card
-
+#### Validate Ecuadorian ID Card
 ```csharp
-// Using dependency injection
 public class IdentityValidator
 {
     private readonly ICedulaService _cedulaService;
-
-    public IdentityValidator(ICedulaService cedulaService)
-    {
-        _cedulaService = cedulaService;
-    }
-
-    public bool ValidateIdentity(string cedula)
-    {
-        return _cedulaService.ValidateCedula(cedula);
-    }
+    public IdentityValidator(ICedulaService cedulaService) => _cedulaService = cedulaService;
+    public bool ValidateIdentity(string cedula) => _cedulaService.ValidateCedula(cedula);
 }
 ```
 
-#### Generating an Electronic Invoice XML
-
+#### Generate Electronic Invoice XML
 ```csharp
-// Using dependency injection
 public class InvoiceGenerator
 {
     private readonly IXmlService _xmlService;
-
-    public InvoiceGenerator(IXmlService xmlService)
-    {
-        _xmlService = xmlService;
-    }
-
-    public string GenerateInvoice(ComprobanteElectronico comprobante)
-    {
-        return _xmlService.GenerateInvoiceXml(comprobante);
-    }
+    public InvoiceGenerator(IXmlService xmlService) => _xmlService = xmlService;
+    public string GenerateInvoice(ComprobanteElectronico comprobante) => _xmlService.GenerateInvoiceXml(comprobante);
 }
 ```
 
-#### Sending a Document to SRI
-
+#### Send Document to SRI
 ```csharp
-// Using dependency injection
 public class DocumentSender
 {
     private readonly ISriWebService _sriService;
-
-    public DocumentSender(ISriWebService sriService)
+    public DocumentSender(ISriWebService sriService) => _sriService = sriService;
+    public async Task<ResponseSri> SendDocumentAsync(string xmlContent, string username, string password)
     {
-        _sriService = sriService;
-    }
-
-    public async Task<ResponseSri> SendDocumentAsync(
-        string xmlContent, 
-        string username, 
-        string password)
-    {
-        // Authenticate with SRI
         var token = await _sriService.AuthenticateAsync(username, password);
-        
-        // Send document to SRI
         return await _sriService.SendDocumentAsync(xmlContent, token);
     }
 }
 ```
 
-#### Converting XML to HTML for Display
-
+#### Convert XML to HTML for Display
 ```csharp
-// Using dependency injection
 public class DocumentRenderer
 {
     private readonly IDocumentConverter _converter;
-
-    public DocumentRenderer(IDocumentConverter converter)
-    {
-        _converter = converter;
-    }
-
-    public string RenderDocument(string xmlContent)
-    {
-        return _converter.ConvertToHtml(xmlContent);
-    }
+    public DocumentRenderer(IDocumentConverter converter) => _converter = converter;
+    public string RenderDocument(string xmlContent) => _converter.ConvertToHtml(xmlContent);
 }
 ```
 
-## Project Structure
+## 📚 API Documentation
 
-```
-Acontplus.FactElect/
-│
-├── Configuration/        # Configuration settings
-├── Constants/            # Constants and enumerations
-├── Exceptions/           # Custom exceptions
-├── Extensions/           # Extension methods
-├── Interfaces/           # Service interfaces
-├── Models/               # Domain models
-│   ├── Authentication/
-│   ├── Documents/
-│   ├── Responses/
-│   └── Validation/
-├── Resources/            # Resource files
-│   ├── Images/
-│   └── Schemas/
-├── Services/             # Service implementations
-│   ├── Authentication/
-│   ├── Conversion/
-│   ├── Documents/
-│   ├── External/
-│   └── Validation/
-└── Utilities/            # Helper classes
+- `ICedulaService`, `IRucService` - Ecuadorian ID and RUC validation
+- `IXmlService` - XML generation and parsing
+- `ISriWebService` - SRI integration and authentication
+- `IDocumentConverter` - XML to HTML/PDF conversion
+- `ComprobanteElectronico` - Electronic document model
+- `ResponseSri` - SRI response model
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Setup
+```bash
+git clone https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs.git
+cd acontplus-dotnet-libs
+dotnet restore
+dotnet build
 ```
 
-## Requirements
+## 📄 License
 
-- .NET Standard 2.0+ or .NET 8.0+
-- Internet connection for SRI web service integration
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributing
+## 🆘 Support
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- 📧 Email: proyectos@acontplus.com
+- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
+- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
 
-## License
+## 👨‍💻 Author
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+**Ivan Paz** - [@iferpaz7](https://linktr.ee/iferpaz7)
 
-## Author
+## 🏢 Company
 
-[Ivan Paz](https://linktr.ee/iferpaz7)
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
 
-## Company
+---
 
-[Acontplus S.A.S.](https://acontplus.com.ec)
+**Built with ❤️ for the .NET community**

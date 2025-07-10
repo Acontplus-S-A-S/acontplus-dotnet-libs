@@ -5,15 +5,23 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Acontplus.FactElect</PackageId>
-		<Version>1.0.16</Version>
+		<Version>1.0.17</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
-		<Description>Lib to use facturación electronica SRI Ecuador</Description>
-		<PackageTags>facturacion;sri;ecuador;services-sri</PackageTags>
+		<Description>Comprehensive .NET 9+ library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML, validation, and SRI web service support.</Description>
+		<PackageTags>dotnet9;facturacion;sri;ecuador;electronic-invoicing;xml;validation;token;captcha;integration</PackageTags>
 		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
+		<PackageReleaseNotes>Updated for .NET 9+ with async/await, SRI integration, and enhanced documentation.</PackageReleaseNotes>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
 
 	<ItemGroup>

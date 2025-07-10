@@ -1,22 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Notifications</PackageId>
-    <Version>1.0.15</Version>
+    <Version>1.0.16</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Lib to send notifications</Description>
-    <PackageTags>notifications;mailkit;email;whatsapp;push</PackageTags>
+    <Description>Modern .NET 9+ library for notifications: email, MailKit, Amazon SES, WhatsApp, and push. Includes templates, queueing, and advanced delivery options.</Description>
+    <PackageTags>dotnet9;notifications;mailkit;email;whatsapp;push;ses;templates;queue</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Updated for .NET 9+ with async/await, MailKit/SES/WhatsApp support, and enhanced documentation.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Acontplus.Utilities" />
     <PackageReference Include="AWSSDK.SimpleEmailV2" />
@@ -26,11 +32,9 @@
     <PackageReference Include="Polly" />
     <PackageReference Include="Scriban" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="README.md" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Images\icon.png">
       <PackagePath>\</PackagePath>
@@ -40,5 +44,4 @@
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-  
 </Project>
