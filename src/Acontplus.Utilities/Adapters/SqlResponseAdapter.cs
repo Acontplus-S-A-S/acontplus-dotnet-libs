@@ -15,8 +15,8 @@ public static class SqlResponseAdapter
         if (response.IsSuccess)
         {
             return response.Content != null
-                ? Results.Ok(ApiResponse<dynamic>.Success(data: response.Content, message: response.Message))
-                : Results.Ok(ApiResponse.Success(message: response.Message));
+                ? Results.Ok(ApiResponse<dynamic>.Success(data: response.Content, options: new ApiResponseOptions { Message = response.Message }))
+                : Results.Ok(ApiResponse.Success(new ApiResponseOptions { Message = response.Message }));
         }
 
         var (statusCode, error) = MapSqlServerError(response.Code, response.Message);

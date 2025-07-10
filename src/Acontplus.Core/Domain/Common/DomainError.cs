@@ -205,14 +205,6 @@ public readonly record struct DomainError(
 
     public HttpStatusCode GetHttpStatusCode() => Type.ToHttpStatusCode();
 
-    public ApiResponse<T> ToApiResponse<T>(string? correlationId = null) =>
-        ApiResponse<T>.Failure(
-            error: this.ToApiError(),
-            message: Message,
-            correlationId: correlationId,
-            statusCode: GetHttpStatusCode()
-        );
-
     private string GetHelpUrl() => Type switch
     {
         ErrorType.Validation => $"https://errors.acontplus.com/validation/{Code.ToLowerInvariant()}",

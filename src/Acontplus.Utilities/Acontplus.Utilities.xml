@@ -77,20 +77,23 @@
             Generic method to serialize any object to JSON
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToBaseResponse``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
         <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
             <summary>
-            Converts ApiResponse to IActionResult with full status code support
+            Converts base ApiResponse to IActionResult with full status code support
             </summary>
         </member>
         <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
             <summary>
-            Converts ApiResponse to IResult for Minimal APIs with full status code support
+            Converts ApiResponse to IResult for Minimal APIs
             </summary>
         </member>
         <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithPagination(System.Collections.Generic.Dictionary{System.String,System.Object},System.Int32,System.Int32,System.Int64,System.Func{System.Int32,System.String})">
             <summary>
             Adds pagination metadata with enhanced details
-            </summary> 
+            </summary>
         </member>
         <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithExecutionTime(System.Collections.Generic.Dictionary{System.String,System.Object},System.TimeSpan,System.Int32)">
             <summary>

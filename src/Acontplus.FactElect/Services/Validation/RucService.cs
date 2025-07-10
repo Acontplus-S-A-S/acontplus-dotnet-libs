@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Acontplus.FactElect.Services.Validation;
+﻿namespace Acontplus.FactElect.Services.Validation;
 
 public class RucService(IServiceProvider serviceProvider) : IRucService
 {

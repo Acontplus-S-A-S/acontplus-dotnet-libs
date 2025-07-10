@@ -62,15 +62,7 @@ try
     try
     {
         builder.Services.AddApplicationServices(builder.Configuration); // <--- This is a likely suspect
-        builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter(System.Text.Json.JsonNamingPolicy.CamelCase));
-            });
 
-        builder.Services.AddOpenApi();
-
-        JsonConfigurationService.ConfigureAspNetCore(builder.Services, useStrictMode: false);
 
 
         //builder.Services.AddDbContextPool<TestContext>(options =>
