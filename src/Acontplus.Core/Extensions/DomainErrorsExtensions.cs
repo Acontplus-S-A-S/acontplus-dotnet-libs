@@ -2,20 +2,22 @@
 
 public static class DomainErrorsExtensions
 {
-    public static IEnumerable<ApiError> ToApiErrors(this DomainErrors errors)
-        => errors.Errors.Select(e => e.ToApiError());
+    public static IReadOnlyList<ApiError>? ToApiErrors(this DomainErrors errors)
+        => errors.Errors.Select(e => e.ToApiError()) as IReadOnlyList<ApiError>;
 
     public static ApiResponse<T> ToApiResponse<T>(
         this DomainErrors errors,
         string? correlationId = null)
     {
         var mostSevereError = errors.GetMostSevereErrorType();
-        return ApiResponse<T>.Failure(
-            errors: errors.ToApiErrors(),
-            message: errors.GetAggregateErrorMessage(),
-            correlationId: correlationId,
-            statusCode: mostSevereError.ToHttpStatusCode()
-        );
+        var options = new ApiResponseOptions
+        {
+            Message = errors.GetAggregateErrorMessage(),
+            CorrelationId = correlationId,
+            StatusCode = mostSevereError.ToHttpStatusCode()
+        };
+
+        return ApiResponse<T>.Failure(errors.ToApiErrors(), options);
     }
 
     public static ApiError[] ToApiErrorArray(this DomainErrors errors)

@@ -45,12 +45,16 @@ public static class DomainErrorExtensions
         string? correlationId = null,
         DomainWarnings? warnings = null)
     {
-        return ApiResponse<T>.Failure(
-            error: error.ToApiError(),
-            message: error.Message,
-            correlationId: correlationId,
-            statusCode: error.Type.ToHttpStatusCode(),
-            warnings: warnings?.ToApiErrors());
+        var options = new ApiResponseOptions
+        {
+            Message = error.Message,
+            Errors = new[] { error.ToApiError() },
+            Warnings = warnings?.ToApiErrors(),
+            CorrelationId = correlationId,
+            StatusCode = error.Type.ToHttpStatusCode()
+        };
+
+        return ApiResponse<T>.Failure(new[] { error.ToApiError() }, options);
     }
 
     public static ApiResponse<T> ToApiResponse<T>(
@@ -59,12 +63,16 @@ public static class DomainErrorExtensions
         DomainWarnings? warnings = null)
     {
         var primaryError = errors.GetMostSevereErrorType();
-        return ApiResponse<T>.Failure(
-            errors: errors.ToApiErrors(),
-            message: errors.GetAggregateErrorMessage(),
-            correlationId: correlationId,
-            statusCode: primaryError.ToHttpStatusCode(),
-            warnings: warnings?.ToApiErrors());
+        var options = new ApiResponseOptions
+        {
+            Message = errors.GetAggregateErrorMessage(),
+            Errors = errors.ToApiErrors(),
+            Warnings = warnings?.ToApiErrors(),
+            CorrelationId = correlationId,
+            StatusCode = primaryError.ToHttpStatusCode()
+        };
+
+        return ApiResponse<T>.Failure(errors.ToApiErrors(), options);
     }
 
     public static ApiResponse<T> ToApiResponse<T>(
@@ -74,16 +82,20 @@ public static class DomainErrorExtensions
     {
         var errorList = errors.ToList();
         var primaryError = errorList.GetMostSevereError();
-        return ApiResponse<T>.Failure(
-            errors: errorList.ToApiErrors(),
-            message: primaryError.Message,
-            correlationId: correlationId,
-            statusCode: primaryError.Type.ToHttpStatusCode(),
-            warnings: warnings?.ToApiErrors());
+        var options = new ApiResponseOptions
+        {
+            Message = primaryError.Message,
+            Errors = errorList.ToApiErrors(),
+            Warnings = warnings?.ToApiErrors(),
+            CorrelationId = correlationId,
+            StatusCode = primaryError.Type.ToHttpStatusCode()
+        };
+
+        return ApiResponse<T>.Failure(errorList.ToApiErrors(), options);
     }
 
-    public static IEnumerable<ApiError> ToApiErrors(this IEnumerable<DomainError> errors)
-        => errors.Select(e => e.ToApiError());
+    public static IReadOnlyList<ApiError>? ToApiErrors(this IReadOnlyList<DomainError> errors)
+        => (IReadOnlyList<ApiError>?)errors.Select(e => e.ToApiError());
 
     public static DomainError GetMostSevereError(this IEnumerable<DomainError> errors)
     {

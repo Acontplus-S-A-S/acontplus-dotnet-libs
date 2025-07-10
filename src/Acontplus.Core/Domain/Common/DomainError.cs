@@ -205,13 +205,17 @@ public readonly record struct DomainError(
 
     public HttpStatusCode GetHttpStatusCode() => Type.ToHttpStatusCode();
 
-    public ApiResponse<T> ToApiResponse<T>(string? correlationId = null) =>
-        ApiResponse<T>.Failure(
-            error: this.ToApiError(),
-            message: Message,
-            correlationId: correlationId,
-            statusCode: GetHttpStatusCode()
-        );
+    public ApiResponse<T> ToApiResponse<T>(string? correlationId = null)
+    {
+        var options = new ApiResponseOptions
+        {
+            Message = Message,
+            CorrelationId = correlationId,
+            StatusCode = GetHttpStatusCode()
+        };
+
+        return ApiResponse<T>.Failure(new[] { this.ToApiError() }, options);
+    }
 
     private string GetHelpUrl() => Type switch
     {

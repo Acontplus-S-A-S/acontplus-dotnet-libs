@@ -2,8 +2,8 @@
 
 public static class DomainWarningsExtensions
 {
-    public static IEnumerable<ApiError> ToApiErrors(this DomainWarnings warnings)
-        => warnings.Warnings.Select(w => w.ToApiError());
+    public static IReadOnlyList<ApiError>? ToApiErrors(this DomainWarnings warnings)
+        => (IReadOnlyList<ApiError>?)warnings.Warnings.Select(w => w.ToApiError());
 
     public static ApiError[] ToApiErrorArray(this DomainWarnings warnings)
         => warnings.ToApiErrors().ToArray();
@@ -53,10 +53,7 @@ public static class SuccessWithWarningsExtensions
         string? correlationId = null)
     {
         return ApiResponse<T>.Success(
-            data: result.Value,
-            warnings: result.Warnings?.ToApiErrors(),
-            message: "Operation completed successfully",
-            correlationId: correlationId);
+            data: result.Value);
     }
 
     public static SuccessWithWarnings<T> WithWarning<T>(

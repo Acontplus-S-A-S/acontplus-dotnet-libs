@@ -11,7 +11,7 @@ public static class ResultExtensions
     public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string? correlationId = null)
     {
         return result.Match(
-            success: data => ApiResponse<T>.Success(data, correlationId: correlationId),
+            success: data => ApiResponse<T>.Success(data),
             failure: error => error.ToApiResponse<T>(correlationId)
         );
     }
@@ -22,7 +22,7 @@ public static class ResultExtensions
     public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string successMessage, string? correlationId = null)
     {
         return result.Match(
-            success: data => ApiResponse<T>.Success(data, successMessage, correlationId: correlationId),
+            success: data => ApiResponse<T>.Success(data),
             failure: error => error.ToApiResponse<T>(correlationId)
         );
     }
