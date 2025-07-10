@@ -1,7 +1,15 @@
 ﻿namespace Acontplus.Utilities.Adapters;
 
+/// <summary>
+/// Provides extension methods to adapt SQL stored procedure responses to API results.
+/// </summary>
 public static class SqlResponseAdapter
 {
+    /// <summary>
+    /// Converts a <see cref="SpResponse"/> to an <see cref="IResult"/> suitable for Minimal APIs, mapping SQL errors to HTTP status codes and error messages.
+    /// </summary>
+    /// <param name="response">The stored procedure response to convert.</param>
+    /// <returns>An <see cref="IResult"/> representing the API response.</returns>
     public static IResult ToApiResult(SpResponse response)
     {
         if (response.IsSuccess)
@@ -18,6 +26,12 @@ public static class SqlResponseAdapter
             statusCode: statusCode);
     }
 
+    /// <summary>
+    /// Maps a SQL Server error code and message to an HTTP status code and <see cref="DomainError"/>.
+    /// </summary>
+    /// <param name="errorCode">The SQL error code as a string.</param>
+    /// <param name="message">The error message.</param>
+    /// <returns>A tuple containing the HTTP status code and a <see cref="DomainError"/>.</returns>
     private static (int statusCode, DomainError error) MapSqlServerError(string errorCode, string message)
     {
         // Try to parse SQL Server error number from error code
@@ -31,6 +45,12 @@ public static class SqlResponseAdapter
             DomainError.Internal("SERVER_ERROR", message ?? ApiResponseHelpers.GetDefaultErrorMessage(System.Net.HttpStatusCode.InternalServerError)));
     }
 
+    /// <summary>
+    /// Maps a SQL Server error number to an HTTP status code and <see cref="DomainError"/> with a user-friendly message.
+    /// </summary>
+    /// <param name="sqlErrorNumber">The SQL Server error number.</param>
+    /// <param name="message">The error message.</param>
+    /// <returns>A tuple containing the HTTP status code and a <see cref="DomainError"/>.</returns>
     private static (int statusCode, DomainError error) MapSqlErrorNumber(int sqlErrorNumber, string message)
     {
         return sqlErrorNumber switch
