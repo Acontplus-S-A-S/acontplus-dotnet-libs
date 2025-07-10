@@ -4,6 +4,9 @@ using System.Text.Json;
 
 namespace Acontplus.Services.Middleware;
 
+/// <summary>
+/// Middleware for centralized API exception handling, logging, and standardized error responses.
+/// </summary>
 public class ApiExceptionMiddleware(
     RequestDelegate next,
     ILogger<ApiExceptionMiddleware> logger,
@@ -15,6 +18,10 @@ public class ApiExceptionMiddleware(
         WriteIndented = options.IncludeDebugDetailsInResponse
     };
 
+    /// <summary>
+    /// Handles the HTTP request and catches exceptions, returning standardized error responses.
+    /// </summary>
+    /// <param name="context">The HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var correlationId = GetCorrelationId(context);

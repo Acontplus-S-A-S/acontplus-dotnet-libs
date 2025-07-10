@@ -4,15 +4,23 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Services</PackageId>
-		<Version>1.0.11</Version>
+		<Version>1.0.12</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
-		<Description>Lib to use common services config</Description>
-		<PackageTags>uuthentication;claims;services;api;versioning;middlewares</PackageTags>
+		<Description>Modern .NET 9+ library for API services, authentication, claims, middleware, and configuration. Includes JWT, user context, and exception handling.</Description>
+		<PackageTags>dotnet9;services;authentication;claims;api;versioning;middlewares;jwt;configuration</PackageTags>
 		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
+		<PackageReleaseNotes>Updated for .NET 9+ with modern C# features, improved middleware, and enhanced documentation.</PackageReleaseNotes>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="README.md" />

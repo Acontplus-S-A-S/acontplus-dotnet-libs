@@ -3,8 +3,17 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Acontplus.Services.Extensions;
 
+/// <summary>
+/// Provides extension methods for configuring global exception handling middleware.
+/// </summary>
 public static class ExceptionHandlingExtensions
 {
+    /// <summary>
+    /// Adds the Acontplus exception handling middleware to the application pipeline.
+    /// </summary>
+    /// <param name="app">The application builder.</param>
+    /// <param name="configure">Optional configuration for exception handling options.</param>
+    /// <returns>The application builder.</returns>
     public static IApplicationBuilder UseAcontplusExceptionHandling(
         this IApplicationBuilder app,
         Action<ExceptionHandlingOptions>? configure = null)
