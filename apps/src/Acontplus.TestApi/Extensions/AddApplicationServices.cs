@@ -1,4 +1,4 @@
-﻿using Acontplus.Core.Extensions;
+﻿using Acontplus.Services.Configuration;
 
 namespace Acontplus.TestApi.Extensions;
 
@@ -10,11 +10,16 @@ public static class ApplicationServicesExtensions
 
 
         services.AddHttpContextAccessor();
-        //var serviceProvider = services.BuildServiceProvider();
-        //var loggingOptions = serviceProvider.GetService<LoggingOptions>();
 
-        //// Dynamically update the log level
-        //loggingOptions.UpdateLogLevel(LogEventLevel.Debug);
+        services.AddOpenApi();
+
+
+
+
+        JsonConfigurationService.ConfigureAspNetCore(services, useStrictMode: false);
+
+        JsonConfigurationService.RegisterJsonConfiguration(services);
+
         return services;
     }
 }
