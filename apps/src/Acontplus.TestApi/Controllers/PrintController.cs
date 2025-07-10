@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApi.Controllers
+﻿using Acontplus.Persistence.SqlServer.Validation;
+
+namespace Acontplus.TestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

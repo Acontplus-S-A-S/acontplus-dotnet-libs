@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApi.Controllers
+﻿using Acontplus.Utilities.Data;
+
+namespace Acontplus.TestApi.Controllers
 {
     public class SimpleModel
     {

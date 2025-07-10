@@ -4,7 +4,9 @@ using Amazon.SimpleEmailV2.Model;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using Acontplus.Core.Extensions;
 using Template = Scriban.Template;
 
 namespace Acontplus.Notifications.Services;
@@ -437,7 +439,7 @@ public sealed class AmazonSesService : IMailKitService, IDisposable
         var templateContent = await File.ReadAllTextAsync(templatePath, ct).ConfigureAwait(false);
         var templateData = string.IsNullOrEmpty(jsonData)
             ? new Dictionary<string, object>()
-            : JsonConvert.DeserializeObject<IDictionary<string, object>>(jsonData) ?? new Dictionary<string, object>();
+            : JsonExtensions.DeserializeModern<IDictionary<string, object>>(jsonData) ?? new Dictionary<string, object>();
 
         // Process logo if provided
         if (!string.IsNullOrEmpty(logo))

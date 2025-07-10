@@ -12,7 +12,6 @@ global using Acontplus.FactElect.Models.Responses;
 global using Acontplus.Utilities.Format;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
-global using Newtonsoft.Json;
 global using System.Data;
 global using System.Net;
 global using System.Net.Http.Headers;

@@ -1,10 +1,8 @@
 ﻿using System.Collections;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Xml;
 
 
-namespace Acontplus.Data;
+namespace Acontplus.Utilities.Data;
 
 /// <summary>
 /// Data Converters
@@ -16,12 +14,8 @@ public static class DataConverters
     /// </summary>
     private static JsonSerializerOptions GetDefaultOptions()
     {
-        return new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true,
-            Converters = { new JsonStringEnumConverter() }
-        };
+        // Use the new DefaultOptions from JsonExtensions
+        return JsonExtensions.DefaultOptions;
     }
 
     /// <summary>
@@ -54,58 +48,14 @@ public static class DataConverters
     /// <summary>
     /// Converts a DataSet to JSON string
     /// </summary>
-    public static string DataSetToJson(DataSet ds, bool oldConverter = false)
+    public static string DataSetToJson(DataSet dataSet)
     {
-        if (ds == null)
-            return "null";
-
-        var namingPolicy = JsonNamingPolicy.CamelCase;
-
-        if (oldConverter)
+        var dataSetDict = new Dictionary<string, object>();
+        foreach (DataTable table in dataSet.Tables)
         {
-            var root = new List<object>();
-            foreach (DataTable dt in ds.Tables)
-            {
-                var tableRows = new List<Dictionary<string, object>>();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    var row = new Dictionary<string, object>();
-                    foreach (DataColumn col in dt.Columns)
-                    {
-                        // Apply camelCase naming to column names
-                        var camelCaseName = namingPolicy.ConvertName(col.ColumnName);
-                        row[camelCaseName] = dr[col] == DBNull.Value ? null : dr[col];
-                    }
-                    tableRows.Add(row);
-                }
-                root.Add(tableRows);
-            }
-            return JsonSerializer.Serialize(root, GetDefaultOptions());
+            dataSetDict[table.TableName] = ConvertDataTableToList(table);
         }
-
-        // Create a dictionary of table name to rows for modern format
-        var dataSetDict = new Dictionary<string, List<Dictionary<string, object>>>();
-
-        foreach (DataTable dt in ds.Tables)
-        {
-            var tableRows = new List<Dictionary<string, object>>();
-            foreach (DataRow dr in dt.Rows)
-            {
-                var row = new Dictionary<string, object>();
-                foreach (DataColumn col in dt.Columns)
-                {
-                    // Apply camelCase naming to column names
-                    var camelCaseName = namingPolicy.ConvertName(col.ColumnName);
-                    row[camelCaseName] = dr[col] == DBNull.Value ? null : dr[col];
-                }
-                tableRows.Add(row);
-            }
-            // Also apply camelCase to table names
-            var camelCaseTableName = namingPolicy.ConvertName(dt.TableName);
-            dataSetDict[camelCaseTableName] = tableRows;
-        }
-
-        return JsonSerializer.Serialize(dataSetDict, GetDefaultOptions());
+        return dataSetDict.SerializeModern();
     }
     /// <summary>
     /// Converts a JSON string to DataTable
@@ -115,18 +65,13 @@ public static class DataConverters
         if (string.IsNullOrWhiteSpace(json))
             return new DataTable();
 
-        var dt = Newtonsoft.Json.JsonConvert.DeserializeObject(json, typeof(DataTable)) as DataTable;
+        var dt = json.DeserializeModern<DataTable>();
         return dt;
     }
 
     public static string SerializeDictionary(Dictionary<string, object> data)
     {
-        return Newtonsoft.Json.JsonConvert.SerializeObject(data,
-            new Newtonsoft.Json.JsonSerializerSettings
-            {
-                ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver { NamingStrategy = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy() },
-                Formatting = (Newtonsoft.Json.Formatting)Formatting.Indented
-            });
+        return data.SerializeModern();
     }
     /// <summary>
     /// Helper method to sanitize values for serialization
@@ -238,5 +183,16 @@ public static class DataConverters
             var sanitizedData = SanitizeValueForSerialization(data);
             return JsonSerializer.Serialize(sanitizedData, GetDefaultOptions());
         }
+    }
+
+    public static string SerializeWithOptions(object data, JsonSerializerOptions? options = null)
+    {
+        return data.SerializeModern(options == JsonExtensions.PrettyOptions);
+    }
+
+    public static string SerializeSanitizedData(object data)
+    {
+        var sanitizedData = SanitizeValueForSerialization(data);
+        return sanitizedData.SerializeModern();
     }
 }

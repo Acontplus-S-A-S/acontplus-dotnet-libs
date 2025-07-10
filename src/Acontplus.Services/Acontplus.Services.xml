@@ -4,6 +4,68 @@
         <name>Acontplus.Services</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Services.Configuration.JsonConfigurationService">
+            <summary>
+            Service for configuring JSON serialization in enterprise applications
+            Provides centralized configuration for System.Text.Json across the application
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetDefaultOptions">
+            <summary>
+            Get default JSON serializer options optimized for enterprise applications
+            </summary>
+            <returns>Configured JsonSerializerOptions</returns>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetPrettyOptions">
+            <summary>
+            Get JSON options with pretty formatting for development/debugging
+            </summary>
+            <returns>Configured JsonSerializerOptions with formatting</returns>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetStrictOptions">
+            <summary>
+            Get strict JSON options for critical APIs
+            </summary>
+            <returns>Configured JsonSerializerOptions with strict validation</returns>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.ConfigureAspNetCore(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
+            <summary>
+            Configure JSON options for ASP.NET Core applications
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="useStrictMode">Whether to use strict JSON validation</param>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.ConfigureAspNetCore(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean,System.Boolean)">
+            <summary>
+            Configure JSON options for ASP.NET Core with custom environment settings
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="isDevelopment">Whether the application is in development mode</param>
+            <param name="useStrictMode">Whether to use strict JSON validation</param>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.CopyOptionsTo(System.Text.Json.JsonSerializerOptions,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            Copy JSON serializer options from source to target
+            </summary>
+            <param name="source">Source options</param>
+            <param name="target">Target options</param>
+        </member>
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.RegisterJsonConfiguration(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register JSON configuration as a singleton service
+            </summary>
+            <param name="services">Service collection</param>
+        </member>
+        <member name="T:Acontplus.Services.Configuration.IJsonConfigurationProvider">
+            <summary>
+            Interface for JSON configuration provider
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.Configuration.JsonConfigurationProvider">
+            <summary>
+            Implementation of JSON configuration provider
+            </summary>
+        </member>
         <member name="T:Acontplus.Services.Configuration.RequestContextOptions">
             <summary>
             Options for configuring request context and security headers.

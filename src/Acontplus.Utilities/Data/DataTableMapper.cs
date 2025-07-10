@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Text.Json;
 
-namespace Acontplus.Data;
+namespace Acontplus.Utilities.Data;
 
 public static class DataTableMapper
 {
@@ -192,7 +192,7 @@ public static class DataTableMapper
                 {
                     try
                     {
-                        return JsonConvert.DeserializeObject(jsonStr, targetType);
+                        return JsonSerializer.Deserialize(jsonStr, targetType, JsonExtensions.DefaultOptions);
                     }
                     catch
                     {

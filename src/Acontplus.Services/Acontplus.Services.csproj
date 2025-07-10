@@ -4,7 +4,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Services</PackageId>
-		<Version>1.0.12</Version>
+		<Version>1.1.0</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
 		<Description>Modern .NET 9+ library for API services, authentication, claims, middleware, and configuration. Includes JWT, user context, and exception handling.</Description>

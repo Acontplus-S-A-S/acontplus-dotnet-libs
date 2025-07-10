@@ -31,6 +31,38 @@ A modern .NET 9+ foundational library providing enterprise-grade components with
 - **Source Generators** - JSON serialization with source generation for performance
 - **Nullable Reference Types** - Full nullable reference type support
 
+### 🆕 Modern JSON Extensions
+
+Acontplus.Core provides high-performance, secure JSON utilities via `Extensions/JsonExtensions`:
+
+- **Enterprise-optimized serialization**: Consistent, camelCase, safe, and fast.
+- **Multiple options**: Default, Pretty (for debugging), and Strict (for APIs).
+- **Extension methods**: For easy serialization, deserialization, and deep cloning.
+
+#### Usage Examples
+
+```csharp
+using Acontplus.Core.Extensions;
+
+// Serialize with enterprise defaults
+var json = myObject.SerializeModern();
+
+// Serialize with pretty formatting (for debugging)
+var prettyJson = myObject.SerializeModern(pretty: true);
+
+// Deserialize with enterprise defaults
+var obj = jsonString.DeserializeModern<MyType>();
+
+// Safe deserialization with fallback
+var objOrDefault = jsonString.DeserializeModernSafe<MyType>(fallback: new MyType());
+
+// Deep clone via JSON
+var clone = myObject.CloneViaJson();
+
+// Use options directly (for ASP.NET Core, etc.)
+var options = JsonExtensions.DefaultOptions;
+```
+
 ## 📦 Installation
 
 ### NuGet Package Manager

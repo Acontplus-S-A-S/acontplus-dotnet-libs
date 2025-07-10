@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using Acontplus.Core.Extensions;
 
 namespace Acontplus.TestApi.Extensions;
 
@@ -16,13 +15,6 @@ public static class ApplicationServicesExtensions
 
         //// Dynamically update the log level
         //loggingOptions.UpdateLogLevel(LogEventLevel.Debug);
-
-        services.ConfigureHttpJsonOptions(options =>
-        {
-            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-            options.SerializerOptions.TypeInfoResolver = ApiResponseJsonContext.Default;
-        });
         return services;
     }
 }
