@@ -319,21 +319,21 @@
         </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
-            Modern JSON extensions for .NET 9 enterprise applications
+            Modern JSON extensions for .NET enterprise applications
             Provides high-performance, secure JSON operations with System.Text.Json
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Extensions.JsonExtensions.DefaultOptions">
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.DefaultOptions">
             <summary>
             Default JSON serializer options optimized for enterprise applications
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Extensions.JsonExtensions.PrettyOptions">
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.PrettyOptions">
             <summary>
             JSON options for development/debugging with pretty formatting
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Extensions.JsonExtensions.StrictOptions">
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.StrictOptions">
             <summary>
             Strict JSON options for APIs that require exact matching
             </summary>
@@ -342,75 +342,21 @@
             <summary>
             Deserialize JSON with enterprise-optimized settings
             </summary>
-            <typeparam name="T">Type to deserialize to</typeparam>
-            <param name="json">JSON string</param>
-            <returns>Deserialized object</returns>
-            <exception cref="T:System.Text.Json.JsonException">When JSON is invalid or cannot be deserialized</exception>
         </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeModernSafe``1(System.String,``0)">
             <summary>
             Safely deserialize JSON with fallback value
             </summary>
-            <typeparam name="T">Type to deserialize to</typeparam>
-            <param name="json">JSON string</param>
-            <param name="fallback">Fallback value if deserialization fails</param>
-            <returns>Deserialized object or fallback</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.SerializeModern``1(``0,System.Boolean)">
             <summary>
             Serialize object to JSON with enterprise-optimized settings
             </summary>
-            <typeparam name="T">Type to serialize</typeparam>
-            <param name="obj">Object to serialize</param>
-            <param name="pretty">Whether to use pretty formatting (for development)</param>
-            <returns>JSON string</returns>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeStrict``1(System.String)">
-            <summary>
-            Deserialize with strict validation (for critical APIs)
-            </summary>
-            <typeparam name="T">Type to deserialize to</typeparam>
-            <param name="json">JSON string</param>
-            <returns>Deserialized object</returns>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.JsonExtensions.IsValidJson(System.String)">
-            <summary>
-            Validate if string is valid JSON
-            </summary>
-            <param name="json">JSON string to validate</param>
-            <returns>True if valid JSON</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.CloneViaJson``1(``0)">
             <summary>
             Clone object using JSON serialization (deep clone)
             </summary>
-            <typeparam name="T">Type to clone</typeparam>
-            <param name="obj">Object to clone</param>
-            <returns>Cloned object</returns>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.JsonExtensions.ToJsonDocument``1(``0)">
-            <summary>
-            Convert object to JsonDocument for advanced manipulation
-            </summary>
-            <typeparam name="T">Type to convert</typeparam>
-            <param name="obj">Object to convert</param>
-            <returns>JsonDocument</returns>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.JsonExtensions.GetJsonProperty(System.String,System.String)">
-            <summary>
-            Get JSON property value safely
-            </summary>
-            <param name="json">JSON string</param>
-            <param name="propertyName">Property name</param>
-            <returns>Property value or null</returns>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.JsonExtensions.MergeJson(System.String,System.String)">
-            <summary>
-            Merge two JSON objects (second object overwrites first)
-            </summary>
-            <param name="json1">First JSON string</param>
-            <param name="json2">Second JSON string</param>
-            <returns>Merged JSON string</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.NullableExtensions.OrKeep(System.Nullable{System.Boolean},System.Boolean)">
             <summary>
