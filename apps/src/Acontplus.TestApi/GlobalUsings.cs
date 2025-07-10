@@ -5,7 +5,6 @@ global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.DTOs.Shared;
 global using Acontplus.Core.Validation;
-global using Acontplus.Data;
 global using Acontplus.FactElect.Helpers;
 global using Acontplus.FactElect.Interfaces.Services;
 global using Acontplus.FactElect.Services.Documents;

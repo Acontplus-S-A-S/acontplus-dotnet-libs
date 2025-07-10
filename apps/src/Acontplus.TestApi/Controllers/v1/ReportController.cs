@@ -1,4 +1,7 @@
-﻿namespace Acontplus.TestApi.Controllers.v1;
+﻿using Acontplus.Persistence.SqlServer.Validation;
+using Acontplus.Utilities.Data;
+
+namespace Acontplus.TestApi.Controllers.v1;
 
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]

@@ -7,7 +7,6 @@ global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.Extensions;
-global using Acontplus.Data;
 global using Acontplus.FactElect.Interfaces.Services;
 global using Acontplus.TestApplication.DTOs;
 global using Acontplus.TestApplication.Interfaces;
