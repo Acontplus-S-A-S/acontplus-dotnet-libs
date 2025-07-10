@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Acontplus.Core.DTOs.Responses;
 
 /// <summary>
-/// Configuration object for creating API responses.
+/// Configuration object for creating API responses (input only)
 /// </summary>
 public sealed class ApiResponseOptions
 {
@@ -20,7 +20,7 @@ public sealed class ApiResponseOptions
 }
 
 /// <summary>
-/// Standard API response wrapper for all endpoints.
+/// Standard API response wrapper for all endpoints
 /// </summary>
 public record ApiResponse<T>
 {
@@ -33,25 +33,36 @@ public record ApiResponse<T>
     public IReadOnlyDictionary<string, object>? Metadata { get; init; }
     public string? CorrelationId { get; init; }
     public string? TraceId { get; init; }
-    public string Timestamp { get; init; } = null!;
+    public string Timestamp { get; init; }
 
     [JsonIgnore]
-    public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.OK;
+    public HttpStatusCode StatusCode { get; init; }
 
-    // Primary constructor with reduced parameters
-    public ApiResponse(ResponseStatus status, string code, T? data, ApiResponseOptions? options = null)
+    // Primary constructor with all properties
+    public ApiResponse(
+        ResponseStatus status,
+        string code,
+        T? data,
+        string? message,
+        IReadOnlyList<ApiError>? errors,
+        IReadOnlyList<ApiError>? warnings,
+        IReadOnlyDictionary<string, object>? metadata,
+        string? correlationId,
+        string? traceId,
+        string? timestamp,
+        HttpStatusCode statusCode)
     {
         Status = status;
         Code = code;
         Data = data;
-        Message = options?.Message;
-        Errors = options?.Errors;
-        Warnings = options?.Warnings;
-        Metadata = options?.Metadata;
-        CorrelationId = options?.CorrelationId;
-        TraceId = options?.TraceId ?? Activity.Current?.Id;
-        Timestamp = options?.Timestamp ?? DateTimeOffset.UtcNow.ToString("O");
-        StatusCode = options?.StatusCode ?? HttpStatusCode.OK;
+        Message = message;
+        Errors = errors;
+        Warnings = warnings;
+        Metadata = metadata;
+        CorrelationId = correlationId;
+        TraceId = traceId ?? Activity.Current?.Id;
+        Timestamp = timestamp ?? DateTimeOffset.UtcNow.ToString("O");
+        StatusCode = statusCode;
     }
 
     [JsonIgnore] public bool IsSuccess => Status == ResponseStatus.Success;
@@ -60,92 +71,121 @@ public record ApiResponse<T>
     [JsonIgnore] public bool HasErrors => Errors?.Count > 0;
     [JsonIgnore] public bool HasData => Data is not null;
 
-    // --- Static Factory/Builder Methods ---
-
+    // Factory methods using options pattern
     public static ApiResponse<T> Success(T data, ApiResponseOptions? options = null)
     {
         var statusCode = options?.StatusCode ?? HttpStatusCode.OK;
-        var responseOptions = new ApiResponseOptions
-        {
-            Message = options?.Message ?? "Operation completed successfully.",
-            Errors = Array.Empty<ApiError>(),
-            Warnings = options?.Warnings,
-            Metadata = options?.Metadata,
-            CorrelationId = options?.CorrelationId,
-            TraceId = options?.TraceId,
-            Timestamp = options?.Timestamp,
-            StatusCode = statusCode
-        };
-
-        return new ApiResponse<T>(ResponseStatus.Success, ((int)statusCode).ToString(), data, responseOptions);
+        return new ApiResponse<T>(
+            status: ResponseStatus.Success,
+            code: ((int)statusCode).ToString(),
+            data: data,
+            message: options?.Message ?? "Operation completed successfully.",
+            errors: Array.Empty<ApiError>(),
+            warnings: options?.Warnings,
+            metadata: options?.Metadata,
+            correlationId: options?.CorrelationId,
+            traceId: options?.TraceId,
+            timestamp: options?.Timestamp,
+            statusCode: statusCode
+        );
     }
 
     public static ApiResponse<T> Failure(ApiError error, ApiResponseOptions? options = null)
-    => Failure(new[] { error }, options);
+        => Failure(new[] { error }, options);
 
     public static ApiResponse<T> Failure(IReadOnlyList<ApiError>? errors, ApiResponseOptions? options = null)
     {
         var statusCode = options?.StatusCode ?? HttpStatusCode.BadRequest;
-        var responseOptions = new ApiResponseOptions
-        {
-            Message = options?.Message ?? "An error occurred.",
-            Errors = errors,
-            Warnings = options?.Warnings,
-            Metadata = options?.Metadata,
-            CorrelationId = options?.CorrelationId,
-            TraceId = options?.TraceId,
-            Timestamp = options?.Timestamp,
-            StatusCode = statusCode
-        };
-
-        return new ApiResponse<T>(ResponseStatus.Error, ((int)statusCode).ToString(), default, responseOptions);
+        return new ApiResponse<T>(
+            status: ResponseStatus.Error,
+            code: ((int)statusCode).ToString(),
+            data: default,
+            message: options?.Message ?? "An error occurred.",
+            errors: errors,
+            warnings: options?.Warnings,
+            metadata: options?.Metadata,
+            correlationId: options?.CorrelationId,
+            traceId: options?.TraceId,
+            timestamp: options?.Timestamp,
+            statusCode: statusCode
+        );
     }
 
     public static ApiResponse<T> Warning(T data, IReadOnlyList<ApiError> warnings, ApiResponseOptions? options = null)
     {
         var statusCode = options?.StatusCode ?? HttpStatusCode.OK;
-        var responseOptions = new ApiResponseOptions
-        {
-            Message = options?.Message ?? "Operation completed with warnings.",
-            Errors = Array.Empty<ApiError>(),
-            Warnings = warnings,
-            Metadata = options?.Metadata,
-            CorrelationId = options?.CorrelationId,
-            TraceId = options?.TraceId,
-            Timestamp = options?.Timestamp,
-            StatusCode = statusCode
-        };
-
-        return new ApiResponse<T>(ResponseStatus.Warning, ((int)statusCode).ToString(), data, responseOptions);
+        return new ApiResponse<T>(
+            status: ResponseStatus.Warning,
+            code: ((int)statusCode).ToString(),
+            data: data,
+            message: options?.Message ?? "Operation completed with warnings.",
+            errors: Array.Empty<ApiError>(),
+            warnings: warnings,
+            metadata: options?.Metadata,
+            correlationId: options?.CorrelationId,
+            traceId: options?.TraceId,
+            timestamp: options?.Timestamp,
+            statusCode: statusCode
+        );
     }
 }
 
-// Non-generic version for responses without data
-public sealed record ApiResponse(ResponseStatus Status, string Code, object? Data = null, ApiResponseOptions? Options = null)
-    : ApiResponse<object?>(Status, Code, Data, Options)
+// Non-generic version
+public sealed record ApiResponse : ApiResponse<object?>
 {
-    // Static factory methods for non-generic version
-    public static ApiResponse Success(ApiResponseOptions? options = null) =>
-        new(ResponseStatus.Success, ((int)(options?.StatusCode ?? HttpStatusCode.OK)).ToString(), null, options);
+    private ApiResponse(
+        ResponseStatus status,
+        string code,
+        object? data,
+        string? message,
+        IReadOnlyList<ApiError>? errors,
+        IReadOnlyList<ApiError>? warnings,
+        IReadOnlyDictionary<string, object>? metadata,
+        string? correlationId,
+        string? traceId,
+        string? timestamp,
+        HttpStatusCode statusCode)
+        : base(status, code, data, message, errors, warnings, metadata,
+              correlationId, traceId, timestamp, statusCode)
+    {
+    }
 
-    public static ApiResponse Failure(IReadOnlyList<ApiError> errors, ApiResponseOptions? options = null)
+    public static new ApiResponse Success(ApiResponseOptions? options = null)
+    {
+        var statusCode = options?.StatusCode ?? HttpStatusCode.OK;
+        return new ApiResponse(
+            status: ResponseStatus.Success,
+            code: ((int)statusCode).ToString(),
+            data: null,
+            message: options?.Message ?? "Operation completed successfully.",
+            errors: Array.Empty<ApiError>(),
+            warnings: options?.Warnings,
+            metadata: options?.Metadata,
+            correlationId: options?.CorrelationId,
+            traceId: options?.TraceId,
+            timestamp: options?.Timestamp,
+            statusCode: statusCode
+        );
+    }
+
+    public static new ApiResponse Failure(IReadOnlyList<ApiError> errors, ApiResponseOptions? options = null)
     {
         var statusCode = options?.StatusCode ?? HttpStatusCode.BadRequest;
-        var responseOptions = new ApiResponseOptions
-        {
-            Message = options?.Message ?? "An error occurred.",
-            Errors = errors,
-            Warnings = options?.Warnings,
-            Metadata = options?.Metadata,
-            CorrelationId = options?.CorrelationId,
-            TraceId = options?.TraceId,
-            Timestamp = options?.Timestamp,
-            StatusCode = statusCode
-        };
-
-        return new ApiResponse(ResponseStatus.Error, ((int)statusCode).ToString(), null, responseOptions);
+        return new ApiResponse(
+            status: ResponseStatus.Error,
+            code: ((int)statusCode).ToString(),
+            data: null,
+            message: options?.Message ?? "An error occurred.",
+            errors: errors,
+            warnings: options?.Warnings,
+            metadata: options?.Metadata,
+            correlationId: options?.CorrelationId,
+            traceId: options?.TraceId,
+            timestamp: options?.Timestamp,
+            statusCode: statusCode
+        );
     }
 
     public static ApiResponse Failure(ApiError error, ApiResponseOptions? options = null)
-    => Failure(new[] { error }, options);
+        => Failure(new[] { error }, options);
 }
