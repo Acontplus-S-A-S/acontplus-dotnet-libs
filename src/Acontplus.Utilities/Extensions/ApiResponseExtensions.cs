@@ -1,9 +1,55 @@
-﻿namespace Acontplus.Utilities.Extensions;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Acontplus.Core.DTOs.Responses;
+
+namespace Acontplus.Utilities.Extensions;
 
 public static class ApiResponseExtensions
 {
     /// <summary>
-    /// Converts ApiResponse to IActionResult with full status code support
+    /// Converts generic ApiResponse<T> to base ApiResponse
+    /// </summary>
+    public static ApiResponse ToBaseResponse<T>(this ApiResponse<T> response)
+    {
+        var options = new ApiResponseOptions
+        {
+            Message = response.Message,
+            Errors = response.Errors,
+            Warnings = response.Warnings,
+            Metadata = response.Metadata,
+            CorrelationId = response.CorrelationId,
+            StatusCode = response.StatusCode,
+            TraceId = response.TraceId,
+            Timestamp = response.Timestamp
+        };
+
+        if (response.IsSuccess)
+        {
+            return ApiResponse.Success(options);
+        }
+        else // Assuming error/warning cases
+        {
+            return ApiResponse.Failure(response.Errors ?? Array.Empty<ApiError>(), options);
+        }
+    }
+    /// <summary>
+    /// Converts ApiResponse<T> to IActionResult
+    /// </summary>
+    public static IActionResult ToActionResult<T>(this ApiResponse<T> response)
+    {
+        return response.ToBaseResponse().ToActionResult();
+    }
+
+    /// <summary>
+    /// Converts ApiResponse<T> to IResult (for Minimal APIs)
+    /// </summary>
+    public static IResult ToMinimalApiResult<T>(this ApiResponse<T> response)
+    {
+        return response.ToBaseResponse().ToMinimalApiResult();
+    }
+
+    /// <summary>
+    /// Converts base ApiResponse to IActionResult with full status code support
     /// </summary>
     public static IActionResult ToActionResult(this ApiResponse response)
     {
@@ -40,7 +86,8 @@ public static class ApiResponseExtensions
             { StatusCode = (int)HttpStatusCode.InternalServerError },
             HttpStatusCode.NotImplemented => new ObjectResult(response)
             { StatusCode = (int)HttpStatusCode.NotImplemented },
-            HttpStatusCode.BadGateway => new ObjectResult(response) { StatusCode = (int)HttpStatusCode.BadGateway },
+            HttpStatusCode.BadGateway => new ObjectResult(response)
+            { StatusCode = (int)HttpStatusCode.BadGateway },
             HttpStatusCode.ServiceUnavailable => new ObjectResult(response)
             { StatusCode = (int)HttpStatusCode.ServiceUnavailable },
             HttpStatusCode.GatewayTimeout => new ObjectResult(response)
@@ -55,7 +102,7 @@ public static class ApiResponseExtensions
     }
 
     /// <summary>
-    /// Converts ApiResponse to IResult for Minimal APIs with full status code support
+    /// Converts ApiResponse to IResult for Minimal APIs
     /// </summary>
     public static IResult ToMinimalApiResult(this ApiResponse response)
     {
@@ -99,7 +146,7 @@ public static class ApiResponseExtensions
 
     /// <summary>
     /// Adds pagination metadata with enhanced details
-    /// </summary> 
+    /// </summary>
     public static Dictionary<string, object> WithPagination(
         this Dictionary<string, object> metadata,
         int page,
@@ -119,7 +166,6 @@ public static class ApiResponseExtensions
             [ApiMetadataKeys.HasPrev] = page > 1
         };
 
-        // Optional HATEOAS links
         if (pageUrlGenerator != null)
         {
             pagination[ApiMetadataKeys.Links] = new
@@ -165,7 +211,6 @@ public static class ApiResponseExtensions
         {
             result[ApiMetadataKeys.CorrelationId] = correlationId;
         }
-
         return result;
     }
 }

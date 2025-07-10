@@ -19,7 +19,7 @@ public static class ResultApiExtensions
         this Result<TValue, DomainError> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IActionResult>(
             value => CreateSuccessResponse(value, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
@@ -29,7 +29,7 @@ public static class ResultApiExtensions
         this Result<TValue, DomainErrors> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IActionResult>(
             value => CreateSuccessResponse(value, correlationId),
             errors => errors.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
@@ -39,7 +39,7 @@ public static class ResultApiExtensions
         this Result<SuccessWithWarnings<TValue>, DomainError> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IActionResult>(
             successWithWarnings => successWithWarnings.ToActionResult(correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
@@ -81,7 +81,7 @@ public static class ResultApiExtensions
         this Result<TValue, DomainError> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IResult>(
             value => CreateSuccessResult(value, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
@@ -91,7 +91,7 @@ public static class ResultApiExtensions
         this Result<TValue, DomainErrors> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IResult>(
             value => CreateSuccessResult(value, correlationId),
             errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
@@ -101,7 +101,7 @@ public static class ResultApiExtensions
         this Result<SuccessWithWarnings<TValue>, DomainError> result,
         string? correlationId = null)
     {
-        return result.Match(
+        return result.Match<IResult>(
             successWithWarnings => successWithWarnings.ToMinimalApiResult(correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
@@ -171,10 +171,13 @@ public static class ResultApiExtensions
     {
         var response = ApiResponse<TValue>.Success(
             data: value,
-            correlationId: correlationId,
-            statusCode: HttpStatusCode.OK
+            new ApiResponseOptions
+            {
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
         );
-        ConfigureResponse?.Invoke(response);
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
         return new OkObjectResult(response);
     }
 
@@ -186,10 +189,13 @@ public static class ResultApiExtensions
         var response = ApiResponse<TValue>.Warning(
             data: value,
             warnings: warnings.ToApiErrors(),
-            correlationId: correlationId,
-            statusCode: HttpStatusCode.OK
+            new ApiResponseOptions
+            {
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
         );
-        ConfigureResponse?.Invoke(response);
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
         return new OkObjectResult(response);
     }
 
@@ -197,10 +203,13 @@ public static class ResultApiExtensions
     {
         var response = ApiResponse<TValue>.Success(
             data: value,
-            correlationId: correlationId,
-            statusCode: HttpStatusCode.OK
+            new ApiResponseOptions
+            {
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
         );
-        ConfigureResponse?.Invoke(response);
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
         return TypedResults.Ok(response);
     }
 
@@ -212,10 +221,13 @@ public static class ResultApiExtensions
         var response = ApiResponse<TValue>.Warning(
             data: value,
             warnings: warnings.ToApiErrors(),
-            correlationId: correlationId,
-            statusCode: HttpStatusCode.OK
+            new ApiResponseOptions
+            {
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
         );
-        ConfigureResponse?.Invoke(response);
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
         return TypedResults.Ok(response);
     }
 

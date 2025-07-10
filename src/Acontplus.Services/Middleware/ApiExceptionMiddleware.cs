@@ -74,11 +74,13 @@ public class ApiExceptionMiddleware(
             .ToList();
 
         return ApiResponse.Failure(
-            errors,
-            message: ex.Message,
-            correlationId: correlationId,
-            statusCode: ex.StatusCode,
-            metadata: CreateStandardMetadata(tenantId));
+            errors, new ApiResponseOptions
+            {
+                Message = "Validation failed",
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.BadRequest,
+                Metadata = CreateStandardMetadata(tenantId)
+            });
     }
 
     private static ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
@@ -89,11 +91,13 @@ public class ApiExceptionMiddleware(
             Category: GetErrorCategory(ex.StatusCode));
 
         return ApiResponse.Failure(
-            error,
-            message: ex.Message,
-            correlationId: correlationId,
-            statusCode: ex.StatusCode,
-            metadata: CreateStandardMetadata(tenantId));
+            error, new ApiResponseOptions
+            {
+                Message = ex.Message,
+                CorrelationId = correlationId,
+                StatusCode = ex.StatusCode,
+                Metadata = CreateStandardMetadata(tenantId)
+            });
     }
 
     private ApiResponse HandleUnhandledException(Exception ex, string correlationId, string tenantId)
@@ -115,11 +119,13 @@ public class ApiExceptionMiddleware(
             TraceId: Activity.Current?.TraceId.ToString());
 
         return ApiResponse.Failure(
-            error,
-            message: "An unexpected error occurred",
-            correlationId: correlationId,
-            statusCode: HttpStatusCode.InternalServerError,
-            metadata: CreateStandardMetadata(tenantId));
+            error, new ApiResponseOptions
+            {
+                Message = "An unexpected error occurred",
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.InternalServerError,
+                Metadata = CreateStandardMetadata(tenantId)
+            });
     }
 
     private async Task HandleStatusCodeAsync(HttpContext context, string correlationId, string tenantId)
@@ -132,11 +138,13 @@ public class ApiExceptionMiddleware(
             Category: GetErrorCategory(statusCode));
 
         var response = ApiResponse.Failure(
-            error,
-            message: GetStatusMessage(statusCode),
-            correlationId: correlationId,
-            statusCode: statusCode,
-            metadata: CreateStandardMetadata(tenantId));
+            error, new ApiResponseOptions
+            {
+                Message = GetStatusMessage(statusCode),
+                CorrelationId = correlationId,
+                StatusCode = statusCode,
+                Metadata = CreateStandardMetadata(tenantId)
+            });
 
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(JsonSerializer.Serialize(response, _jsonOptions));

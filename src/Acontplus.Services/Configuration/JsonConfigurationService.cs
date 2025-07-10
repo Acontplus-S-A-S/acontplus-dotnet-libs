@@ -60,7 +60,11 @@ public static class JsonConfigurationService
         ReadCommentHandling = JsonCommentHandling.Disallow,
         WriteIndented = false,
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        NumberHandling = JsonNumberHandling.Strict
+        NumberHandling = JsonNumberHandling.Strict,
+        Converters =
+        {
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+        }
     };
 
     /// <summary>
