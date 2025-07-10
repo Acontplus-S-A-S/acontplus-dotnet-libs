@@ -298,25 +298,6 @@
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
         </member>
-        <member name="P:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.Default">
-            <summary>
-            The default <see cref="T:System.Text.Json.Serialization.JsonSerializerContext"/> associated with a default <see cref="T:System.Text.Json.JsonSerializerOptions"/> instance.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.GeneratedSerializerOptions">
-            <summary>
-            The source-generated options associated with this context.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.#ctor">
-            <inheritdoc/>
-        </member>
-        <member name="M:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.GetTypeInfo(System.Type)">
-            <inheritdoc/>
-        </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
             Modern JSON extensions for .NET enterprise applications

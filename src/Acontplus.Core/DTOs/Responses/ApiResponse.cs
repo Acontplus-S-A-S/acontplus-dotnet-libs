@@ -1,16 +1,13 @@
-﻿using System.Diagnostics;
+﻿using Acontplus.Core.Helpers;
+using System.Diagnostics;
 using System.Net;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Acontplus.Core.DTOs.Responses;
 
-[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
-[JsonSerializable(typeof(ApiResponse<>))]
-public partial class ApiResponseJsonContext : JsonSerializerContext { }
-
 public record ApiResponse
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required ResponseStatus Status { get; init; }
     public required string Code { get; init; }
     public string? Message { get; init; }
