@@ -317,6 +317,47 @@
         <member name="M:Acontplus.Core.DTOs.Responses.ApiResponseJsonContext.GetTypeInfo(System.Type)">
             <inheritdoc/>
         </member>
+        <member name="T:Acontplus.Core.Extensions.JsonExtensions">
+            <summary>
+            Modern JSON extensions for .NET enterprise applications
+            Provides high-performance, secure JSON operations with System.Text.Json
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.DefaultOptions">
+            <summary>
+            Default JSON serializer options optimized for enterprise applications
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.PrettyOptions">
+            <summary>
+            JSON options for development/debugging with pretty formatting
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Extensions.JsonExtensions.StrictOptions">
+            <summary>
+            Strict JSON options for APIs that require exact matching
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeModern``1(System.String)">
+            <summary>
+            Deserialize JSON with enterprise-optimized settings
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeModernSafe``1(System.String,``0)">
+            <summary>
+            Safely deserialize JSON with fallback value
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.SerializeModern``1(``0,System.Boolean)">
+            <summary>
+            Serialize object to JSON with enterprise-optimized settings
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.CloneViaJson``1(``0)">
+            <summary>
+            Clone object using JSON serialization (deep clone)
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Extensions.NullableExtensions.OrKeep(System.Nullable{System.Boolean},System.Boolean)">
             <summary>
             Returns the value of a nullable bool if it has a value; otherwise, returns the original.

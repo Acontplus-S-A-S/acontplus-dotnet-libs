@@ -1,4 +1,6 @@
-﻿namespace Acontplus.FactElect.Services.Validation;
+﻿using System.Text.Json;
+
+namespace Acontplus.FactElect.Services.Validation;
 
 public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
 {
@@ -93,7 +95,7 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
     private async Task<Result<ContribuyenteCedulaDto, DomainError>> GetCedulaSriAsync(string cedula, CookieContainer cookies,
         string captcha)
     {
-        var captchaDeserialized = JsonConvert.DeserializeObject<TokenSri>(captcha);
+        var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
 
         var tokenSri = captchaDeserialized.mensaje;
 
@@ -124,7 +126,7 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
         var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
         sriResponse = sriResponse.Replace("[", "");
         sriResponse = sriResponse.Replace("]", "");
-        var result = JsonConvert.DeserializeObject<ContribuyenteCedulaDto>(sriResponse);
+        var result = JsonExtensions.DeserializeModern<ContribuyenteCedulaDto>(sriResponse);
         if (result != null) return Result<ContribuyenteCedulaDto, DomainError>.Success(result);
         return Result<ContribuyenteCedulaDto, DomainError>.Failure(new DomainError
         {

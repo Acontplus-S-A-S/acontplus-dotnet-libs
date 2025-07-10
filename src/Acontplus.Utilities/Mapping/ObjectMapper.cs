@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Data;
+﻿namespace Acontplus.Utilities.Mapping;
 
 using System;
 using System.Collections;

@@ -1,5 +1,7 @@
 ﻿using Acontplus.ApiDocumentation;
 using Acontplus.Core.Domain.Exceptions;
+using Acontplus.Core.Enums;
+using Acontplus.Core.Extensions;
 using Acontplus.FactElect.Models.Documents;
 using Acontplus.FactElect.Services.Authentication;
 using Acontplus.FactElect.Services.External;
@@ -13,7 +15,6 @@ using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
 using Acontplus.TestApplication.Services;
 using Acontplus.TestInfrastructure.Persistence;
-using Microsoft.Extensions.Options;
 using Scrutor;
 using Serilog;
 
@@ -61,8 +62,16 @@ try
     try
     {
         builder.Services.AddApplicationServices(builder.Configuration); // <--- This is a likely suspect
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter(System.Text.Json.JsonNamingPolicy.CamelCase));
+            });
+
         builder.Services.AddOpenApi();
+
+        JsonConfigurationService.ConfigureAspNetCore(builder.Services, useStrictMode: false);
+
 
         //builder.Services.AddDbContextPool<TestContext>(options =>
         //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -265,19 +274,24 @@ try
         }
     });
 
-    app.Use(async (context, next) =>
-    {
-        var serializer = context.RequestServices.GetService<JsonSerializer>(); // Newtonsoft.Json
-        var jsonOptions = context.RequestServices.GetService<IOptions<JsonOptions>>(); // System.Text.Json
-        Console.WriteLine($"Using Newtonsoft.Json: {serializer != null}");
-        Console.WriteLine($"Using System.Text.Json: {jsonOptions != null}");
-        await next();
-    });
+    //app.Use(async (context, next) =>
+    //{
+    //    var serializer = context.RequestServices.GetService<JsonSerializer>(); // Newtonsoft.Json
+    //    var jsonOptions = context.RequestServices.GetService<IOptions<JsonOptions>>(); // System.Text.Json
+    //    Console.WriteLine($"Using Newtonsoft.Json: {serializer != null}");
+    //    Console.WriteLine($"Using System.Text.Json: {jsonOptions != null}");
+    //    await next();
+    //});
 
     app.MapGet("/minimal-test", () =>
     //Results.Json(new ApiResponse { Status = ResponseStatus.Success }));
-    Results.Json(ApiResponse.Success()));
+    Results.Json(ApiResponse.Success("great")));
+    var options = JsonExtensions.DefaultOptions;
+    var json = ApiResponse.Success("Test").SerializeModern();
+    Console.WriteLine(json);
 
+    var test = new Test { Status = ResponseStatus.Success };
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(test, options));
     await app.RunAsync();
 }
 catch (Exception ex)
@@ -289,4 +303,10 @@ finally
 {
     // Ensure all buffered logs are flushed on application shutdown
     Log.CloseAndFlush();
+}
+
+
+public class Test
+{
+    public ResponseStatus Status { get; set; }
 }

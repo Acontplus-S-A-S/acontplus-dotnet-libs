@@ -74,6 +74,94 @@ var metadata = new Dictionary<string, object>()
     .WithPagination(page: 1, pageSize: 10, totalItems: 100);
 ```
 
+## 🗃️ Data Utilities
+
+### DataConverters
+```csharp
+using Acontplus.Utilities.Data;
+
+// Convert DataTable to JSON
+string json = DataConverters.DataTableToJson(myDataTable);
+
+// Convert DataSet to JSON
+string json = DataConverters.DataSetToJson(myDataSet);
+
+// Convert JSON to DataTable
+DataTable table = DataConverters.JsonToDataTable(jsonString);
+
+// Serialize any object (with DataTable/DataSet support)
+string json = DataConverters.SerializeObjectCustom(myObject);
+
+// Serialize and sanitize complex objects
+string json = DataConverters.SerializeSanitizedData(myObject);
+```
+
+### DataTableMapper
+```csharp
+using Acontplus.Utilities.Data;
+
+// Map a DataRow to a strongly-typed model
+var model = DataTableMapper.MapDataRowToModel<MyModel>(dataRow);
+
+// Map a DataTable to a list of models
+List<MyModel> models = DataTableMapper.MapDataTableToList<MyModel>(dataTable);
+```
+
+## 🧩 JSON Utilities
+
+### JsonHelper
+```csharp
+using Acontplus.Utilities.Json;
+
+// Validate JSON
+var result = JsonHelper.ValidateJson(jsonString);
+if (!result.IsValid) Console.WriteLine(result.ErrorMessage);
+
+// Get a property value from JSON
+string? value = JsonHelper.GetJsonProperty<string>(jsonString, "propertyName");
+
+// Merge two JSON objects
+string merged = JsonHelper.MergeJson(json1, json2);
+
+// Compare two JSON strings (ignoring property order)
+bool areEqual = JsonHelper.AreEqual(json1, json2);
+```
+
+### JsonManipulationExtensions
+```csharp
+using Acontplus.Utilities.Json;
+
+// Validate JSON using extension
+bool isValid = jsonString.IsValidJson();
+
+// Get property value using extension
+int? id = jsonString.GetJsonProperty<int>("id");
+
+// Merge JSON using extension
+string merged = json1.MergeJson(json2);
+
+// Compare JSON using extension
+bool equal = json1.JsonEquals(json2);
+```
+
+## 🔄 Object Mapping
+
+### ObjectMapper
+```csharp
+using Acontplus.Utilities.Mapping;
+
+// Map between objects (AutoMapper-like)
+var target = ObjectMapper.Map<SourceType, TargetType>(sourceObject);
+
+// Configure custom mapping
+ObjectMapper.CreateMap<SourceType, TargetType>()
+    .ForMember(dest => dest.SomeProperty, src => src.OtherProperty)
+    .Ignore(dest => dest.IgnoredProperty);
+
+// Map with configuration
+var mapped = ObjectMapper.Map<SourceType, TargetType>(sourceObject);
+```
+
 ## 🔧 Advanced Usage
 
 ### File Name Sanitization
