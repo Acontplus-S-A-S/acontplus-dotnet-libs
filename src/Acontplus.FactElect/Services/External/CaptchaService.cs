@@ -4,7 +4,7 @@ public class CaptchaService : ICaptchaService
 {
     public async Task<Result<string, DomainError>> ValidateAsync(string captcha, CookieContainer cookies)
     {
-        var captchaImage = JsonConvert.DeserializeObject<CaptchaImageDto>(captcha);
+        var captchaImage = JsonExtensions.DeserializeModern<CaptchaImageDto>(captcha);
         var captchaImageValue = captchaImage?.Values[0];
 
         using var client = new HttpClient(new HttpClientHandler

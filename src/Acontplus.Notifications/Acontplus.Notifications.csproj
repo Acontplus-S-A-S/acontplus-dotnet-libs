@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Notifications</PackageId>
-    <Version>1.0.16</Version>
+    <Version>1.0.17</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Modern .NET 9+ library for notifications: email, MailKit, Amazon SES, WhatsApp, and push. Includes templates, queueing, and advanced delivery options.</Description>
@@ -28,7 +28,6 @@
     <PackageReference Include="AWSSDK.SimpleEmailV2" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Scriban" />
   </ItemGroup>

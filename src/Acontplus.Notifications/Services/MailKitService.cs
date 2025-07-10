@@ -7,6 +7,8 @@ using Scriban;
 using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Security.Authentication;
+using System.Text.Json;
+using Acontplus.Core.Extensions;
 
 namespace Acontplus.Notifications.Services;
 
@@ -269,7 +271,7 @@ public class MailKitService : IMailKitService, IDisposable
 
                     var htmlString = await File.ReadAllTextAsync(pathToHtmlFile, ct);
                     var emailBody = ProcessTemplate(htmlString,
-                        JsonConvert.DeserializeObject<IDictionary<string, object>>(email.Body)!);
+                        JsonExtensions.DeserializeModern<IDictionary<string, object>>(email.Body)!);
 
                     body.HtmlBody = emailBody;
 
@@ -371,7 +373,13 @@ public class MailKitService : IMailKitService, IDisposable
 
     private static string ProcessTemplate(string template, IDictionary<string, object> data)
     {
-        var reportData = JsonConvert.DeserializeObject<ExpandoObject>(JsonConvert.SerializeObject(data));
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+        var reportData = JsonExtensions.DeserializeModern<ExpandoObject>(JsonSerializer.Serialize(data, options));
 
         var scriptObject = new ScriptObject();
         foreach (var prop in reportData)

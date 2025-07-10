@@ -1,4 +1,6 @@
-﻿namespace Acontplus.FactElect.Services.Validation;
+﻿using System.Text.Json;
+
+namespace Acontplus.FactElect.Services.Validation;
 
 public class RucService(IServiceProvider serviceProvider) : IRucService
 {
@@ -99,7 +101,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         CookieContainer cookieContainer,
         string captcha)
     {
-        var captchaDeserialized = JsonConvert.DeserializeObject<TokenSri>(captcha);
+        var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
 
         var tokenSri = captchaDeserialized.mensaje;
 
@@ -133,7 +135,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         var stream = await response.Content.ReadAsStreamAsync();
         using var streamReader = new StreamReader(stream);
         var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
-        var rucs = JsonConvert.DeserializeObject<List<ContribuyenteRucDto>>(sriResponse);
+        var rucs = JsonExtensions.DeserializeModern<List<ContribuyenteRucDto>>(sriResponse);
         if (rucs.Count == 0 || rucs[0].NumeroRuc != ruc)
         {
             return Result<ContribuyenteCompleteDto, DomainError>.Failure(new DomainError
@@ -185,7 +187,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         var stream = await sriResponse.Content.ReadAsStreamAsync();
         using var streamReader = new StreamReader(stream);
         var serializedEstabs = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
-        var establecimientos = JsonConvert.DeserializeObject<List<EstablecimientoDto>>(serializedEstabs);
+        var establecimientos = JsonExtensions.DeserializeModern<List<EstablecimientoDto>>(serializedEstabs);
 
         var response = new ContribuyenteCompleteDto
         {

@@ -5,7 +5,6 @@ global using Amazon.Runtime;
 global using Amazon.SimpleEmailV2;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.Logging;
-global using Newtonsoft.Json;
 global using Polly;
 global using Polly.Retry;
 global using Scriban.Runtime;
