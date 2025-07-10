@@ -6,28 +6,6 @@ namespace Acontplus.Core.Extensions;
 public static class ResultExtensions
 {
     /// <summary>
-    /// Converts a Result to an ApiResponse.
-    /// </summary>
-    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string? correlationId = null)
-    {
-        return result.Match(
-            success: data => ApiResponse<T>.Success(data),
-            failure: error => error.ToApiResponse<T>(correlationId)
-        );
-    }
-
-    /// <summary>
-    /// Converts a Result to an ApiResponse with custom success message.
-    /// </summary>
-    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string successMessage, string? correlationId = null)
-    {
-        return result.Match(
-            success: data => ApiResponse<T>.Success(data),
-            failure: error => error.ToApiResponse<T>(correlationId)
-        );
-    }
-
-    /// <summary>
     /// Binds a Result to another Result using a function.
     /// </summary>
     public static Result<TNewValue> Bind<TValue, TNewValue>(

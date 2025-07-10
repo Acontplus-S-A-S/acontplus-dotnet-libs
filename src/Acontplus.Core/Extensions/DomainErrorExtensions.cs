@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Net;
 
 namespace Acontplus.Core.Extensions;
 
@@ -40,59 +41,60 @@ public static class DomainErrorExtensions
         [ErrorType.RequestHeadersTooLarge] = 0
     }.ToImmutableDictionary();
 
-    public static ApiResponse<T> ToApiResponse<T>(
-        this DomainError error,
-        string? correlationId = null,
-        DomainWarnings? warnings = null)
+    private static ApiResponse<T> CreateApiResponse<T>(
+        IReadOnlyList<DomainError>? errors = null,
+        IReadOnlyList<DomainError>? warnings = null,
+        T? data = default,
+        string? message = null,
+        string? correlationId = null)
     {
         var options = new ApiResponseOptions
         {
-            Message = error.Message,
-            Errors = new[] { error.ToApiError() },
+            Message = message ?? errors?.FirstOrDefault().Message,
+            Errors = errors?.ToApiErrors(),
             Warnings = warnings?.ToApiErrors(),
             CorrelationId = correlationId,
-            StatusCode = error.Type.ToHttpStatusCode()
+            StatusCode = errors?.GetMostSevereError().GetHttpStatusCode() ?? HttpStatusCode.OK
         };
 
-        return ApiResponse<T>.Failure(new[] { error.ToApiError() }, options);
+        return errors == null || !errors.Any()
+            ? ApiResponse<T>.Success(data!, options)
+            : ApiResponse<T>.Failure(errors.ToApiErrors(), options);
     }
 
-    public static ApiResponse<T> ToApiResponse<T>(
-        this DomainErrors errors,
-        string? correlationId = null,
+    // Result<T> conversions
+    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string? correlationId = null)
+        => result.Match(
+            success: data => CreateApiResponse(data: data, correlationId: correlationId),
+            failure: error => error.ToApiResponse<T>(correlationId));
+
+    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string successMessage,
+        string? correlationId = null)
+        => result.Match(
+            success: data => CreateApiResponse(data: data, message: successMessage, correlationId: correlationId),
+            failure: error => error.ToApiResponse<T>(correlationId));
+
+    // DomainError conversions
+    public static ApiResponse<T> ToApiResponse<T>(this DomainError error, string? correlationId = null)
+        => CreateApiResponse<T>(errors: new[] { error }, correlationId: correlationId);
+
+    public static ApiResponse<T> ToApiResponse<T>(this DomainError error, string? correlationId = null,
         DomainWarnings? warnings = null)
-    {
-        var primaryError = errors.GetMostSevereErrorType();
-        var options = new ApiResponseOptions
-        {
-            Message = errors.GetAggregateErrorMessage(),
-            Errors = errors.ToApiErrors(),
-            Warnings = warnings?.ToApiErrors(),
-            CorrelationId = correlationId,
-            StatusCode = primaryError.ToHttpStatusCode()
-        };
+        => CreateApiResponse<T>(errors: new[] { error }, warnings: warnings?.Warnings, correlationId: correlationId);
 
-        return ApiResponse<T>.Failure(errors.ToApiErrors(), options);
-    }
-
-    public static ApiResponse<T> ToApiResponse<T>(
-        this IEnumerable<DomainError> errors,
-        string? correlationId = null,
+    // Collections conversions
+    public static ApiResponse<T> ToApiResponse<T>(this DomainErrors errors, string? correlationId = null,
         DomainWarnings? warnings = null)
-    {
-        var errorList = errors.ToList();
-        var primaryError = errorList.GetMostSevereError();
-        var options = new ApiResponseOptions
-        {
-            Message = primaryError.Message,
-            Errors = errorList.ToApiErrors(),
-            Warnings = warnings?.ToApiErrors(),
-            CorrelationId = correlationId,
-            StatusCode = primaryError.Type.ToHttpStatusCode()
-        };
+        => CreateApiResponse<T>(errors: errors.Errors, warnings: warnings?.Warnings, correlationId: correlationId);
 
-        return ApiResponse<T>.Failure(errorList.ToApiErrors(), options);
-    }
+    public static ApiResponse<T> ToApiResponse<T>(this IEnumerable<DomainError> errors, string? correlationId = null,
+        DomainWarnings? warnings = null)
+        => CreateApiResponse<T>(errors: errors.ToList(), warnings: warnings?.Warnings, correlationId: correlationId);
+
+    // SuccessWithWarnings conversion
+    public static ApiResponse<T> ToApiResponse<T>(this SuccessWithWarnings<T> result, string? correlationId = null,
+        DomainWarnings? warnings = null)
+        => CreateApiResponse(warnings: warnings?.Warnings, data: result.Value, correlationId: correlationId);
 
     public static IReadOnlyList<ApiError>? ToApiErrors(this IReadOnlyList<DomainError> errors)
         => (IReadOnlyList<ApiError>?)errors.Select(e => e.ToApiError());

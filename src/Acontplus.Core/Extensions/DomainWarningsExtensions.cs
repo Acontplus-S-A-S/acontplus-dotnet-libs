@@ -48,14 +48,6 @@ public static class DomainWarningsExtensions
 
 public static class SuccessWithWarningsExtensions
 {
-    public static ApiResponse<T> ToApiResponse<T>(
-        this SuccessWithWarnings<T> result,
-        string? correlationId = null)
-    {
-        return ApiResponse<T>.Success(
-            data: result.Value);
-    }
-
     public static SuccessWithWarnings<T> WithWarning<T>(
         this T value,
         DomainError warning) => new(value, DomainWarnings.Single(warning));

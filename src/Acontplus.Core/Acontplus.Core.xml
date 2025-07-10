@@ -394,16 +394,6 @@
             Modern extension methods for the Result pattern to improve developer experience.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToApiResponse``1(Acontplus.Core.Domain.Common.Result{``0},System.String)">
-            <summary>
-            Converts a Result to an ApiResponse.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToApiResponse``1(Acontplus.Core.Domain.Common.Result{``0},System.String,System.String)">
-            <summary>
-            Converts a Result to an ApiResponse with custom success message.
-            </summary>
-        </member>
         <member name="M:Acontplus.Core.Extensions.ResultExtensions.Bind``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,Acontplus.Core.Domain.Common.Result{``1}})">
             <summary>
             Binds a Result to another Result using a function.

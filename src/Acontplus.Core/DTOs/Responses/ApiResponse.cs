@@ -34,7 +34,7 @@ public record ApiResponse<T>
     public string? CorrelationId { get; init; }
     public string? TraceId { get; init; }
     public string Timestamp { get; init; } = null!;
-    
+
     [JsonIgnore]
     public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.OK;
 

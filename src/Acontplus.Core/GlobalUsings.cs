@@ -5,5 +5,4 @@ global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.Enums;
 global using Acontplus.Core.Extensions;
-global using Acontplus.Core.Helpers;
 global using System.Data;
