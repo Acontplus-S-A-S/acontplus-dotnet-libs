@@ -25,7 +25,7 @@ public static class ApiResponseExtensions
 
         if (response.IsSuccess)
         {
-            return ApiResponse.Success(options);
+            return ApiResponse.Success(response.Data, options);
         }
         else // Assuming error/warning cases
         {
