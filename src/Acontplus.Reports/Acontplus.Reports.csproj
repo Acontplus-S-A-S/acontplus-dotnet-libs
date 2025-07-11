@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Reports</PackageId>
-    <Version>1.0.18</Version>
+    <Version>1.0.19</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Modern .NET 9+ library for RDLC report generation, export, and management. Includes PDF/Excel export, template support, and ReportViewer integration.</Description>
@@ -36,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Acontplus.Barcode" />
-    <PackageReference Include="Acontplus.Data" />
     <PackageReference Include="Acontplus.Utilities" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="ReportViewerCore.NETCore" />

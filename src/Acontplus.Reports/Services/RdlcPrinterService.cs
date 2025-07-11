@@ -1,4 +1,5 @@
-﻿using System.Drawing.Imaging;
+﻿using Acontplus.Utilities.Data;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
 
 namespace Acontplus.Reports.Services;
@@ -21,7 +22,7 @@ public class RdlcPrinterService : IRdlcPrinterService
             foreach (var item in printRequest.DataSources)
             {
                 lr.DataSources.Add(new ReportDataSource(item.Key,
-                    DataConverters.JsonToDataTable(JsonConvert.SerializeObject(item.Value))));
+                    DataConverters.JsonToDataTable(JsonExtensions.SerializeModern(item.Value))));
             }
         }
 
