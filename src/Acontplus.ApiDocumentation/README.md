@@ -135,6 +135,14 @@ public class DataController : ControllerBase
 
 ---
 
-## 📄 License
+## 📄 License & Info
 
-MIT
+- **License:** [MIT](../LICENSE)
+- **Authors:** Ivan Paz
+- **Company:** [Acontplus S.A.S.](https://acontplus.com.ec)
+- **Repository:** [github.com/Acontplus-S-A-S/acontplus-dotnet-libs](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs)
+- **Contact:** [proyectos@acontplus.com](mailto:proyectos@acontplus.com)
+
+---
+
+© 2024 Acontplus S.A.S. All rights reserved.
