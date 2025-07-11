@@ -5,9 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Acontplus.Barcode" Version="1.0.1" />
-    <PackageVersion Include="Acontplus.Core" Version="1.2.6" />
-    <PackageVersion Include="Acontplus.Data" Version="1.0.1" />
-    <PackageVersion Include="Acontplus.Utilities" Version="1.1.1" />
+    <PackageVersion Include="Acontplus.Core" Version="1.2.7" />
+    <PackageVersion Include="Acontplus.Utilities" Version="1.1.2" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
@@ -38,10 +37,9 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.12.1" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="1.6.24" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageVersion Include="Polly" Version="8.6.1" />
+    <PackageVersion Include="Polly" Version="8.6.2" />
     <PackageVersion Include="ReportViewerCore.NETCore" Version="15.1.26" />
     <PackageVersion Include="Scriban" Version="6.2.1" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />

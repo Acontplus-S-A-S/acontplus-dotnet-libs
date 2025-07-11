@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.ApiDocumentation</name>
+    </assembly>
+    <members>
+        <member name="T:Acontplus.ApiDocumentation.ConfigureSwaggerOptions">
+            <summary>
+            Provides configuration for Swagger/OpenAPI generation options, supporting multiple API versions and dynamic metadata.
+            </summary>
+            <remarks>
+            This configurator creates a distinct Swagger document for each discovered API version, using metadata from both the API version description and the application's configuration (such as contact and license info).
+            </remarks>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.#ctor(Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Acontplus.ApiDocumentation.ConfigureSwaggerOptions"/> class.
+            </summary>
+            <param name="provider">The API version description provider used to enumerate API versions.</param>
+            <param name="configuration">The application configuration for retrieving Swagger metadata.</param>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <summary>
+            Configures the <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions"/> for all discovered API versions.
+            </summary>
+            <param name="options">The Swagger generation options to configure.</param>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.Configure(System.String,Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <summary>
+            Configures the <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions"/> for a named options instance. Delegates to the main <see cref="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)"/> method.
+            </summary>
+            <param name="name">The name of the options instance (not used).</param>
+            <param name="options">The Swagger generation options to configure.</param>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.CreateVersionInfo(Asp.Versioning.ApiExplorer.ApiVersionDescription)">
+            <summary>
+            Creates the <see cref="T:Microsoft.OpenApi.Models.OpenApiInfo"/> object for a given API version, including title, version, description, contact, and license information.
+            </summary>
+            <param name="description">The description of the API version.</param>
+            <returns>An <see cref="T:Microsoft.OpenApi.Models.OpenApiInfo"/> object with metadata for the Swagger document.</returns>
+        </member>
+        <member name="T:Acontplus.ApiDocumentation.ApiDocumentationExtensions">
+            <summary>
+            Provides extension methods for configuring API versioning and Swagger/OpenAPI documentation in ASP.NET Core applications.
+            </summary>
+            <remarks>
+            These extensions enable standardized API versioning, JWT Bearer authentication in Swagger UI, and automatic inclusion of XML documentation comments.
+            </remarks>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ApiDocumentationExtensions.AddApiVersioningAndDocumentation(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds and configures API versioning and Swagger/OpenAPI documentation services to the application's service collection.
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to add services to.</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> for chaining.</returns>
+        </member>
+        <member name="M:Acontplus.ApiDocumentation.ApiDocumentationExtensions.UseApiVersioningAndDocumentation(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Configures the application pipeline to use Swagger and the Swagger UI with versioning support.
+            </summary>
+            <param name="app">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> to configure.</param>
+            <returns>The configured <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/> for chaining.</returns>
+        </member>
+    </members>
+</doc>

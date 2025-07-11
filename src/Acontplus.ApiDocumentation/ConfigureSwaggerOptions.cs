@@ -9,20 +9,29 @@ using System.Reflection;
 namespace Acontplus.ApiDocumentation;
 
 /// <summary>
-/// Configures the Swagger generation options.
+/// Provides configuration for Swagger/OpenAPI generation options, supporting multiple API versions and dynamic metadata.
 /// </summary>
 /// <remarks>
-/// This class is responsible for creating a distinct Swagger document for each discovered API version.
-/// It dynamically pulls metadata from both the API version description and the application's configuration.
+/// This configurator creates a distinct Swagger document for each discovered API version, using metadata from both the API version description and the application's configuration (such as contact and license info).
 /// </remarks>
-public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration)
-    : IConfigureNamedOptions<SwaggerGenOptions>
+public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
 {
-    private readonly IApiVersionDescriptionProvider _provider = provider;
-    private readonly IConfiguration _configuration = configuration;
+    private readonly IApiVersionDescriptionProvider _provider;
+    private readonly IConfiguration _configuration;
 
     /// <summary>
-    /// Configures the SwaggerGenOptions for all discovered API versions.
+    /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
+    /// </summary>
+    /// <param name="provider">The API version description provider used to enumerate API versions.</param>
+    /// <param name="configuration">The application configuration for retrieving Swagger metadata.</param>
+    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IConfiguration configuration)
+    {
+        _provider = provider;
+        _configuration = configuration;
+    }
+
+    /// <summary>
+    /// Configures the <see cref="SwaggerGenOptions"/> for all discovered API versions.
     /// </summary>
     /// <param name="options">The Swagger generation options to configure.</param>
     public void Configure(SwaggerGenOptions options)
@@ -35,7 +44,7 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IC
     }
 
     /// <summary>
-    /// This overload is required by the IConfigureNamedOptions interface and simply delegates to the primary Configure method.
+    /// Configures the <see cref="SwaggerGenOptions"/> for a named options instance. Delegates to the main <see cref="Configure(SwaggerGenOptions)"/> method.
     /// </summary>
     /// <param name="name">The name of the options instance (not used).</param>
     /// <param name="options">The Swagger generation options to configure.</param>
@@ -45,10 +54,10 @@ public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider, IC
     }
 
     /// <summary>
-    /// Creates the OpenApiInfo object for a given API version.
+    /// Creates the <see cref="OpenApiInfo"/> object for a given API version, including title, version, description, contact, and license information.
     /// </summary>
     /// <param name="description">The description of the API version.</param>
-    /// <returns>An OpenApiInfo object with metadata for the Swagger document.</returns>
+    /// <returns>An <see cref="OpenApiInfo"/> object with metadata for the Swagger document.</returns>
     private OpenApiInfo CreateVersionInfo(ApiVersionDescription description)
     {
         // Retrieve the SwaggerInfo section from appsettings.json

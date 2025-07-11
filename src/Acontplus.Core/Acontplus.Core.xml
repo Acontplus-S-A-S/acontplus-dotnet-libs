@@ -184,6 +184,36 @@
             </summary>
             <typeparam name="TId">The type of the entity's primary key.</typeparam>
         </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.CreatedByUserId">
+            <summary>
+            The local user ID (foreign key) who created the entity, if available.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.UpdatedByUserId">
+            <summary>
+            The local user ID (foreign key) who last updated the entity, if available.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.DeletedByUserId">
+            <summary>
+            The local user ID (foreign key) who deleted the entity, if available.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.CreatedBy">
+            <summary>
+            The username, email, or external identifier of the creator (for cross-system or external users).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.UpdatedBy">
+            <summary>
+            The username, email, or external identifier of the last updater (for cross-system or external users).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.DeletedBy">
+            <summary>
+            The username, email, or external identifier of the deleter (for cross-system or external users).
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.MarkAsDeleted(`0)">
             <summary>
             Marks the entity as deleted with audit information.
