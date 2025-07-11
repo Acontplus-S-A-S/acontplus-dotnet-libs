@@ -147,7 +147,7 @@ public sealed record ApiResponse : ApiResponse<object?>
     {
     }
 
-    public static new ApiResponse Success(ApiResponseOptions? options = null)
+    public static new ApiResponse Success(object? data = null, ApiResponseOptions? options = null)
     {
         options = InitializeOptions(options, HttpStatusCode.OK);
         return new ApiResponse(
@@ -163,7 +163,9 @@ public sealed record ApiResponse : ApiResponse<object?>
                 TraceId = options.TraceId,
                 Timestamp = options.Timestamp,
                 StatusCode = options.StatusCode
-            });
+            },
+            data
+        );
     }
 
     public static new ApiResponse Failure(IReadOnlyList<ApiError> errors, ApiResponseOptions? options = null)
@@ -185,7 +187,7 @@ public sealed record ApiResponse : ApiResponse<object?>
             });
     }
 
-    public static ApiResponse Failure(ApiError error, ApiResponseOptions? options = null)
+    public static new ApiResponse Failure(ApiError error, ApiResponseOptions? options = null)
         => Failure(new[] { error }, options);
 
     private static ApiResponseOptions InitializeOptions(ApiResponseOptions? options, HttpStatusCode defaultStatusCode)
