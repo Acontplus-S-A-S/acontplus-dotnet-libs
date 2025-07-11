@@ -1,4 +1,6 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Acontplus.Core.Domain.Common;
 
 /// <summary>
 /// Base auditable entity with modern .NET 9+ features and improved audit patterns.
@@ -7,14 +9,38 @@
 public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
 {
     public DateTime CreatedAt { get; set; }
+    /// <summary>
+    /// The local user ID (foreign key) who created the entity, if available.
+    /// </summary>
     public TId? CreatedByUserId { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    /// <summary>
+    /// The local user ID (foreign key) who last updated the entity, if available.
+    /// </summary>
     public TId? UpdatedByUserId { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
+    /// <summary>
+    /// The local user ID (foreign key) who deleted the entity, if available.
+    /// </summary>
     public TId? DeletedByUserId { get; set; }
     public bool IsMobileRequest { get; set; }
+    /// <summary>
+    /// The username, email, or external identifier of the creator (for cross-system or external users).
+    /// </summary>
+    [MaxLength(100)]
+    public string? CreatedBy { get; set; } // e.g., "admin@company.com" or "erpuser123"
+    /// <summary>
+    /// The username, email, or external identifier of the last updater (for cross-system or external users).
+    /// </summary>
+    [MaxLength(100)]
+    public string? UpdatedBy { get; set; }
+    /// <summary>
+    /// The username, email, or external identifier of the deleter (for cross-system or external users).
+    /// </summary>
+    [MaxLength(100)]
+    public string? DeletedBy { get; set; }
 
     protected AuditableEntity()
     {
