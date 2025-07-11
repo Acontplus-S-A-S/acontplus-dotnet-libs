@@ -7,15 +7,18 @@ using Microsoft.OpenApi.Models;
 namespace Acontplus.ApiDocumentation;
 
 /// <summary>
-/// Extension methods for configuring API versioning and Swagger documentation.
+/// Provides extension methods for configuring API versioning and Swagger/OpenAPI documentation in ASP.NET Core applications.
 /// </summary>
+/// <remarks>
+/// These extensions enable standardized API versioning, JWT Bearer authentication in Swagger UI, and automatic inclusion of XML documentation comments.
+/// </remarks>
 public static class ApiDocumentationExtensions
 {
     /// <summary>
-    /// Adds and configures API versioning and Swagger/OpenAPI documentation services.
+    /// Adds and configures API versioning and Swagger/OpenAPI documentation services to the application's service collection.
     /// </summary>
-    /// <param name="services">The IServiceCollection to add services to.</param>
-    /// <returns>The configured IServiceCollection.</returns>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The configured <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddApiVersioningAndDocumentation(this IServiceCollection services)
     {
         // 1. Configure API Versioning
@@ -77,8 +80,8 @@ public static class ApiDocumentationExtensions
     /// <summary>
     /// Configures the application pipeline to use Swagger and the Swagger UI with versioning support.
     /// </summary>
-    /// <param name="app">The IApplicationBuilder to configure.</param>
-    /// <returns>The configured IApplicationBuilder.</returns>
+    /// <param name="app">The <see cref="IApplicationBuilder"/> to configure.</param>
+    /// <returns>The configured <see cref="IApplicationBuilder"/> for chaining.</returns>
     public static IApplicationBuilder UseApiVersioningAndDocumentation(this IApplicationBuilder app)
     {
         // Enable middleware to serve generated Swagger as a JSON endpoint.
