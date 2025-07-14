@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Enums;
-
-namespace Acontplus.Services.Extensions;
+﻿namespace Acontplus.Services.Extensions;
 
 public static class HttpContextExtensions
 {

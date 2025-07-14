@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;

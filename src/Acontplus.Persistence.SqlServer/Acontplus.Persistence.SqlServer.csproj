@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.SqlServer</PackageId>
-    <Version>1.0.18</Version>
+    <Version>1.1.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Modern .NET 9+ library for SQL Server persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling.</Description>

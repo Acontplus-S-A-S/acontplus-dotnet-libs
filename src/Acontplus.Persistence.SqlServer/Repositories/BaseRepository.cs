@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.DTOs.Responses;
+﻿using Acontplus.Core.DTOs.Responses;
 using Acontplus.Persistence.SqlServer.Diagnostics;
 using Acontplus.Persistence.SqlServer.Exceptions;
 using Microsoft.EntityFrameworkCore.Query; // Assuming DiagnosticConfig is here
