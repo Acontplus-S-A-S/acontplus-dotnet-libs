@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApplication.Services;
+﻿using Acontplus.Core.Domain.Common.Results;
+
+namespace Acontplus.TestApplication.Services;
 
 public class CustomerService(
     IAdoRepository adoRepository,
