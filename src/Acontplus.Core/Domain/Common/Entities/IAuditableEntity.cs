@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common.Entities;
 
 public interface IAuditableEntity
 {

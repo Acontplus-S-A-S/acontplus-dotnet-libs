@@ -1,4 +1,6 @@
-namespace Acontplus.Core.Extensions;
+using Acontplus.Core.Domain.Common.Results;
+
+namespace Acontplus.Core.Domain.Extensions;
 
 /// <summary>
 /// Modern extension methods for the Result pattern to improve developer experience.

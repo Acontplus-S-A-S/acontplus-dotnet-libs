@@ -1,9 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿using Acontplus.Core.Domain.Common.Results;
+using System.Collections.Immutable;
 using System.Net;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Acontplus.Core.Extensions;
+namespace Acontplus.Core.Domain.Extensions;
 
 public static class DomainErrorExtensions
 {

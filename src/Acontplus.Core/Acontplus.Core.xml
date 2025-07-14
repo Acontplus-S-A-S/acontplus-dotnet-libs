@@ -328,23 +328,70 @@
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
         </member>
-        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse.Success(System.String,System.Object,System.String)">
+        <member name="T:Acontplus.Core.Extensions.ResultExtensions">
             <summary>
-            Creates a success response with a default code and message.
+            Modern extension methods for the Result pattern to improve developer experience.
             </summary>
-            <param name="code"></param> // Default is "1" to success! Excuse me
-            <param name="payload"></param>
-            <param name="message"></param>
-            <returns></returns>
         </member>
-        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse`1.Success(`0,System.String,System.String)">
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Bind``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,Acontplus.Core.Domain.Common.Result{``1}})">
             <summary>
-            Creates a success response with a default code and message.
+            Binds a Result to another Result using a function.
             </summary>
-            <param name="payload"></param>
-            <param name="code"></param> // Default is "1" to success! Excuse me
-            <param name="message"></param>
-            <returns></returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.BindAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Result{``1}}})">
+            <summary>
+            Binds a Result to another Result using an async function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Map``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,``1})">
+            <summary>
+            Maps a Result to another Result using a function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.MapAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            Maps a Result to another Result using an async function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Tap``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{``0})">
+            <summary>
+            Executes an action on success and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Executes an async action on success and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapError``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{Acontplus.Core.Domain.Common.DomainError})">
+            <summary>
+            Executes an action on failure and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapErrorAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{Acontplus.Core.Domain.Common.DomainError,System.Threading.Tasks.Task})">
+            <summary>
+            Executes an async action on failure and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,Acontplus.Core.Domain.Common.DomainError)">
+            <summary>
+            Converts a nullable value to a Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,System.String,System.String)">
+            <summary>
+            Converts a nullable value to a Result with a custom error message.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,Acontplus.Core.Domain.Common.DomainError)">
+            <summary>
+            Converts a boolean condition to a Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,System.String,System.String)">
+            <summary>
+            Converts a boolean condition to a Result with a custom error message.
+            </summary>
         </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
@@ -427,69 +474,34 @@
             Returns the new IEnumerable if it is not null or empty; otherwise, returns the original.
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Extensions.ResultExtensions">
+        <member name="T:Acontplus.Core.DTOs.Responses.LegacySpResponse">
             <summary>
-            Modern extension methods for the Result pattern to improve developer experience.
+            Legacy response with dynamic payload. Prefer the generic version for type safety.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Bind``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,Acontplus.Core.Domain.Common.Result{``1}})">
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse.Success(System.Object,System.String)">
             <summary>
-            Binds a Result to another Result using a function.
+            Creates a success response with code "0" and optional payload/message.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.BindAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Result{``1}}})">
+        <member name="T:Acontplus.Core.DTOs.Responses.LegacySpResponse`1">
             <summary>
-            Binds a Result to another Result using an async function.
+            Legacy response with strongly-typed payload. Prefer this for type safety.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Map``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,``1})">
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse`1.Success(`0,System.String)">
             <summary>
-            Maps a Result to another Result using a function.
+            Creates a success response with code "0" and strongly-typed payload.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.MapAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
+        <!-- Badly formed XML comment ignored for member "T:Acontplus.Core.DTOs.Responses.SpResponse" -->
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Core.DTOs.Responses.SpResponse.#ctor(System.String,System.String,System.Object)" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Code" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Message" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Content" -->
+        <member name="M:Acontplus.Core.DTOs.Responses.SpResponse.GetContent``1">
             <summary>
-            Maps a Result to another Result using an async function.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Tap``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{``0})">
-            <summary>
-            Executes an action on success and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task})">
-            <summary>
-            Executes an async action on success and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapError``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{Acontplus.Core.Domain.Common.DomainError})">
-            <summary>
-            Executes an action on failure and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapErrorAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{Acontplus.Core.Domain.Common.DomainError,System.Threading.Tasks.Task})">
-            <summary>
-            Executes an async action on failure and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,Acontplus.Core.Domain.Common.DomainError)">
-            <summary>
-            Converts a nullable value to a Result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,System.String,System.String)">
-            <summary>
-            Converts a nullable value to a Result with a custom error message.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,Acontplus.Core.Domain.Common.DomainError)">
-            <summary>
-            Converts a boolean condition to a Result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,System.String,System.String)">
-            <summary>
-            Converts a boolean condition to a Result with a custom error message.
+            Attempts to deserialize Content to the specified type. Handles both string and object cases.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Validation.XmlValidator.Validate(System.Xml.XmlDocument,System.IO.Stream)">

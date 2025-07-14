@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using Acontplus.Core.Domain.Common.Entities;
+using System.Data.Common;
 
 namespace Acontplus.Core.Abstractions.Persistence;
 

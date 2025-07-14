@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Acontplus.Core.Domain.Common;
+namespace Acontplus.Core.Domain.Common.Entities;
 
 /// <summary>
 /// Base auditable entity with modern .NET 9+ features and improved audit patterns.

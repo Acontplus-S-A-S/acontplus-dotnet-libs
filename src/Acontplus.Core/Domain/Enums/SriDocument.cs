@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Acontplus.Core.Enums;
+namespace Acontplus.Core.Domain.Enums;
 
 public enum SriDocument
 {
