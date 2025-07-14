@@ -24,6 +24,7 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await DispatchDomainEventsAsync();
+        // Only update audit fields and handle soft deletes for auditable entities
         await UpdateAuditFieldsAsync();
         await HandleSoftDeletesAsync();
 
@@ -34,6 +35,7 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
     public override int SaveChanges()
     {
         DispatchDomainEventsAsync().GetAwaiter().GetResult();
+        // Only update audit fields and handle soft deletes for auditable entities
         UpdateAuditFieldsAsync().GetAwaiter().GetResult();
         HandleSoftDeletesAsync().GetAwaiter().GetResult();
 
@@ -64,82 +66,58 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 
     private async Task UpdateAuditFieldsAsync()
     {
+        // Only process entities that implement IAuditableEntity
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is AuditableEntity<object> &&
+            .Where(e => e.Entity is IAuditableEntity &&
                         (e.State == EntityState.Added || e.State == EntityState.Modified))
-            .Select(e => new { Entry = e, Entity = (AuditableEntity<object>)e.Entity });
+            .ToList();
 
-        foreach (var item in entries)
+        foreach (var entry in entries)
         {
-            var entity = item.Entity;
-            var entry = item.Entry;
-
+            var auditable = (IAuditableEntity)entry.Entity;
+            // Use reflection or pattern matching to set audit fields if needed
+            // (Assume AuditableEntity<TId> for full audit support)
             if (entry.State == EntityState.Added)
             {
-                entity.CreatedAt = DateTime.UtcNow;
-
-                if (entity.CreatedByUserId != null)
-                {
-                    ((IEntityWithDomainEvents)entity).AddDomainEvent(
-                        new EntityCreatedEvent<object>(
-                            entity.Id,
-                            entity.GetType().Name,
-                            entity.CreatedByUserId));
-                }
+                var createdAtProp = entry.Entity.GetType().GetProperty("CreatedAt");
+                createdAtProp?.SetValue(entry.Entity, DateTime.UtcNow);
             }
             else
             {
-                entity.UpdatedAt = DateTime.UtcNow;
-
-                if (entry.Property(nameof(AuditableEntity<object>.UpdatedByUserId)).IsModified)
-                {
-                    ((IEntityWithDomainEvents)entity).AddDomainEvent(
-                        new EntityModifiedEvent<object>(
-                            entity.Id,
-                            entity.GetType().Name,
-                            entity.UpdatedByUserId));
-                }
+                var updatedAtProp = entry.Entity.GetType().GetProperty("UpdatedAt");
+                updatedAtProp?.SetValue(entry.Entity, DateTime.UtcNow);
             }
         }
     }
 
     private async Task HandleSoftDeletesAsync()
     {
+        // Only process entities that implement IAuditableEntity
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is AuditableEntity<object> &&
+            .Where(e => e.Entity is IAuditableEntity &&
                         (e.State == EntityState.Deleted ||
-                         e.Property(nameof(AuditableEntity<object>.IsDeleted)).IsModified))
-            .Select(e => new { Entry = e, Entity = (AuditableEntity<object>)e.Entity });
+                         e.Property("IsDeleted").IsModified))
+            .ToList();
 
-        foreach (var item in entries)
+        foreach (var entry in entries)
         {
-            var entity = item.Entity;
-            var entry = item.Entry;
-
-            if (entry.State == EntityState.Deleted || entity.IsDeleted)
+            var auditable = (IAuditableEntity)entry.Entity;
+            if (entry.State == EntityState.Deleted || auditable.IsDeleted)
             {
                 entry.State = EntityState.Modified;
-                entity.IsDeleted = true;
-                entity.DeletedAt = DateTime.UtcNow;
-                entity.IsActive = false;
-
-                ((IEntityWithDomainEvents)entity).AddDomainEvent(
-                    new EntityDeletedEvent<object>(
-                        entity.Id,
-                        entity.GetType().Name,
-                        entity.DeletedByUserId));
+                auditable.IsDeleted = true;
+                var deletedAtProp = entry.Entity.GetType().GetProperty("DeletedAt");
+                deletedAtProp?.SetValue(entry.Entity, DateTime.UtcNow);
+                var isActiveProp = entry.Entity.GetType().GetProperty("IsActive");
+                isActiveProp?.SetValue(entry.Entity, false);
             }
-            else if (!entity.IsDeleted && entity.DeletedAt.HasValue)
+            else if (!auditable.IsDeleted && entry.Entity.GetType().GetProperty("DeletedAt")?.GetValue(entry.Entity) != null)
             {
-                entity.DeletedAt = null;
-                entity.DeletedByUserId = default;
-                entity.IsActive = true;
-
-                ((IEntityWithDomainEvents)entity).AddDomainEvent(
-                    new EntityRestoredEvent<object>(
-                        entity.Id,
-                        entity.GetType().Name,
-                        entity.UpdatedByUserId));
+                entry.Entity.GetType().GetProperty("DeletedAt")?.SetValue(entry.Entity, null);
+                var deletedByUserIdProp = entry.Entity.GetType().GetProperty("DeletedByUserId");
+                deletedByUserIdProp?.SetValue(entry.Entity, null);
+                var isActiveProp = entry.Entity.GetType().GetProperty("IsActive");
+                isActiveProp?.SetValue(entry.Entity, true);
             }
         }
     }
@@ -159,12 +137,13 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 
     private static void ConfigureGlobalFilters(ModelBuilder builder)
     {
+        // Only apply soft delete filter to auditable entities
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
             if (typeof(IAuditableEntity).IsAssignableFrom(entityType.ClrType))
             {
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
-                var property = Expression.Property(parameter, nameof(AuditableEntity<object>.IsDeleted));
+                var property = Expression.Property(parameter, nameof(IAuditableEntity.IsDeleted));
                 var condition = Expression.Lambda(Expression.Not(property), parameter);
 
                 builder.Entity(entityType.ClrType).HasQueryFilter(condition);

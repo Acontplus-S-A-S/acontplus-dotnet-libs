@@ -12,7 +12,7 @@ namespace Acontplus.Persistence.SqlServer.Repositories;
 /// TEntity: The type of the entity.
 /// TId: The type of the entity's primary key, must be not null.
 public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
-    where TEntity : AuditableEntity<TId>
+    where TEntity : Entity<TId>
     where TId : notnull
 {
     protected readonly DbContext _context;

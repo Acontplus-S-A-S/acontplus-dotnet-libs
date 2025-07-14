@@ -32,8 +32,19 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
     public IAdoRepository AdoRepository => _adoRepository;
     public bool HasActiveTransaction => _efTransaction is not null;
 
-    public IRepository<TEntity, TId> GetRepository<TEntity, TId>()
+    public IAuditableRepository<TEntity, TId> GetAuditableRepository<TEntity, TId>()
         where TEntity : AuditableEntity<TId>
+        where TId : notnull
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        return (IAuditableRepository<TEntity, TId>)_repositories.GetOrAdd(typeof(TEntity), static (type, context) =>
+            new AuditableBaseRepository<TEntity, TId>(context._context, context._logger as ILogger<AuditableBaseRepository<TEntity, TId>>),
+            this);
+    }
+
+    public IRepository<TEntity, TId> GetRepository<TEntity, TId>()
+        where TEntity : Entity<TId>
         where TId : notnull
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
