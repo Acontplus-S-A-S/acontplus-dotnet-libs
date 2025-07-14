@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common.Results;
 
 /// <summary>
 /// Represents multiple domain errors that can occur during validation or complex operations.

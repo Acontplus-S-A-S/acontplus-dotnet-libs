@@ -1,6 +1,6 @@
 ﻿using Acontplus.ApiDocumentation;
+using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
-using Acontplus.Core.Enums;
 using Acontplus.Core.Extensions;
 using Acontplus.FactElect.Models.Documents;
 using Acontplus.FactElect.Services.Authentication;

@@ -1,4 +1,6 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿using Acontplus.Core.Domain.Extensions;
+
+namespace Acontplus.Core.Domain.Common.Results;
 
 /// <summary>
 /// Represents warnings that don't prevent operation success but should be communicated.

@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Domain.Exceptions;
-
-namespace Acontplus.Persistence.SqlServer.Exceptions;
+﻿namespace Acontplus.Persistence.SqlServer.Exceptions;
 
 public class SqlDomainException : DomainException
 {

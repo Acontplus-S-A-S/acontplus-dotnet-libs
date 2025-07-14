@@ -1,6 +1,7 @@
 ﻿global using Acontplus.Core.Abstractions.Context;
+global using Acontplus.Core.Domain.Enums;
+global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Responses;
-global using Acontplus.Core.Exceptions;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;

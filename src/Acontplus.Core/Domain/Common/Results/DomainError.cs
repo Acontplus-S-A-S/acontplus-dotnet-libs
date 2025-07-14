@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net;
 
-namespace Acontplus.Core.Domain.Common;
+namespace Acontplus.Core.Domain.Common.Results;
 
 public readonly record struct DomainError(
     ErrorType Type,

@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common.Results;
 
 /// <summary>
 /// Represents a result of an operation that can either succeed or fail.

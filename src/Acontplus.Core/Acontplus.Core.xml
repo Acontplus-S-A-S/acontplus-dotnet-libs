@@ -178,70 +178,70 @@
             Applies pagination using the entire DTO, which also enables paging.
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Domain.Common.AuditableEntity`1">
+        <member name="T:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1">
             <summary>
             Base auditable entity with modern .NET 9+ features and improved audit patterns.
             </summary>
             <typeparam name="TId">The type of the entity's primary key.</typeparam>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.CreatedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.CreatedByUserId">
             <summary>
             The local user ID (foreign key) who created the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.UpdatedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdatedByUserId">
             <summary>
             The local user ID (foreign key) who last updated the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.DeletedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.DeletedByUserId">
             <summary>
             The local user ID (foreign key) who deleted the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.CreatedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.CreatedBy">
             <summary>
             The username, email, or external identifier of the creator (for cross-system or external users).
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.UpdatedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdatedBy">
             <summary>
             The username, email, or external identifier of the last updater (for cross-system or external users).
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.AuditableEntity`1.DeletedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.DeletedBy">
             <summary>
             The username, email, or external identifier of the deleter (for cross-system or external users).
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.MarkAsDeleted(`0)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.MarkAsDeleted(`0)">
             <summary>
             Marks the entity as deleted with audit information.
             </summary>
             <param name="deletedByUserId">The user ID who deleted the entity.</param>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.RestoreFromDeleted">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.RestoreFromDeleted">
             <summary>
             Restores the entity from deleted state.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.Deactivate">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Deactivate">
             <summary>
             Deactivates the entity.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.Activate">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Activate">
             <summary>
             Activates the entity.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.UpdateAuditFields(`0)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdateAuditFields(`0)">
             <summary>
             Updates audit fields when the entity is modified.
             </summary>
             <param name="updatedByUserId">The user ID who updated the entity.</param>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.AuditableEntity`1.Create``1(`0,`0,System.Boolean)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Create``1(`0,`0,System.Boolean)">
             <summary>
             Creates a new auditable entity with the specified ID and creator.
             </summary>
@@ -251,70 +251,70 @@
             <param name="isMobileRequest">Whether the request came from a mobile device.</param>
             <returns>A new auditable entity instance.</returns>
         </member>
-        <member name="T:Acontplus.Core.Domain.Common.DomainErrors">
-            <summary>
-            Represents multiple domain errors that can occur during validation or complex operations.
-            </summary>
-            <param name="Errors">Collection of individual domain errors.</param>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.DomainErrors.#ctor(System.Collections.Generic.IReadOnlyList{Acontplus.Core.Domain.Common.DomainError})">
-            <summary>
-            Represents multiple domain errors that can occur during validation or complex operations.
-            </summary>
-            <param name="Errors">Collection of individual domain errors.</param>
-        </member>
-        <member name="P:Acontplus.Core.Domain.Common.DomainErrors.Errors">
-            <summary>Collection of individual domain errors.</summary>
-        </member>
-        <member name="T:Acontplus.Core.Domain.Common.DomainWarnings">
-            <summary>
-            Represents warnings that don't prevent operation success but should be communicated.
-            </summary>
-            <param name="Warnings">Collection of individual warnings.</param>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.DomainWarnings.#ctor(System.Collections.Generic.IReadOnlyList{Acontplus.Core.Domain.Common.DomainError})">
-            <summary>
-            Represents warnings that don't prevent operation success but should be communicated.
-            </summary>
-            <param name="Warnings">Collection of individual warnings.</param>
-        </member>
-        <member name="P:Acontplus.Core.Domain.Common.DomainWarnings.Warnings">
-            <summary>Collection of individual warnings.</summary>
-        </member>
-        <member name="T:Acontplus.Core.Domain.Common.SuccessWithWarnings`1">
-            <summary>
-            Represents a successful result that may also contain warnings.
-            </summary>
-            <param name="Value">The success value.</param>
-            <param name="Warnings">Optional warnings that occurred during the operation.</param>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.SuccessWithWarnings`1.#ctor(`0,System.Nullable{Acontplus.Core.Domain.Common.DomainWarnings})">
-            <summary>
-            Represents a successful result that may also contain warnings.
-            </summary>
-            <param name="Value">The success value.</param>
-            <param name="Warnings">Optional warnings that occurred during the operation.</param>
-        </member>
-        <member name="P:Acontplus.Core.Domain.Common.SuccessWithWarnings`1.Value">
-            <summary>The success value.</summary>
-        </member>
-        <member name="P:Acontplus.Core.Domain.Common.SuccessWithWarnings`1.Warnings">
-            <summary>Optional warnings that occurred during the operation.</summary>
-        </member>
-        <member name="T:Acontplus.Core.Domain.Common.Entity`1">
+        <member name="T:Acontplus.Core.Domain.Common.Entities.Entity`1">
             <summary>
             Base entity class with domain event support and modern .NET 9+ features.
             </summary>
             <typeparam name="TId">The type of the entity's primary key.</typeparam>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entity`1.Create``1(`0)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.Entity`1.Create``1(`0)">
             <summary>
             Creates a new entity with the specified ID.
             </summary>
             <param name="id">The entity ID.</param>
             <returns>A new entity instance.</returns>
         </member>
-        <member name="T:Acontplus.Core.Domain.Common.Result`2">
+        <member name="T:Acontplus.Core.Domain.Common.Results.DomainErrors">
+            <summary>
+            Represents multiple domain errors that can occur during validation or complex operations.
+            </summary>
+            <param name="Errors">Collection of individual domain errors.</param>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.#ctor(System.Collections.Generic.IReadOnlyList{Acontplus.Core.Domain.Common.Results.DomainError})">
+            <summary>
+            Represents multiple domain errors that can occur during validation or complex operations.
+            </summary>
+            <param name="Errors">Collection of individual domain errors.</param>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.Results.DomainErrors.Errors">
+            <summary>Collection of individual domain errors.</summary>
+        </member>
+        <member name="T:Acontplus.Core.Domain.Common.Results.DomainWarnings">
+            <summary>
+            Represents warnings that don't prevent operation success but should be communicated.
+            </summary>
+            <param name="Warnings">Collection of individual warnings.</param>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainWarnings.#ctor(System.Collections.Generic.IReadOnlyList{Acontplus.Core.Domain.Common.Results.DomainError})">
+            <summary>
+            Represents warnings that don't prevent operation success but should be communicated.
+            </summary>
+            <param name="Warnings">Collection of individual warnings.</param>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.Results.DomainWarnings.Warnings">
+            <summary>Collection of individual warnings.</summary>
+        </member>
+        <member name="T:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1">
+            <summary>
+            Represents a successful result that may also contain warnings.
+            </summary>
+            <param name="Value">The success value.</param>
+            <param name="Warnings">Optional warnings that occurred during the operation.</param>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.#ctor(`0,System.Nullable{Acontplus.Core.Domain.Common.Results.DomainWarnings})">
+            <summary>
+            Represents a successful result that may also contain warnings.
+            </summary>
+            <param name="Value">The success value.</param>
+            <param name="Warnings">Optional warnings that occurred during the operation.</param>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Value">
+            <summary>The success value.</summary>
+        </member>
+        <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Warnings">
+            <summary>Optional warnings that occurred during the operation.</summary>
+        </member>
+        <member name="T:Acontplus.Core.Domain.Common.Results.Result`2">
             <summary>
             Represents a result of an operation that can either succeed or fail.
             Modern .NET 9+ pattern for functional error handling.
@@ -322,11 +322,106 @@
             <typeparam name="TValue">The type of the success value.</typeparam>
             <typeparam name="TError">The type of the error.</typeparam>
         </member>
-        <member name="T:Acontplus.Core.Domain.Common.Result`1">
+        <member name="T:Acontplus.Core.Domain.Common.Results.Result`1">
             <summary>
             Represents a result of an operation that can either succeed or fail with a standard error type.
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
+        </member>
+        <member name="T:Acontplus.Core.Domain.Extensions.ResultExtensions">
+            <summary>
+            Modern extension methods for the Result pattern to improve developer experience.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.Bind``2(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{``0,Acontplus.Core.Domain.Common.Results.Result{``1}})">
+            <summary>
+            Binds a Result to another Result using a function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.BindAsync``2(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{``0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{``1}}})">
+            <summary>
+            Binds a Result to another Result using an async function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.Map``2(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{``0,``1})">
+            <summary>
+            Maps a Result to another Result using a function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.MapAsync``2(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            Maps a Result to another Result using an async function.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.Tap``1(Acontplus.Core.Domain.Common.Results.Result{``0},System.Action{``0})">
+            <summary>
+            Executes an action on success and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.TapAsync``1(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Executes an async action on success and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.TapError``1(Acontplus.Core.Domain.Common.Results.Result{``0},System.Action{Acontplus.Core.Domain.Common.Results.DomainError})">
+            <summary>
+            Executes an action on failure and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.TapErrorAsync``1(Acontplus.Core.Domain.Common.Results.Result{``0},System.Func{Acontplus.Core.Domain.Common.Results.DomainError,System.Threading.Tasks.Task})">
+            <summary>
+            Executes an async action on failure and returns the original result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.ToResult``1(``0,Acontplus.Core.Domain.Common.Results.DomainError)">
+            <summary>
+            Converts a nullable value to a Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.ToResult``1(``0,System.String,System.String)">
+            <summary>
+            Converts a nullable value to a Result with a custom error message.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,Acontplus.Core.Domain.Common.Results.DomainError)">
+            <summary>
+            Converts a boolean condition to a Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,System.String,System.String)">
+            <summary>
+            Converts a boolean condition to a Result with a custom error message.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.DTOs.Responses.LegacySpResponse">
+            <summary>
+            Legacy response with dynamic payload. Prefer the generic version for type safety.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse.Success(System.Object,System.String)">
+            <summary>
+            Creates a success response with code "0" and optional payload/message.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.DTOs.Responses.LegacySpResponse`1">
+            <summary>
+            Legacy response with strongly-typed payload. Prefer this for type safety.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse`1.Success(`0,System.String)">
+            <summary>
+            Creates a success response with code "0" and strongly-typed payload.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Acontplus.Core.DTOs.Responses.SpResponse" -->
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Core.DTOs.Responses.SpResponse.#ctor(System.String,System.String,System.Object)" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Code" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Message" -->
+        <!-- Badly formed XML comment ignored for member "P:Acontplus.Core.DTOs.Responses.SpResponse.Content" -->
+        <member name="M:Acontplus.Core.DTOs.Responses.SpResponse.GetContent``1">
+            <summary>
+            Attempts to deserialize Content to the specified type. Handles both string and object cases.
+            </summary>
         </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
@@ -407,71 +502,6 @@
         <member name="M:Acontplus.Core.Extensions.NullableExtensions.OrKeep``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Returns the new IEnumerable if it is not null or empty; otherwise, returns the original.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Core.Extensions.ResultExtensions">
-            <summary>
-            Modern extension methods for the Result pattern to improve developer experience.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Bind``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,Acontplus.Core.Domain.Common.Result{``1}})">
-            <summary>
-            Binds a Result to another Result using a function.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.BindAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Result{``1}}})">
-            <summary>
-            Binds a Result to another Result using an async function.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Map``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,``1})">
-            <summary>
-            Maps a Result to another Result using a function.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.MapAsync``2(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task{``1}})">
-            <summary>
-            Maps a Result to another Result using an async function.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.Tap``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{``0})">
-            <summary>
-            Executes an action on success and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{``0,System.Threading.Tasks.Task})">
-            <summary>
-            Executes an async action on success and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapError``1(Acontplus.Core.Domain.Common.Result{``0},System.Action{Acontplus.Core.Domain.Common.DomainError})">
-            <summary>
-            Executes an action on failure and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.TapErrorAsync``1(Acontplus.Core.Domain.Common.Result{``0},System.Func{Acontplus.Core.Domain.Common.DomainError,System.Threading.Tasks.Task})">
-            <summary>
-            Executes an async action on failure and returns the original result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,Acontplus.Core.Domain.Common.DomainError)">
-            <summary>
-            Converts a nullable value to a Result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(``0,System.String,System.String)">
-            <summary>
-            Converts a nullable value to a Result with a custom error message.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,Acontplus.Core.Domain.Common.DomainError)">
-            <summary>
-            Converts a boolean condition to a Result.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Extensions.ResultExtensions.ToResult``1(System.Boolean,``0,System.String,System.String)">
-            <summary>
-            Converts a boolean condition to a Result with a custom error message.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Validation.XmlValidator.Validate(System.Xml.XmlDocument,System.IO.Stream)">

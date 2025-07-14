@@ -1,5 +1,4 @@
 ﻿using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
 
 namespace Acontplus.Persistence.SqlServer.Exceptions;
 

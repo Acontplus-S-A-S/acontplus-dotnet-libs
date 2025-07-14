@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common;
+﻿namespace Acontplus.Core.Domain.Common.Entities;
 
 /// <summary>
 /// Base entity class with domain event support and modern .NET 9+ features.

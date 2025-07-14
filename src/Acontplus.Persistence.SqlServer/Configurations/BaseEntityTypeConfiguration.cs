@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;
 

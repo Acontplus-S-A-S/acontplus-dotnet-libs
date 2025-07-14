@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Common;
-using Acontplus.Core.Domain.Common.Events;
+﻿using Acontplus.Core.Domain.Common.Events;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 

@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Domain.Extensions;
 
 
 public static class PagedResultExtensions

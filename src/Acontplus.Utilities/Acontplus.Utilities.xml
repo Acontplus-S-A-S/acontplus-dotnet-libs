@@ -18,19 +18,19 @@
         </member>
         <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlServerError(System.String,System.String)">
             <summary>
-            Maps a SQL Server error code and message to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.
+            Maps a SQL Server error code and message to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.
             </summary>
             <param name="errorCode">The SQL error code as a string.</param>
             <param name="message">The error message.</param>
-            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.</returns>
+            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.</returns>
         </member>
         <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlErrorNumber(System.Int32,System.String)">
             <summary>
-            Maps a SQL Server error number to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.DomainError"/> with a user-friendly message.
+            Maps a SQL Server error number to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/> with a user-friendly message.
             </summary>
             <param name="sqlErrorNumber">The SQL Server error number.</param>
             <param name="message">The error message.</param>
-            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.DomainError"/>.</returns>
+            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.</returns>
         </member>
         <member name="T:Acontplus.Utilities.Data.DataConverters">
             <summary>

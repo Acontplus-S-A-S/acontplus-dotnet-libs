@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Acontplus.Core.DTOs.Responses;
-
-namespace Acontplus.Utilities.Extensions;
+﻿namespace Acontplus.Utilities.Extensions;
 
 public static class ApiResponseExtensions
 {
