@@ -4,6 +4,23 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2">
+            <summary>
+            Defines generic data access operations for auditable entities.
+            </summary>
+            TEntity: The type of the entity.
+            TId: The type of the entity's primary key must be not null.
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2.SoftDeleteAsync(`0,`1,System.Threading.CancellationToken)">
+            <summary>
+            Soft deletes an entity (sets IsDeleted, DeletedAt, etc.).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2.RestoreAsync(`0,`1,System.Threading.CancellationToken)">
+            <summary>
+            Restores a soft-deleted entity.
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.IRepository`2">
             <summary>
             Defines generic data access operations for entities.

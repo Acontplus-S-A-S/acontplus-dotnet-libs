@@ -6,6 +6,10 @@ namespace Acontplus.Core.Abstractions.Persistence;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     IRepository<TEntity, TId> GetRepository<TEntity, TId>()
+        where TEntity : Entity<TId>
+        where TId : notnull;
+
+    IAuditableRepository<TEntity, TId> GetAuditableRepository<TEntity, TId>()
         where TEntity : AuditableEntity<TId>
         where TId : notnull;
 
