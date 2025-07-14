@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Acontplus.Persistence.SqlServer.Validation;
+namespace Acontplus.Persistence.SqlServer.Utilities;
 
 public static class SqlStringParam
 {

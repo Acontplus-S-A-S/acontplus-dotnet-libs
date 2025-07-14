@@ -42,26 +42,6 @@
             <param name="serviceKey">Optional key to register the services with (for keyed DI).</param>
             <returns>The updated IServiceCollection.</returns>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
-            <summary>
-            OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
-            <summary>
-            Convertir de zona horaria local a UTC (para guardar en BD)
-            </summary>
-        </member>
-        <member name="P:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.NowInEcuador">
-            <summary>
-            Obtener la hora actual en Ecuador
-            </summary>
-        </member>
-        <member name="P:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.NowInServer">
-            <summary>
-            Obtener la hora actual del servidor
-            </summary>
-        </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.SqlExceptionTranslator.FindSqlException(System.Exception)">
             <summary>
             Recursively searches for SqlException in the exception chain
@@ -169,6 +149,26 @@
             </summary>
             TEntity: The type of the entity.
             TId: The type of the entity's primary key, must be not null.
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
+            <summary>
+            OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
+            <summary>
+            Convertir de zona horaria local a UTC (para guardar en BD)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInEcuador">
+            <summary>
+            Obtener la hora actual en Ecuador
+            </summary>
+        </member>
+        <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInServer">
+            <summary>
+            Obtener la hora actual del servidor
+            </summary>
         </member>
         <member name="M:SqlExceptionExtensions.ToDomainErrors(System.Collections.Generic.IEnumerable{Acontplus.Persistence.SqlServer.Exceptions.SqlDomainException},System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
             <summary>

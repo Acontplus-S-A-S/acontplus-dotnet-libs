@@ -1,6 +1,6 @@
 ﻿using Acontplus.Core.DTOs.Responses;
-using Acontplus.Persistence.SqlServer.Diagnostics;
 using Acontplus.Persistence.SqlServer.Exceptions;
+using Acontplus.Persistence.SqlServer.Utilities;
 using Microsoft.EntityFrameworkCore.Query; // Assuming DiagnosticConfig is here
 using System.Linq.Expressions;
 
