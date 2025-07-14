@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Acontplus.FactElect</PackageId>
-		<Version>1.0.21</Version>
+		<Version>1.1.0</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
 		<Description>Comprehensive .NET 9+ library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML, validation, and SRI web service support.</Description>

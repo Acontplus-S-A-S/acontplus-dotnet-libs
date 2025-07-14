@@ -1,7 +1,7 @@
 ﻿global using Acontplus.Barcode.Models;
 global using Acontplus.Barcode.Utils;
-global using Acontplus.Core.Domain.Common;
-global using Acontplus.Core.Enums;
+global using Acontplus.Core.Domain.Common.Results;
+global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Extensions;
 global using Acontplus.Core.Validation;
 global using Acontplus.FactElect.Dtos.Validation;
