@@ -328,6 +328,24 @@
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
         </member>
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse.Success(System.String,System.Object,System.String)">
+            <summary>
+            Creates a success response with a default code and message.
+            </summary>
+            <param name="code"></param> // Default is "1" to success! Excuse me
+            <param name="payload"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Acontplus.Core.DTOs.Responses.LegacySpResponse`1.Success(`0,System.String,System.String)">
+            <summary>
+            Creates a success response with a default code and message.
+            </summary>
+            <param name="payload"></param>
+            <param name="code"></param> // Default is "1" to success! Excuse me
+            <param name="message"></param>
+            <returns></returns>
+        </member>
         <member name="T:Acontplus.Core.Extensions.JsonExtensions">
             <summary>
             Modern JSON extensions for .NET enterprise applications
