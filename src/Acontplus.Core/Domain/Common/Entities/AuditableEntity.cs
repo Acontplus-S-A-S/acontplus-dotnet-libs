@@ -7,7 +7,7 @@ namespace Acontplus.Core.Domain.Common.Entities;
 /// </summary>
 /// <typeparam name="TId">The type of the entity's primary key.</typeparam>
 public abstract class AuditableEntity<TId> : Entity<TId>, IAuditableEntity where TId : notnull
-{
+
     public DateTime CreatedAt { get; set; }
     /// <summary>
     /// The local user ID (foreign key) who created the entity, if available.
