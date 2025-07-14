@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
 
-public class UserRepository : BaseRepository<Usuario, int>, IUserRepository
+public class UserRepository : AuditableBaseRepository<Usuario, int>, IUserRepository
 {
     public UserRepository(TestContext context) : base(context)
     {

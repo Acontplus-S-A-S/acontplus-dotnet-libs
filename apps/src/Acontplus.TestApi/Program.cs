@@ -9,6 +9,7 @@ using Acontplus.FactElect.Services.Validation;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
+using Acontplus.Persistence.SqlServer.Repositories;
 using Acontplus.Services.Configuration;
 using Acontplus.Services.Extensions;
 using Acontplus.TestApi.Endpoints;
@@ -85,9 +86,9 @@ try
 
         string[] nameSpaces =
         [
-            "Acontplus.Persistence.SqlServer.Repositories",
             "Acontplus.Reports.Services",
-            "Acontplus.Core.Security.Services"
+            "Acontplus.Core.Security.Services",
+            "Acontplus.TestApplication.Services"
         ];
 
         builder.Services.Scan(scan => scan
@@ -99,17 +100,17 @@ try
         );
 
 
+        builder.Services.AddScoped<IAdoRepository, AdoRepository>();
         builder.Services.AddScoped<IAtsXmlService, AtsXmlService>();
         builder.Services.AddScoped<IWebServiceSri, WebServiceSri>();
         builder.Services.AddScoped<IRucService, RucService>();
         builder.Services.AddScoped<ICookieService, CookieService>();
         builder.Services.AddScoped<ICaptchaService, CaptchaService>();
         builder.Services.AddScoped<ICedulaService, CedulaService>();
-        builder.Services.AddScoped<ICustomerService, CustomerService>();
         builder.Services.AddScoped<IMailKitService, AmazonSesService>();
-        builder.Services.AddScoped<IUsuarioService, UsuarioService>();
         builder.Services.AddTransient<ISqlExceptionTranslator, SqlExceptionTranslator>();
         builder.Services.AddDataProtection();
+
         builder.Services.AddApiVersioningAndDocumentation();
     }
     catch (Exception serviceEx)
@@ -284,6 +285,20 @@ try
 
     var test = new Test { Status = ResponseStatus.Success };
     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(test, options));
+
+
+    //Endpoints
+
+    app.MapPost("/dia", async (IDiaService diaService, CreateDiaDto createDiaDto) =>
+    {
+        return await diaService.CreateAsync(createDiaDto).ToMinimalApiResultAsync();
+    });
+    app.MapPut("/dia/{id:int}", async (IDiaService diaService, int id, UpdateDiaDto updateDiaDto) =>
+    {
+        return await diaService.UpdateAsync(id, updateDiaDto).ToMinimalApiResultAsync();
+    });
+
+
     await app.RunAsync();
 }
 catch (Exception ex)

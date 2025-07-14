@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Persistence.SqlServer.Diagnostics;
+﻿namespace Acontplus.Persistence.SqlServer.Utilities;
 
 public static class TimeZoneHelper
 {

@@ -4,6 +4,7 @@ namespace Acontplus.TestInfrastructure.Persistence;
 
 public class TestContext(DbContextOptions<TestContext> options) : BaseContext(options)
 {
+    public DbSet<Dia> Dias { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<WhatsAppUsage> WhatsAppUsages { get; set; }
 
@@ -15,7 +16,8 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
 
         // 1. Register entities with default conventions and BaseEntityTypeConfiguration
         // Usuario will be mapped to table "Usuarios" (from DbSet name)
-        SimpleEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
+        AuditableEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
+        SimpleEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Dia));
 
         // 2. Register entities with explicit schema/table names (overrides [Table] attribute)
         //SimpleEntityRegistration.RegisterEntitiesWithNames(modelBuilder, typeof(TestContext),

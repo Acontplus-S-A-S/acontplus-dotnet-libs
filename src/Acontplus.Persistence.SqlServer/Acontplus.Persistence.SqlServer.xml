@@ -4,8 +4,50 @@
         <name>Acontplus.Persistence.SqlServer</name>
     </assembly>
     <members>
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.GetPrimaryKeyType(System.Type)" -->
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
+            <summary>
+            Registers auditable entities with the ModelBuilder, applying base configurations,
+            custom schema/table names, and optional specific entity configurations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
+            <summary>
+            Helper method to check if a type is assignable to a generic type definition
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
+            <summary>
+            Registers entities with default conventions and base configuration.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithSchemas(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String}[])">
+            <summary>
+            Registers entities, explicitly setting schemas for specified types.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String,System.String}[])">
+            <summary>
+            Registers entities, explicitly setting schema and/or table names for specified types.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
+            <summary>
+            Registers entities with specific custom configurations.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Persistence.SqlServer.Configurations.EntityTypeConfiguration`2">
+            <summary>
+            Base configuration for non-auditable entities.
+            </summary>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetPrimaryKeyType(System.Type)" -->
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])" -->
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
+            <summary>
+            Registers non-auditable entities with the ModelBuilder, applying base configurations,
+            custom schema/table names, and optional specific entity configurations.
+            </summary>
+        </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
             <summary>
             Helper method to check if a type is assignable to a generic type definition
@@ -41,26 +83,6 @@
             <param name="sqlServerOptions">The SQL Server-specific options for DbContext.</param>
             <param name="serviceKey">Optional key to register the services with (for keyed DI).</param>
             <returns>The updated IServiceCollection.</returns>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
-            <summary>
-            OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
-            <summary>
-            Convertir de zona horaria local a UTC (para guardar en BD)
-            </summary>
-        </member>
-        <member name="P:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.NowInEcuador">
-            <summary>
-            Obtener la hora actual en Ecuador
-            </summary>
-        </member>
-        <member name="P:Acontplus.Persistence.SqlServer.Diagnostics.TimeZoneHelper.NowInServer">
-            <summary>
-            Obtener la hora actual del servidor
-            </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.SqlExceptionTranslator.FindSqlException(System.Exception)">
             <summary>
@@ -163,12 +185,37 @@
             Executes a SQL query designed to return a single row.
             </summary>
         </member>
+        <member name="T:Acontplus.Persistence.SqlServer.Repositories.AuditableBaseRepository`2">
+            <summary>
+            Repository for auditable entities, adds audit-specific methods.
+            </summary>
+        </member>
         <member name="T:Acontplus.Persistence.SqlServer.Repositories.BaseRepository`2">
             <summary>
             A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
             </summary>
             TEntity: The type of the entity.
             TId: The type of the entity's primary key, must be not null.
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
+            <summary>
+            OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
+            <summary>
+            Convertir de zona horaria local a UTC (para guardar en BD)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInEcuador">
+            <summary>
+            Obtener la hora actual en Ecuador
+            </summary>
+        </member>
+        <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInServer">
+            <summary>
+            Obtener la hora actual del servidor
+            </summary>
         </member>
         <member name="M:SqlExceptionExtensions.ToDomainErrors(System.Collections.Generic.IEnumerable{Acontplus.Persistence.SqlServer.Exceptions.SqlDomainException},System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
             <summary>

@@ -9,7 +9,7 @@ namespace Acontplus.Core.Abstractions.Persistence;
 /// TEntity: The type of the entity.
 /// TId: The type of the entity's primary key must be not null.
 public interface IRepository<TEntity, TId>
-    where TEntity : AuditableEntity<TId>
+    where TEntity : Entity<TId>
     where TId : notnull
 {
     #region Query Methods

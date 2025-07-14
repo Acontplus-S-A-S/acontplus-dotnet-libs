@@ -6,8 +6,8 @@ namespace Acontplus.Core.Domain.Common.Entities;
 /// Base auditable entity with modern .NET 9+ features and improved audit patterns.
 /// </summary>
 /// <typeparam name="TId">The type of the entity's primary key.</typeparam>
-public abstract class AuditableEntity<TId> : Entity<TId> where TId : notnull
-{
+public abstract class AuditableEntity<TId> : Entity<TId>, IAuditableEntity where TId : notnull
+
     public DateTime CreatedAt { get; set; }
     /// <summary>
     /// The local user ID (foreign key) who created the entity, if available.

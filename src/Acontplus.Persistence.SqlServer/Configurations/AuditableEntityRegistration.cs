@@ -1,21 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
-public static class SimpleEntityRegistration
+public static class AuditableEntityRegistration
 {
     /// <summary>
-    /// Gets the primary key type for an entity that inherits from Entity<TKey>
+    /// Gets the primary key type for an entity that inherits from AuditableEntity<TKey>
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
-        // Look for Entity<TKey> in the inheritance chain
+        // Look for AuditableEntity<TKey> in the inheritance chain
         var currentType = entityType;
         while (currentType != null)
         {
             if (currentType.IsGenericType &&
-                currentType.GetGenericTypeDefinition() == typeof(Entity<>))
+                currentType.GetGenericTypeDefinition() == typeof(AuditableEntity<>))
             {
                 return currentType.GetGenericArguments()[0]; // Return TKey
             }
@@ -26,7 +26,7 @@ public static class SimpleEntityRegistration
     }
 
     /// <summary>
-    /// Registers non-auditable entities with the ModelBuilder, applying base configurations,
+    /// Registers auditable entities with the ModelBuilder, applying base configurations,
     /// custom schema/table names, and optional specific entity configurations.
     /// </summary>
     public static void RegisterEntities(
@@ -38,13 +38,13 @@ public static class SimpleEntityRegistration
     {
         foreach (var entityType in entityTypes)
         {
-            // Check if entity inherits from Entity<>
+            // Check if entity inherits from AuditableEntity<>
             var isValidEntity = entityType.IsClass &&
                                !entityType.IsAbstract &&
-                               IsAssignableToGenericType(entityType, typeof(Entity<>));
+                               IsAssignableToGenericType(entityType, typeof(AuditableEntity<>));
             if (!isValidEntity)
             {
-                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from Entity<>).");
+                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
                 continue;
             }
 
@@ -115,11 +115,11 @@ public static class SimpleEntityRegistration
                 entityBuilder.Metadata.SetSchema(determinedSchemaName);
             }
 
-            // 4. Apply the EntityTypeConfiguration for common properties/conventions
+            // 4. Apply the BaseEntityTypeConfiguration for common properties/conventions
             try
             {
                 var keyType = GetPrimaryKeyType(entityType);
-                var baseConfigurationType = typeof(EntityTypeConfiguration<,>).MakeGenericType(entityType, keyType);
+                var baseConfigurationType = typeof(BaseEntityTypeConfiguration<,>).MakeGenericType(entityType, keyType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
                 modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
             }
