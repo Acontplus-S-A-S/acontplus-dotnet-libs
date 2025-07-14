@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Acontplus.TestInfrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TestContext))]
-    [Migration("20250710053215_Initial")]
+    [Migration("20250714141012_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -41,11 +41,21 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("DeletedByUserId")
                         .HasColumnType("int");
@@ -86,6 +96,11 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<int>("UpdatedByUserId")
                         .HasColumnType("int");
 
@@ -111,6 +126,28 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     b.ToTable("WhatsAppUsage", "Config");
                 });
 
+            modelBuilder.Entity("Acontplus.TestDomain.Entities.Dia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Dias");
+                });
+
             modelBuilder.Entity("Acontplus.TestDomain.Entities.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -124,11 +161,21 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("DeletedByUserId")
                         .HasColumnType("int");
@@ -156,6 +203,11 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("UpdatedByUserId")
                         .HasColumnType("int");

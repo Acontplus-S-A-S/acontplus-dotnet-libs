@@ -21,7 +21,7 @@ namespace Acontplus.TestApplication.Services
             IAdoRepository adoRepository,
             ISqlExceptionTranslator exceptionTranslator)
         {
-            _usuarioRepository = unitOfWork.GetRepository<Usuario, int>();
+            _usuarioRepository = unitOfWork.GetAuditableRepository<Usuario, int>();
             _unitOfWork = unitOfWork;
             _logger = logger;
             _adoRepository = adoRepository;

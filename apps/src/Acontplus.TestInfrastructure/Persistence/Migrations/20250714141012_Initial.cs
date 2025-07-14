@@ -14,6 +14,20 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                 name: "Config");
 
             migrationBuilder.CreateTable(
+                name: "Dias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    Description = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dias", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Usuarios",
                 columns: table => new
                 {
@@ -29,7 +43,10 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedByUserId = table.Column<int>(type: "int", nullable: false),
-                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    DeletedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,7 +74,10 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedByUserId = table.Column<int>(type: "int", nullable: false),
-                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    DeletedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,6 +139,9 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Dias");
+
             migrationBuilder.DropTable(
                 name: "Usuarios");
 

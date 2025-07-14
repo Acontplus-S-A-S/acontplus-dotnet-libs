@@ -23,7 +23,7 @@ namespace Acontplus.TestApi.Controllers
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
 
-            return Ok(await usuarioService.UpdateAsync(id, usuario));
+            return await usuarioService.UpdateAsync(id, usuario).ToActionResultAsync();
         }
 
         // [HttpDelete("{id}")]
