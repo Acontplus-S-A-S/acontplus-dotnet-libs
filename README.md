@@ -60,7 +60,7 @@ This repository contains multiple libraries and sample applications, each in its
 ## 📚 Documentation
 
 - Each library includes a detailed README and XML API docs.
-- Centralized documentation and guides: [GitHub Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/docs/wiki)
+- Centralized documentation and guides: [Documentation Home](docs/wiki/Home.md)
 - For Ecuadorian electronic invoicing, see `Acontplus.FactElect` and its [README](src/Acontplus.FactElect/README.md).
 
 ---
