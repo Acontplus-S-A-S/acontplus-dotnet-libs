@@ -101,7 +101,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
     {
         var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
 
-        var tokenSri = captchaDeserialized.mensaje;
+        var tokenSri = captchaDeserialized.Mensaje;
 
         using var client = new HttpClient(new HttpClientHandler
         {

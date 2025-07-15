@@ -2,5 +2,5 @@
 
 public class TokenSri
 {
-    public string mensaje { get; set; }
+    public string Mensaje { get; set; }
 }

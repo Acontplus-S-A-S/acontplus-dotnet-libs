@@ -95,7 +95,7 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
     {
         var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
 
-        var tokenSri = captchaDeserialized.mensaje;
+        var tokenSri = captchaDeserialized.Mensaje;
 
         using var client = new HttpClient(new HttpClientHandler
         {
