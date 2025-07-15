@@ -165,6 +165,142 @@ public static class ResultApiExtensions
 
     #endregion
 
+    #region CRUD-Specific Extensions (Synchronous)
+
+    // GET: 200 OK or 204 NoContent
+    public static IActionResult ToGetActionResult<T>(this Result<T, DomainError> result)
+    {
+        return result.Match<IActionResult>(
+            value => value is null ? new NoContentResult() : new OkObjectResult(value),
+            error => error.ToApiResponse<T>(null, null).ToActionResult()
+        );
+    }
+
+    // POST: 201 Created (with Location header)
+    public static IActionResult ToCreatedActionResult<T>(this Result<T, DomainError> result, string locationUri)
+    {
+        return result.Match<IActionResult>(
+            value => new CreatedResult(locationUri, value),
+            error => error.ToApiResponse<T>(null, null).ToActionResult()
+        );
+    }
+
+    // PUT: 200 OK or 204 NoContent
+    public static IActionResult ToPutActionResult<T>(this Result<T, DomainError> result)
+    {
+        return result.Match<IActionResult>(
+            value => value is null ? new NoContentResult() : new OkObjectResult(value),
+            error => error.ToApiResponse<T>(null, null).ToActionResult()
+        );
+    }
+
+    // DELETE: 204 NoContent or 404 NotFound
+    public static IActionResult ToDeleteActionResult(this Result<bool, DomainError> result)
+    {
+        return result.Match<IActionResult>(
+            deleted => deleted ? new NoContentResult() : new NotFoundResult(),
+            error => error.ToApiResponse<bool>(null, null).ToActionResult()
+        );
+    }
+
+    // Minimal API: GET: 200 OK or 204 NoContent
+    public static IResult ToGetMinimalApiResult<T>(this Result<T, DomainError> result)
+    {
+        return result.Match<IResult>(
+            value => value is null ? TypedResults.NoContent() : TypedResults.Ok(value),
+            error => TypedResults.Problem(error.Message)
+        );
+    }
+
+    // Minimal API: POST: 201 Created (with Location header)
+    public static IResult ToCreatedMinimalApiResult<T>(this Result<T, DomainError> result, string locationUri)
+    {
+        return result.Match<IResult>(
+            value => TypedResults.Created(locationUri, value),
+            error => TypedResults.Problem(error.Message)
+        );
+    }
+
+    // Minimal API: PUT: 200 OK or 204 NoContent
+    public static IResult ToPutMinimalApiResult<T>(this Result<T, DomainError> result)
+    {
+        return result.Match<IResult>(
+            value => value is null ? TypedResults.NoContent() : TypedResults.Ok(value),
+            error => TypedResults.Problem(error.Message)
+        );
+    }
+
+    // Minimal API: DELETE: 204 NoContent or 404 NotFound
+    public static IResult ToDeleteMinimalApiResult(this Result<bool, DomainError> result)
+    {
+        return result.Match<IResult>(
+            deleted => deleted ? TypedResults.NoContent() : TypedResults.NotFound(),
+            error => TypedResults.Problem(error.Message)
+        );
+    }
+
+    #endregion
+
+    #region CRUD-Specific Extensions (Async)
+
+    // GET: 200 OK or 204 NoContent (async)
+    public static async Task<IActionResult> ToGetActionResultAsync<T>(this Task<Result<T, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToGetActionResult();
+    }
+
+    // POST: 201 Created (async)
+    public static async Task<IActionResult> ToCreatedActionResultAsync<T>(this Task<Result<T, DomainError>> resultTask, string locationUri)
+    {
+        var result = await resultTask;
+        return result.ToCreatedActionResult(locationUri);
+    }
+
+    // PUT: 200 OK or 204 NoContent (async)
+    public static async Task<IActionResult> ToPutActionResultAsync<T>(this Task<Result<T, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToPutActionResult();
+    }
+
+    // DELETE: 204 NoContent or 404 NotFound (async)
+    public static async Task<IActionResult> ToDeleteActionResultAsync(this Task<Result<bool, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToDeleteActionResult();
+    }
+
+    // Minimal API: GET: 200 OK or 204 NoContent (async)
+    public static async Task<IResult> ToGetMinimalApiResultAsync<T>(this Task<Result<T, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToGetMinimalApiResult();
+    }
+
+    // Minimal API: POST: 201 Created (async)
+    public static async Task<IResult> ToCreatedMinimalApiResultAsync<T>(this Task<Result<T, DomainError>> resultTask, string locationUri)
+    {
+        var result = await resultTask;
+        return result.ToCreatedMinimalApiResult(locationUri);
+    }
+
+    // Minimal API: PUT: 200 OK or 204 NoContent (async)
+    public static async Task<IResult> ToPutMinimalApiResultAsync<T>(this Task<Result<T, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToPutMinimalApiResult();
+    }
+
+    // Minimal API: DELETE: 204 NoContent or 404 NotFound (async)
+    public static async Task<IResult> ToDeleteMinimalApiResultAsync(this Task<Result<bool, DomainError>> resultTask)
+    {
+        var result = await resultTask;
+        return result.ToDeleteMinimalApiResult();
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private static IActionResult CreateSuccessResponse<TValue>(TValue value, string? correlationId)
