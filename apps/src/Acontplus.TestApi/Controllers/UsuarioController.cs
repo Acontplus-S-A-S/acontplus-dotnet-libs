@@ -1,5 +1,4 @@
 ﻿using Acontplus.Services.Extensions;
-using Acontplus.Utilities.Data;
 using Acontplus.Utilities.Mapping;
 
 namespace Acontplus.TestApi.Controllers
@@ -12,18 +11,25 @@ namespace Acontplus.TestApi.Controllers
         public async Task<IActionResult> Post([FromBody] UsuarioDto usuarioDto)
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
-            var serialized = DataConverters.SerializeObjectCustom<Usuario>(usuario);
-
-
-            return await usuarioService.AddAsync(usuario).ToActionResultAsync();
+            var result = await usuarioService.AddAsync(usuario);
+            // Return 201 Created if successful, otherwise error
+            // Assume new user's ID is available in result.Value.Id if successful
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var locationUri = $"/api/Usuario/{result.Value.Id}";
+                return result.ToCreatedActionResult(locationUri);
+            }
+            // For error or null, use generic action result
+            return result.ToActionResult();
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UsuarioDto usuarioDto)
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
-
-            return await usuarioService.UpdateAsync(id, usuario).ToActionResultAsync();
+            var result = await usuarioService.UpdateAsync(id, usuario);
+            // Return 200 OK if updated, 204 NoContent if no data, or error
+            return result.ToPutActionResult();
         }
 
         // [HttpDelete("{id}")]
@@ -41,7 +47,9 @@ namespace Acontplus.TestApi.Controllers
             [FromServices] ILogger<UsuarioController> logger)
         {
             var isMobileRequest = HttpContext.GetIsMobileRequest();
-            return await usuarioService.GetPaginatedUsersAsync(pagination).ToActionResultAsync();
+            var result = await usuarioService.GetPaginatedUsersAsync(pagination);
+            // Return 200 OK if data, 204 NoContent if empty, or error
+            return result.ToGetActionResult();
         }
 
         [HttpGet("ado")]
@@ -49,7 +57,8 @@ namespace Acontplus.TestApi.Controllers
             [FromServices] IUsuarioService usuarioService,
             [FromServices] ILogger<UsuarioController> logger)
         {
-            return await usuarioService.GetLegacySpResponseAsync().ToActionResultAsync();
+            var result = await usuarioService.GetLegacySpResponseAsync();
+            return result.ToGetActionResult();
         }
 
         [HttpGet("get-dynamic")]
@@ -57,7 +66,8 @@ namespace Acontplus.TestApi.Controllers
             [FromServices] IUsuarioService usuarioService,
             [FromServices] ILogger<UsuarioController> logger)
         {
-            return await usuarioService.GetDynamicUserListAsync().ToActionResultAsync();
+            var result = await usuarioService.GetDynamicUserListAsync();
+            return result.ToGetActionResult();
         }
 
         private string CreatePageLink(PaginationDto pagination, int page)
@@ -69,7 +79,8 @@ namespace Acontplus.TestApi.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var correlationId = HttpContext.TraceIdentifier;
-            return await usuarioService.DeleteAsync(id).ToActionResultAsync(correlationId);
+            var result = await usuarioService.DeleteAsync(id);
+            return result.ToDeleteActionResult();
         }
     }
 }

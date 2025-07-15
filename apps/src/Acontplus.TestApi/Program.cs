@@ -14,7 +14,6 @@ using Acontplus.Services.Configuration;
 using Acontplus.Services.Extensions;
 using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
-using Acontplus.TestApplication.Services;
 using Acontplus.TestInfrastructure.Persistence;
 using Scrutor;
 using Serilog;

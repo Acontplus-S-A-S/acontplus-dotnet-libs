@@ -1,5 +1,6 @@
 ﻿using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Domain.Extensions;
+using Acontplus.Utilities.Adapters;
 using Acontplus.Utilities.Mapping;
 using Microsoft.Extensions.Logging;
 using System.Data.Common;
@@ -75,9 +76,9 @@ namespace Acontplus.TestApplication.Services
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Failed to execute raw SQL command");
-                return DomainError.Internal(
-                    "SQL_COMMAND_FAILED",
-                    "Failed to execute database command");
+                // Example: Use SqlResponseAdapter to map SQL error code to DomainError
+                var sqlError = SqlResponseAdapter.MapSqlServerError(ex.ErrorCode.ToString(), ex.Message);
+                return sqlError;
             }
         }
 
@@ -125,6 +126,13 @@ namespace Acontplus.TestApplication.Services
 
                 return Result<List<UsuarioDto>, DomainError>.Success(result);
             }
+            catch (DbException ex)
+            {
+                _logger.LogError(ex, "Failed to execute raw SQL command");
+                // Example: Use SqlResponseAdapter to map SQL error code to DomainError
+                var sqlError = SqlResponseAdapter.MapSqlServerError(ex.ErrorCode.ToString(), ex.Message);
+                return sqlError;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to execute raw SQL command");
@@ -153,9 +161,21 @@ namespace Acontplus.TestApplication.Services
                     parameters: parameters,
                     options: options);
 
+                // Example: If result has a SQL error code, map it to DomainError
+                if (!result.IsSuccess && !string.IsNullOrEmpty(result.Code))
+                {
+                    var sqlError = SqlResponseAdapter.MapSqlServerError(result.Code, result.Message);
+                    return sqlError;
+                }
+
                 return result.IsSuccess
                     ? Result<LegacySpResponse, DomainError>.Success(result)
                     : DomainError.Internal(result.Code, result.Message);
+            }
+            catch (DbException ex)
+            {
+                var sqlError = SqlResponseAdapter.MapSqlServerError(ex.ErrorCode.ToString(), ex.Message);
+                return sqlError;
             }
             catch (Exception ex)
             {
