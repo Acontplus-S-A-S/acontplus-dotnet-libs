@@ -1,5 +1,4 @@
-﻿global using Acontplus.Core.Api.Helpers;
-global using Acontplus.Core.Constants;
+﻿global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Common.Results;
 global using Acontplus.Core.Domain.Extensions;
 global using Acontplus.Core.DTOs.Responses;

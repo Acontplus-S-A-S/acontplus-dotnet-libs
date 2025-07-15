@@ -6,31 +6,24 @@
     <members>
         <member name="T:Acontplus.Utilities.Adapters.SqlResponseAdapter">
             <summary>
-            Provides extension methods to adapt SQL stored procedure responses to API results.
+            Provides helpers to map SQL Server error codes to domain errors.
             </summary>
-        </member>
-        <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.ToApiResult(Acontplus.Core.DTOs.Responses.SpResponse)">
-            <summary>
-            Converts a <see cref="T:Acontplus.Core.DTOs.Responses.SpResponse"/> to an <see cref="T:Microsoft.AspNetCore.Http.IResult"/> suitable for Minimal APIs, mapping SQL errors to HTTP status codes and error messages.
-            </summary>
-            <param name="response">The stored procedure response to convert.</param>
-            <returns>An <see cref="T:Microsoft.AspNetCore.Http.IResult"/> representing the API response.</returns>
         </member>
         <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlServerError(System.String,System.String)">
             <summary>
-            Maps a SQL Server error code and message to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.
+            Maps a SQL Server error code and message to a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.
             </summary>
             <param name="errorCode">The SQL error code as a string.</param>
             <param name="message">The error message.</param>
-            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.</returns>
+            <returns>A <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/> representing the error.</returns>
         </member>
         <member name="M:Acontplus.Utilities.Adapters.SqlResponseAdapter.MapSqlErrorNumber(System.Int32,System.String)">
             <summary>
-            Maps a SQL Server error number to an HTTP status code and <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/> with a user-friendly message.
+            Maps a SQL Server error number to a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/> with a user-friendly message.
             </summary>
             <param name="sqlErrorNumber">The SQL Server error number.</param>
             <param name="message">The error message.</param>
-            <returns>A tuple containing the HTTP status code and a <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.</returns>
+            <returns>A <see cref="T:Acontplus.Core.Domain.Common.Results.DomainError"/>.</returns>
         </member>
         <member name="T:Acontplus.Utilities.Data.DataConverters">
             <summary>
