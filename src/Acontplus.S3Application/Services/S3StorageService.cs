@@ -8,8 +8,16 @@ using Amazon.S3.Transfer;
 
 namespace Acontplus.S3Application.Services;
 
+/// <summary>
+/// Provides a concrete implementation of <see cref="IS3StorageService"/> for performing AWS S3 storage operations, including async CRUD, retrieval, and presigned URL generation.
+/// </summary>
 public class S3StorageService : IS3StorageService
 {
+    /// <summary>
+    /// Uploads a new object to S3 asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object to upload.</param>
+    /// <returns>A response with status and metadata.</returns>
     public async Task<S3Response> UploadAsync(S3ObjectCustom s3ObjectCustom)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
@@ -60,6 +68,11 @@ public class S3StorageService : IS3StorageService
         return response;
     }
 
+    /// <summary>
+    /// Updates an existing object in S3 asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object to update.</param>
+    /// <returns>A response with status and metadata.</returns>
     public async Task<S3Response> UpdateAsync(S3ObjectCustom s3ObjectCustom)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
@@ -109,6 +122,11 @@ public class S3StorageService : IS3StorageService
         return response;
     }
 
+    /// <summary>
+    /// Deletes an object from S3 asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object to delete.</param>
+    /// <returns>A response with status and metadata.</returns>
     public async Task<S3Response> DeleteAsync(S3ObjectCustom s3ObjectCustom)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
@@ -148,6 +166,11 @@ public class S3StorageService : IS3StorageService
         return response;
     }
 
+    /// <summary>
+    /// Retrieves an object from S3 asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object to retrieve.</param>
+    /// <returns>A response with file content and metadata.</returns>
     public async Task<S3Response> GetObjectAsync(S3ObjectCustom s3ObjectCustom)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
@@ -193,6 +216,11 @@ public class S3StorageService : IS3StorageService
         return response;
     }
 
+    /// <summary>
+    /// Checks if an object exists in S3 asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object to check.</param>
+    /// <returns>True if the object exists; otherwise, false.</returns>
     public async Task<bool> DoesObjectExistAsync(S3ObjectCustom s3ObjectCustom)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
@@ -226,6 +254,12 @@ public class S3StorageService : IS3StorageService
         }
     }
 
+    /// <summary>
+    /// Generates a presigned URL for an S3 object asynchronously.
+    /// </summary>
+    /// <param name="s3ObjectCustom">The S3 object for which to generate the URL.</param>
+    /// <param name="expirationInMinutes">The expiration time in minutes for the URL.</param>
+    /// <returns>A response containing the presigned URL.</returns>
     public async Task<S3Response> GetPresignedUrlAsync(S3ObjectCustom s3ObjectCustom, int expirationInMinutes = 60)
     {
         if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
