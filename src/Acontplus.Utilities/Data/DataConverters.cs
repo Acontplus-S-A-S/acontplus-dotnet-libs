@@ -132,13 +132,15 @@ public static class DataConverters
     private static List<Dictionary<string, object>> ConvertDataTableToList(DataTable table)
     {
         var result = new List<Dictionary<string, object>>();
+        var namingPolicy = JsonNamingPolicy.CamelCase;
 
         foreach (DataRow row in table.Rows)
         {
             var dict = new Dictionary<string, object>();
             foreach (DataColumn col in table.Columns)
             {
-                dict[col.ColumnName] = row[col] == DBNull.Value ? null : row[col];
+                var camelCaseName = namingPolicy.ConvertName(col.ColumnName);
+                dict[camelCaseName] = row[col] == DBNull.Value ? null : row[col];
             }
             result.Add(dict);
         }
