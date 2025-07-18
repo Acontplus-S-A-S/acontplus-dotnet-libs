@@ -10,4 +10,4 @@ public interface IConnectionStringProvider
     /// Gets a connection string by logical name or key.
     /// </summary>
     string GetConnectionString(string name);
-} 
+}
