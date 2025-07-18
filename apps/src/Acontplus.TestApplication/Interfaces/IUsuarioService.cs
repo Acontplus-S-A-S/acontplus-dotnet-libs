@@ -11,4 +11,6 @@ public interface IUsuarioService
     Task<Result<List<UsuarioDto>, DomainError>> GetDynamicUserListAsync();
     Task<Result<Usuario, DomainErrors>> UpdateAsync(int id, Usuario usuario);
     Task<Result<bool, DomainError>> DeleteAsync(int id);
+    Task<Result<Usuario, DomainError>> GetByIdAsync(int id);
+    Task<Result<SuccessWithWarnings<List<Usuario>>, DomainError>> ImportUsuariosAsync(List<UsuarioDto> dtos);
 }

@@ -266,6 +266,56 @@ namespace Acontplus.TestApplication.Services
             }
         }
 
+        public async Task<Result<Usuario, DomainError>> GetByIdAsync(int id)
+        {
+            try
+            {
+                var user = await _usuarioRepository.GetByIdAsync(id);
+                if (user == null)
+                    return DomainError.NotFound("USER_NOT_FOUND", $"User with ID {id} not found");
+                return Result<Usuario, DomainError>.Success(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user by ID {UserId}", id);
+                return DomainError.Internal("GET_USER_ERROR", "Failed to fetch user");
+            }
+        }
+
+        public async Task<Result<SuccessWithWarnings<List<Usuario>>, DomainError>> ImportUsuariosAsync(List<UsuarioDto> dtos)
+        {
+            var warnings = new List<DomainError>();
+            var imported = new List<Usuario>();
+            foreach (var dto in dtos)
+            {
+                if (string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Email))
+                {
+                    warnings.Add(DomainError.Validation("INVALID_DATA", $"Missing username or email for user: {dto.Username ?? "<null>"}"));
+                    continue;
+                }
+                var existing = await _usuarioRepository.GetFirstOrDefaultAsync(x => x.Username == dto.Username);
+                if (existing != null)
+                {
+                    warnings.Add(DomainError.Conflict("DUPLICATE_USER", $"Username '{dto.Username}' already exists"));
+                    continue;
+                }
+                var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(dto);
+                await _usuarioRepository.AddAsync(usuario);
+                imported.Add(usuario);
+            }
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+                var domainWarnings = warnings.Count > 0 ? DomainWarnings.Multiple(warnings) : DomainWarnings.Multiple(Array.Empty<DomainError>());
+                return Result<SuccessWithWarnings<List<Usuario>>, DomainError>.Success(new SuccessWithWarnings<List<Usuario>>(imported, domainWarnings));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error importing users");
+                return DomainError.Internal("IMPORT_USERS_ERROR", "Failed to import users");
+            }
+        }
+
         public async Task<Result<Usuario, DomainErrors>> UpdateAsync(int id, Usuario usuario)
         {
             try

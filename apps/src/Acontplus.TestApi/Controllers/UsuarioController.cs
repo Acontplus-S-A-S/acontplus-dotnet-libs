@@ -1,4 +1,7 @@
-﻿using Acontplus.Services.Extensions;
+﻿using Acontplus.Core.DTOs.Responses;
+using Acontplus.Core.Domain.Common.Results;
+using Acontplus.Utilities.Extensions;
+using Acontplus.Services.Extensions;
 using Acontplus.Utilities.Mapping;
 
 namespace Acontplus.TestApi.Controllers
@@ -7,64 +10,72 @@ namespace Acontplus.TestApi.Controllers
     [ApiController]
     public class UsuarioController(IUsuarioService usuarioService) : ControllerBase
     {
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetUsuario(int id)
+        {
+            var result = await usuarioService.GetByIdAsync(id);
+            return result.ToGetActionResult();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] UsuarioDto usuarioDto)
+        public async Task<IActionResult> CreateUsuario([FromBody] UsuarioDto usuarioDto)
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
             var result = await usuarioService.AddAsync(usuario);
-            // Return 201 Created if successful, otherwise error
-            // Assume new user's ID is available in result.Value.Id if successful
             if (result.IsSuccess && result.Value is not null)
             {
                 var locationUri = $"/api/Usuario/{result.Value.Id}";
-                return result.ToCreatedActionResult(locationUri);
+                // Custom message example
+                return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario creado exitosamente." })
+                    .ToActionResult();
             }
-            // For error or null, use generic action result
             return result.ToActionResult();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] UsuarioDto usuarioDto)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioDto usuarioDto)
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
             var result = await usuarioService.UpdateAsync(id, usuario);
-            // Return 200 OK if updated, 204 NoContent if no data, or error
-            return result.ToPutActionResult();
+            if (result.IsSuccess)
+            {
+                return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario actualizado correctamente." }).ToActionResult();
+            }
+            return result.ToActionResult();
         }
 
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> Put(int id)
-        // {
-        //     return Ok(await usuarioService.DeleteAsync(id));
-        // }
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteUsuario(int id)
+        {
+            var result = await usuarioService.DeleteAsync(id);
+            return result.ToDeleteActionResult();
+        }
 
         [HttpGet]
         [ProducesResponseType<ApiResponse<PagedResult<UsuarioDto>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUsers(
-            [FromQuery] PaginationDto pagination,
-            [FromServices] IUsuarioService usuarioService,
-            [FromServices] ILogger<UsuarioController> logger)
+        public async Task<IActionResult> GetUsuarios([FromQuery] PaginationDto pagination)
         {
-            var isMobileRequest = HttpContext.GetIsMobileRequest();
             var result = await usuarioService.GetPaginatedUsersAsync(pagination);
-            // Return 200 OK if data, 204 NoContent if empty, or error
             return result.ToGetActionResult();
         }
 
+        [HttpPost("import")]
+        public async Task<IActionResult> ImportUsuarios([FromBody] List<UsuarioDto> dtos)
+        {
+            var result = await usuarioService.ImportUsuariosAsync(dtos);
+            return result.ToActionResult();
+        }
+
         [HttpGet("ado")]
-        public async Task<IActionResult> GetUsersAdo(
-            [FromServices] IUsuarioService usuarioService,
-            [FromServices] ILogger<UsuarioController> logger)
+        public async Task<IActionResult> GetUsersAdo()
         {
             var result = await usuarioService.GetLegacySpResponseAsync();
             return result.ToGetActionResult();
         }
 
         [HttpGet("get-dynamic")]
-        public async Task<IActionResult> GetDynamicUsers(
-            [FromServices] IUsuarioService usuarioService,
-            [FromServices] ILogger<UsuarioController> logger)
+        public async Task<IActionResult> GetDynamicUsers()
         {
             var result = await usuarioService.GetDynamicUserListAsync();
             return result.ToGetActionResult();
@@ -73,14 +84,6 @@ namespace Acontplus.TestApi.Controllers
         private string CreatePageLink(PaginationDto pagination, int page)
         {
             return $"?page={page}&pageSize={pagination.PageSize}";
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            var correlationId = HttpContext.TraceIdentifier;
-            var result = await usuarioService.DeleteAsync(id);
-            return result.ToDeleteActionResult();
         }
     }
 }
