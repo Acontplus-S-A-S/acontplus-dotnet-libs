@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.Persistence.Shared</name>
+    </assembly>
+    <members>
+        <member name="T:Acontplus.Persistence.Shared.ConfigurationConnectionStringProvider">
+            <summary>
+            Default implementation of IConnectionStringProvider using IConfiguration.
+            Supports hierarchical, environment-based, and secure connection string resolution.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Persistence.Shared.Repositories.AuditableBaseRepository`2">
+            <summary>
+            Repository for auditable entities, adds audit-specific methods.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Persistence.Shared.Repositories.BaseRepository`2">
+            <summary>
+            A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
+            </summary>
+            TEntity: The type of the entity.
+            TId: The type of the entity's primary key, must be not null.
+        </member>
+        <member name="M:SqlExceptionExtensions.ToDomainErrors(System.Collections.Generic.IEnumerable{Acontplus.Persistence.Shared.Exceptions.SqlDomainException},System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Converts multiple SqlDomainExceptions to a DomainErrors collection
+            </summary>
+            <param name="exceptions">Collection of SQL domain exceptions</param>
+            <param name="target">Optional target of the errors</param>
+            <param name="commonDetails">Optional common details for all errors</param>
+            <returns>DomainErrors containing all converted exceptions</returns>
+        </member>
+    </members>
+</doc>

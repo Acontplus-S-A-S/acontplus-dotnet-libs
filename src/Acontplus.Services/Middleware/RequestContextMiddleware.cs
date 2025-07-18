@@ -1,5 +1,5 @@
 ﻿using Acontplus.Services.Configuration;
-using Acontplus.Services.Extensions;
+using Acontplus.Services.Extensions.Context;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -8,11 +8,11 @@ namespace Acontplus.Services.Middleware;
 public sealed class RequestContextMiddleware(
     RequestDelegate next,
     ILogger<RequestContextMiddleware> logger, // Injected ILogger
-    IOptions<RequestContextOptions> options)
+    IOptions<RequestContextConfiguration> options)
 {
     private readonly RequestDelegate _next = next ?? throw new ArgumentNullException(nameof(next));
 
-    private readonly RequestContextOptions
+    private readonly RequestContextConfiguration
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     private readonly ILogger<RequestContextMiddleware> _logger =

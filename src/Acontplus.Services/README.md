@@ -1,171 +1,284 @@
 # Acontplus.Services
 
-[![NuGet](https://img.shields.io/nuget/v/Acontplus.Services.svg)](https://www.nuget.org/packages/Acontplus.Services)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+Modern service library providing enterprise-grade patterns for ASP.NET Core applications.
 
-A modern .NET 9+ library for API services, authentication, claims, middleware, and configuration. Includes JWT, user context, and exception handling for robust enterprise APIs.
+## Features
 
-## 🚀 Features
+### 🏗️ Enterprise Architecture Patterns
 
-- **Platform-aware Configuration Loading** - Dynamic app and shared config loading
-- **Claims-based User Context Extensions** - Easy access to user info and claims
-- **Identity & JWT Authentication** - Flexible and strict JWT setup
-- **User Context Service** - Abstracted access to user claims
-- **Global Exception Handling Middleware** - Robust error logging and API error responses
-- **Mobile Request Detection Middleware** - Detects mobile clients via headers
+- **Service Layer**: Clean separation of concerns with dependency injection
+- **Action Filters**: Reusable cross-cutting concerns (validation, logging, security)
+- **Authorization Policies**: Fine-grained access control for modern scenarios
+- **Middleware Pipeline**: Properly ordered middleware for security and context management
 
-## 📦 Installation
+### 🔒 Security & Compliance
 
-### NuGet Package Manager
-```bash
-Install-Package Acontplus.Services
-```
+- **Security Headers**: Comprehensive HTTP security header management
+- **Content Security Policy**: CSP nonce generation and management
+- **Client Validation**: Client-ID based access control
+- **Tenant Isolation**: Multi-tenant security policies
 
-### .NET CLI
-```bash
-dotnet add package Acontplus.Services
-```
+### 📱 Device & Context Awareness
 
-### PackageReference
-```xml
-<ItemGroup>
-  <PackageReference Include="Acontplus.Services" Version="1.0.12" />
-</ItemGroup>
-```
+- **Device Detection**: Smart device type detection from headers and user agents
+- **Request Context**: Correlation IDs, tenant isolation, and request tracking
+- **Device-Aware**: Mobile and tablet-aware policies and services
 
-## 🎯 Quick Start
+### 🚀 Performance & Observability
 
-### 1. Add JWT Authentication
+- **Request Logging**: Structured logging with performance metrics
+- **Health Checks**: Comprehensive health monitoring for all services
+- **Response Compression**: Optimized content delivery
+- **Rate Limiting**: Built-in rate limiting capabilities
+
+## Quick Start
+
+### 1. Basic Setup
+
 ```csharp
-using Microsoft.Extensions.DependencyInjection;
-using Acontplus.Services.Extensions;
-
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddIdentityService(Configuration); // or AddIdentityServiceStrict
+    // Add enterprise services with all patterns
+    services.AddEnterpriseServices(Configuration);
+
+    // Add authorization policies
+    services.AddEnterpriseAuthorizationPolicies();
+
+    // Add MVC with enterprise filters
+    services.AddEnterpriseMvc();
+
+    // Add health checks
+    services.AddEnterpriseHealthChecks(Configuration);
 }
 
-public void Configure(IApplicationBuilder app)
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
+    // Use enterprise middleware pipeline
+    app.UseEnterpriseMiddleware(env);
+
+    app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseEndpoints(endpoints => endpoints.MapControllers());
 }
 ```
 
-### 2. Use ClaimsPrincipal Extensions
-```csharp
-using System.Security.Claims;
-using Acontplus.Services.Extensions;
+### 2. Configuration
 
-var username = user.GetUsername();
-var email = user.GetEmail();
-var userId = user.GetUserId();
-```
+Add to your `appsettings.json`:
 
-### 3. Global Exception Middleware
-```csharp
-app.UseMiddleware<ApiExceptionMiddleware>();
-```
-
-## 🔧 Advanced Usage
-
-### AppConfiguration
-```csharp
-using Acontplus.Services.Configuration;
-var config = AppConfiguration.Load();
-```
-
-### User Context Service
-```csharp
-using Acontplus.Services.Extensions;
-services.AddHttpContextAccessor();
-services.AddScoped<IUserContext, UserContext>();
-```
-
-### JsonConfigurationService
-
-Centralizes and standardizes `System.Text.Json` options for your application.
-
-```csharp
-using Acontplus.Services.Configuration;
-
-// Get default options for serialization
-var options = JsonConfigurationService.GetDefaultOptions();
-
-// For pretty-printing (development)
-var prettyOptions = JsonConfigurationService.GetPrettyOptions();
-
-// For strict API validation
-var strictOptions = JsonConfigurationService.GetStrictOptions();
-```
-
-#### Integrate with ASP.NET Core
-
-```csharp
-// In Program.cs or Startup.cs
-using Acontplus.Services.Configuration;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Use default or strict options for all controllers and minimal APIs
-JsonConfigurationService.ConfigureAspNetCore(builder.Services, useStrictMode: false);
-
-// Or, environment-aware:
-JsonConfigurationService.ConfigureAspNetCore(builder.Services, builder.Environment.IsDevelopment());
-```
-
-#### Dependency Injection
-
-```csharp
-// Register as singleton for DI
-JsonConfigurationService.RegisterJsonConfiguration(services);
-
-// Then inject IJsonConfigurationProvider wherever needed
-public class MyService
+```json
 {
-    public MyService(IJsonConfigurationProvider jsonConfig) { ... }
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "FrameOptionsDeny": true,
+    "ReferrerPolicy": "strict-origin-when-cross-origin",
+    "RequireClientId": false,
+    "AnonymousClientId": "anonymous",
+    "AllowedClientIds": ["web-app", "mobile-app", "admin-portal"]
+  }
 }
 ```
 
-## 📚 API Documentation
+## Services
 
-- `AppConfiguration` - Platform/environment config loader
-- `ClaimsPrincipalExtensions` - User/claim helpers
-- `ApiExceptionMiddleware` - Centralized error handling
-- `UserContext` - User info abstraction
-- `RequestContextOptions` - Request context config
+### IRequestContextService
 
-## 🤝 Contributing
+Manages request context information across the application:
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+```csharp
+public class MyController : ControllerBase
+{
+    private readonly IRequestContextService _requestContext;
 
-### Development Setup
-```bash
-git clone https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs.git
-cd acontplus-dotnet-libs
-dotnet restore
-dotnet build
+    public MyController(IRequestContextService requestContext)
+    {
+        _requestContext = requestContext;
+    }
+
+    [HttpGet]
+    public IActionResult Get()
+    {
+        var context = _requestContext.GetRequestContext();
+        var isMobile = _requestContext.IsMobileRequest();
+
+        return Ok(new { context, isMobile });
+    }
+}
 ```
 
-## 📄 License
+### ISecurityHeaderService
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Manages HTTP security headers:
 
-## 🆘 Support
+```csharp
+public class SecurityController : ControllerBase
+{
+    private readonly ISecurityHeaderService _securityHeaders;
 
-- 📧 Email: proyectos@acontplus.com
-- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
-- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
+    [HttpGet("headers")]
+    public IActionResult GetRecommendedHeaders()
+    {
+        var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment: false);
+        return Ok(headers);
+    }
+}
+```
 
-## 👨‍💻 Author
+### IDeviceDetectionService
 
-**Ivan Paz** - [@iferpaz7](https://linktr.ee/iferpaz7)
+Detects device types and capabilities:
 
-## 🏢 Company
+```csharp
+public class DeviceController : ControllerBase
+{
+    private readonly IDeviceDetectionService _deviceDetection;
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+    [HttpGet("capabilities")]
+    public IActionResult GetCapabilities()
+    {
+        var userAgent = Request.Headers.UserAgent.ToString();
+        var capabilities = _deviceDetection.GetDeviceCapabilities(userAgent);
 
----
+        return Ok(capabilities);
+    }
+}
+```
 
-**Built with ❤️ for the .NET community**
+## Authorization Policies
+
+### Client-ID Based Access
+
+```csharp
+[Authorize(Policy = "RequireClientId")]
+[HttpGet("secure")]
+public IActionResult SecureEndpoint()
+{
+    return Ok("Access granted");
+}
+```
+
+### Tenant Isolation
+
+```csharp
+[Authorize(Policy = "RequireTenant")]
+[HttpGet("tenant-data")]
+public IActionResult GetTenantData()
+{
+    return Ok("Tenant-specific data");
+}
+```
+
+### Device Type Restrictions
+
+```csharp
+[Authorize(Policy = "MobileOnly")]
+[HttpGet("mobile-only")]
+public IActionResult MobileOnlyEndpoint()
+{
+    return Ok("Mobile access only");
+}
+```
+
+## Action Filters
+
+### Global Filters
+
+Automatically applied to all controllers:
+
+- `SecurityHeaderActionFilter`: Applies security headers
+- `RequestLoggingActionFilter`: Logs request details and performance
+- `ValidationActionFilter`: Handles model validation with standardized responses
+
+### Manual Filter Application
+
+```csharp
+[ServiceFilter(typeof(RequestLoggingActionFilter))]
+public class ApiController : ControllerBase
+{
+    // Controller actions
+}
+```
+
+## Middleware Pipeline
+
+The enterprise middleware pipeline is automatically configured in the correct order:
+
+1. **Security Headers**: Applied early for all responses
+2. **CSP Nonce**: Generates Content Security Policy nonces
+3. **Request Context**: Extracts and validates request context
+4. **Exception Handling**: Global exception handling with standardized responses
+
+## Health Checks
+
+Access health information at `/health`:
+
+```json
+{
+  "status": "Healthy",
+  "results": {
+    "request-context": {
+      "status": "Healthy",
+      "description": "Request context service is operational"
+    },
+    "security-headers": {
+      "status": "Healthy",
+      "description": "Security header service is operational"
+    },
+    "device-detection": {
+      "status": "Healthy",
+      "description": "Device detection service is operational"
+    }
+  }
+}
+```
+
+## Migration Guide
+
+### From Legacy Services
+
+1. **Replace old extension class names**:
+
+   - `IdentityServiceExtensions` → `JwtAuthenticationExtensions`
+   - `ServiceConfigurationExtensions` → `InfrastructureServiceExtensions`
+   - `ExceptionHandlingExtensions` → `GlobalExceptionHandlingExtensions`
+
+2. **Update configuration classes**:
+
+   - `RequestContextOptions` → `RequestContextConfiguration`
+   - `AppConfiguration` → `ApplicationConfigurationBuilder`
+
+3. **Adopt new service patterns**:
+
+   ```csharp
+   // Old approach
+   var userId = HttpContext.User.GetUserId();
+
+   // New approach
+   var userId = _requestContext.GetUserId(); // via IRequestContextService
+   ```
+
+## Best Practices
+
+1. **Use dependency injection** for all services
+2. **Apply authorization policies** at the controller or action level
+3. **Configure security headers** appropriate for your environment
+4. **Monitor health checks** in production
+5. **Use structured logging** with correlation IDs
+6. **Validate device headers** for mobile applications
+
+## Version History
+
+- **v1.2.0**: Added enterprise service patterns and authorization policies
+- **v1.1.x**: Enhanced middleware and security features
+- **v1.0.x**: Initial release with basic services
+
+## Contributing
+
+When adding new features:
+
+1. Follow the established patterns (Services, Filters, Policies)
+2. Add comprehensive logging
+3. Include health checks for new services
+4. Update this documentation
+5. Add unit tests for new functionality

@@ -1,8 +1,4 @@
-﻿using Acontplus.Core.DTOs.Responses;
-using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Utilities.Extensions;
-using Acontplus.Services.Extensions;
-using Acontplus.Utilities.Mapping;
+﻿using Acontplus.Utilities.Mapping;
 
 namespace Acontplus.TestApi.Controllers
 {

@@ -10,7 +10,6 @@ using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
 using Acontplus.Persistence.SqlServer.Repositories;
-using Acontplus.Services.Configuration;
 using Acontplus.Services.Extensions;
 using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
@@ -47,15 +46,14 @@ try
     //    This is where builder.Services (an IServiceCollection) is available.
     builder.Services.AddAdvancedLoggingOptions(builder.Configuration);
 
-    builder.Services.Configure<RequestContextOptions>(options =>
+    // Configure enterprise services with modern patterns
+    builder.Services.AddEnterpriseServices(builder.Configuration);
+    builder.Services.AddEnterpriseAuthorizationPolicies(new List<string>
     {
-        options.EnableSecurityHeaders = true;
-        options.FrameOptionsDeny = true;
-        options.ReferrerPolicy = "strict-origin-when-cross-origin";
-        options.RequireClientId = true;
-        options.AnonymousClientId = "guest-client";
-        options.AllowedClientIds = new List<string> { "app-client-1", "dashboard-client" }; // Example allowed clients
+        "web-app", "mobile-app", "admin-portal", "test-client"
     });
+    builder.Services.AddEnterpriseMvc();
+    builder.Services.AddEnterpriseHealthChecks(builder.Configuration);
 
 
     // --- Start new try-catch block for service registration ---
@@ -134,10 +132,8 @@ try
         app.UseApiVersioningAndDocumentation();
     }
 
-    app.UseAcontplusExceptionHandling(options =>
-    {
-        options.IncludeDebugDetailsInResponse = app.Environment.IsDevelopment();
-    });
+    // Use enterprise middleware pipeline
+    app.UseEnterpriseMiddleware(app.Environment);
 
     app.UseRouting();
 
@@ -146,6 +142,12 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    // Map enterprise demonstration endpoints
+    app.MapEnterpriseEndpoints();
+
+    // Map health checks
+    app.MapHealthChecks("/health");
 
     app.MapAllEndpoints();
 

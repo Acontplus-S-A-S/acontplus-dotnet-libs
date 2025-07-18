@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Enums;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.SqlServer.Exceptions;

@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
+﻿using Acontplus.Persistence.Shared.Repositories;
+
+namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
 
 public class UserRepository : AuditableBaseRepository<Usuario, int>, IUserRepository
 {
