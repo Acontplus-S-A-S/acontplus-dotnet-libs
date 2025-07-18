@@ -1,9 +1,9 @@
 ﻿namespace Acontplus.Services.Configuration;
 
 /// <summary>
-/// Options for configuring request context and security headers.
+/// Configuration for request context and security headers.
 /// </summary>
-public class RequestContextOptions
+public class RequestContextConfiguration
 {
     /// <summary>
     /// Enables security headers for all responses. Default: true.

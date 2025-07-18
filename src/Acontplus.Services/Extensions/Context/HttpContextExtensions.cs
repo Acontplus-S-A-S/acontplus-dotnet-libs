@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Context;
 
 public static class HttpContextExtensions
 {

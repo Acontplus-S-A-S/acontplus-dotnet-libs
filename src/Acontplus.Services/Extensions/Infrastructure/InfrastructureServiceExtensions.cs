@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.IO.Compression;
 using System.Threading.RateLimiting;
 
-namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Infrastructure;
 
-public static class ServiceConfigurationExtensions
+public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddResponseCompressionServices(this IServiceCollection services)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.Services.Configuration;
 
-public static class AppConfiguration
+public static class ApplicationConfigurationBuilder
 {
     private static string? GetPlatformSharedFolder(IConfiguration baseConfig)
     {

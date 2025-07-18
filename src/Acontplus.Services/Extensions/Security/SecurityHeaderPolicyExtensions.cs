@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Security;
 
-
-public static class SecurityHeadersExtensions
+public static class SecurityHeaderPolicyExtensions
 {
     public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, IWebHostEnvironment environment)
     {

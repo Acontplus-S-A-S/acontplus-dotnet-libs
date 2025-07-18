@@ -1,12 +1,12 @@
-﻿using Acontplus.Services.Middleware;
+using Acontplus.Services.Middleware;
 using Microsoft.AspNetCore.Builder;
 
-namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Middleware;
 
 /// <summary>
 /// Provides extension methods for configuring global exception handling middleware.
 /// </summary>
-public static class ExceptionHandlingExtensions
+public static class GlobalExceptionHandlingExtensions
 {
     /// <summary>
     /// Adds the Acontplus exception handling middleware to the application pipeline.

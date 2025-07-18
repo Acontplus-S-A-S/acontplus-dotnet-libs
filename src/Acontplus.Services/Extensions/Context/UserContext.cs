@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Context;
 
 /// <summary>
 /// Provides access to user claims and identity information from the current HTTP context.
@@ -20,15 +20,15 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
     /// <summary>
     /// Gets the user name from the current user claims.
     /// </summary>
-    public string GetUserName() { return httpContextAccessor.HttpContext?.User.GetUsername(); }
+    public string GetUserName() { return httpContextAccessor.HttpContext?.User.GetUsername() ?? string.Empty; }
 
     /// <summary>
     /// Gets the email from the current user claims.
     /// </summary>
-    public string GetEmail() { return httpContextAccessor.HttpContext?.User.GetEmail(); }
+    public string GetEmail() { return httpContextAccessor.HttpContext?.User.GetEmail() ?? string.Empty; }
 
     /// <summary>
     /// Gets the role name from the current user claims.
     /// </summary>
-    public string GetRoleName() { return httpContextAccessor.HttpContext?.User.GetRoleName(); }
+    public string GetRoleName() { return httpContextAccessor.HttpContext?.User.GetRoleName() ?? string.Empty; }
 }

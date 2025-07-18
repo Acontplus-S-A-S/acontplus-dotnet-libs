@@ -1,6 +1,6 @@
-﻿namespace Acontplus.Services.Extensions;
+namespace Acontplus.Services.Extensions.Authentication;
 
-public static class IdentityServiceExtensions
+public static class JwtAuthenticationExtensions
 {
     public static IServiceCollection AddIdentityService(this IServiceCollection services, IConfiguration config)
     {
@@ -27,6 +27,7 @@ public static class IdentityServiceExtensions
         services.AddAuthorizationBuilder();
         return services;
     }
+
     public static IServiceCollection AddIdentityServiceStrict(this IServiceCollection services,
         IConfiguration config)
     {
@@ -51,11 +52,8 @@ public static class IdentityServiceExtensions
                 };
             });
 
-
         services.AddAuthorization();
-
         services.AddAuthorizationBuilder();
-
 
         return services;
     }
