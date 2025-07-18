@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace Acontplus.Persistence.Postgres.Configurations;
+﻿namespace Acontplus.Persistence.Postgres.Configurations;
 
 public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
     where TEntity : AuditableEntity<TId>

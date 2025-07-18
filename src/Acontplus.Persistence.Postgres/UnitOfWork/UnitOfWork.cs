@@ -1,7 +1,5 @@
-﻿using Acontplus.Persistence.Postgres.Exceptions;
-using Acontplus.Persistence.Postgres.Repositories;
+﻿using Acontplus.Persistence.Shared.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Data.Common;
 
 namespace Acontplus.Persistence.Postgres.UnitOfWork;
 

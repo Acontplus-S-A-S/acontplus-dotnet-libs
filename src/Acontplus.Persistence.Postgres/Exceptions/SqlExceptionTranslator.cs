@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Domain.Enums;
-
-namespace Acontplus.Persistence.Postgres.Exceptions;
+﻿namespace Acontplus.Persistence.Postgres.Exceptions;
 
 public class PostgresExceptionTranslator : ISqlExceptionTranslator
 {

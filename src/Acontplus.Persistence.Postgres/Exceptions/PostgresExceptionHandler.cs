@@ -1,5 +1,4 @@
-﻿using Acontplus.Core.Domain.Enums;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.Postgres.Exceptions;
 

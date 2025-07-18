@@ -1,7 +1,4 @@
-﻿using Acontplus.Persistence.Postgres.Exceptions;
-using Acontplus.Persistence.Postgres.Mapping;
-using NpgsqlTypes;
-using System.Data.Common;
+﻿using Acontplus.Persistence.Postgres.Mapping;
 
 namespace Acontplus.Persistence.Postgres.Repositories;
 

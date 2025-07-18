@@ -1,7 +1,5 @@
 ﻿namespace Acontplus.Persistence.Postgres.Mapping;
 
-using Npgsql;
-
 public static class DataTableNameMapper
 {
     public static async Task ProcessTableNames(NpgsqlCommand cmd, DataSet ds)

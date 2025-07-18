@@ -1,7 +1,4 @@
-﻿using NpgsqlTypes;
-using System.Data.Common;
-
-namespace Acontplus.Persistence.Postgres.Ado.Parameters;
+﻿namespace Acontplus.Persistence.Postgres.Ado.Parameters;
 
 public static class CommandParameterBuilder
 {
