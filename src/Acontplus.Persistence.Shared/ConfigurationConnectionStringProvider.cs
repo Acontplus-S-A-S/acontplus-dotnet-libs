@@ -1,6 +1,7 @@
+using Acontplus.Core.Abstractions.Persistence;
 using Microsoft.Extensions.Configuration;
 
-namespace Acontplus.Persistence.Abstractions;
+namespace Acontplus.Persistence.Shared;
 
 /// <summary>
 /// Default implementation of IConnectionStringProvider using IConfiguration.
@@ -14,4 +15,4 @@ public class ConfigurationConnectionStringProvider : IConnectionStringProvider
         _configuration = configuration;
     }
     public string GetConnectionString(string name) => _configuration.GetConnectionString(name);
-} 
+}

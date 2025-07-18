@@ -1,39 +1,61 @@
 using Acontplus.Core.Abstractions.Persistence;
 using Acontplus.Core.Domain.Common.Entities;
+using Acontplus.Persistence.Shared.Exceptions;
+using Acontplus.Persistence.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Acontplus.Persistence.Shared.Repositories;
 
 /// <summary>
-/// Generic auditable repository base for EF Core, provider-agnostic. Inherit and override for provider-specific logic.
+/// Repository for auditable entities, adds audit-specific methods.
 /// </summary>
-public abstract class AuditableBaseRepository<TEntity, TId> : BaseRepository<TEntity, TId>, IAuditableRepository<TEntity, TId>
+public class AuditableBaseRepository<TEntity, TId> : BaseRepository<TEntity, TId>, IAuditableRepository<TEntity, TId>
     where TEntity : AuditableEntity<TId>
     where TId : notnull
 {
-    protected AuditableBaseRepository(DbContext context, ILogger logger = null)
+    public AuditableBaseRepository(DbContext context, ILogger<BaseRepository<TEntity, TId>> logger = null)
         : base(context, logger) { }
 
     public virtual async Task SoftDeleteAsync(TEntity entity, TId? deletedByUserId = default, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-        entity.IsDeleted = true;
-        entity.DeletedAt = DateTimeOffset.UtcNow;
-        if (deletedByUserId is not null)
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(SoftDeleteAsync)}");
+        try
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            entity.IsDeleted = true;
+            entity.DeletedAt = DateTime.UtcNow;
             entity.DeletedByUserId = deletedByUserId;
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            entity.IsActive = false;
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error soft deleting entity of type {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error soft deleting entity", ex);
+        }
     }
 
     public virtual async Task RestoreAsync(TEntity entity, TId? restoredByUserId = default, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-        entity.IsDeleted = false;
-        entity.DeletedAt = null;
-        if (restoredByUserId is not null)
-            entity.RestoredByUserId = restoredByUserId;
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(RestoreAsync)}");
+        try
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            entity.IsDeleted = false;
+            entity.DeletedAt = null;
+            entity.DeletedByUserId = default;
+            entity.IsActive = true;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedByUserId = restoredByUserId;
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error restoring entity of type {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error restoring entity", ex);
+        }
     }
-} 
+}

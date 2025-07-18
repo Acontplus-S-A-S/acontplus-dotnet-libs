@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 
-namespace Acontplus.Persistence.Abstractions;
+namespace Acontplus.Persistence.Shared;
 
 public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
 {
@@ -16,4 +16,4 @@ public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TCon
             return context;
         throw new KeyNotFoundException($"DbContext with name '{contextName}' not found.");
     }
-} 
+}
