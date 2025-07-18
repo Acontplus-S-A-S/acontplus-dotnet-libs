@@ -21,6 +21,17 @@
             Restores a soft-deleted entity.
             </summary>
         </member>
+        <member name="T:Acontplus.Core.Abstractions.Persistence.IConnectionStringProvider">
+            <summary>
+            Provides a way to resolve connection strings by name or key.
+            Useful for multi-tenant, sharded, or dynamic connection scenarios.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IConnectionStringProvider.GetConnectionString(System.String)">
+            <summary>
+            Gets a connection string by logical name or key.
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.IRepository`2">
             <summary>
             Defines generic data access operations for entities.
