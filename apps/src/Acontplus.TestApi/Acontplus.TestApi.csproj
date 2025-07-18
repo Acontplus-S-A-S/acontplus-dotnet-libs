@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Acontplus.ApiDocumentation\Acontplus.ApiDocumentation.csproj" />
-    <ProjectReference Include="..\..\..\src\Acontplus.ApiDocumentation\Acontplus.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Barcode\Acontplus.Barcode.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Core\Acontplus.Core.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.FactElect\Acontplus.FactElect.csproj" />
