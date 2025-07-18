@@ -23,4 +23,4 @@ var imageBytes = BarcodeGen.Create(config);
 
 ## 📖 See Also
 - [API Reference](../Home.md)
-- [Project README](../../src/Acontplus.Barcode/README.md) 
+- [Project README](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/blob/main/src/Acontplus.Barcode/README.md) 
