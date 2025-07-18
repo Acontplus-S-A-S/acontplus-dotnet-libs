@@ -31,4 +31,4 @@ var result = await repo.ExecuteQueryAsync("SELECT * FROM MyTable");
 
 ## 📖 See Also
 - [API Reference](../Home.md)
-- [Project README](../../src/Acontplus.Persistence.SqlServer/README.md) 
+- [Project README](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/blob/main/src/Acontplus.Persistence.SqlServer/README.md) 

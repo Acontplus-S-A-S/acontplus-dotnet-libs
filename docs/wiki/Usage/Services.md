@@ -35,4 +35,4 @@ app.UseAcontplusExceptionHandling();
 
 ## 📖 See Also
 - [API Reference](../Home.md)
-- [Project README](../../src/Acontplus.Services/README.md) 
+- [Project README](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/blob/main/src/Acontplus.Services/README.md) 
