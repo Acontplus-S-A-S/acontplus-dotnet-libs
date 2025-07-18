@@ -29,4 +29,4 @@ return File(report, "application/pdf");
 
 ## 📖 See Also
 - [API Reference](../Home.md)
-- [Project README](../../src/Acontplus.Reports/README.md) 
+- [Project README](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/blob/main/src/Acontplus.Reports/README.md) 

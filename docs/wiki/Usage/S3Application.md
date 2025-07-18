@@ -28,4 +28,4 @@ var response = await s3StorageService.UploadAsync(s3Object);
 
 ## 📖 See Also
 - [API Reference](../Home.md)
-- [Project README](../../src/Acontplus.S3Application/README.md) 
+- [Project README](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/blob/main/src/Acontplus.S3Application/README.md) 
