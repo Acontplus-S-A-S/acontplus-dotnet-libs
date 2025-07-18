@@ -1,9 +1,4 @@
-﻿using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Persistence.Shared.Exceptions;
-using System.Collections.Immutable;
-
-public static class SqlExceptionExtensions
+﻿public static class SqlExceptionExtensions
 {
     private static readonly
         ImmutableDictionary<ErrorType, Func<string, string, string?, Dictionary<string, object>?, DomainError>>

@@ -1,13 +1,4 @@
-﻿using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.Domain.Common.Entities;
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.Core.DTOs.Responses;
-using Acontplus.Persistence.Shared.Exceptions;
-using Acontplus.Persistence.Shared.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query; // Assuming DiagnosticConfig is here
-using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
+﻿// Assuming DiagnosticConfig is here
 
 namespace Acontplus.Persistence.Shared.Repositories;
 

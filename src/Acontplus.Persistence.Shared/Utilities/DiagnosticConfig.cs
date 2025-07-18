@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Acontplus.Persistence.Shared.Utilities;
+﻿namespace Acontplus.Persistence.Shared.Utilities;
 
 public static class DiagnosticConfig
 {

@@ -1,6 +1,4 @@
-﻿using Acontplus.Core.Domain.Enums;
-
-namespace Acontplus.Persistence.Shared.Exceptions;
+﻿namespace Acontplus.Persistence.Shared.Exceptions;
 
 public record SqlErrorInfo(
     ErrorType Type,

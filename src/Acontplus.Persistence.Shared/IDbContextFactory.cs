@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Acontplus.Persistence.Shared;
 
 public interface IDbContextFactory<TContext> where TContext : DbContext

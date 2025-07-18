@@ -1,10 +1,3 @@
-using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.Domain.Common.Entities;
-using Acontplus.Persistence.Shared.Exceptions;
-using Acontplus.Persistence.Shared.Utilities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace Acontplus.Persistence.Shared.Repositories;
 
 /// <summary>

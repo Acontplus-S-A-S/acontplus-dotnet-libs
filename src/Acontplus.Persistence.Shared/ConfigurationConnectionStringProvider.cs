@@ -1,6 +1,3 @@
-using Acontplus.Core.Abstractions.Persistence;
-using Microsoft.Extensions.Configuration;
-
 namespace Acontplus.Persistence.Shared;
 
 /// <summary>
