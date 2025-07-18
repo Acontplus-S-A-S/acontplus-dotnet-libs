@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.S3Application</name>
+    </assembly>
+    <members>
+        <member name="T:Acontplus.S3Application.Interfaces.IS3StorageService">
+            <summary>
+            Defines a contract for AWS S3 storage operations, including async CRUD, retrieval, and presigned URL generation.
+            </summary>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.UploadAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Uploads a new object to S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to upload.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.UpdateAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Updates an existing object in S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to update.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.DeleteAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Deletes an object from S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to delete.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.GetObjectAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Retrieves an object from S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to retrieve.</param>
+            <returns>A response with file content and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.DoesObjectExistAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Checks if an object exists in S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to check.</param>
+            <returns>True if the object exists; otherwise, false.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Interfaces.IS3StorageService.GetPresignedUrlAsync(Acontplus.S3Application.Models.S3ObjectCustom,System.Int32)">
+            <summary>
+            Generates a presigned URL for an S3 object asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object for which to generate the URL.</param>
+            <param name="expirationInMinutes">The expiration time in minutes for the URL.</param>
+            <returns>A response containing the presigned URL.</returns>
+        </member>
+        <member name="T:Acontplus.S3Application.Models.AwsCredentials">
+            <summary>
+            Represents AWS credentials required for S3 operations.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.AwsCredentials.Key">
+            <summary>
+            Gets or sets the AWS access key.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.AwsCredentials.Secret">
+            <summary>
+            Gets or sets the AWS secret key.
+            </summary>
+        </member>
+        <member name="T:Acontplus.S3Application.Models.S3ObjectCustom">
+            <summary>
+            Represents a strongly-typed S3 object, including content, metadata, and AWS configuration.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.Region">
+            <summary>
+            Gets the AWS region for the S3 bucket.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.BucketName">
+            <summary>
+            Gets the S3 bucket name.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.Content">
+            <summary>
+            Gets the file content as a byte array.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.S3ObjectKey">
+            <summary>
+            Gets the S3 object key (path/filename in the bucket).
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.S3ObjectUrl">
+            <summary>
+            Gets the full S3 object URL.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.AwsCredentials">
+            <summary>
+            Gets the AWS credentials for this object.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3ObjectCustom.ContentType">
+            <summary>
+            Gets the MIME type of the file.
+            </summary>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Acontplus.S3Application.Models.S3ObjectCustom"/> class using configuration.
+            </summary>
+            <param name="configuration">The application configuration containing S3 and AWS settings.</param>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.Initialize(System.String,Microsoft.AspNetCore.Http.IFormFile,System.String,System.String)">
+            <summary>
+            Initializes the S3 object with file content and metadata from an uploaded file.
+            </summary>
+            <param name="filePath">The S3 folder path or prefix.</param>
+            <param name="file">The uploaded file (IFormFile).</param>
+            <param name="s3ObjectKey">Optional custom S3 object key.</param>
+            <param name="contentType">Optional custom MIME type.</param>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.Initialize(System.String)">
+            <summary>
+            Initializes the S3 object with an existing S3 object key.
+            </summary>
+            <param name="s3ObjectKey">The S3 object key (path/filename).</param>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.SetContent(System.Byte[],System.String)">
+            <summary>
+            Sets the file content and optionally the MIME type.
+            </summary>
+            <param name="content">The file content as a byte array.</param>
+            <param name="contentType">Optional MIME type.</param>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.Dispose">
+            <summary>
+            Disposes the object and clears sensitive data.
+            </summary>
+        </member>
+        <member name="M:Acontplus.S3Application.Models.S3ObjectCustom.Finalize">
+            <summary>
+            Finalizer to ensure resources are released.
+            </summary>
+        </member>
+        <member name="T:Acontplus.S3Application.Models.S3Response">
+            <summary>
+            Represents the result of an S3 storage operation, including status, message, and optional file content.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3Response.StatusCode">
+            <summary>
+            Gets or sets the HTTP-like status code for the operation (e.g., 200, 201, 404, 500).
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3Response.Message">
+            <summary>
+            Gets or sets a message describing the result or error.
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3Response.Content">
+            <summary>
+            Gets or sets the file content as a byte array (for downloads).
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3Response.ContentType">
+            <summary>
+            Gets or sets the MIME type of the file (for downloads).
+            </summary>
+        </member>
+        <member name="P:Acontplus.S3Application.Models.S3Response.FileName">
+            <summary>
+            Gets or sets the file name or presigned URL (for presigned requests).
+            </summary>
+        </member>
+        <member name="T:Acontplus.S3Application.Services.S3StorageService">
+            <summary>
+            Provides a concrete implementation of <see cref="T:Acontplus.S3Application.Interfaces.IS3StorageService"/> for performing AWS S3 storage operations, including async CRUD, retrieval, and presigned URL generation.
+            </summary>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.UploadAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Uploads a new object to S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to upload.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.UpdateAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Updates an existing object in S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to update.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.DeleteAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Deletes an object from S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to delete.</param>
+            <returns>A response with status and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.GetObjectAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Retrieves an object from S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to retrieve.</param>
+            <returns>A response with file content and metadata.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.DoesObjectExistAsync(Acontplus.S3Application.Models.S3ObjectCustom)">
+            <summary>
+            Checks if an object exists in S3 asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object to check.</param>
+            <returns>True if the object exists; otherwise, false.</returns>
+        </member>
+        <member name="M:Acontplus.S3Application.Services.S3StorageService.GetPresignedUrlAsync(Acontplus.S3Application.Models.S3ObjectCustom,System.Int32)">
+            <summary>
+            Generates a presigned URL for an S3 object asynchronously.
+            </summary>
+            <param name="s3ObjectCustom">The S3 object for which to generate the URL.</param>
+            <param name="expirationInMinutes">The expiration time in minutes for the URL.</param>
+            <returns>A response containing the presigned URL.</returns>
+        </member>
+    </members>
+</doc>
