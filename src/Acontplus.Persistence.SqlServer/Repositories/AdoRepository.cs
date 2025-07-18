@@ -1,6 +1,4 @@
-﻿using Acontplus.Persistence.SqlServer.Exceptions;
-using Acontplus.Persistence.SqlServer.Mapping;
-using System.Data.Common;
+﻿using Acontplus.Persistence.SqlServer.Mapping;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
 

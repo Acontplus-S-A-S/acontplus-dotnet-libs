@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-
-namespace Acontplus.Persistence.SqlServer.Ado.Parameters;
+﻿namespace Acontplus.Persistence.SqlServer.Ado.Parameters;
 
 public static class CommandParameterBuilder
 {

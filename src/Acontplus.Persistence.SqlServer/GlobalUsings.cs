@@ -1,6 +1,5 @@
 ﻿global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Domain.Common.Entities;
-global using Acontplus.Core.Domain.Common.Results;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Persistence.SqlServer.Ado.Parameters;
@@ -12,3 +11,8 @@ global using Polly;
 global using Polly.Retry;
 global using System.Collections.Concurrent;
 global using System.Data;
+global using System.Data.Common;
+global using Acontplus.Core.Domain.Common.Events;
+global using Acontplus.Core.Domain.Enums;
+global using Acontplus.Persistence.Shared.Exceptions;
+global using Acontplus.Persistence.SqlServer.Exceptions;

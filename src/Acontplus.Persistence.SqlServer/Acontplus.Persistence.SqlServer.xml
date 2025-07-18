@@ -185,18 +185,6 @@
             Executes a SQL query designed to return a single row.
             </summary>
         </member>
-        <member name="T:Acontplus.Persistence.SqlServer.Repositories.AuditableBaseRepository`2">
-            <summary>
-            Repository for auditable entities, adds audit-specific methods.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Persistence.SqlServer.Repositories.BaseRepository`2">
-            <summary>
-            A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
-            </summary>
-            TEntity: The type of the entity.
-            TId: The type of the entity's primary key, must be not null.
-        </member>
         <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
             <summary>
             OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
@@ -216,15 +204,6 @@
             <summary>
             Obtener la hora actual del servidor
             </summary>
-        </member>
-        <member name="M:SqlExceptionExtensions.ToDomainErrors(System.Collections.Generic.IEnumerable{Acontplus.Persistence.SqlServer.Exceptions.SqlDomainException},System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary>
-            Converts multiple SqlDomainExceptions to a DomainErrors collection
-            </summary>
-            <param name="exceptions">Collection of SQL domain exceptions</param>
-            <param name="target">Optional target of the errors</param>
-            <param name="commonDetails">Optional common details for all errors</param>
-            <returns>DomainErrors containing all converted exceptions</returns>
         </member>
     </members>
 </doc>
