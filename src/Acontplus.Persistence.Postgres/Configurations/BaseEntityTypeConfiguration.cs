@@ -8,17 +8,17 @@ public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguratio
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        // Configure common audit properties for SQL Server
+        // Configure common audit properties for PostgreSQL
         builder.Property(x => x.CreatedAt)
-            .HasColumnType("datetime2")
-            .HasDefaultValueSql("SYSUTCDATETIME()");
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(x => x.UpdatedAt)
-            .HasColumnType("datetime2")
+            .HasColumnType("timestamp with time zone")
             .IsRequired(false);
 
         builder.Property(x => x.DeletedAt)
-            .HasColumnType("datetime2")
+            .HasColumnType("timestamp with time zone")
             .IsRequired(false);
 
         builder.Property(x => x.IsActive)

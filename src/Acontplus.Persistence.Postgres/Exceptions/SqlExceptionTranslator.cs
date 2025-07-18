@@ -1,5 +1,4 @@
 ﻿using Acontplus.Core.Domain.Enums;
-using Npgsql;
 
 namespace Acontplus.Persistence.Postgres.Exceptions;
 

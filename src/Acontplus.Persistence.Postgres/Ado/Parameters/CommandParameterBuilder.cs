@@ -1,6 +1,5 @@
-﻿using System.Data.Common;
-using Npgsql;
-using NpgsqlTypes;
+﻿using NpgsqlTypes;
+using System.Data.Common;
 
 namespace Acontplus.Persistence.Postgres.Ado.Parameters;
 

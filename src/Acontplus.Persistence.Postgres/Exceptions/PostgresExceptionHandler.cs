@@ -1,7 +1,5 @@
 ﻿using Acontplus.Core.Domain.Enums;
-using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
-using Npgsql;
 
 namespace Acontplus.Persistence.Postgres.Exceptions;
 
