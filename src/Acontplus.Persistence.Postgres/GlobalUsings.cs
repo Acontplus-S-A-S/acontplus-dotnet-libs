@@ -1,12 +1,12 @@
-﻿global using Acontplus.Core.Abstractions.Persistence;
+global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Domain.Common.Entities;
 global using Acontplus.Core.Domain.Common.Events;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;
+global using Acontplus.Persistence.Common.Exceptions;
 global using Acontplus.Persistence.Postgres.Ado.Parameters;
 global using Acontplus.Persistence.Postgres.Exceptions;
-global using Acontplus.Persistence.Shared.Exceptions;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Configuration;

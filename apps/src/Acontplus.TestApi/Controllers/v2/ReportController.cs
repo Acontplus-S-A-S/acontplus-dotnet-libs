@@ -1,4 +1,4 @@
-﻿using Acontplus.Persistence.SqlServer.Utilities;
+using Acontplus.Persistence.SqlServer.Utilities;
 using Acontplus.Utilities.Data;
 
 namespace Acontplus.TestApi.Controllers.v2;

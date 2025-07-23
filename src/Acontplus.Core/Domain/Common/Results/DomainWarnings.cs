@@ -8,11 +8,11 @@ namespace Acontplus.Core.Domain.Common.Results;
 /// <param name="Warnings">Collection of individual warnings.</param>
 public readonly record struct DomainWarnings(IReadOnlyList<DomainError> Warnings)
 {
-    public static DomainWarnings Single(DomainError warning) => new([warning]);
+    public static DomainWarnings FromSingle(DomainError warning) => new([warning]);
     public static DomainWarnings Multiple(params DomainError[] warnings) => new(warnings);
     public static DomainWarnings Multiple(IEnumerable<DomainError> warnings) => new(warnings.ToList());
 
-    public static implicit operator DomainWarnings(DomainError warning) => Single(warning);
+    public static implicit operator DomainWarnings(DomainError warning) => FromSingle(warning);
     public static implicit operator DomainWarnings(DomainError[] warnings) => Multiple(warnings);
     public static implicit operator DomainWarnings(List<DomainError> warnings) => Multiple(warnings);
 
@@ -41,7 +41,7 @@ public readonly record struct SuccessWithWarnings<TValue>(TValue Value, DomainWa
     public static implicit operator SuccessWithWarnings<TValue>(TValue value) => new(value);
 
     public SuccessWithWarnings<TValue> AddWarning(DomainError warning) =>
-        new(Value, Warnings?.Warnings.AddToCopy(warning) ?? DomainWarnings.Single(warning));
+        new(Value, Warnings?.Warnings.AddToCopy(warning) ?? DomainWarnings.FromSingle(warning));
 
     public SuccessWithWarnings<TValue> AddWarnings(IEnumerable<DomainError> warnings) =>
         new(Value, Warnings?.Warnings.AddRangeToCopy(warnings) ?? DomainWarnings.Multiple(warnings));

@@ -4,7 +4,7 @@ global using Acontplus.Core.Domain.Common.Events;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;
-global using Acontplus.Persistence.Shared.Exceptions;
+global using Acontplus.Persistence.Common.Exceptions;
 global using Acontplus.Persistence.SqlServer.Ado.Parameters;
 global using Acontplus.Persistence.SqlServer.Exceptions;
 global using Microsoft.Data.SqlClient;

@@ -248,7 +248,7 @@ public static class XmlValidator
     }
 
     /// <summary>
-    /// Escapa los ampersands (&) que no sean parte de entidades XML válidas
+    /// Escapa los ampersands y que no sean parte de entidades XML válidas
     /// </summary>
     private static string EscapeUnescapedAmpersands(string xml)
     {

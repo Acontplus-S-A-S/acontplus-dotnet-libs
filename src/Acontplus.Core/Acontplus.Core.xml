@@ -572,7 +572,11 @@
             Limpia atributos HTML que pueden no ser válidos en XML
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Core.Validation.XmlValidator.EscapeUnescapedAmpersands(System.String)" -->
+        <member name="M:Acontplus.Core.Validation.XmlValidator.EscapeUnescapedAmpersands(System.String)">
+            <summary>
+            Escapa los ampersands y que no sean parte de entidades XML válidas
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Validation.XmlValidator.RemoveBomChars(System.String)">
             <summary>
             Elimina caracteres BOM (Byte Order Mark) que pueden causar problemas de codificación

@@ -52,7 +52,7 @@ public static class SuccessWithWarningsExtensions
 {
     public static SuccessWithWarnings<T> WithWarning<T>(
         this T value,
-        DomainError warning) => new(value, DomainWarnings.Single(warning));
+        DomainError warning) => new(value, DomainWarnings.FromSingle(warning));
 
     public static SuccessWithWarnings<T> WithWarnings<T>(
         this T value,

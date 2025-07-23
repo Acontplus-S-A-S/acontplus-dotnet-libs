@@ -1,4 +1,4 @@
-namespace Acontplus.Persistence.Shared;
+namespace Acontplus.Persistence.Common;
 
 public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
 {

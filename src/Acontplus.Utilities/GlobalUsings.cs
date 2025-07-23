@@ -1,8 +1,8 @@
-﻿global using Acontplus.Core.Constants;
+global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Common.Results;
 global using Acontplus.Core.Domain.Extensions;
+global using Acontplus.Core.DTOs.Common;
 global using Acontplus.Core.DTOs.Responses;
-global using Acontplus.Core.DTOs.Shared;
 global using Acontplus.Core.Enums;
 global using Acontplus.Core.Extensions;
 global using Acontplus.Utilities.IO;
