@@ -2,15 +2,15 @@
 
 public class RucService(IServiceProvider serviceProvider) : IRucService
 {
-    public async Task<Result<ContribuyenteCompleteDto, DomainErrors>> GetRucSriAsync(string ruc)
+    public async Task<Result<ContribuyenteCompleteDto, DomainErrors>> GetRucSriAsync(string idCard)
     {
         var errors = new List<DomainError>();
 
-        if (string.IsNullOrWhiteSpace(ruc))
+        if (string.IsNullOrWhiteSpace(idCard))
         {
             errors.Add(DomainError.Validation("RUC_REQUIRED", "RUC es requerido"));
         }
-        else if (ruc.Length != 13)
+        else if (idCard.Length != 13)
         {
             errors.Add(DomainError.Validation("RUC_INVALID_LENGTH", "RUC debe tener 13 dígitos"));
         }
@@ -20,7 +20,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
             return Result<ContribuyenteCompleteDto, DomainErrors>.Failure(DomainErrors.Multiple(errors));
         }
 
-        var checkExistenceResult = await CheckExistenceAsync(ruc);
+        var checkExistenceResult = await CheckExistenceAsync(idCard);
         if (!checkExistenceResult.IsSuccess)
         {
             return Result<ContribuyenteCompleteDto, DomainErrors>.Failure(checkExistenceResult.Error);
@@ -51,7 +51,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
             return Result<ContribuyenteCompleteDto, DomainErrors>.Failure(DomainErrors.Multiple(errors));
         }
 
-        var response = await GetRucSriAsync(ruc, cookieResponse.Value.Cookie, captchaResponse.Value);
+        var response = await GetRucSriAsync(idCard, cookieResponse.Value.Cookie, captchaResponse.Value);
 
         return !response.IsSuccess
             ? Result<ContribuyenteCompleteDto, DomainErrors>.Failure(response.Error)
@@ -95,7 +95,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         });
     }
 
-    private async Task<Result<ContribuyenteCompleteDto, DomainError>> GetRucSriAsync(string ruc,
+    private async Task<Result<ContribuyenteCompleteDto, DomainError>> GetRucSriAsync(string idCard,
         CookieContainer cookieContainer,
         string captcha)
     {
@@ -114,7 +114,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
             RequestUri =
                 new Uri(
                     "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/obtenerPorNumerosRuc?&ruc=" +
-                    ruc),
+                    idCard),
             Method = HttpMethod.Get
         };
         client.DefaultRequestHeaders.Add("User-Agent",
@@ -134,7 +134,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         using var streamReader = new StreamReader(stream);
         var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
         var rucs = JsonExtensions.DeserializeModern<List<ContribuyenteRucDto>>(sriResponse);
-        if (rucs.Count == 0 || rucs[0].NumeroRuc != ruc)
+        if (rucs.Count == 0 || rucs[0].NumeroRuc != idCard)
         {
             return Result<ContribuyenteCompleteDto, DomainError>.Failure(new DomainError
             {

@@ -19,7 +19,7 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
         ErrorType.LoopDetected,
         ErrorType.NotExtended,
         ErrorType.NetworkAuthRequired,
-    
+
         // Client Errors (4xx) - higher severity first
         ErrorType.RequestTimeout,
         ErrorType.UnavailableForLegal,
@@ -42,11 +42,11 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
         ErrorType.RequestHeadersTooLarge
     };
 
-    public static DomainErrors Single(DomainError error) => new([error]);
+    public static DomainErrors FromSingle(DomainError error) => new([error]);
     public static DomainErrors Multiple(params DomainError[] errors) => new(errors);
     public static DomainErrors Multiple(IEnumerable<DomainError> errors) => new(errors.ToList());
 
-    public static implicit operator DomainErrors(DomainError error) => Single(error);
+    public static implicit operator DomainErrors(DomainError error) => FromSingle(error);
     public static implicit operator DomainErrors(DomainError[] errors) => Multiple(errors);
     public static implicit operator DomainErrors(List<DomainError> errors) => Multiple(errors);
 

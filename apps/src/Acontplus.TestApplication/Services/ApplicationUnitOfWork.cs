@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.Services;
+namespace Acontplus.TestApplication.Services;
 
 // Implementación de la UoW específica
 // public class ApplicationUnitOfWork : UnitOfWork<TestContext>, IApplicationUnitOfWork

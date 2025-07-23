@@ -121,16 +121,16 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
         }
     }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
 
-        ConfigureGlobalFilters(builder);
-        ConfigureDateTimeProperties(builder);
+        ConfigureGlobalFilters(modelBuilder);
+        ConfigureDateTimeProperties(modelBuilder);
 
         if (Database.IsNpgsql())
         {
-            ApplyPostgresConfigurations(builder);
+            ApplyPostgresConfigurations(modelBuilder);
         }
     }
 

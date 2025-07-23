@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Persistence.SqlServer.Exceptions;
+namespace Acontplus.Persistence.SqlServer.Exceptions;
 
 public class SqlExceptionTranslator : ISqlExceptionTranslator
 {

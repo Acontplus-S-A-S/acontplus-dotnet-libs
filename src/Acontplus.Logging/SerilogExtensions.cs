@@ -1,4 +1,4 @@
-﻿using Serilog.Formatting.Display;
+using Serilog.Formatting.Display;
 
 namespace Acontplus.Logging;
 
@@ -77,7 +77,7 @@ public static class SerilogExtensions
 
     private static void ConfigureLocalLogging(LoggerConfiguration loggerConfiguration, LoggingOptions options, string environment)
     {
-        var rollingInterval = (RollingInterval)Enum.Parse(typeof(RollingInterval), options.RollingInterval ?? "Day", true);
+        var rollingInterval = Enum.Parse<RollingInterval>(options.RollingInterval, true);
         var retainedFileCountLimit = options.RetainedFileCountLimit ?? 7;
         var fileSizeLimitBytes = options.FileSizeLimitBytes ?? 10 * 1024 * 1024; // 10 MB
 

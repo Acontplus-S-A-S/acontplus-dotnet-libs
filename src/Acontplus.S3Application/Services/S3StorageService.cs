@@ -20,11 +20,11 @@ public class S3StorageService : IS3StorageService
     /// <returns>A response with status and metadata.</returns>
     public async Task<S3Response> UploadAsync(S3ObjectCustom s3ObjectCustom)
     {
-        if (s3ObjectCustom == null) throw new ArgumentNullException(nameof(s3ObjectCustom));
+        ArgumentNullException.ThrowIfNull(s3ObjectCustom);
 
         var credentials = new BasicAWSCredentials(
-            s3ObjectCustom.AwsCredentials.Key,
-            s3ObjectCustom.AwsCredentials.Secret);
+            s3ObjectCustom.AwsCredentials?.Key,
+            s3ObjectCustom.AwsCredentials?.Secret);
 
         AWSConfigs.AWSRegion = s3ObjectCustom.Region;
         var response = new S3Response();

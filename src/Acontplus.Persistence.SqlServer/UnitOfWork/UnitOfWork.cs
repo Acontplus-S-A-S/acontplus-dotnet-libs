@@ -1,4 +1,4 @@
-﻿using Acontplus.Persistence.Shared.Repositories;
+﻿using Acontplus.Persistence.Common.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Acontplus.Persistence.SqlServer.UnitOfWork;

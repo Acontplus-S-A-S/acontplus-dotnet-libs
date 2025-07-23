@@ -3,11 +3,11 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PackageId>Acontplus.Persistence.Shared</PackageId>
-		<Version>1.0.0</Version>
+		<PackageId>Acontplus.Persistence.Common</PackageId>
+		<Version>1.0.1</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
-		<Description>Shared persistence abstractions and infrastructure for Acontplus .NET libraries. Includes generic repository, context factory, connection string provider, and mapping utilities for multi-provider support.</Description>
+		<Description>Common persistence abstractions and infrastructure for Acontplus .NET libraries. Includes generic repository, context factory, connection string provider, and mapping utilities for multi-provider support.</Description>
 		<PackageTags>dotnet9;database;abstractions;repository;efcore;multi-tenant;shared;infrastructure</PackageTags>
 		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>

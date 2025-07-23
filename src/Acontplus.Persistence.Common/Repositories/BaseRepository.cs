@@ -1,6 +1,9 @@
-﻿// Assuming DiagnosticConfig is here
+// Assuming DiagnosticConfig is here
 
-namespace Acontplus.Persistence.Shared.Repositories;
+
+// Assuming DiagnosticConfig is here
+
+namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
 /// A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.

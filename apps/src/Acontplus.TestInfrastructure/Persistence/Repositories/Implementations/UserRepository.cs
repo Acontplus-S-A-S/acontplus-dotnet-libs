@@ -1,4 +1,4 @@
-﻿using Acontplus.Persistence.Shared.Repositories;
+﻿using Acontplus.Persistence.Common.Repositories;
 
 namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
 

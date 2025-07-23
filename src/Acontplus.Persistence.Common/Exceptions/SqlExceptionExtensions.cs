@@ -86,7 +86,7 @@
         return domainErrors.Count switch
         {
             0 => throw new ArgumentException("No exceptions provided", nameof(exceptions)),
-            1 => DomainErrors.Single(domainErrors[0]),
+            1 => DomainErrors.FromSingle(domainErrors[0]),
             _ => DomainErrors.Multiple(domainErrors)
         };
     }

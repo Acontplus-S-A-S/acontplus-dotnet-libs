@@ -1,4 +1,4 @@
-namespace Acontplus.Persistence.Shared.Repositories;
+namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
 /// Repository for auditable entities, adds audit-specific methods.

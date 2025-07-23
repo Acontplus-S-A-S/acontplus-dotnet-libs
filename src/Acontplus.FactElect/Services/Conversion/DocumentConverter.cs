@@ -4,7 +4,7 @@ namespace Acontplus.FactElect.Services.Conversion;
 
 public class DocumentConverter : IDocumentConverter
 {
-    public string CreateHtml(ComprobanteElectronico data)
+    public string CreateHtml(ComprobanteElectronico comprobanteElectronico)
     {
         var assembly = typeof(DocumentConverter).Assembly;
         byte[] imageBytes;
@@ -55,7 +55,7 @@ public class DocumentConverter : IDocumentConverter
         // Convertir la imagen a base64 para incluirla en el HTML
         var base64Image = Convert.ToBase64String(imageBytes);
 
-        var dt = (SriDocument)Convert.ToInt32(data.CodDoc);
+        var dt = (SriDocument)Convert.ToInt32(comprobanteElectronico.CodDoc);
         var documentName = dt.DisplayName();
         var doc = @"
                     <div class=""row"">
@@ -67,13 +67,13 @@ public class DocumentConverter : IDocumentConverter
                   $"data:image/png;base64,{base64Image}" +
                   @" alt=""No Logo"" class=""img-fluid"" align=""center"" width=""100"">
 </div>
-                                    <h6>" + data.InfoTributaria.RazonSocial + @"</h6>
-                                    
-                                    <h6>" + data.InfoTributaria.NombreComercial + @"</h6>
+                                    <h6>" + comprobanteElectronico.InfoTributaria.RazonSocial + @"</h6>
+
+                                    <h6>" + comprobanteElectronico.InfoTributaria.NombreComercial + @"</h6>
                                     <br>
-                                    <h6><label>Dirección Matriz:</label> " + data.InfoTributaria.DirMatriz + @"</h6>
+                                    <h6><label>Dirección Matriz:</label> " + comprobanteElectronico.InfoTributaria.DirMatriz + @"</h6>
                                     <br>
-                                    " + GetInfoTrib(data) + @"
+                                    " + GetInfoTrib(comprobanteElectronico) + @"
                                 </div>
                             </div>
                         </div>
@@ -81,46 +81,46 @@ public class DocumentConverter : IDocumentConverter
                             <div class=""card border border-dark rounded"">
                                 <div class=""card-body"">
                                     <h5><label>RUC: </label> "
-                  + data.InfoTributaria.Ruc + @"</h5>
+                  + comprobanteElectronico.InfoTributaria.Ruc + @"</h5>
                                     <h4>" + documentName + @"</h4>
                                     <h5>
                                         <label>No.</label>
-                                        " + data.InfoTributaria.Estab + @"-" + data.InfoTributaria.PtoEmi + @"-" +
-                  data.InfoTributaria.Secuencial + @"
+                                        " + comprobanteElectronico.InfoTributaria.Estab + @"-" + comprobanteElectronico.InfoTributaria.PtoEmi + @"-" +
+                  comprobanteElectronico.InfoTributaria.Secuencial + @"
                                     </h5>
                                     <label>NÚMERO DE AUTORIZACIÓN</label><br>
                                     <small id=""claveAcceso"">
-                                        " + data.InfoTributaria.ClaveAcceso + @"
+                                        " + comprobanteElectronico.InfoTributaria.ClaveAcceso + @"
                                     </small>
                                     <label>FECHA Y HORA DE AUTORIZACIÓN</label>
                                     <small>
-                                        " + data.FechaAutorizacion + @"
+                                        " + comprobanteElectronico.FechaAutorizacion + @"
                                     </small>
                                     <h5>
                                         <label>AMBIENTE:</label>
-                                         " + (data.InfoTributaria.Ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
+                                         " + (comprobanteElectronico.InfoTributaria.Ambiente == "1" ? "PRUEBAS" : "PRODUCCIÓN") + @"
                                     </h5>
                                     <h5>
                                         <label>EMISIÓN:</label>
-                                        " + (data.InfoTributaria.TipoEmision == "1" ? "NORMAL" : "") + @"
+                                        " + (comprobanteElectronico.InfoTributaria.TipoEmision == "1" ? "NORMAL" : "") + @"
                                     </h5>
                                     <label>CLAVE DE ACCESSO</label><br />
 <div class=""text-center"">
                                     <img id=""barcodeImg"" src=" +
-                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.ClaveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = data.InfoTributaria.ClaveAcceso }).Length)}" +
+                  $"data:image/png;base64,{Convert.ToBase64String(BarcodeGen.Create(new BarcodeConfig { Text = comprobanteElectronico.InfoTributaria.ClaveAcceso }), 0, BarcodeGen.Create(new BarcodeConfig { Text = comprobanteElectronico.InfoTributaria.ClaveAcceso }).Length)}" +
                   @" alt="""" align=""center"" class=""img-fluid"" height=""60"" width=""500"">
-                                    <br><small> " + data.InfoTributaria.ClaveAcceso + @"</small></div>
+                                    <br><small> " + comprobanteElectronico.InfoTributaria.ClaveAcceso + @"</small></div>
                                 </div>
 
                             </div>
 
                         </div>
-                    </div> " + GetInfoComprobante(data) + @"
+                    </div> " + GetInfoComprobante(comprobanteElectronico) + @"
                     </div>
                     <div class=""row"">
-                        
-                           " + GetInfoAdicional(data) + GetTotals(data) + @"
-                        
+
+                           " + GetInfoAdicional(comprobanteElectronico) + GetTotals(comprobanteElectronico) + @"
+
                     </div>
                     <div class=""row"">
                         <div class=""col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"">

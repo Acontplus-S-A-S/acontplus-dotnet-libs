@@ -1,4 +1,4 @@
-﻿using Acontplus.Core.Domain.Common.Results;
+using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Domain.Extensions;
 using Acontplus.Utilities.Adapters;
 using Acontplus.Utilities.Mapping;
@@ -37,7 +37,7 @@ namespace Acontplus.TestApplication.Services
 
                 if (existingUser is not null)
                 {
-                    return DomainErrors.Single(DomainError.Conflict(
+                    return DomainErrors.FromSingle(DomainError.Conflict(
                         "USERNAME_EXISTS",
                         $"Username '{usuario.Username}' already exists"));
                 }
@@ -50,7 +50,7 @@ namespace Acontplus.TestApplication.Services
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Database error adding user {Username}", usuario.Username);
-                return DomainErrors.Single(DomainError.Internal(
+                return DomainErrors.FromSingle(DomainError.Internal(
                     "DB_INSERT_ERROR",
                     "Failed to create user due to database error",
                     details: new Dictionary<string, object> { ["username"] = usuario.Username }));
@@ -323,7 +323,7 @@ namespace Acontplus.TestApplication.Services
                 var userFound = await _usuarioRepository.GetByIdAsync(id);
                 if (userFound == null)
                 {
-                    return DomainErrors.Single(DomainError.NotFound(
+                    return DomainErrors.FromSingle(DomainError.NotFound(
                         "USER_NOT_FOUND",
                         $"User with ID {id} not found"));
                 }
@@ -336,7 +336,7 @@ namespace Acontplus.TestApplication.Services
 
                     if (usernameExists)
                     {
-                        return DomainErrors.Single(DomainError.Conflict(
+                        return DomainErrors.FromSingle(DomainError.Conflict(
                             "USERNAME_EXISTS",
                             $"Username '{usuario.Username}' already exists"));
                     }
@@ -355,7 +355,7 @@ namespace Acontplus.TestApplication.Services
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Database error updating user {UserId}", id);
-                return DomainErrors.Single(DomainError.Internal(
+                return DomainErrors.FromSingle(DomainError.Internal(
                     "DB_UPDATE_ERROR",
                     "Failed to update user",
                     details: new Dictionary<string, object> { ["userId"] = id }));

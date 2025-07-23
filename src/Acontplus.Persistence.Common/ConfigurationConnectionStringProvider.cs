@@ -1,4 +1,4 @@
-namespace Acontplus.Persistence.Shared;
+namespace Acontplus.Persistence.Common;
 
 /// <summary>
 /// Default implementation of IConnectionStringProvider using IConfiguration.

@@ -1,4 +1,4 @@
-﻿using Acontplus.Services.Configuration;
+using Acontplus.Services.Configuration;
 using Acontplus.Services.Extensions.Context;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;

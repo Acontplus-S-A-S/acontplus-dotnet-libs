@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Persistence.Shared.Utilities;
+namespace Acontplus.Persistence.Common.Utilities;
 
 public static class DiagnosticConfig
 {

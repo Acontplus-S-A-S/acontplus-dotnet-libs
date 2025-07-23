@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.Notifications.Entities;
 
-public class EmailQueue : BaseEntity
+public class Email : BaseEntity
 {
     private string? _decompressedBody;
     public int NotificationId { get; set; } // Links to Notification table

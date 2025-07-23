@@ -5,6 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Directory.Packages.props = Directory.Packages.props
 		Nuget.config = Nuget.config
 	EndProjectSection
@@ -45,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acontplus.TestApi", "apps\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acontplus.Persistence.Postgres", "src\Acontplus.Persistence.Postgres\Acontplus.Persistence.Postgres.csproj", "{D6B82683-7DAE-4804-AE1F-477B892E197D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acontplus.Persistence.Shared", "src\Acontplus.Persistence.Shared\Acontplus.Persistence.Shared.csproj", "{996CF951-64A8-4CE6-AFE7-12C45FDE460F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acontplus.Persistence.Common", "src\Acontplus.Persistence.Common\Acontplus.Persistence.Common.csproj", "{97E0521A-3EDD-781D-CE28-22CC465D76FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,18 +250,18 @@ Global
 		{D6B82683-7DAE-4804-AE1F-477B892E197D}.Release|x64.Build.0 = Release|Any CPU
 		{D6B82683-7DAE-4804-AE1F-477B892E197D}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6B82683-7DAE-4804-AE1F-477B892E197D}.Release|x86.Build.0 = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|x64.Build.0 = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Debug|x86.Build.0 = Debug|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|x64.ActiveCfg = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|x64.Build.0 = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|x86.ActiveCfg = Release|Any CPU
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F}.Release|x86.Build.0 = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|x64.Build.0 = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Debug|x86.Build.0 = Debug|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|x64.ActiveCfg = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|x64.Build.0 = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -282,7 +283,7 @@ Global
 		{D8D945A8-EDC7-42D4-9353-7A7EE8DE4F58} = {802C95C5-F8AA-4136-A298-261105286C93}
 		{18821081-AC99-58B3-FD8A-08E0C0F9F22D} = {802C95C5-F8AA-4136-A298-261105286C93}
 		{D6B82683-7DAE-4804-AE1F-477B892E197D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{996CF951-64A8-4CE6-AFE7-12C45FDE460F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{97E0521A-3EDD-781D-CE28-22CC465D76FA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EDD6A9D-1770-4385-AADB-26C6AEDD8C12}
