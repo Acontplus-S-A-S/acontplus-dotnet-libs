@@ -1,6 +1,5 @@
 ###############################
 # Enhanced EditorConfig       #
-# .NET 9 + C# 13 + Angular 20+ #
 # Enterprise Ready 2025       #
 ###############################
 root = true
@@ -13,10 +12,7 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 max_line_length = 120
-
-# XML/Project files (.NET 9 optimized)
-[*.{csproj,props,targets,config,nuspec,resx,ruleset}]
-indent_size = 2
+indent_size = 4
 
 # JSON files (including Angular configs)
 [*.{json,jsonc}]
@@ -29,49 +25,26 @@ indent_size = 2
 # SQL files (SQL Server 2022+ enterprise conventions)
 [*.sql]
 indent_size = 2
-keyword_case = upper
-identifier_case = lower
-# SQL Server 2022+ enterprise naming
-table_name_case = pascal_case
-procedure_name_case = pascal_case
 
 ###############################
 # .NET 9 / C# 13 Conventions #
 ###############################
 [*.cs]
-indent_size = 4
 tab_width = 4
 
 # 🆕 NEW .NET 9 / C# 13 Features
-dotnet_style_prefer_collection_expression = true:suggestion
 dotnet_style_prefer_simplified_interpolation = true:suggestion
 dotnet_style_prefer_inferred_tuple_names = true:suggestion
-dotnet_style_prefer_tuple_swap = true:suggestion
-dotnet_style_namespace_match_folder = true:suggestion
-dotnet_style_allow_multiple_blank_lines_experimental = false:error
-dotnet_style_allow_statement_immediately_after_block_experimental = false:error
-
-# C# 13 specific enhancements
-csharp_style_prefer_primary_constructors = true:suggestion
-csharp_style_prefer_collection_expression = true:suggestion
-csharp_style_prefer_readonly_struct = true:suggestion
-csharp_style_prefer_readonly_struct_member = true:suggestion
-csharp_prefer_system_threading_lock = true:suggestion
-csharp_style_prefer_utf8_string_literals = true:suggestion
 
 # Enhanced pattern matching (C# 13)
 csharp_style_prefer_pattern_matching = true:suggestion
 csharp_style_prefer_switch_expression = true:suggestion
-csharp_style_prefer_extended_property_patterns = true:suggestion
 csharp_style_prefer_not_pattern = true:suggestion
 
 # Modern C# preferences
-csharp_style_prefer_method_group_conversion = true:suggestion
-csharp_style_prefer_top_level_statements = true:suggestion
 csharp_using_directive_placement = outside_namespace:warning
 csharp_prefer_simple_using_statement = true:suggestion
-csharp_prefer_braces = true:warning
-csharp_style_namespace_declarations = file_scoped:suggestion
+# csharp_prefer_braces = true:warning
 
 # Expression-bodied members
 csharp_style_expression_bodied_methods = when_on_single_line:suggestion
@@ -98,7 +71,6 @@ dotnet_style_prefer_conditional_expression_over_return = true:silent
 # Formatting rules
 csharp_indent_labels = one_less_than_current
 csharp_space_around_binary_operators = before_and_after
-csharp_space_around_declaration_statements = false
 csharp_space_before_colon_in_inheritance_clause = true
 csharp_space_after_colon_in_inheritance_clause = true
 csharp_space_before_comma = false
@@ -123,46 +95,6 @@ csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
-
-###############################
-# TypeScript/Angular 20+     #
-###############################
-[*.{ts,tsx}]
-indent_size = 2
-quote_type = single
-max_line_length = 120
-
-# 🆕 Angular 20+ Standalone Components & Signals
-typescript_prefer_standalone_components = true
-typescript_prefer_signals = true
-typescript_prefer_control_flow = true
-
-# TypeScript 5.8+ features
-typescript_style_prefer_import_type = true:suggestion
-typescript_style_prefer_unknown_in_catch = true:suggestion
-typescript_style_prefer_nullish_coalescing = true:suggestion
-typescript_style_prefer_optional_chaining = true:suggestion
-
-[*.{js,jsx}]
-indent_size = 2
-quote_type = single
-
-# Angular specific files
-[*.{component.ts,service.ts,directive.ts,pipe.ts,guard.ts,resolver.ts}]
-# Angular 20+ with DDD structure
-typescript_class_naming = PascalCase
-typescript_interface_naming = PascalCase
-typescript_method_naming = camelCase
-
-# Angular HTML templates
-[*.{html,htm}]
-indent_size = 2
-quote_type = double
-
-# SCSS/CSS (Modern Angular styling)
-[*.{scss,sass,css}]
-indent_size = 2
-quote_type = single
 
 ###############################
 # Enhanced Naming Conventions #
@@ -241,48 +173,18 @@ dotnet_naming_style.camel_case_underscore.word_separator =
 dotnet_naming_style.camel_case_underscore.capitalization = camel_case
 
 ###############################
-# Code Analysis & Quality     #
-###############################
-# Enable all analyzers
-dotnet_analyzer_diagnostic.category-design.severity = warning
-dotnet_analyzer_diagnostic.category-documentation.severity = suggestion
-dotnet_analyzer_diagnostic.category-globalization.severity = warning
-dotnet_analyzer_diagnostic.category-interoperability.severity = warning
-dotnet_analyzer_diagnostic.category-maintainability.severity = warning
-dotnet_analyzer_diagnostic.category-naming.severity = error
-dotnet_analyzer_diagnostic.category-performance.severity = warning
-dotnet_analyzer_diagnostic.category-SingleFile.severity = warning
-dotnet_analyzer_diagnostic.category-reliability.severity = error
-dotnet_analyzer_diagnostic.category-security.severity = error
-dotnet_analyzer_diagnostic.category-style.severity = suggestion
-dotnet_analyzer_diagnostic.category-usage.severity = warning
-
-###############################
 # IDE & Tools Integration     #
 ###############################
 # Visual Studio 2022 / JetBrains Rider / VS Code compatibility
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
 
-# Solution-wide analyzer configuration
-is_global = true
-
 ###############################
 # File-specific configurations #
 ###############################
 # Test files
-[*.{Tests.cs,Test.cs,*Tests.cs,*Test.cs}]
-dotnet_naming_rule.test_methods_should_be_descriptive.severity = suggestion
-tab_width = 4
-indent_size = 4
-
-# Program.cs (top-level programs)
-[Program.cs]
-csharp_style_prefer_top_level_statements = true:suggestion
-
-# Global.asax, Startup.cs
-[{Global.asax.cs,Startup.cs}]
-csharp_style_prefer_top_level_statements = false:suggestion
+#[*.{Tests.cs,Test.cs,*Tests.cs,*Test.cs}]
+#dotnet_naming_rule.test_methods_should_be_descriptive.severity = suggestion
 
 # Configuration files
 [*.{config,xml}]
@@ -291,7 +193,6 @@ indent_size = 2
 # Docker files
 [{Dockerfile,Dockerfile.*,.dockerignore}]
 indent_size = 2
-end_of_line = lf
 
 # Markdown files
 [*.{md,mdx}]

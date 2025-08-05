@@ -1,10 +1,10 @@
-﻿namespace Acontplus.TestDomain.Models;
+namespace Acontplus.TestDomain.Models;
 
 public class Notification
 {
-    public bool hasFile { get; set; }
-    public string isReport { get; set; }
-    public Dictionary<string, object> reportParams { get; set; }
-    public Dictionary<string, object> spParams { get; set; }
-    public bool withTableNames { get; set; } = false;
+    public bool HasFile { get; set; }
+    public string IsReport { get; set; }
+    public Dictionary<string, object> ReportParams { get; set; }
+    public Dictionary<string, object> SpParams { get; set; }
+    public bool WithTableNames { get; set; } = false;
 }

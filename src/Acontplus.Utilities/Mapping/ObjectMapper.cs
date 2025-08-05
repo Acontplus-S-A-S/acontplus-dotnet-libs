@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Utilities.Mapping;
+namespace Acontplus.Utilities.Mapping;
 
 using System;
 using System.Collections;
@@ -12,7 +12,7 @@ using System.Reflection;
 /// </summary>
 public static class ObjectMapper
 {
-    private static readonly Dictionary<string, MappingConfiguration> _mappingConfigurations = new Dictionary<string, MappingConfiguration>();
+    private static readonly Dictionary<string, MappingConfiguration> MappingConfigurations = new Dictionary<string, MappingConfiguration>();
 
     /// <summary>
     /// Creates a mapping configuration between source and target types.
@@ -21,7 +21,7 @@ public static class ObjectMapper
     {
         var config = new MappingConfiguration<TSource, TTarget>();
         var key = GetMappingKey(typeof(TSource), typeof(TTarget));
-        _mappingConfigurations[key] = config;
+        MappingConfigurations[key] = config;
         return config;
     }
 
@@ -51,7 +51,7 @@ public static class ObjectMapper
 
         // Check if we have a configuration for this mapping
         var key = GetMappingKey(typeof(TSource), typeof(TTarget));
-        if (_mappingConfigurations.TryGetValue(key, out var configuration))
+        if (MappingConfigurations.TryGetValue(key, out var configuration))
         {
             return (TTarget)configuration.Map(source, target);
         }

@@ -1,12 +1,10 @@
 namespace Acontplus.Persistence.Common;
 
-public class DbContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
+public class DbContextFactory<TContext>(IDictionary<string, TContext> contexts) : IDbContextFactory<TContext>
+    where TContext : DbContext
 {
-    private readonly ConcurrentDictionary<string, TContext> _contexts;
-    public DbContextFactory(IDictionary<string, TContext> contexts)
-    {
-        _contexts = new ConcurrentDictionary<string, TContext>(contexts);
-    }
+    private readonly ConcurrentDictionary<string, TContext> _contexts = new(contexts);
+
     public TContext GetContext(string contextName)
     {
         if (_contexts.TryGetValue(contextName, out var context))

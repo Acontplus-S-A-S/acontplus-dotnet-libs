@@ -30,39 +30,38 @@
             }.ToImmutableDictionary();
 
     public static DomainError ToDomainError(
-        this SqlDomainException ex,
+        this SqlDomainException sqlDomainException,
         string? target = null,
         Dictionary<string, object>? details = null)
     {
-        if (ErrorMappers.TryGetValue(ex.ErrorType, out var mapper))
+        if (ErrorMappers.TryGetValue(sqlDomainException.ErrorType, out var mapper))
         {
-            return mapper(ex.ErrorCode, ex.Message, target, details);
+            return mapper(sqlDomainException.ErrorCode, sqlDomainException.Message, target, details);
         }
 
         // Default mapping for unmapped error types
-        return ex.ErrorType switch
+        return sqlDomainException.ErrorType switch
         {
             // Additional client error mappings
-            ErrorType.UriTooLong => new DomainError(ErrorType.UriTooLong, ex.ErrorCode, ex.Message, target, details),
-            ErrorType.UnsupportedMediaType => new DomainError(ErrorType.UnsupportedMediaType, ex.ErrorCode, ex.Message,
+            ErrorType.UriTooLong => new DomainError(ErrorType.UriTooLong, sqlDomainException.ErrorCode, sqlDomainException.Message, target, details),
+            ErrorType.UnsupportedMediaType => new DomainError(ErrorType.UnsupportedMediaType, sqlDomainException.ErrorCode, sqlDomainException.Message,
                 target, details),
-            ErrorType.PreconditionFailed => new DomainError(ErrorType.PreconditionFailed, ex.ErrorCode, ex.Message,
+            ErrorType.PreconditionFailed => new DomainError(ErrorType.PreconditionFailed, sqlDomainException.ErrorCode, sqlDomainException.Message,
                 target, details),
 
             // Additional server error mappings
-            ErrorType.NotImplemented => new DomainError(ErrorType.NotImplemented, ex.ErrorCode, ex.Message, target,
+            ErrorType.NotImplemented => new DomainError(ErrorType.NotImplemented, sqlDomainException.ErrorCode, sqlDomainException.Message, target,
                 details),
-            ErrorType.HttpVersionNotSupported => new DomainError(ErrorType.HttpVersionNotSupported, ex.ErrorCode,
-                ex.Message, target, details),
+            ErrorType.HttpVersionNotSupported => new DomainError(ErrorType.HttpVersionNotSupported, sqlDomainException.ErrorCode,
+                sqlDomainException.Message, target, details),
 
             _ => DomainError.Internal(
-                $"SQL_{ex.ErrorCode}",
-                $"Unmapped SQL error: {ex.Message}",
+                $"SQL_{sqlDomainException.ErrorCode}",
+                $"Unmapped SQL error: {sqlDomainException.Message}",
                 target,
                 details?.Union(new Dictionary<string, object>
                 {
-                    ["originalErrorType"] = ex.ErrorType.ToString(),
-                    ["sqlErrorCode"] = ex.ErrorCode
+                    ["originalErrorType"] = sqlDomainException.ErrorType.ToString(), ["sqlErrorCode"] = sqlDomainException.ErrorCode
                 }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
         };
     }
