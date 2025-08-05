@@ -8,7 +8,7 @@ namespace Acontplus.Core.Validation;
 
 public class ValidationError
 {
-    public string Message { get; set; }
+    public required string Message { get; set; }
     public XmlSeverityType Severity { get; set; }
     public int LineNumber { get; set; }
     public int LinePosition { get; set; }

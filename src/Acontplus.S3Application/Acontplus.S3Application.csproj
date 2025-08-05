@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.S3Application</PackageId>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Modern .NET 9+ library for AWS S3 storage operations. Provides async CRUD, strongly-typed S3 object handling, presigned URLs, and robust error handling for enterprise applications.</Description>

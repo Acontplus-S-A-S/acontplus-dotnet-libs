@@ -1,8 +1,8 @@
-﻿namespace Acontplus.Utilities.IO;
+namespace Acontplus.Utilities.IO;
 
 public static class MimeTypeMap
 {
-    private static readonly Lazy<IDictionary<string, string>> _mappings = new(BuildMappings);
+    private static readonly Lazy<IDictionary<string, string>> Mappings = new(BuildMappings);
 
     private static IDictionary<string, string> BuildMappings()
     {
@@ -701,7 +701,7 @@ public static class MimeTypeMap
 
         string mime;
 
-        return _mappings.Value.TryGetValue(extension, out mime) ? mime : "application/octet-stream";
+        return Mappings.Value.TryGetValue(extension, out mime) ? mime : "application/octet-stream";
     }
 
     public static string GetExtension(string mimeType)
@@ -718,7 +718,7 @@ public static class MimeTypeMap
 
         string extension;
 
-        if (_mappings.Value.TryGetValue(mimeType, out extension))
+        if (Mappings.Value.TryGetValue(mimeType, out extension))
         {
             return extension;
         }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.Postgres.Exceptions;
 
@@ -82,10 +82,10 @@ public static class PostgresExceptionHandler
         [CallerMemberName] string caller = "")
     {
         var errorInfo = MapSqlException(ex);
-        logger.Log(GetLogLevel(errorInfo.Type),
+        logger.Log(GetLogLevel(errorInfo.ErrorType),
             new EventId(ex.SqlState.GetHashCode(), errorInfo.Code),
             "Postgres Error in {Operation} called from {Caller}: {ErrorType} - {Message}",
-            operation, caller, errorInfo.Type, errorInfo.Message);
+            operation, caller, errorInfo.ErrorType, errorInfo.Message);
         if (logger.IsEnabled(LogLevel.Debug))
         {
             logger.LogDebug("Postgres Error Details: {Details}", new

@@ -164,10 +164,10 @@ public static class SqlServerExceptionHandler
     {
         var errorInfo = MapSqlException(ex);
 
-        logger.Log(GetLogLevel(errorInfo.Type),
+        logger.Log(GetLogLevel(errorInfo.ErrorType),
             new EventId(ex.Number, errorInfo.Code),
             "SQL Error in {Operation} called from {Caller}: {ErrorType} - {Message}",
-            operation, caller, errorInfo.Type, errorInfo.Message);
+            operation, caller, errorInfo.ErrorType, errorInfo.Message);
 
         if (logger.IsEnabled(LogLevel.Debug))
         {

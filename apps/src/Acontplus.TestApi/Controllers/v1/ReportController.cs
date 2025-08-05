@@ -23,7 +23,7 @@ public class ReportController(
         var emailData = DataTableMapper.MapDataRowToModel<EmailModel>(dataRow);
 
 
-        if (mainParams.hasFile)
+        if (mainParams.HasFile)
         {
             var reportFile = new FileModel();
             await HandleReportGeneration(mainParams, reportFile);
@@ -49,7 +49,7 @@ public class ReportController(
     {
         var dsParams = await reportService.GetParamsAsync(new Dictionary<string, object>
         {
-            { "json", SqlStringParam.Sanitize(DataConverters.SerializeDictionary(mainParams.reportParams)) }
+            { "json", SqlStringParam.Sanitize(DataConverters.SerializeDictionary(mainParams.ReportParams)) }
         });
 
         if (dsParams.Tables["ReportProps"].Rows.Count == 0) throw new Exception("Report data not found");
@@ -57,9 +57,9 @@ public class ReportController(
         var storedProcedure = dsParams.Tables["ReportProps"].Rows[0].Field<string>("storedProcedure");
         var dataParams = new Dictionary<string, object>
         {
-            ["json"] = DataConverters.SerializeDictionary(mainParams.spParams)
+            ["json"] = DataConverters.SerializeDictionary(mainParams.SpParams)
         };
-        var ds = await reportService.GetDataAsync(storedProcedure, dataParams, mainParams.withTableNames);
+        var ds = await reportService.GetDataAsync(storedProcedure, dataParams, mainParams.WithTableNames);
 
         if (ds.Tables[0].Rows.Count == 0) throw new Exception("No report data found");
 

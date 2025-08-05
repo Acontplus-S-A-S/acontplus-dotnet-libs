@@ -110,7 +110,8 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
                 var isActiveProp = entry.Entity.GetType().GetProperty("IsActive");
                 isActiveProp?.SetValue(entry.Entity, false);
             }
-            else if (!auditable.IsDeleted && entry.Entity.GetType().GetProperty("DeletedAt")?.GetValue(entry.Entity) != null)
+            else if (!auditable.IsDeleted &&
+                     entry.Entity.GetType().GetProperty("DeletedAt")?.GetValue(entry.Entity) != null)
             {
                 entry.Entity.GetType().GetProperty("DeletedAt")?.SetValue(entry.Entity, null);
                 var deletedByUserIdProp = entry.Entity.GetType().GetProperty("DeletedByUserId");
@@ -134,10 +135,10 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
         }
     }
 
-    private static void ConfigureGlobalFilters(ModelBuilder builder)
+    private static void ConfigureGlobalFilters(ModelBuilder modelBuilder)
     {
         // Only apply soft delete filter to auditable entities
-        foreach (var entityType in builder.Model.GetEntityTypes())
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             if (typeof(IAuditableEntity).IsAssignableFrom(entityType.ClrType))
             {
@@ -145,7 +146,7 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
                 var property = Expression.Property(parameter, nameof(IAuditableEntity.IsDeleted));
                 var condition = Expression.Lambda(Expression.Not(property), parameter);
 
-                builder.Entity(entityType.ClrType).HasQueryFilter(condition);
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(condition);
             }
         }
     }
