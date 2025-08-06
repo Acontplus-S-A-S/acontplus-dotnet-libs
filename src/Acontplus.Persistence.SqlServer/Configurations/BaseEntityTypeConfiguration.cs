@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
@@ -8,35 +9,117 @@ public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguratio
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        // Configure common audit properties for SQL Server
+        ConfigurePrimaryKey(builder);
+        ConfigureTimestamps(builder);
+        ConfigureUserAuditFields(builder);
+        ConfigureStatusFields(builder);
+        ConfigureExternalUserTracking(builder);
+        ConfigureSoftDeleteAndIndexes(builder);
+    }
+
+    protected virtual void ConfigurePrimaryKey(EntityTypeBuilder<TEntity> builder)
+    {
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+    }
+
+    protected virtual void ConfigureTimestamps(EntityTypeBuilder<TEntity> builder)
+    {
         builder.Property(x => x.CreatedAt)
             .HasColumnType("datetime2")
-            .HasDefaultValueSql("SYSUTCDATETIME()");
+            .HasPrecision(7)
+            .HasDefaultValueSql("SYSUTCDATETIME()")
+            .IsRequired();
 
         builder.Property(x => x.UpdatedAt)
             .HasColumnType("datetime2")
+            .HasPrecision(7)
             .IsRequired(false);
 
         builder.Property(x => x.DeletedAt)
             .HasColumnType("datetime2")
+            .HasPrecision(7)
             .IsRequired(false);
+    }
 
+    protected virtual void ConfigureUserAuditFields(EntityTypeBuilder<TEntity> builder)
+    {
+        var defaultValue = default(TId);
+
+        var converter = new ValueConverter<TId?, TId>(
+            v => v ?? defaultValue,
+            v => v.Equals(defaultValue) ? null : v);
+
+        builder.Property(x => x.CreatedByUserId)
+            .HasDefaultValue(defaultValue)
+            .IsRequired()
+            .HasConversion(converter);
+
+        builder.Property(x => x.UpdatedByUserId)
+            .HasDefaultValue(defaultValue)
+            .IsRequired()
+            .HasConversion(converter);
+
+        builder.Property(x => x.DeletedByUserId)
+            .HasDefaultValue(defaultValue)
+            .IsRequired()
+            .HasConversion(converter);
+    }
+
+    protected virtual void ConfigureStatusFields(EntityTypeBuilder<TEntity> builder)
+    {
         builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
+            .HasDefaultValue(true)
+            .IsRequired();
 
         builder.Property(x => x.IsDeleted)
-            .HasDefaultValue(false);
+            .HasDefaultValue(false)
+            .IsRequired();
 
         builder.Property(x => x.IsMobileRequest)
-            .HasDefaultValue(false);
+            .HasDefaultValue(false)
+            .IsRequired();
+    }
 
-        // Configure query filter for soft delete
+    protected virtual void ConfigureExternalUserTracking(EntityTypeBuilder<TEntity> builder)
+    {
+        builder.Property(x => x.CreatedBy)
+            .IsRequired(false)
+            .HasMaxLength(100)
+            .IsUnicode(false);
+
+        builder.Property(x => x.UpdatedBy)
+            .IsRequired(false)
+            .HasMaxLength(100)
+            .IsUnicode(false);
+
+        builder.Property(x => x.DeletedBy)
+            .IsRequired(false)
+            .HasMaxLength(100)
+            .IsUnicode(false);
+    }
+
+    protected virtual void ConfigureSoftDeleteAndIndexes(EntityTypeBuilder<TEntity> builder)
+    {
         builder.HasQueryFilter(x => !x.IsDeleted);
+        ConfigureIndexes(builder);
+    }
 
-        // Configure indexes for audit fields (optional)
-        builder.HasIndex(x => x.CreatedAt);
-        builder.HasIndex(x => x.CreatedByUserId);
-        builder.HasIndex(x => x.IsDeleted);
-        builder.HasIndex(x => x.IsActive);
+    protected virtual void ConfigureIndexes(EntityTypeBuilder<TEntity> builder)
+    {
+        builder.HasIndex(x => x.CreatedAt)
+            .HasDatabaseName($"IX_{typeof(TEntity).Name}_CreatedAt");
+
+        builder.HasIndex(x => x.CreatedByUserId)
+            .HasDatabaseName($"IX_{typeof(TEntity).Name}_CreatedByUserId");
+
+        builder.HasIndex(x => x.IsDeleted)
+            .HasDatabaseName($"IX_{typeof(TEntity).Name}_IsDeleted");
+
+        builder.HasIndex(x => x.IsActive)
+            .HasDatabaseName($"IX_{typeof(TEntity).Name}_IsActive");
+
+        builder.HasIndex(x => new { x.IsActive, x.IsDeleted })
+            .HasDatabaseName($"IX_{typeof(TEntity).Name}_Status");
     }
 }
