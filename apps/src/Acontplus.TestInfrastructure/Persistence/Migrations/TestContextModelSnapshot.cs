@@ -17,7 +17,7 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -35,6 +35,7 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
+                        .HasPrecision(7)
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
@@ -44,9 +45,12 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime?>("DeletedAt")
+                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -55,7 +59,9 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("DeletedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -91,6 +97,7 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
@@ -99,7 +106,9 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("UpdatedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("Used")
                         .ValueGeneratedOnAdd()
@@ -112,13 +121,20 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("UX_WhatsAppUsage_CompanyId");
 
-                    b.HasIndex("CreatedAt");
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_WhatsAppUsage_CreatedAt");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("IX_WhatsAppUsage_CreatedByUserId");
 
-                    b.HasIndex("IsActive");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_WhatsAppUsage_IsActive");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_WhatsAppUsage_IsDeleted");
+
+                    b.HasIndex("IsActive", "IsDeleted")
+                        .HasDatabaseName("IX_WhatsAppUsage_Status");
 
                     b.ToTable("WhatsAppUsage", "Config");
                 });
@@ -155,6 +171,7 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
+                        .HasPrecision(7)
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
@@ -164,9 +181,12 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime?>("DeletedAt")
+                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -175,7 +195,9 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("DeletedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -199,6 +221,7 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
@@ -207,7 +230,9 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("UpdatedByUserId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -217,13 +242,20 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt");
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Usuario_CreatedAt");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("IX_Usuario_CreatedByUserId");
 
-                    b.HasIndex("IsActive");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_Usuario_IsActive");
 
-                    b.HasIndex("IsDeleted");
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("IX_Usuario_IsDeleted");
+
+                    b.HasIndex("IsActive", "IsDeleted")
+                        .HasDatabaseName("IX_Usuario_Status");
 
                     b.ToTable("Usuarios");
                 });

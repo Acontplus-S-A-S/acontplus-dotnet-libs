@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.Postgres</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Modern .NET 9+ library for PostgreSQL persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling for PostgreSQL.</Description>

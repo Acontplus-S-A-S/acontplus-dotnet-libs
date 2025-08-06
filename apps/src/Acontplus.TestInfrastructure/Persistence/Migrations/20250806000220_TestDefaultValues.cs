@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Acontplus.TestInfrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class TestDefaultValues : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,14 +36,14 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: true),
+                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<int>(type: "int", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: true),
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     UpdatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
@@ -66,14 +67,14 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     Unlimited = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: true),
+                    UpdatedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<int>(type: "int", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2(7)", precision: 7, nullable: true),
+                    DeletedByUserId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     IsMobileRequest = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     UpdatedBy = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
@@ -85,24 +86,29 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_CreatedAt",
+                name: "IX_Usuario_CreatedAt",
                 table: "Usuarios",
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_CreatedByUserId",
+                name: "IX_Usuario_CreatedByUserId",
                 table: "Usuarios",
                 column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_IsActive",
+                name: "IX_Usuario_IsActive",
                 table: "Usuarios",
                 column: "IsActive");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_IsDeleted",
+                name: "IX_Usuario_IsDeleted",
                 table: "Usuarios",
                 column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuario_Status",
+                table: "Usuarios",
+                columns: new[] { "IsActive", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_WhatsAppUsage_CreatedAt",
@@ -127,6 +133,12 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                 schema: "Config",
                 table: "WhatsAppUsage",
                 column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WhatsAppUsage_Status",
+                schema: "Config",
+                table: "WhatsAppUsage",
+                columns: new[] { "IsActive", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
                 name: "UX_WhatsAppUsage_CompanyId",
