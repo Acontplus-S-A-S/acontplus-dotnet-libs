@@ -4,17 +4,17 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Services</PackageId>
-		<Version>1.3.2</Version>
+		<Version>1.4.2</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
-		<Description>Modern .NET 9+ library for API services, authentication, claims, middleware, and configuration. Includes JWT, user context, and exception handling.</Description>
-		<PackageTags>dotnet9;services;authentication;claims;api;versioning;middlewares;jwt;configuration</PackageTags>
+		<Description>Comprehensive library for API services, authentication, claims, middleware, and configuration. Includes JWT authentication, user context management, exception handling, security headers, and enterprise-ready service patterns for ASP.NET Core applications.</Description>
+		<PackageTags>dotnet9;services;authentication;claims;api;versioning;middlewares;jwt;configuration;security-headers;user-context;exception-handling;aspnetcore;enterprise</PackageTags>
 		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageReleaseNotes>Updated for .NET 9+ with modern C# features, improved middleware, and enhanced documentation.</PackageReleaseNotes>
+		<PackageReleaseNotes>Enhanced with contemporary authentication patterns, JWT token management, user context services, security headers middleware, exception handling, and enterprise-ready service abstractions for ASP.NET Core applications.</PackageReleaseNotes>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>

@@ -4,39 +4,39 @@
         <name>Acontplus.Persistence.SqlServer</name>
     </assembly>
     <members>
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.GetPrimaryKeyType(System.Type)" -->
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
+        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.GetPrimaryKeyType(System.Type)" -->
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
             Registers auditable entities with the ModelBuilder, applying base configurations,
             custom schema/table names, and optional specific entity configurations.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
             <summary>
             Helper method to check if a type is assignable to a generic type definition
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
             <summary>
             Registers entities with default conventions and base configuration.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithSchemas(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String}[])">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithSchemas(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String}[])">
             <summary>
             Registers entities, explicitly setting schemas for specified types.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String,System.String}[])">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String,System.String}[])">
             <summary>
             Registers entities, explicitly setting schema and/or table names for specified types.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.AuditableEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
             Registers entities with specific custom configurations.
             </summary>
         </member>
-        <member name="T:Acontplus.Persistence.SqlServer.Configurations.EntityTypeConfiguration`2">
+        <member name="T:Acontplus.Persistence.SqlServer.Configurations.EntityTypeConfiguration`1">
             <summary>
             Base configuration for non-auditable entities.
             </summary>

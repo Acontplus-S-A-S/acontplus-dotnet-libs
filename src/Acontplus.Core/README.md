@@ -4,63 +4,160 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A modern .NET 9+ foundational library providing enterprise-grade components with domain-driven design patterns, comprehensive error handling, and modern C# features.
+A cutting-edge .NET 9+ foundational library leveraging the latest C# language features and modern enterprise patterns. Built with performance, type safety, and developer experience in mind.
 
-## 🚀 Features
+## 🚀 .NET 9 Modern Features
 
-### 🏗️ Core Architecture
-- **Domain-Driven Design (DDD)** - Complete DDD implementation with entities, value objects, and domain events
-- **Modern Entity System** - Base entities with audit trails, soft deletes, and domain event support
-- **Specification Pattern** - Flexible query specifications for complex business rules
-- **Result Pattern** - Functional error handling with modern .NET 9+ features
+### 🎯 Latest C# Language Features
+- **Collection Expressions** - Modern `[]` syntax for efficient collection initialization
+- **Primary Constructors** - Concise record and class definitions
+- **Required Properties** - Compile-time null safety with `required` keyword
+- **Pattern Matching** - Advanced `switch` expressions and `is` patterns
+- **Record Structs** - High-performance value types for DTOs and results
+- **Nullable Reference Types** - Full compile-time null safety
+- **Source Generators** - JSON serialization with AOT compilation support
+- **Global Usings** - Clean namespace management with global using directives
 
-### 📊 Data Transfer Objects (DTOs)
-- **Structured API Responses** - Consistent API response format with status, errors, and metadata
-- **Pagination Support** - Built-in pagination DTOs for efficient data retrieval
-- **Request/Response Models** - Type-safe request and response models
+### 🏗️ Modern Architecture Patterns
+- **Domain-Driven Design (DDD)** - Complete DDD implementation with modern C# features
+- **Functional Result Pattern** - Railway-oriented programming with record structs
+- **Repository Pattern** - Comprehensive data access with bulk operations
+- **Specification Pattern** - Type-safe query composition with expressions
+- **Event Sourcing Ready** - Domain events with modern event patterns
 
-### 🔍 Validation & Error Handling
-- **Domain Errors** - Comprehensive error types with HTTP status code mapping
-- **Data Validation** - Common validation utilities for XML, JSON, and data formats
-- **Error Extensions** - Fluent error handling with severity-based error aggregation
+### 📊 Advanced Data Patterns
+- **Async Streaming** - `IAsyncEnumerable<T>` for memory-efficient processing
+- **Projections** - Expression-based data transfer for performance
+- **Bulk Operations** - High-performance batch processing with EF Core 9
+- **Smart Pagination** - Advanced pagination with search and filtering
+- **Modern JSON** - System.Text.Json with source generation
 
-### 🎯 Modern .NET 9+ Features
-- **Required Properties** - Compile-time null safety with required properties
-- **Collection Expressions** - Modern collection initialization with `[]` syntax
-- **Pattern Matching** - Advanced pattern matching for type-safe operations
-- **Source Generators** - JSON serialization with source generation for performance
-- **Nullable Reference Types** - Full nullable reference type support
+## 🔥 Cutting-Edge Features
 
-### 🆕 Modern JSON Extensions
-
-Acontplus.Core provides high-performance, secure JSON utilities via `Extensions/JsonExtensions`:
-
-- **Enterprise-optimized serialization**: Consistent, camelCase, safe, and fast.
-- **Multiple options**: Default, Pretty (for debugging), and Strict (for APIs).
-- **Extension methods**: For easy serialization, deserialization, and deep cloning.
-
-#### Usage Examples
+### 🎯 Modern Entity System
 
 ```csharp
-using Acontplus.Core.Extensions;
+// Modern entity with required properties and collection expressions
+public class Product : BaseEntity
+{
+    public required string Name { get; set; }
+    public required decimal Price { get; set; }
+    public string? Description { get; set; }
+    public required int CategoryId { get; set; }
+    
+    // Factory method with modern syntax
+    public static Product Create(int id, string name, decimal price, string description, int categoryId, int createdByUserId) =>
+        new()
+        {
+            Id = id,
+            Name = name,
+            Price = price,
+            Description = description,
+            CategoryId = categoryId,
+            CreatedAt = DateTime.UtcNow,
+            CreatedByUserId = createdByUserId
+        };
+}
+```
 
-// Serialize with enterprise defaults
+### 🔄 Functional Result Pattern
+
+```csharp
+// Modern result pattern with record structs
+public async Task<Result<Product>> GetProductAsync(int id)
+{
+    var product = await _repository.GetByIdAsync(id);
+    
+    return product is not null 
+        ? Result<Product>.Success(product)
+        : Result<Product>.Failure(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found"));
+}
+
+// Pattern matching with modern syntax
+var response = result.Match(
+    success: product => ApiResponse<Product>.Success(product),
+    failure: error => error.ToApiResponse<Product>()
+);
+```
+
+### 📊 Modern Pagination
+
+```csharp
+// Collection expressions and modern initialization
+var pagination = new PaginationDto
+{
+    PageIndex = 1,
+    PageSize = 20,
+    SortBy = "CreatedAt",
+    SortDirection = SortDirection.Descending,
+    SearchTerm = "search term",
+    Filters = new Dictionary<string, object>
+    {
+        ["CategoryId"] = 1,
+        ["IsActive"] = true
+    }
+};
+
+// Modern specification pattern
+public class ActiveProductsSpecification : BaseSpecification<Product>
+{
+    public ActiveProductsSpecification(PaginationDto pagination) : base(p => p.IsActive)
+    {
+        ApplyPaging(pagination);
+        AddOrderBy(p => p.CreatedAt, isDescending: true);
+        AddInclude(p => p.Category);
+    }
+}
+```
+
+### 🚀 Async Streaming & Projections
+
+```csharp
+// Memory-efficient async streaming
+await foreach (var product in repository.FindAsyncEnumerable(p => p.IsActive))
+{
+    await ProcessProductAsync(product);
+}
+
+// High-performance projections
+var summaries = await repository.GetPagedProjectionAsync(
+    pagination,
+    p => new ProductSummary(p.Id, p.Name, p.Price),
+    p => p.IsActive
+);
+```
+
+### 🔥 Modern JSON Extensions
+
+```csharp
+// Enterprise-optimized JSON with source generation
 var json = myObject.SerializeModern();
-
-// Serialize with pretty formatting (for debugging)
-var prettyJson = myObject.SerializeModern(pretty: true);
-
-// Deserialize with enterprise defaults
 var obj = jsonString.DeserializeModern<MyType>();
-
-// Safe deserialization with fallback
-var objOrDefault = jsonString.DeserializeModernSafe<MyType>(fallback: new MyType());
-
-// Deep clone via JSON
 var clone = myObject.CloneViaJson();
 
-// Use options directly (for ASP.NET Core, etc.)
-var options = JsonExtensions.DefaultOptions;
+// Modern JSON options for different scenarios
+var options = JsonExtensions.DefaultOptions; // Production
+var prettyOptions = JsonExtensions.PrettyOptions; // Development
+var strictOptions = JsonExtensions.StrictOptions; // APIs
+```
+
+### 🎯 Modern Error Handling
+
+```csharp
+// Modern error creation with record structs
+var validationError = DomainError.Validation(
+    code: "PRODUCT_INVALID_PRICE",
+    message: "Product price must be greater than zero",
+    target: "price"
+);
+
+// Error aggregation with modern LINQ
+var errors = new List<DomainError>();
+if (string.IsNullOrWhiteSpace(request.Name))
+    errors.Add(DomainError.Validation("INVALID_NAME", "Product name is required"));
+
+if (errors.Any())
+    return Result<Product>.Failure(errors.GetMostSevereError());
 ```
 
 ## 📦 Installation
@@ -77,78 +174,81 @@ dotnet add package Acontplus.Core
 
 ### PackageReference
 ```xml
-<PackageReference Include="Acontplus.Core" Version="1.2.0" />
+<PackageReference Include="Acontplus.Core" Version="1.3.3" />
 ```
 
-## 🎯 Quick Start
+## 🎯 Quick Start with .NET 9
 
-### 1. Basic Entity Usage
+### 1. Modern Entity Definition
 
 ```csharp
-public class Product : AuditableEntity<int>
+// Modern entity with required properties
+public class Product : BaseEntity
 {
     public required string Name { get; set; }
     public required decimal Price { get; set; }
     public string? Description { get; set; }
+    public required int CategoryId { get; set; }
     
-    // Factory method for creating products
-    public static Product Create(int id, string name, decimal price, int createdByUserId)
-    {
-        return new Product
+    // Factory method with modern syntax
+    public static Product Create(int id, string name, decimal price, string description, int categoryId, int createdByUserId) =>
+        new()
         {
             Id = id,
             Name = name,
             Price = price,
+            Description = description,
+            CategoryId = categoryId,
             CreatedAt = DateTime.UtcNow,
             CreatedByUserId = createdByUserId
         };
-    }
 }
 ```
 
-### 2. Domain Error Handling
+### 2. Modern Error Handling
 
 ```csharp
-// Create domain errors
+// Modern error creation with record structs
 var validationError = DomainError.Validation(
     code: "PRODUCT_INVALID_PRICE",
     message: "Product price must be greater than zero",
     target: "price"
 );
 
-var notFoundError = DomainError.NotFound(
-    code: "PRODUCT_NOT_FOUND",
-    message: "Product with ID {id} was not found",
-    target: "id"
-);
-
-// Convert to API response
-var response = validationError.ToApiResponse<ProductDto>();
-```
-
-### 3. Result Pattern Usage
-
-```csharp
-public async Task<Result<Product>> GetProductAsync(int id)
-{
-    var product = await _repository.GetByIdAsync(id);
-    
-    return product is not null 
-        ? Result<Product>.Success(product)
-        : Result<Product>.Failure(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found"));
-}
-
-// Usage with pattern matching
-var result = await GetProductAsync(123);
+// Pattern matching with modern syntax
 var response = result.Match(
     success: product => ApiResponse<Product>.Success(product),
     failure: error => error.ToApiResponse<Product>()
 );
 ```
 
-### 4. Specification Pattern
+### 3. Modern Repository Pattern
 
 ```csharp
+// Modern repository interface
+public interface IProductRepository : IRepository<Product>
+{
+    Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId);
+    Task<bool> ExistsByNameAsync(string name);
+}
+
+// Modern repository implementation
+public class ProductRepository : BaseRepository<Product>, IProductRepository
+{
+    public ProductRepository(DbContext context) : base(context) { }
+    
+    public async Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId) =>
+        await FindAsync(p => p.CategoryId == categoryId);
+    
+    public async Task<bool> ExistsByNameAsync(string name) =>
+        await ExistsAsync(p => p.Name == name);
+}
+```
+
+### 4. Modern Specification Pattern
+
+```csharp
+// Modern specification with primary constructor
 public class ActiveProductsSpecification : BaseSpecification<Product>
 {
     public ActiveProductsSpecification(PaginationDto pagination) : base(p => p.IsActive)
@@ -159,165 +259,181 @@ public class ActiveProductsSpecification : BaseSpecification<Product>
     }
 }
 
-// Usage
-var spec = new ActiveProductsSpecification(new PaginationDto { Page = 1, PageSize = 10 });
+// Usage with modern syntax
+var spec = new ActiveProductsSpecification(new PaginationDto { PageIndex = 1, PageSize = 10 });
 var products = await _repository.FindWithSpecificationAsync(spec);
 ```
 
-### 5. API Response Handling
+### 5. Modern API Response Handling
 
 ```csharp
 [HttpGet("{id}")]
 public async Task<ApiResponse<ProductDto>> GetProduct(int id)
 {
-    var product = await _productService.GetByIdAsync(id);
+    var result = await _productService.GetByIdAsync(id);
     
-    if (product is null)
-    {
-        return ApiResponse<ProductDto>.Failure(
-            DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found")
-        );
-    }
-    
-    return ApiResponse<ProductDto>.Success(product.ToDto());
+    return result.Match(
+        success: product => ApiResponse<ProductDto>.Success(product.ToDto()),
+        failure: error => error.ToApiResponse<ProductDto>()
+    );
 }
 ```
 
-## 🔧 Advanced Usage
+## 🔧 Advanced .NET 9 Features
 
-### Domain Events
+### Modern Domain Events
 
 ```csharp
-public class ProductCreatedEvent : IDomainEvent
+// Modern domain event with record
+public record ProductCreatedEvent(int ProductId, string ProductName, DateTime OccurredOn) : IDomainEvent
 {
-    public int ProductId { get; }
-    public string ProductName { get; }
-    public DateTime OccurredOn { get; }
-    
-    public ProductCreatedEvent(int productId, string productName)
-    {
-        ProductId = productId;
-        ProductName = productName;
-        OccurredOn = DateTime.UtcNow;
-    }
+    public ProductCreatedEvent(int productId, string productName) : this(productId, productName, DateTime.UtcNow) { }
 }
 
-// In your entity
-public void MarkAsCreated()
+// Modern entity with domain events
+public class Product : BaseEntity
 {
-    AddDomainEvent(new ProductCreatedEvent(Id, Name));
+    public void MarkAsCreated() =>
+        AddDomainEvent(new ProductCreatedEvent(Id, Name));
 }
 ```
 
-### Repository Pattern
+### Modern Bulk Operations
 
 ```csharp
-public interface IProductRepository : IRepository<Product, int>
-{
-    Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId);
-    Task<bool> ExistsByNameAsync(string name);
-}
+// High-performance bulk operations
+await repository.BulkInsertAsync(products);
+await repository.BulkUpdateAsync(p => p.CategoryId == 1, p => p.Status, "Active");
+await repository.BulkDeleteAsync(p => p.CreatedAt < DateTime.UtcNow.AddDays(-30));
 
-public class ProductRepository : BaseRepository<Product, int>, IProductRepository
-{
-    public ProductRepository(DbContext context) : base(context) { }
-    
-    public async Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId)
-    {
-        return await FindAsync(p => p.CategoryId == categoryId);
-    }
-    
-    public async Task<bool> ExistsByNameAsync(string name)
-    {
-        return await ExistsAsync(p => p.Name == name);
-    }
-}
+// Modern projections for efficient data transfer
+var summaries = await repository.GetPagedProjectionAsync(
+    pagination,
+    p => new ProductSummary(p.Id, p.Name, p.Price),
+    p => p.IsActive
+);
 ```
 
-### Error Aggregation
+### Modern Async Streaming
 
 ```csharp
-public async Task<Result<Product>> CreateProductAsync(CreateProductRequest request)
+// Memory-efficient processing with async streaming
+await foreach (var product in repository.FindAsyncEnumerable(p => p.IsActive))
 {
-    var errors = new List<DomainError>();
-    
-    if (string.IsNullOrWhiteSpace(request.Name))
-        errors.Add(DomainError.Validation("INVALID_NAME", "Product name is required"));
-    
-    if (request.Price <= 0)
-        errors.Add(DomainError.Validation("INVALID_PRICE", "Price must be greater than zero"));
-    
-    if (await _repository.ExistsByNameAsync(request.Name))
-        errors.Add(DomainError.Conflict("DUPLICATE_NAME", "Product name already exists"));
-    
-    if (errors.Any())
-        return Result<Product>.Failure(errors.GetMostSevereError());
-    
-    var product = Product.Create(request.Name, request.Price, request.CreatedByUserId);
-    await _repository.AddAsync(product);
-    
-    return Result<Product>.Success(product);
+    await ProcessProductAsync(product);
 }
 ```
 
-## 🏗️ Architecture Patterns
+### Modern JSON Handling
+
+```csharp
+// Enterprise-optimized JSON with source generation
+var json = myObject.SerializeModern();
+var obj = jsonString.DeserializeModern<MyType>();
+var clone = myObject.CloneViaJson();
+
+// Modern JSON options for different scenarios
+var options = JsonExtensions.DefaultOptions; // Production
+var prettyOptions = JsonExtensions.PrettyOptions; // Development
+var strictOptions = JsonExtensions.StrictOptions; // APIs
+```
+
+## 🏗️ Modern Architecture Patterns
 
 ### Domain-Driven Design
-- **Entities**: Rich domain objects with identity and lifecycle
-- **Value Objects**: Immutable objects representing concepts
-- **Domain Events**: Decoupled communication between aggregates
-- **Specifications**: Encapsulated business rules for queries
+- **Modern Entities**: Record-based entities with primary constructors
+- **Value Objects**: Immutable objects with modern C# features
+- **Domain Events**: Record-based events with modern patterns
+- **Specifications**: Type-safe query composition with expressions
 
 ### Repository Pattern
-- **Generic Repository**: Type-safe data access with common operations
-- **Specification Pattern**: Flexible query composition
-- **Unit of Work**: Transaction management and consistency
+- **Generic Repository**: Type-safe data access with modern features
+- **Specification Pattern**: Flexible query composition with modern syntax
+- **Unit of Work**: Transaction management with modern patterns
+- **Bulk Operations**: High-performance batch processing with EF Core 9
 
 ### Error Handling
-- **Domain Errors**: Business logic errors with proper categorization
-- **Result Pattern**: Functional error handling without exceptions
-- **API Responses**: Consistent error response format
+- **Domain Errors**: Record struct-based error types with HTTP mapping
+- **Result Pattern**: Functional error handling with modern syntax
+- **API Responses**: Consistent error response format with modern features
+- **Error Aggregation**: Multiple error handling with modern LINQ
 
-## 🔍 Validation Examples
+## 🔍 Modern Validation Examples
 
 ```csharp
-// XML Validation
-if (!DataValidation.IsXml(xmlContent))
+// Modern validation with pattern matching
+var validationResult = input switch
 {
-    return DomainError.Validation("INVALID_XML", "Invalid XML format");
-}
+    { Length: 0 } => DomainError.Validation("EMPTY_INPUT", "Input cannot be empty"),
+    { Length: > 100 } => DomainError.Validation("TOO_LONG", "Input too long"),
+    _ => null
+};
 
-// JSON Validation
+// Modern JSON validation
 if (!DataValidation.IsValidJson(jsonContent))
 {
     return DomainError.Validation("INVALID_JSON", "Invalid JSON format");
 }
-
-// IP Address Validation
-var validIp = DataValidation.ValidateIpAddress("192.168.1.1");
 ```
 
-## 📚 API Documentation
+## 📚 Modern API Documentation
 
 ### Entity Base Classes
-- `Entity<TId>` - Base entity with domain events
-- `AuditableEntity<TId>` - Entity with audit trail and soft delete
-- `BaseEntity` - Convenience base for int-keyed entities
+- `Entity<TId>` - Modern base entity with domain events
+- `BaseEntity` - Modern base for int-keyed entities with audit trail
+- `IAuditableEntity` - Interface for audit trail support
+- `IEntityWithDomainEvents` - Interface for domain event support
 
 ### DTOs
-- `ApiResponse<T>` - Standardized API response format
-- `PaginationDto` - Pagination parameters
-- `ApiError` - Detailed error information
+- `ApiResponse<T>` - Modern API response format with record structs
+- `PaginationDto` - Modern pagination with search and filtering
+- `PagedResult<T>` - Modern paginated results with metadata
+- `ApiError` - Modern error information with record structs
 
 ### Error Handling
-- `DomainError` - Business logic errors
-- `Result<T>` - Functional result pattern
-- `ErrorType` - Categorized error types
+- `DomainError` - Modern business logic errors with HTTP mapping
+- `Result<T>` - Modern functional result pattern with record structs
+- `ErrorType` - Modern error type categorization
+- `ErrorTypeExtensions` - Modern error type utilities
 
 ### Repository
-- `IRepository<TEntity, TId>` - Generic repository interface
-- `ISpecification<T>` - Query specification pattern
-- `PagedResult<T>` - Paginated query results
+- `IRepository<TEntity>` - Modern comprehensive repository interface
+- `ISpecification<T>` - Modern query specification pattern
+- `BaseSpecification<T>` - Modern base class for specifications
+- `PagedResult<T>` - Modern paginated query results
+
+### Modern Features
+- **Collection Expressions**: `[]` syntax for modern collection initialization
+- **Required Properties**: Compile-time null safety with `required` keyword
+- **Record Structs**: High-performance value types for DTOs and results
+- **Primary Constructors**: Concise type definitions with modern syntax
+- **Pattern Matching**: Advanced type-safe operations with modern patterns
+- **Async Streaming**: Memory-efficient data processing with `IAsyncEnumerable<T>`
+- **Source Generation**: JSON serialization with AOT compilation support
+
+## 🆕 What's New in Version 1.3.3
+
+### .NET 9 Modern Features
+- **Primary Constructors**: Concise record and class definitions
+- **Collection Expressions**: Modern `[]` syntax for efficient initialization
+- **Required Properties**: Compile-time null safety with `required` keyword
+- **Record Structs**: High-performance value types for DTOs and results
+- **Pattern Matching**: Advanced `switch` expressions and `is` patterns
+- **Source Generators**: JSON serialization with AOT compilation support
+- **Global Usings**: Clean namespace management with global using directives
+
+### Performance Improvements
+- **Source Generation**: JSON serialization with source generation for AOT
+- **Record Structs**: High-performance value types for DTOs and results
+- **Collection Expressions**: Modern collection initialization with better performance
+- **Async Streaming**: Memory-efficient data processing with `IAsyncEnumerable<T>`
+- **Bulk Operations**: Optimized batch processing with EF Core 9
+
+### Developer Experience
+- **Modern C# Features**: Latest .NET 9+ language capabilities
+- **Type Safety**: Enhanced compile-time safety with modern features
+- **Better Documentation**: Comprehensive examples with modern syntax
+- **Error Handling**: Improved error aggregation with modern patterns
 
 ## 🤝 Contributing
 
@@ -351,4 +467,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the .NET community**
+**Built with ❤️ for the .NET community using the latest .NET 9 features**

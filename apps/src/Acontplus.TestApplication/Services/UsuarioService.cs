@@ -10,7 +10,7 @@ namespace Acontplus.TestApplication.Services
 {
     public class UsuarioService : IUsuarioService
     {
-        private readonly IRepository<Usuario, int> _usuarioRepository;
+        private readonly IRepository<Usuario> _usuarioRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UsuarioService> _logger;
         private readonly IAdoRepository _adoRepository;
@@ -22,7 +22,7 @@ namespace Acontplus.TestApplication.Services
             IAdoRepository adoRepository,
             ISqlExceptionTranslator exceptionTranslator)
         {
-            _usuarioRepository = unitOfWork.GetAuditableRepository<Usuario, int>();
+            _usuarioRepository = unitOfWork.GetRepository<Usuario>();
             _unitOfWork = unitOfWork;
             _logger = logger;
             _adoRepository = adoRepository;
@@ -142,7 +142,7 @@ namespace Acontplus.TestApplication.Services
             }
         }
 
-        public async Task<Result<LegacySpResponse, DomainError>> GetLegacySpResponseAsync()
+        public async Task<Result<SpResponse, DomainError>> GetLegacySpResponseAsync()
         {
             try
             {
@@ -156,7 +156,7 @@ namespace Acontplus.TestApplication.Services
                     ["@Id"] = 123
                 };
 
-                var result = await _adoRepository.QuerySingleOrDefaultAsync<LegacySpResponse>(
+                var result = await _adoRepository.QuerySingleOrDefaultAsync<SpResponse>(
                     "dbo.sp_Test",
                     parameters: parameters,
                     options: options);
@@ -169,7 +169,7 @@ namespace Acontplus.TestApplication.Services
                 }
 
                 return result.IsSuccess
-                    ? Result<LegacySpResponse, DomainError>.Success(result)
+                    ? Result<SpResponse, DomainError>.Success(result)
                     : DomainError.Internal(result.Code, result.Message);
             }
             catch (DbException ex)

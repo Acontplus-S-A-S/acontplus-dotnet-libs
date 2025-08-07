@@ -5,17 +5,17 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Acontplus.FactElect</PackageId>
-		<Version>1.2.5</Version>
+		<Version>1.3.0</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
-		<Description>Comprehensive .NET 9+ library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML, validation, and SRI web service support.</Description>
-		<PackageTags>dotnet9;facturacion;sri;ecuador;electronic-invoicing;xml;validation;token;captcha;integration</PackageTags>
+		<Description>Complete library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML validation, SRI web service support, and embedded XSD schemas for compliance.</Description>
+		<PackageTags>dotnet9;facturacion;sri;ecuador;electronic-invoicing;xml;validation;token;captcha;integration;compliance;xsd-schemas</PackageTags>
 		<RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageReleaseNotes>Updated for .NET 9+ with async/await, SRI integration, and enhanced documentation.</PackageReleaseNotes>
+		<PackageReleaseNotes>Enhanced with cutting-edge C# features, comprehensive SRI integration, embedded XSD schemas, XML validation, token management, and enterprise-grade electronic invoicing capabilities for Ecuadorian compliance.</PackageReleaseNotes>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
@@ -36,15 +36,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- Icono del paquete -->
 		<None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
-
-		<!-- Logo genérico como recurso embebido -->
 		<EmbeddedResource Include="Resources\Images\logo-generic.png">
 			<LogicalName>Common.FactElect.Resources.Images.logo-generic.png</LogicalName>
 		</EmbeddedResource>
-
-		<!-- Esquemas XSD como recursos embebidos -->
 		<EmbeddedResource Include="Resources\Schemas\comprobanteRetencion_V1.0.0.xsd" />
 		<EmbeddedResource Include="Resources\Schemas\comprobanteRetencion_V2.0.0.xsd" />
 		<EmbeddedResource Include="Resources\Schemas\factura_V1.0.0.xsd" />

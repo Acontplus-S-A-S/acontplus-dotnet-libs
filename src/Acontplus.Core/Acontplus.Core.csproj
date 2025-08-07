@@ -5,17 +5,17 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Core</PackageId>
-    <Version>1.3.2</Version>
+    <Version>1.4.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Modern .NET 9+ foundational components for enterprise applications. Includes domain-driven design patterns, comprehensive error handling, specification pattern, and modern C# features.</Description>
-    <PackageTags>dotnet9;domain-driven-design;ddd;enterprise;abstractions;entities;dtos;enums;models;validations;specification-pattern;error-handling</PackageTags>
+    <Description>Advanced foundational library with cutting-edge C# features. Includes domain-driven design patterns, comprehensive error handling with HTTP mapping, specification pattern, functional result types, JSON utilities, validation helpers, and enterprise-ready abstractions. Built with collection expressions, required properties, record structs, and source generation for optimal performance.</Description>
+    <PackageTags>dotnet9;domain-driven-design;ddd;enterprise;abstractions;entities;dtos;enums;models;validations;specification-pattern;error-handling;functional-programming;result-pattern;json-utilities;validation-helpers;repository-pattern;unit-of-work;pagination;api-responses;domain-events;audit-trail;http-mapping;modern-csharp;collection-expressions;required-properties;record-structs;source-generation;aot-compatible</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Updated for .NET 9+ with modern C# features, improved error handling, and enhanced documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with cutting-edge C# features: collection expressions, required properties, record structs, and source generation. Improved error handling with comprehensive HTTP status code mapping, functional result patterns, and domain event system. Added advanced pagination with search and filtering, powerful JSON utilities with multiple serialization options, XML validation helpers, and enterprise-ready abstractions for repository pattern and specification queries. Optimized for AOT compilation and contemporary C# development patterns.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
@@ -23,11 +23,11 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>

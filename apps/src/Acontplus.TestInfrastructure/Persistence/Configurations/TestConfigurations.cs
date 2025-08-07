@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.TestInfrastructure.Persistence.Configurations;
 
-public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUsage, int>
+public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUsage>
 {
     public override void Configure(EntityTypeBuilder<WhatsAppUsage> builder)
     {

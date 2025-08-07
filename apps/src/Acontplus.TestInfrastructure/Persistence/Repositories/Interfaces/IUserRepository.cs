@@ -1,6 +1,6 @@
 ﻿namespace Acontplus.TestInfrastructure.Persistence.Repositories.Interfaces;
 
-public interface IUserRepository : IRepository<Usuario, int>
+public interface IUserRepository : IRepository<Usuario>
 {
     Task<PagedResult<Usuario>> GetPaginatedUsersAsync(PaginationDto pagination);
 }

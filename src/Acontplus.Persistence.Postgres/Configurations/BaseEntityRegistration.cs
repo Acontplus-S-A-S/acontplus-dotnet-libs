@@ -1,9 +1,8 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace Acontplus.Persistence.SqlServer.Configurations;
+namespace Acontplus.Persistence.Postgres.Configurations;
 
-public static class AuditableEntityRegistration
+public static class BaseEntityRegistration
 {
     /// <summary>
     /// Gets the primary key type for an entity that inherits from AuditableEntity<TKey>
@@ -15,7 +14,7 @@ public static class AuditableEntityRegistration
         while (currentType != null)
         {
             if (currentType.IsGenericType &&
-                currentType.GetGenericTypeDefinition() == typeof(AuditableEntity<>))
+                currentType.GetGenericTypeDefinition() == typeof(BaseEntity))
             {
                 return currentType.GetGenericArguments()[0]; // Return TKey
             }
@@ -41,7 +40,7 @@ public static class AuditableEntityRegistration
             // Check if entity inherits from AuditableEntity<>
             var isValidEntity = entityType.IsClass &&
                                !entityType.IsAbstract &&
-                               IsAssignableToGenericType(entityType, typeof(AuditableEntity<>));
+                               IsAssignableToGenericType(entityType, typeof(BaseEntity));
             if (!isValidEntity)
             {
                 Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
@@ -119,7 +118,7 @@ public static class AuditableEntityRegistration
             try
             {
                 var keyType = GetPrimaryKeyType(entityType);
-                var baseConfigurationType = typeof(BaseEntityTypeConfiguration<,>).MakeGenericType(entityType, keyType);
+                var baseConfigurationType = typeof(BaseEntityTypeConfiguration<>).MakeGenericType(entityType, keyType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
                 modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
             }

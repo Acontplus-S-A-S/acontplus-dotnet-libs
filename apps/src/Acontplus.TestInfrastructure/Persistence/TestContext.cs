@@ -16,7 +16,7 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
 
         // 1. Register entities with default conventions and BaseEntityTypeConfiguration
         // Usuario will be mapped to table "Usuarios" (from DbSet name)
-        AuditableEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
+        BaseEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
         SimpleEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Dia));
 
         // 2. Register entities with explicit schema/table names (overrides [Table] attribute)

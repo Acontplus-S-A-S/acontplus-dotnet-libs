@@ -10,17 +10,12 @@
             Supports hierarchical, environment-based, and secure connection string resolution.
             </summary>
         </member>
-        <member name="T:Acontplus.Persistence.Common.Repositories.AuditableBaseRepository`2">
-            <summary>
-            Repository for auditable entities, adds audit-specific methods.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Persistence.Common.Repositories.BaseRepository`2">
+        <member name="T:Acontplus.Persistence.Common.Repositories.BaseRepository`1">
             <summary>
             A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
             </summary>
             TEntity: The type of the entity.
-            TId: The type of the entity's primary key, must be not null.
+            int: The type of the entity's primary key, must be not null.
         </member>
         <member name="M:SqlExceptionExtensions.ToDomainErrors(System.Collections.Generic.IEnumerable{Acontplus.Persistence.Common.Exceptions.SqlDomainException},System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
             <summary>

@@ -32,7 +32,6 @@ public record ApiResponse<T>
     [JsonIgnore]
     public HttpStatusCode StatusCode { get; }
 
-    // Changed to protected internal to allow inheritance
     protected internal ApiResponse(
         ResponseStatus status,
         string code,

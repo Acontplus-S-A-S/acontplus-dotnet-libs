@@ -1,17 +1,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
-public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
-    where TEntity : AuditableEntity<TId>
-    where TId : struct
+public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+    where TEntity : BaseEntity
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         ConfigurePrimaryKey(builder);
         ConfigureTimestamps(builder);
-        ConfigureUserAuditFields(builder);
         ConfigureStatusFields(builder);
         ConfigureExternalUserTracking(builder);
         ConfigureSoftDeleteAndIndexes(builder);
@@ -40,30 +37,6 @@ public class BaseEntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguratio
             .HasColumnType("datetime2")
             .HasPrecision(7)
             .IsRequired(false);
-    }
-
-    protected virtual void ConfigureUserAuditFields(EntityTypeBuilder<TEntity> builder)
-    {
-        var defaultValue = default(TId);
-
-        var converter = new ValueConverter<TId?, TId>(
-            v => v ?? defaultValue,
-            v => v.Equals(defaultValue) ? null : v);
-
-        builder.Property(x => x.CreatedByUserId)
-            .HasDefaultValue(defaultValue)
-            .IsRequired()
-            .HasConversion(converter);
-
-        builder.Property(x => x.UpdatedByUserId)
-            .HasDefaultValue(defaultValue)
-            .IsRequired()
-            .HasConversion(converter);
-
-        builder.Property(x => x.DeletedByUserId)
-            .HasDefaultValue(defaultValue)
-            .IsRequired()
-            .HasConversion(converter);
     }
 
     protected virtual void ConfigureStatusFields(EntityTypeBuilder<TEntity> builder)

@@ -54,8 +54,6 @@ public static class DataValidation
 
     public static string RemoveSpecialCharacters(string text)
     {
-        // Regular expression to match non-alphanumeric characters
-        //Regex regex = new Regex("[^a-zA-Z0-9]");
         return Regex.Replace(text, "[^0-9A-Za-z _-]", "");
     }
 
@@ -95,9 +93,6 @@ public static class DataValidation
                 }
             default:
                 return ipAddress ?? "0.0.0.0";
-                // Extract the relevant part of the IP address if necessary
-
-                // Check if the extracted part is a valid IP address
         }
     }
 }

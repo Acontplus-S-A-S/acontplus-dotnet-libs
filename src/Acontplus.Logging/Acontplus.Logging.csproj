@@ -6,16 +6,23 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Logging</PackageId>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Library to trace logs with local, s3 and database</Description>
-    <PackageTags>logs;serilog;aws-s3-logs;database-logs;trace-logs</PackageTags>
+    <Description>Advanced logging library with Serilog integration. Supports structured logging, multiple sinks (console, file, database, AWS S3), custom enrichers, and enterprise-grade logging patterns for cloud-native applications.</Description>
+    <PackageTags>dotnet9;logging;serilog;structured-logging;aws-s3;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Enhanced with structured logging, multiple sink support (console, file, database, AWS S3), custom enrichers, and enterprise-grade logging patterns. Improved configuration options and cloud-native observability features.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,7 +51,7 @@
       <Pack>True</Pack>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
