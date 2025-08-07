@@ -3,22 +3,23 @@
 
 // Assuming DiagnosticConfig is here
 
+using System.Security.Cryptography;
+
 namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
 /// A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
 /// </summary>
 /// TEntity: The type of the entity.
-/// TId: The type of the entity's primary key, must be not null.
-public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
-    where TEntity : Entity<TId>
-    where TId : notnull
+/// int: The type of the entity's primary key, must be not null.
+public class BaseRepository<TEntity> : IRepository<TEntity>
+    where TEntity : BaseEntity
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly ILogger<BaseRepository<TEntity, TId>> _logger;
+    protected readonly ILogger<BaseRepository<TEntity>> _logger;
 
-    public BaseRepository(DbContext context, ILogger<BaseRepository<TEntity, TId>> logger = null)
+    public BaseRepository(DbContext context, ILogger<BaseRepository<TEntity>> logger = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _dbSet = context.Set<TEntity>();
@@ -27,7 +28,7 @@ public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
 
     #region Query Methods
 
-    public virtual async Task<TEntity> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetByIdAsync)}");
         try
@@ -400,7 +401,7 @@ public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
         }
     }
 
-    public virtual async Task<bool> DeleteByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteByIdAsync)}");
         try
@@ -824,4 +825,46 @@ public class BaseRepository<TEntity, TId> : IRepository<TEntity, TId>
     }
 
     #endregion
+
+    public virtual async Task SoftDeleteAsync(TEntity entity, int? deletedByUserId = default, CancellationToken cancellationToken = default)
+    {
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(SoftDeleteAsync)}");
+        try
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            entity.IsDeleted = true;
+            entity.DeletedAt = DateTime.UtcNow;
+            entity.DeletedByUserId = deletedByUserId;
+            entity.IsActive = false;
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error soft deleting entity of type {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error soft deleting entity", ex);
+        }
+    }
+
+    public virtual async Task RestoreAsync(TEntity entity, int? restoredByUserId = default, CancellationToken cancellationToken = default)
+    {
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(RestoreAsync)}");
+        try
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            entity.IsDeleted = false;
+            entity.DeletedAt = null;
+            entity.DeletedByUserId = default;
+            entity.IsActive = true;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedByUserId = restoredByUserId;
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error restoring entity of type {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error restoring entity", ex);
+        }
+    }
 }
