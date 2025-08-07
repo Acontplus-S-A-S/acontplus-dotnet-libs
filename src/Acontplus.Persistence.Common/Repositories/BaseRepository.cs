@@ -3,8 +3,6 @@
 
 // Assuming DiagnosticConfig is here
 
-using System.Security.Cryptography;
-
 namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
