@@ -1,11 +1,5 @@
 ﻿namespace Acontplus.Core.Domain.Common.Results;
 
-/// <summary>
-/// Represents a result of an operation that can either succeed or fail.
-/// Modern .NET 9+ pattern for functional error handling.
-/// </summary>
-/// <typeparam name="TValue">The type of the success value.</typeparam>
-/// <typeparam name="TError">The type of the error.</typeparam>
 public readonly record struct Result<TValue, TError>
 {
     private readonly TValue? _value;
@@ -127,10 +121,6 @@ public readonly record struct Result<TValue, TError>
     public static implicit operator Result<TValue, TError>(TError error) => Failure(error);
 }
 
-/// <summary>
-/// Represents a result of an operation that can either succeed or fail with a standard error type.
-/// </summary>
-/// <typeparam name="TValue">The type of the success value.</typeparam>
 public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
 {
     private readonly TValue? _value;

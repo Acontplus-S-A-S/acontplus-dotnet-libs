@@ -4,23 +4,6 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
-        <member name="T:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2">
-            <summary>
-            Defines generic data access operations for auditable entities.
-            </summary>
-            TEntity: The type of the entity.
-            TId: The type of the entity's primary key must be not null.
-        </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2.SoftDeleteAsync(`0,`1,System.Threading.CancellationToken)">
-            <summary>
-            Soft deletes an entity (sets IsDeleted, DeletedAt, etc.).
-            </summary>
-        </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAuditableRepository`2.RestoreAsync(`0,`1,System.Threading.CancellationToken)">
-            <summary>
-            Restores a soft-deleted entity.
-            </summary>
-        </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.IConnectionStringProvider">
             <summary>
             Provides a way to resolve connection strings by name or key.
@@ -32,166 +15,176 @@
             Gets a connection string by logical name or key.
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Abstractions.Persistence.IRepository`2">
+        <member name="T:Acontplus.Core.Abstractions.Persistence.IRepository`1">
             <summary>
             Defines generic data access operations for entities.
             </summary>
             TEntity: The type of the entity.
-            TId: The type of the entity's primary key must be not null.
+            int: The type of the entity's primary key must be not null.
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetByIdAsync(`1,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetByIdAsync(System.Int32,System.Threading.CancellationToken)">
             <summary>
             Retrieves an entity by its primary key.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetFirstOrDefaultAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetFirstOrDefaultAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Gets the first entity matching a predicate, with optional includes.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetAllAsync(System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetAllAsync(System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Retrieves all entities, with optional includes.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.FindAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.FindAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Finds entities matching a predicate, with optional includes.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.FindAsyncEnumerable(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.FindAsyncEnumerable(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Gets entities as an IAsyncEnumerable for memory-efficient streaming.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetPagedAsync(Acontplus.Core.DTOs.Requests.PaginationDto,System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetPagedAsync(Acontplus.Core.DTOs.Requests.PaginationDto,System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
             <summary>
             Gets a paged result of all entities with optional sorting.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetPagedAsync(Acontplus.Core.DTOs.Requests.PaginationDto,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetPagedAsync(Acontplus.Core.DTOs.Requests.PaginationDto,System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Gets a paged result of filtered entities, with optional includes and sorting.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetPagedProjectionAsync``1(Acontplus.Core.DTOs.Requests.PaginationDto,System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetPagedProjectionAsync``1(Acontplus.Core.DTOs.Requests.PaginationDto,System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean)">
             <summary>
             Gets a projected paged result for efficient data transfer.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.ExistsAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExistsAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Checks if any entity matches the predicate.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.CountAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.CountAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Counts entities matching the predicate.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.LongCountAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.LongCountAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Counts entities matching the predicate as a long for large datasets.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.AddAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.AddAsync(`0,System.Threading.CancellationToken)">
             <summary>
             Adds a new entity. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.AddRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.AddRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Adds multiple entities efficiently. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.UpdateAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.UpdateAsync(`0,System.Threading.CancellationToken)">
             <summary>
             Marks an entity for update. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.UpdateRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.UpdateRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Marks multiple entities for update. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.UpdatePropertiesAsync(`0,System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.UpdatePropertiesAsync(`0,System.Threading.CancellationToken,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Updates specific properties of an entity. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.DeleteAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.DeleteAsync(`0,System.Threading.CancellationToken)">
             <summary>
             Marks an entity for deletion. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.DeleteByIdAsync(`1,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.DeleteByIdAsync(System.Int32,System.Threading.CancellationToken)">
             <summary>
             Marks an entity for deletion by ID. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.DeleteRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.DeleteRangeAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Marks multiple entities for deletion. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.DeleteAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.DeleteAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Marks entities matching a predicate for deletion. Persisted by UnitOfWork.SaveChangesAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.BulkDeleteAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.BulkDeleteAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Performs a bulk delete directly in the database using ExecuteDeleteAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.BulkUpdateAsync``1(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{`0,``0}},``0,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.BulkUpdateAsync``1(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{`0,``0}},``0,System.Threading.CancellationToken)">
             <summary>
             Performs a bulk update directly in the database using ExecuteUpdateAsync.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.BulkInsertAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.BulkInsertAsync(System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Performs a bulk insert operation for better performance with large datasets.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.FindWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.FindWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
             <summary>
             Finds entities using a specification.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetFirstOrDefaultWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetFirstOrDefaultWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
             <summary>
             Gets the first entity using a specification.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetPagedWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetPagedWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
             <summary>
             Gets a paged result of entities using a specification.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.FindProjectionWithSpecificationAsync``1(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.FindProjectionWithSpecificationAsync``1(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Threading.CancellationToken)">
             <summary>
             Gets a projected result using a specification for efficient data transfer.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.CountWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.CountWithSpecificationAsync(Acontplus.Core.Abstractions.Persistence.ISpecification{`0},System.Threading.CancellationToken)">
             <summary>
             Counts entities using a specification.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetOrderedAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.ValueTuple{System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean}[])">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetOrderedAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken,System.ValueTuple{System.Linq.Expressions.Expression{System.Func{`0,System.Object}},System.Boolean}[])">
             <summary>
             Gets entities with complex ordering options.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.AggregateAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.AggregateAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Performs aggregation operations on entities.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`2.GetDistinctAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetDistinctAsync``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Threading.CancellationToken)">
             <summary>
             Gets distinct values for a specific property.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.SoftDeleteAsync(`0,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Soft deletes an entity (sets IsDeleted, DeletedAt, etc.).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.RestoreAsync(`0,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Restores a soft-deleted entity.
             </summary>
         </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.BaseSpecification`1">
@@ -206,70 +199,70 @@
             Applies pagination using the entire DTO, which also enables paging.
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1">
+        <member name="T:Acontplus.Core.Domain.Common.Entities.BaseEntity">
             <summary>
             Base auditable entity with modern .NET 9+ features and improved audit patterns.
             </summary>
-            <typeparam name="TId">The type of the entity's primary key.</typeparam>
+            <typeparam name="int">The type of the entity's primary key.</typeparam>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.CreatedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.CreatedByUserId">
             <summary>
             The local user ID (foreign key) who created the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdatedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.UpdatedByUserId">
             <summary>
             The local user ID (foreign key) who last updated the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.DeletedByUserId">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.DeletedByUserId">
             <summary>
             The local user ID (foreign key) who deleted the entity, if available.
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.CreatedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.CreatedBy">
             <summary>
             The username, email, or external identifier of the creator (for cross-system or external users).
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdatedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.UpdatedBy">
             <summary>
             The username, email, or external identifier of the last updater (for cross-system or external users).
             </summary>
         </member>
-        <member name="P:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.DeletedBy">
+        <member name="P:Acontplus.Core.Domain.Common.Entities.BaseEntity.DeletedBy">
             <summary>
             The username, email, or external identifier of the deleter (for cross-system or external users).
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.MarkAsDeleted(`0)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.MarkAsDeleted(System.Nullable{System.Int32})">
             <summary>
             Marks the entity as deleted with audit information.
             </summary>
             <param name="deletedByUserId">The user ID who deleted the entity.</param>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.RestoreFromDeleted">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.RestoreFromDeleted">
             <summary>
             Restores the entity from deleted state.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Deactivate">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.Deactivate">
             <summary>
             Deactivates the entity.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Activate">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.Activate">
             <summary>
             Activates the entity.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.UpdateAuditFields(`0)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.UpdateAuditFields(System.Nullable{System.Int32})">
             <summary>
             Updates audit fields when the entity is modified.
             </summary>
             <param name="updatedByUserId">The user ID who updated the entity.</param>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Entities.AuditableEntity`1.Create``1(`0,`0,System.Boolean)">
+        <member name="M:Acontplus.Core.Domain.Common.Entities.BaseEntity.Create``1(System.Int32,System.Int32,System.Boolean)">
             <summary>
             Creates a new auditable entity with the specified ID and creator.
             </summary>

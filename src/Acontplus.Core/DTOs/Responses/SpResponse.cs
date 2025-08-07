@@ -1,87 +1,72 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Data;
 
 namespace Acontplus.Core.DTOs.Responses;
 
-/// <summary>
-/// Legacy response with dynamic payload. Prefer the generic version for type safety.
-/// </summary>
-public record LegacySpResponse
+public record SpResponse<T>
 {
-    public string Code { get; set; }
-    public string? Message { get; set; }
-    public dynamic? Payload { get; set; }
+    public T? Data { get; init; }
+    public DataTable? DataTable { get; init; }
+    public DataSet? DataSet { get; init; }
+    public int RowsAffected { get; init; }
+    public bool HasData { get; init; }
+    public string? Message { get; init; }
+    public bool IsSuccess { get; init; }
 
-    [JsonIgnore]
-    public bool IsSuccess => Code == "0";
-
-    public LegacySpResponse() { }
-
-    public LegacySpResponse(string code, string? message = null, dynamic? payload = null)
+    public static SpResponse<T> Success(T data, int rowsAffected = 0, string? message = null)
     {
-        Code = code;
-        Message = message;
-        Payload = payload;
+        return new SpResponse<T>
+        {
+            Data = data,
+            RowsAffected = rowsAffected,
+            HasData = data is not null,
+            Message = message ?? "Operation completed successfully.",
+            IsSuccess = true
+        };
     }
 
-    /// <summary>
-    /// Creates a success response with code "0" and optional payload/message.
-    /// </summary>
-    public static LegacySpResponse Success(dynamic? payload = null, string message = "Operation successful")
-        => new("0", message, payload);
-
-    public static LegacySpResponse Error(string code, string message)
-        => new(code, message);
-}
-
-/// <summary>
-/// Legacy response with strongly-typed payload. Prefer this for type safety.
-/// </summary>
-public record LegacySpResponse<T> : LegacySpResponse
-{
-    public new T? Payload { get; set; }
-
-    public LegacySpResponse() { }
-
-    public LegacySpResponse(string code, string? message = null, T? payload = default)
-        : base(code, message, payload)
+    public static SpResponse<T> Success(DataTable dataTable, int rowsAffected = 0, string? message = null)
     {
-        Payload = payload;
+        return new SpResponse<T>
+        {
+            DataTable = dataTable,
+            RowsAffected = rowsAffected,
+            HasData = dataTable?.Rows.Count > 0,
+            Message = message ?? "Operation completed successfully.",
+            IsSuccess = true
+        };
     }
 
-    /// <summary>
-    /// Creates a success response with code "0" and strongly-typed payload.
-    /// </summary>
-    public static LegacySpResponse<T> Success(T? payload = default, string message = "Operation successful")
-        => new("0", message, payload);
-
-    public static new LegacySpResponse<T> Error(string code, string message)
-        => new(code, message);
-}
-
-/// <summary>
-/// Modern response with dynamic content. Prefer SimpleResponse<T> for type safety.
-/// </summary>
-public record SpResponse(
-    string Code,
-    string? Message = null,
-    dynamic? Content = null
-)
-{
-    [JsonIgnore]
-    public bool IsSuccess => Code == "0";
-
-    /// <summary>
-    /// Attempts to deserialize Content to the specified type. Handles both string and object cases.
-    /// </summary>
-    public T? GetContent<T>()
+    public static SpResponse<T> Success(DataSet dataSet, int rowsAffected = 0, string? message = null)
     {
-        if (Content is null)
-            return default;
-        if (Content is T t)
-            return t;
-        if (Content is string s)
-            return JsonSerializer.Deserialize<T>(s);
-        return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(Content));
+        return new SpResponse<T>
+        {
+            DataSet = dataSet,
+            RowsAffected = rowsAffected,
+            HasData = dataSet?.Tables.Count > 0,
+            Message = message ?? "Operation completed successfully.",
+            IsSuccess = true
+        };
+    }
+
+    public static SpResponse<T> Failure(string message, int rowsAffected = 0)
+    {
+        return new SpResponse<T>
+        {
+            RowsAffected = rowsAffected,
+            HasData = false,
+            Message = message,
+            IsSuccess = false
+        };
+    }
+
+    public static SpResponse<T> Failure(Exception exception, int rowsAffected = 0)
+    {
+        return new SpResponse<T>
+        {
+            RowsAffected = rowsAffected,
+            HasData = false,
+            Message = exception.Message,
+            IsSuccess = false
+        };
     }
 }

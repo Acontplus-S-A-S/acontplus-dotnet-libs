@@ -2,8 +2,6 @@
 
 namespace Acontplus.Core.Abstractions.Persistence;
 
-// The core ISpecification interface remains unchanged.
-// Its contract is already aligned, as it holds a PaginationDto.
 public interface ISpecification<T>
 {
     Expression<Func<T, bool>> Criteria { get; }
@@ -15,14 +13,8 @@ public interface ISpecification<T>
     bool IsTrackingEnabled { get; }
 }
 
-/// <summary>
-/// An updated base class for creating specifications.
-/// It's designed to be extended by concrete specifications that can interpret a PaginationDto.
-/// </summary>
-/// <typeparam name="T">The type of the entity this specification is for.</typeparam>
 public abstract class BaseSpecification<T> : ISpecification<T>
 {
-    // Criteria is now settable by the derived class, allowing it to be built dynamically.
     public Expression<Func<T, bool>> Criteria { get; protected set; } = null!;
 
     public IReadOnlyList<Expression<Func<T, object>>> Includes => _includes.AsReadOnly();
@@ -56,9 +48,6 @@ public abstract class BaseSpecification<T> : ISpecification<T>
         _orderByExpressions.Add(new OrderByExpression<T>(orderByExpression, isDescending));
     }
 
-    /// <summary>
-    /// Applies pagination using the entire DTO, which also enables paging.
-    /// </summary>
     protected virtual void ApplyPaging(PaginationDto pagination)
     {
         Pagination = pagination;
@@ -71,7 +60,6 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     }
 }
 
-// OrderByExpression remains the same as it's the target for translation
 public class OrderByExpression<T>
 {
     public Expression<Func<T, object>> Expression { get; }
