@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Acontplus.Core.Domain.Common.Entities;
 
-public abstract class BaseEntity: Entity<int>, IAuditableEntity
+public abstract class BaseEntity : Entity<int>, IAuditableEntity
 {
     public DateTime CreatedAt { get; set; }
     public int? CreatedByUserId { get; set; }
