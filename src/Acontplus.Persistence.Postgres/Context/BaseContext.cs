@@ -75,7 +75,7 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
         {
             var auditable = (IAuditableEntity)entry.Entity;
             // Use reflection or pattern matching to set audit fields if needed
-            // (Assume AuditableEntity<TId> for full audit support)
+            // (Assume AuditableBaseEntity for full audit support)
             if (entry.State == EntityState.Added)
             {
                 var createdAtProp = entry.Entity.GetType().GetProperty("CreatedAt");

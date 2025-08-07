@@ -4,17 +4,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.SqlServer</PackageId>
-    <Version>1.4.3</Version>
+    <Version>1.5.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Modern .NET 9+ library for SQL Server persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling.</Description>
-    <PackageTags>dotnet9;database;ado-net;data-access;sql;orm;micro-orm;query;crud;efcore;repository</PackageTags>
+    <Description>Advanced library for SQL Server persistence with Entity Framework Core integration. Includes repositories, context management, ADO.NET support, advanced error handling, and enterprise-ready data access patterns for SQL Server databases.</Description>
+    <PackageTags>dotnet9;database;ado-net;data-access;sql-server;orm;micro-orm;query;crud;efcore;repository;entity-framework;sql;microsoft-sql</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Updated for .NET 9+ with async/await, repository pattern, and enhanced documentation.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with contemporary repository patterns, Entity Framework Core integration, ADO.NET support, advanced error handling, connection resilience with Polly, and enterprise-ready SQL Server data access patterns.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

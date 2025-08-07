@@ -5,17 +5,17 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Notifications</PackageId>
-    <Version>1.2.6</Version>
+    <Version>1.3.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Modern .NET 9+ library for notifications: email, MailKit, Amazon SES, WhatsApp, and push. Includes templates, queueing, and advanced delivery options.</Description>
-    <PackageTags>dotnet9;notifications;mailkit;email;whatsapp;push;ses;templates;queue</PackageTags>
+    <Description>Comprehensive library for notification services. Includes email (MailKit, Amazon SES), WhatsApp, push notifications, templating with Scriban, queue management, and enterprise-ready delivery patterns for cloud-native applications.</Description>
+    <PackageTags>dotnet9;notifications;mailkit;email;whatsapp;push;ses;templates;queue;scriban;amazon-ses;enterprise;cloud-native</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Updated for .NET 9+ with async/await, MailKit/SES/WhatsApp support, and enhanced documentation.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with contemporary notification patterns, MailKit integration, Amazon SES support, WhatsApp messaging, push notifications, Scriban templating, queue management, and enterprise-ready delivery systems for cloud-native applications.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

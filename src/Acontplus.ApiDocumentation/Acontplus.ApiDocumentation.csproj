@@ -8,14 +8,14 @@
     <Version>1.0.4</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Modern .NET 9+ library for standardized API versioning and OpenAPI/Swagger documentation. Supports both controller-based and minimal APIs, with advanced customization and versioning support.</Description>
-    <PackageTags>dotnet9;openapi;swagger;api-versioning;documentation;minimal-api;aspnetcore;enterprise</PackageTags>
+    <Description>Advanced library for comprehensive API documentation and versioning. Includes OpenAPI/Swagger integration, API versioning support for both controller-based and minimal APIs, advanced customization options, and enterprise-ready documentation patterns for ASP.NET Core applications.</Description>
+    <PackageTags>dotnet9;openapi;swagger;api-versioning;documentation;minimal-api;aspnetcore;enterprise;api-docs;versioning</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Updated for .NET 9+ with modern C# features, improved documentation, and enhanced OpenAPI/Swagger support.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with contemporary API documentation patterns, comprehensive OpenAPI/Swagger integration, advanced API versioning support for controller-based and minimal APIs, and enterprise-ready documentation solutions for ASP.NET Core applications.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

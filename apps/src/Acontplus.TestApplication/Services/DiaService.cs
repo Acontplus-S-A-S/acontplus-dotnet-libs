@@ -1,4 +1,4 @@
-﻿using Acontplus.Core.Domain.Common.Results;
+using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Utilities.Mapping;
 using Microsoft.Extensions.Logging;
 
@@ -8,13 +8,13 @@ namespace Acontplus.TestApplication.Services
     {
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Dia, int> _diaRepository;
+        private readonly IRepository<Dia> _diaRepository;
 
         public DiaService(IUnitOfWork unitOfWork, ILogger<DiaService> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
-            _diaRepository = _unitOfWork.GetRepository<Dia, int>();
+            _diaRepository = _unitOfWork.GetRepository<Dia>();
         }
 
         public async Task<Result<Dia, DomainError>> CreateAsync(CreateDiaDto createDiaDto)

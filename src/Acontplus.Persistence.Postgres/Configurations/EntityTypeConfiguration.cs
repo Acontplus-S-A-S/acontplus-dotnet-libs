@@ -3,9 +3,9 @@ namespace Acontplus.Persistence.Postgres.Configurations;
 /// <summary>
 /// Base configuration for non-auditable entities.
 /// </summary>
-public class EntityTypeConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
-    where TEntity : Entity<TId>
-    where TId : notnull
+public class EntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
+    where TEntity : BaseEntity
+
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {

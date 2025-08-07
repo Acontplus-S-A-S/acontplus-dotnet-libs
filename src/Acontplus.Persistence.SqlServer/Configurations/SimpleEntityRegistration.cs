@@ -119,7 +119,7 @@ public static class SimpleEntityRegistration
             try
             {
                 var keyType = GetPrimaryKeyType(entityType);
-                var baseConfigurationType = typeof(EntityTypeConfiguration<,>).MakeGenericType(entityType, keyType);
+                var baseConfigurationType = typeof(EntityTypeConfiguration<>).MakeGenericType(entityType, keyType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
                 modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
             }

@@ -1,6 +1,6 @@
-﻿namespace Acontplus.TestDomain.Entities;
+namespace Acontplus.TestDomain.Entities;
 
-public class Dia : Entity<int>
+public class Dia : BaseEntity
 {
     public required string Name { get; set; }
     public string? Description { get; set; }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Acontplus.TestInfrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TestContext))]
-    [Migration("20250806000220_TestDefaultValues")]
-    partial class TestDefaultValues
+    [Migration("20250807222016_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,10 +47,8 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("CreatedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasPrecision(7)
@@ -61,10 +59,8 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("DeletedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("DeletedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -108,10 +104,8 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("UpdatedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Used")
                         .ValueGeneratedOnAdd()
@@ -150,14 +144,56 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("DeletedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMobileRequest")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -173,23 +209,17 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasPrecision(7)
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(100)
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("CreatedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -197,10 +227,8 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("DeletedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("DeletedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -209,22 +237,15 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsMobileRequest")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasPrecision(7)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
@@ -232,10 +253,8 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int>("UpdatedByUserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -244,21 +263,6 @@ namespace Acontplus.TestInfrastructure.Persistence.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_Usuario_CreatedAt");
-
-                    b.HasIndex("CreatedByUserId")
-                        .HasDatabaseName("IX_Usuario_CreatedByUserId");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_Usuario_IsActive");
-
-                    b.HasIndex("IsDeleted")
-                        .HasDatabaseName("IX_Usuario_IsDeleted");
-
-                    b.HasIndex("IsActive", "IsDeleted")
-                        .HasDatabaseName("IX_Usuario_Status");
 
                     b.ToTable("Usuarios");
                 });
