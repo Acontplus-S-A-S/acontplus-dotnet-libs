@@ -1,14 +1,14 @@
-using Acontplus.Core.Domain.Common.Entities;
 using System.Linq.Expressions;
 
 namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class
 {
     #region Query Methods
 
     Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
 
     Task<TEntity> GetFirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -20,6 +20,16 @@ public interface IRepository<TEntity>
         params Expression<Func<TEntity, object>>[] includeProperties);
 
     Task<IReadOnlyList<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
+    Task<TEntity?> FindSingleOrDefaultAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
+    Task<TEntity> FindSingleAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
         params Expression<Func<TEntity, object>>[] includeProperties);
@@ -46,9 +56,9 @@ public interface IRepository<TEntity>
         PaginationDto pagination,
         Expression<Func<TEntity, TProjection>> projection,
         Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
-        bool orderByDescending = false);
+        bool orderByDescending = false,
+        CancellationToken cancellationToken = default);
 
     Task<bool> ExistsAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -59,6 +69,31 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default);
 
     Task<long> LongCountAsync(
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<TEntity>> GetByIdsAsync(
+        IEnumerable<int> ids,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
+    Task<TProperty?> GetMaxAsync<TProperty>(
+        Expression<Func<TEntity, TProperty>> selector,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+
+    Task<TProperty?> GetMinAsync<TProperty>(
+        Expression<Func<TEntity, TProperty>> selector,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+
+    Task<decimal> GetSumAsync(
+        Expression<Func<TEntity, decimal>> selector,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default);
+
+    Task<double> GetAverageAsync(
+        Expression<Func<TEntity, decimal>> selector,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
@@ -101,6 +136,11 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default);
 
     Task<int> BulkInsertAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+
+    Task<int> BulkUpdateAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TEntity>> updateExpression,
+        CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -146,11 +186,30 @@ public interface IRepository<TEntity>
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<TProjection>> GetProjectionAsync<TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
+    Task<TProjection?> GetFirstProjectionOrDefaultAsync<TProjection>(
+        Expression<Func<TEntity, TProjection>> projection,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken cancellationToken = default,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
     #endregion
 
-    #region Audit Methods
-    Task SoftDeleteAsync(TEntity entity, int? deletedByUserId = default, CancellationToken cancellationToken = default);
 
-    Task RestoreAsync(TEntity entity, int? restoredByUserId = default, CancellationToken cancellationToken = default);
+
+    #region Transaction Support
+
+    Task<TResult> ExecuteInTransactionAsync<TResult>(
+        Func<Task<TResult>> operation,
+        CancellationToken cancellationToken = default);
+
+    Task ExecuteInTransactionAsync(
+        Func<Task> operation,
+        CancellationToken cancellationToken = default);
     #endregion
 }

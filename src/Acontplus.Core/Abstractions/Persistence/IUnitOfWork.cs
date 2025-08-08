@@ -1,4 +1,3 @@
-using Acontplus.Core.Domain.Common.Entities;
 using System.Data.Common;
 
 namespace Acontplus.Core.Abstractions.Persistence;
@@ -6,7 +5,7 @@ namespace Acontplus.Core.Abstractions.Persistence;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     IRepository<TEntity> GetRepository<TEntity>()
-        where TEntity : BaseEntity;
+        where TEntity : class;
 
     IAdoRepository AdoRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

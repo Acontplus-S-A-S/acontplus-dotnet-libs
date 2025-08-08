@@ -31,7 +31,7 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
     public bool HasActiveTransaction => _efTransaction is not null;
 
     public IRepository<TEntity> GetRepository<TEntity>()
-        where TEntity : BaseEntity
+        where TEntity : class
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 

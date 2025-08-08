@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 
 namespace Acontplus.Persistence.Postgres.Configurations;
 
@@ -37,13 +38,13 @@ public static class SimpleEntityRegistration
     {
         foreach (var entityType in entityTypes)
         {
-            // Check if entity inherits from Entity<>
+            // Check if entity is a valid simple entity (concrete class with public Id property)
             var isValidEntity = entityType.IsClass &&
                                !entityType.IsAbstract &&
-                               IsAssignableToGenericType(entityType, typeof(Entity<>));
+                               HasIdProperty(entityType);
             if (!isValidEntity)
             {
-                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from Entity<>).");
+                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid simple entity (must be a concrete class with an Id property).");
                 continue;
             }
 
@@ -118,7 +119,7 @@ public static class SimpleEntityRegistration
             try
             {
                 var keyType = GetPrimaryKeyType(entityType);
-                var baseConfigurationType = typeof(EntityTypeConfiguration<>).MakeGenericType(entityType, keyType);
+                var baseConfigurationType = typeof(SimpleEntityTypeConfiguration<>).MakeGenericType(entityType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
                 modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
             }
@@ -151,21 +152,21 @@ public static class SimpleEntityRegistration
     }
 
     /// <summary>
-    /// Helper method to check if a type is assignable to a generic type definition
+    /// Helper method to check if a type has an Id property (for simple entities)
     /// </summary>
-    private static bool IsAssignableToGenericType(Type givenType, Type genericType)
+    private static bool HasIdProperty(Type entityType)
     {
-        var interfaceTypes = givenType.GetInterfaces();
-        foreach (var it in interfaceTypes)
-        {
-            if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
-                return true;
-        }
-        if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
-            return true;
-        Type baseType = givenType.BaseType;
-        if (baseType == null) return false;
-        return IsAssignableToGenericType(baseType, genericType);
+        var idProperty = entityType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+        return idProperty != null && idProperty.CanRead && idProperty.CanWrite;
+    }
+
+    /// <summary>
+    /// Helper method to get the type of the Id property
+    /// </summary>
+    private static Type GetIdPropertyType(Type entityType)
+    {
+        var idProperty = entityType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+        return idProperty?.PropertyType ?? typeof(int);
     }
 
     /// <summary>

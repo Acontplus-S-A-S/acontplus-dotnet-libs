@@ -10,18 +10,18 @@ public static class BaseEntityRegistration
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
-        // Look for BaseEntity in the inheritance chain
+        // Look for Entity<TKey> in the inheritance chain since BaseEntity inherits from Entity<int>
         var currentType = entityType;
         while (currentType != null)
         {
             if (currentType.IsGenericType &&
-                currentType.GetGenericTypeDefinition() == typeof(BaseEntity))
+                currentType.GetGenericTypeDefinition() == typeof(Entity<>))
             {
                 return currentType.GetGenericArguments()[0]; // Return TKey
             }
             currentType = currentType.BaseType;
         }
-        // Fallback to common key types if not found
+        // Fallback to int since BaseEntity uses Entity<int>
         return typeof(int);
     }
 
@@ -38,10 +38,10 @@ public static class BaseEntityRegistration
     {
         foreach (var entityType in entityTypes)
         {
-            // Check if entity inherits from AuditableEntity<>
+            // Check if entity inherits from BaseEntity (non-generic)
             var isValidEntity = entityType.IsClass &&
                                !entityType.IsAbstract &&
-                               IsAssignableToGenericType(entityType, typeof(BaseEntity));
+                               typeof(BaseEntity).IsAssignableFrom(entityType);
             if (!isValidEntity)
             {
                 Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
@@ -119,7 +119,7 @@ public static class BaseEntityRegistration
             try
             {
                 var keyType = GetPrimaryKeyType(entityType);
-                var baseConfigurationType = typeof(BaseEntityTypeConfiguration<>).MakeGenericType(entityType, keyType);
+                var baseConfigurationType = typeof(BaseEntityTypeConfiguration<>).MakeGenericType(entityType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
                 modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
             }
