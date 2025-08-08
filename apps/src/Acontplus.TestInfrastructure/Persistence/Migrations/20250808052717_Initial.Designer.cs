@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Acontplus.TestInfrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TestContext))]
-    [Migration("20250807222016_Initial")]
+    [Migration("20250808052717_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
