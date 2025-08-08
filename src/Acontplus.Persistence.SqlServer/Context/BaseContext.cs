@@ -34,7 +34,6 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
     public override int SaveChanges()
     {
         DispatchDomainEventsAsync().GetAwaiter().GetResult();
-        // Only update audit fields and handle soft deletes for auditable entities
         UpdateAuditFieldsAsync().GetAwaiter().GetResult();
         HandleSoftDeletesAsync().GetAwaiter().GetResult();
 
@@ -65,17 +64,17 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 
     private async Task UpdateAuditFieldsAsync()
     {
-        // Only process entities that implement IAuditableEntity
+        // Only process entities that implement BaseEntity
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is IAuditableEntity &&
+            .Where(e => e.Entity is BaseEntity &&
                         (e.State == EntityState.Added || e.State == EntityState.Modified))
             .ToList();
 
         foreach (var entry in entries)
         {
-            var auditable = (IAuditableEntity)entry.Entity;
+            var auditable = (BaseEntity)entry.Entity;
             // Use reflection or pattern matching to set audit fields if needed
-            // (Assume AuditableEntity<TId> for full audit support)
+            // (Assume BaseEntity for full audit support)
             if (entry.State == EntityState.Added)
             {
                 var createdAtProp = entry.Entity.GetType().GetProperty("CreatedAt");
@@ -91,16 +90,16 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 
     private async Task HandleSoftDeletesAsync()
     {
-        // Only process entities that implement IAuditableEntity
+        // Only process entities that implement BaseEntity
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is IAuditableEntity &&
+            .Where(e => e.Entity is BaseEntity &&
                         (e.State == EntityState.Deleted ||
                          e.Property("IsDeleted").IsModified))
             .ToList();
 
         foreach (var entry in entries)
         {
-            var auditable = (IAuditableEntity)entry.Entity;
+            var auditable = (BaseEntity)entry.Entity;
             if (entry.State == EntityState.Deleted || auditable.IsDeleted)
             {
                 entry.State = EntityState.Modified;
@@ -140,10 +139,10 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
         // Only apply soft delete filter to auditable entities
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(IAuditableEntity).IsAssignableFrom(entityType.ClrType))
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
             {
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
-                var property = Expression.Property(parameter, nameof(IAuditableEntity.IsDeleted));
+                var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
                 var condition = Expression.Lambda(Expression.Not(property), parameter);
 
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(condition);

@@ -6,11 +6,11 @@ namespace Acontplus.Persistence.SqlServer.Configurations;
 public static class BaseEntityRegistration
 {
     /// <summary>
-    /// Gets the primary key type for an entity that inherits from AuditableEntity<TKey>
+    /// Gets the primary key type for an entity that inherits from BaseEntity
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
-        // Look for AuditableEntity<TKey> in the inheritance chain
+        // Look for BaseEntity in the inheritance chain
         var currentType = entityType;
         while (currentType != null)
         {

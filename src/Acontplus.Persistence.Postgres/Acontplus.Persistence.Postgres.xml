@@ -4,7 +4,11 @@
         <name>Acontplus.Persistence.Postgres</name>
     </assembly>
     <members>
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.Postgres.Configurations.BaseEntityRegistration.GetPrimaryKeyType(System.Type)" -->
+        <member name="M:Acontplus.Persistence.Postgres.Configurations.BaseEntityRegistration.GetPrimaryKeyType(System.Type)">
+            <summary>
+            Gets the primary key type for an entity that inherits from BaseEntity
+            </summary>
+        </member>
         <member name="M:Acontplus.Persistence.Postgres.Configurations.BaseEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
             Registers auditable entities with the ModelBuilder, applying base configurations,

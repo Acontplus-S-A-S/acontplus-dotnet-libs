@@ -5,11 +5,11 @@ namespace Acontplus.Persistence.Postgres.Configurations;
 public static class BaseEntityRegistration
 {
     /// <summary>
-    /// Gets the primary key type for an entity that inherits from AuditableEntity<TKey>
+    /// Gets the primary key type for an entity that inherits from BaseEntity
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
-        // Look for AuditableEntity<TKey> in the inheritance chain
+        // Look for BaseEntity in the inheritance chain
         var currentType = entityType;
         while (currentType != null)
         {
@@ -43,7 +43,7 @@ public static class BaseEntityRegistration
                                IsAssignableToGenericType(entityType, typeof(BaseEntity));
             if (!isValidEntity)
             {
-                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
+                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from BaseEntity).");
                 continue;
             }
 
