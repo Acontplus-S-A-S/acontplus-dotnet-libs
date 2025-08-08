@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Core</PackageId>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Advanced foundational library with cutting-edge C# features. Includes domain-driven design patterns, comprehensive error handling with HTTP mapping, specification pattern, functional result types, JSON utilities, validation helpers, and enterprise-ready abstractions. Built with collection expressions, required properties, record structs, and source generation for optimal performance.</Description>

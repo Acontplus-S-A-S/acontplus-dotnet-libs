@@ -11,5 +11,5 @@ public class ConfigurationConnectionStringProvider : IConnectionStringProvider
     {
         _configuration = configuration;
     }
-    public string GetConnectionString(string name) => _configuration.GetConnectionString(name);
+    public string GetConnectionString(string name) => _configuration.GetConnectionString(name) ?? throw new InvalidOperationException($"Connection string '{name}' not found");
 }
