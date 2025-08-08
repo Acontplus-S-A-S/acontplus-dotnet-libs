@@ -52,9 +52,14 @@
             custom schema/table names, and optional specific entity configurations.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.HasIdProperty(System.Type)">
             <summary>
-            Helper method to check if a type is assignable to a generic type definition
+            Helper method to check if a type has an Id property (for simple entities)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetIdPropertyType(System.Type)">
+            <summary>
+            Helper method to get the type of the Id property
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
@@ -75,6 +80,11 @@
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
             Registers entities with specific custom configurations.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityTypeConfiguration`1">
+            <summary>
+            Base configuration for simple entities that don't inherit from BaseEntity.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.DependencyInjection.SqlServerServiceCollectionExtensions.AddSqlServerPersistence``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.EntityFrameworkCore.DbContextOptionsBuilder},System.Object)">

@@ -1,14 +1,14 @@
-using Acontplus.Core.Domain.Common.Entities;
 using System.Linq.Expressions;
 
 namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class
 {
     #region Query Methods
 
     Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
 
     Task<TEntity> GetFirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -71,8 +71,6 @@ public interface IRepository<TEntity>
     Task<long> LongCountAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
-
-    Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TEntity>> GetByIdsAsync(
         IEnumerable<int> ids,
@@ -202,18 +200,7 @@ public interface IRepository<TEntity>
 
     #endregion
 
-    #region Audit Methods
-    Task SoftDeleteAsync(TEntity entity, int? deletedByUserId = default, CancellationToken cancellationToken = default);
 
-    Task RestoreAsync(TEntity entity, int? restoredByUserId = default, CancellationToken cancellationToken = default);
-
-    Task<bool> SoftDeleteByIdAsync(int id, int? deletedByUserId = default, CancellationToken cancellationToken = default);
-
-    Task<int> SoftDeleteRangeAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        int? deletedByUserId = default,
-        CancellationToken cancellationToken = default);
-    #endregion
 
     #region Transaction Support
 

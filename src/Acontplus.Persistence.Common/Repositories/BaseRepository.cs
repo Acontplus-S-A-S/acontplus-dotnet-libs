@@ -11,17 +11,29 @@ namespace Acontplus.Persistence.Common.Repositories;
 /// TEntity: The type of the entity.
 /// int: The type of the entity's primary key, must be not null.
 public class BaseRepository<TEntity> : IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
     protected readonly ILogger<BaseRepository<TEntity>>? _logger;
+    private readonly string? _idPropertyName;
 
     public BaseRepository(DbContext context, ILogger<BaseRepository<TEntity>>? logger = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _dbSet = context.Set<TEntity>();
         _logger = logger;
+        _idPropertyName = GetIdPropertyName();
+    }
+
+    private static string? GetIdPropertyName()
+    {
+        // Look for common Id property names
+        var type = typeof(TEntity);
+        var idProperty = type.GetProperty("Id") ?? 
+                        type.GetProperty("ID") ?? 
+                        type.GetProperty($"{type.Name}Id");
+        return idProperty?.Name;
     }
 
     #region Query Methods
@@ -68,7 +80,11 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             if (!idList.Any()) return Array.Empty<TEntity>();
 
             var query = BuildQuery(includeProperties: includeProperties);
-            return await query.Where(e => idList.Contains(e.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
+            if (_idPropertyName == null)
+                throw new InvalidOperationException($"Entity {typeof(TEntity).Name} does not have a recognizable Id property");
+                
+            // Use dynamic property access
+            return await query.Where(e => idList.Contains(EF.Property<int>(e, _idPropertyName))).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -224,7 +240,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             }
             else // Default sorting by ID if not specified
             {
-                query = query.OrderBy(e => e.Id);
+                if (_idPropertyName != null)
+                    query = query.OrderBy(e => EF.Property<object>(e, _idPropertyName));
             }
 
             var items = await query
@@ -271,7 +288,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             }
             else // Default sorting by ID if not specified
             {
-                query = query.OrderBy(e => e.Id);
+                if (_idPropertyName != null)
+                    query = query.OrderBy(e => EF.Property<object>(e, _idPropertyName));
             }
 
             var items = await query
@@ -1050,7 +1068,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     {
         if (orderExpressions is null || orderExpressions.Length == 0)
         {
-            return query.OrderBy(e => e.Id); // Default order
+            return _idPropertyName != null ? 
+                query.OrderBy(e => EF.Property<object>(e, _idPropertyName)) : 
+                query; // Default order
         }
 
         IOrderedQueryable<TEntity>? orderedQuery = null;
@@ -1084,109 +1104,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 
     #endregion
 
-    #region Audit Methods
 
-    public virtual async Task SoftDeleteAsync(TEntity entity, int? deletedByUserId = default, CancellationToken cancellationToken = default)
-    {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(SoftDeleteAsync)}");
-        try
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            entity.IsDeleted = true;
-            entity.DeletedAt = DateTime.UtcNow;
-            entity.DeletedByUserId = deletedByUserId;
-            entity.IsActive = false;
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error soft deleting entity of type {EntityType}", typeof(TEntity).Name);
-            throw new RepositoryException("Error soft deleting entity", ex);
-        }
-    }
-
-    public virtual async Task RestoreAsync(TEntity entity, int? restoredByUserId = default, CancellationToken cancellationToken = default)
-    {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(RestoreAsync)}");
-        try
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            entity.IsDeleted = false;
-            entity.DeletedAt = null;
-            entity.DeletedByUserId = default;
-            entity.IsActive = true;
-            entity.UpdatedAt = DateTime.UtcNow;
-            entity.UpdatedByUserId = restoredByUserId;
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error restoring entity of type {EntityType}", typeof(TEntity).Name);
-            throw new RepositoryException("Error restoring entity", ex);
-        }
-    }
-
-    public virtual async Task<bool> SoftDeleteByIdAsync(int id, int? deletedByUserId = default, CancellationToken cancellationToken = default)
-    {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(SoftDeleteByIdAsync)}");
-        try
-        {
-            var entity = await _dbSet.FindAsync([id], cancellationToken).ConfigureAwait(false);
-
-            if (entity == null) return false;
-
-            entity.IsDeleted = true;
-            entity.DeletedAt = DateTime.UtcNow;
-            entity.DeletedByUserId = deletedByUserId;
-            entity.IsActive = false;
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error soft deleting entity of type {EntityType} by ID: {Id}", typeof(TEntity).Name, id);
-            throw new RepositoryException($"Error soft deleting entity by ID {id}", ex);
-        }
-    }
-
-    public virtual async Task<int> SoftDeleteRangeAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        int? deletedByUserId = default,
-        CancellationToken cancellationToken = default)
-    {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(SoftDeleteRangeAsync)}");
-        try
-        {
-            ArgumentNullException.ThrowIfNull(predicate);
-            var entities = await _dbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
-
-            foreach (var entity in entities)
-            {
-                entity.IsDeleted = true;
-                entity.DeletedAt = DateTime.UtcNow;
-                entity.DeletedByUserId = deletedByUserId;
-                entity.IsActive = false;
-            }
-
-            if (entities.Count > 0)
-            {
-                _dbSet.UpdateRange(entities);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-
-            return entities.Count;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error soft deleting entity range of type {EntityType}", typeof(TEntity).Name);
-            throw new RepositoryException("Error soft deleting entity range", ex);
-        }
-    }
-
-    #endregion
 
     #region Transaction Support
 

@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestDomain.Entities;
+namespace Acontplus.TestDomain.Entities;
 
 public class Usuario : BaseEntity
 {

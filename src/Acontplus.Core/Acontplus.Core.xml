@@ -54,6 +54,31 @@
         <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Warnings">
             <summary>Optional warnings that occurred during the operation.</summary>
         </member>
+        <member name="T:Acontplus.Core.Extensions.RepositoryAuditExtensions">
+            <summary>
+            Extension methods for audit functionality on repositories with BaseEntity types.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.RepositoryAuditExtensions.SoftDeleteAsync``1(Acontplus.Core.Abstractions.Persistence.IRepository{``0},``0,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Soft deletes an entity by marking it as deleted.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.RepositoryAuditExtensions.RestoreAsync``1(Acontplus.Core.Abstractions.Persistence.IRepository{``0},``0,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Restores a soft-deleted entity.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.RepositoryAuditExtensions.SoftDeleteByIdAsync``1(Acontplus.Core.Abstractions.Persistence.IRepository{``0},System.Int32,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Soft deletes an entity by ID.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.RepositoryAuditExtensions.SoftDeleteRangeAsync``1(Acontplus.Core.Abstractions.Persistence.IRepository{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Soft deletes multiple entities matching a predicate.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Validation.XmlValidator.Validate(System.Xml.XmlDocument,System.IO.Stream)">
             <summary>
                 Validates the provided XmlDocument against an XSD schema file.
