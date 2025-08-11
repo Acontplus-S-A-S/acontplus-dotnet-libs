@@ -1,5 +1,3 @@
-using Acontplus.Persistence.Postgres.Utilities;
-
 namespace Acontplus.Persistence.Postgres.Configurations;
 
 /// <summary>

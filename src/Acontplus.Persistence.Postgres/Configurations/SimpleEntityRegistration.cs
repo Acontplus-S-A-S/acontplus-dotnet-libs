@@ -1,4 +1,3 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Acontplus.Persistence.Postgres.Configurations;

@@ -1,4 +1,4 @@
-﻿using Acontplus.ApiDocumentation;
+using Acontplus.ApiDocumentation;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
 using Acontplus.Core.Extensions;
@@ -46,20 +46,21 @@ try
     //    This is where builder.Services (an IServiceCollection) is available.
     builder.Services.AddAdvancedLoggingOptions(builder.Configuration);
 
-    // Configure enterprise services with modern patterns
-    builder.Services.AddEnterpriseServices(builder.Configuration);
-    builder.Services.AddEnterpriseAuthorizationPolicies(new List<string>
+    // Configure Acontplus.Services - Core infrastructure
+    builder.Services.AddAcontplusServices(builder.Configuration);
+
+    // Configure application services
+    builder.Services.AddTestServices(builder.Configuration);
+    builder.Services.AddAuthorizationPolicies(new List<string>
     {
         "web-app", "mobile-app", "admin-portal", "test-client"
     });
-    builder.Services.AddEnterpriseMvc();
-    builder.Services.AddEnterpriseHealthChecks(builder.Configuration);
+    builder.Services.AddApplicationMvc();
 
 
     // --- Start new try-catch block for service registration ---
     try
     {
-        builder.Services.AddApplicationServices(builder.Configuration); // <--- This is a likely suspect
 
 
 
@@ -132,8 +133,11 @@ try
         app.UseApiVersioningAndDocumentation();
     }
 
-    // Use enterprise middleware pipeline
-    app.UseEnterpriseMiddleware(app.Environment);
+    // Use Acontplus.Services middleware pipeline
+    app.UseAcontplusServices(app.Environment);
+
+    // Use application middleware pipeline
+    app.UseApplicationMiddleware(app.Environment);
 
     app.UseRouting();
 
@@ -148,6 +152,8 @@ try
 
     // Map health checks
     app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health/ready");
+    app.MapHealthChecks("/health/live");
 
     app.MapAllEndpoints();
 

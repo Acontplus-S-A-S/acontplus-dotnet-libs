@@ -1,0 +1,282 @@
+### Acontplus.Services Advanced Usage Examples
+### This file demonstrates all the advanced usage patterns from the README
+
+### ========================================
+### BASIC USAGE EXAMPLES
+### ========================================
+
+### Basic Hello - Simple caching and request context
+GET {{baseUrl}}/api/AdvancedUsage/basic/hello
+Content-Type: application/json
+
+### Basic Product - Simple product retrieval with caching
+GET {{baseUrl}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+### ========================================
+### INTERMEDIATE USAGE EXAMPLES
+### ========================================
+
+### Intermediate Content - Device-aware content with caching and circuit breaker
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### Intermediate Health - Health monitoring for services
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/health
+Content-Type: application/json
+
+### Cache Stats - Cache performance monitoring
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/cache-stats
+Content-Type: application/json
+
+### ========================================
+### ENTERPRISE USAGE EXAMPLES
+### ========================================
+
+### Enterprise Dashboard - Multi-tenant dashboard with comprehensive monitoring
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/dashboard
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: web-app
+X-Tenant-ID: premium-tenant-001
+
+### Enterprise Audit - Audit logging with comprehensive context
+POST {{baseUrl}}/api/AdvancedUsage/enterprise/audit
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+X-Client-ID: admin-portal
+X-Tenant-ID: premium-tenant-001
+
+{
+  "action": "user_login",
+  "resource": "authentication_service",
+  "metadata": {
+    "ipAddress": "192.168.1.100",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "success": true
+  }
+}
+
+### Enterprise Security Status - Security status and monitoring
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/security-status
+Content-Type: application/json
+
+### Enterprise Tenant Data - Multi-tenant data with isolation
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/tenant-data/user-preferences
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: mobile-app
+X-Tenant-ID: standard-tenant-002
+
+### ========================================
+### ADVANCED SERVICE PATTERNS
+### ========================================
+
+### Hybrid Cache - Hybrid caching with fallback
+GET {{baseUrl}}/api/AdvancedUsage/advanced/hybrid-cache/weather-data
+Content-Type: application/json
+
+### Resilient Operation - Composite resilience with fallback
+GET {{baseUrl}}/api/AdvancedUsage/advanced/resilient/payment-processing
+Content-Type: application/json
+
+### Adaptive Content - Device-aware content optimization
+GET {{baseUrl}}/api/AdvancedUsage/advanced/adaptive-content/news-article-123
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### ========================================
+### DEVICE TESTING EXAMPLES
+### ========================================
+
+### Test Mobile Device
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### Test Tablet Device
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### Test Desktop Device
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+
+### ========================================
+### CACHE TESTING EXAMPLES
+### ========================================
+
+### Test Cache Hit (Second request should be faster)
+GET {{baseUrl}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+### Test Cache Invalidation
+DELETE {{baseUrl}}/api/AdvancedUsage/basic/products/123/cache
+Content-Type: application/json
+
+### Test Cache Statistics
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/cache-stats
+Content-Type: application/json
+
+### ========================================
+### CIRCUIT BREAKER TESTING EXAMPLES
+### ========================================
+
+### Test Circuit Breaker Status
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/health
+Content-Type: application/json
+
+### Test Circuit Breaker with Multiple Operations
+GET {{baseUrl}}/api/AdvancedUsage/advanced/resilient/database-query
+Content-Type: application/json
+
+GET {{baseUrl}}/api/AdvancedUsage/advanced/resilient/external-api
+Content-Type: application/json
+
+GET {{baseUrl}}/api/AdvancedUsage/advanced/resilient/payment-gateway
+Content-Type: application/json
+
+### ========================================
+### TENANT ISOLATION TESTING EXAMPLES
+### ========================================
+
+### Test Tenant A
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/tenant-data/config
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: web-app
+X-Tenant-ID: tenant-a
+
+### Test Tenant B
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/tenant-data/config
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: mobile-app
+X-Tenant-ID: tenant-b
+
+### Test Premium Tenant
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/tenant-data/config
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: admin-portal
+X-Tenant-ID: premium-tenant-001
+
+### ========================================
+### SECURITY TESTING EXAMPLES
+### ========================================
+
+### Test Security Headers
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/security-status
+Content-Type: application/json
+
+### Test CSP Nonce Generation
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/security-status
+Content-Type: application/json
+
+### Test Authorization Policies
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/dashboard
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: web-app
+X-Tenant-ID: premium-tenant-001
+
+### ========================================
+### PERFORMANCE TESTING EXAMPLES
+### ========================================
+
+### Test Cache Performance (Multiple requests)
+GET {{baseUrl}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+GET {{baseUrl}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+GET {{baseUrl}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+### Test Device Detection Performance
+GET {{baseUrl}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### ========================================
+### ERROR HANDLING TESTING EXAMPLES
+### ========================================
+
+### Test Exception Handling (from existing controller)
+GET {{baseUrl}}/api/EnterpriseExamples/test-exception
+Content-Type: application/json
+
+### Test Circuit Breaker Failure
+GET {{baseUrl}}/api/AdvancedUsage/advanced/resilient/failing-operation
+Content-Type: application/json
+
+### ========================================
+### CONFIGURATION EXAMPLES
+### ========================================
+
+### Test with Different Client IDs
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/dashboard
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: mobile-app
+X-Tenant-ID: premium-tenant-001
+
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/dashboard
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: admin-portal
+X-Tenant-ID: premium-tenant-001
+
+GET {{baseUrl}}/api/AdvancedUsage/enterprise/dashboard
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+X-Client-ID: api-client
+X-Tenant-ID: premium-tenant-001
+
+### ========================================
+### MONITORING AND OBSERVABILITY EXAMPLES
+### ========================================
+
+### Health Check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+### Circuit Breaker Health
+GET {{baseUrl}}/health/circuit-breaker
+Content-Type: application/json
+
+### Cache Health
+GET {{baseUrl}}/health/cache
+Content-Type: application/json
+
+### ========================================
+### NOTES AND USAGE INSTRUCTIONS
+### ========================================
+
+### This file demonstrates:
+### 1. Basic Usage: Simple caching and request context
+### 2. Intermediate Usage: Device detection, circuit breakers, health monitoring
+### 3. Enterprise Usage: Multi-tenant support, security, comprehensive monitoring
+### 4. Advanced Patterns: Hybrid caching, resilience, adaptive content
+### 5. Testing: Different devices, tenants, client IDs, and error scenarios
+
+### To use this file:
+### 1. Set the {{baseUrl}} variable to your API base URL
+### 2. Set {{authToken}} to a valid authentication token
+### 3. Set {{adminToken}} to a valid admin authentication token
+### 4. Run the requests to test different scenarios
+
+### Key Features Demonstrated:
+### - Caching strategies (basic, intermediate, enterprise)
+### - Circuit breaker patterns
+### - Device detection and adaptive content
+### - Multi-tenant isolation
+### - Security headers and policies
+### - Health monitoring
+### - Error handling and resilience
+### - Performance optimization

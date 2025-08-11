@@ -5,13 +5,13 @@ using System.Text.Json.Serialization;
 namespace Acontplus.Services.Configuration;
 
 /// <summary>
-/// Service for configuring JSON serialization in enterprise applications
+/// Service for configuring JSON serialization in applications
 /// Provides centralized configuration for System.Text.Json across the application
 /// </summary>
 public static class JsonConfigurationService
 {
     /// <summary>
-    /// Get default JSON serializer options optimized for enterprise applications
+    /// Get default JSON serializer options optimized for applications
     /// </summary>
     /// <returns>Configured JsonSerializerOptions</returns>
     public static JsonSerializerOptions GetDefaultOptions() => new()

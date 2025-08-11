@@ -1,5 +1,4 @@
 using Acontplus.Services.Middleware;
-using Microsoft.AspNetCore.Builder;
 
 namespace Acontplus.Services.Extensions.Middleware;
 

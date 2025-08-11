@@ -15,7 +15,7 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
     /// </summary>
     /// <typeparam name="T">The type of the claim value.</typeparam>
     /// <param name="claimName">The name of the claim.</param>
-    public T GetClaimValue<T>(string claimName) { return httpContextAccessor.HttpContext!.User.GetClaimValue<T>(claimName) ?? default; }
+    public T GetClaimValue<T>(string claimName) { return httpContextAccessor.HttpContext!.User.GetClaimValue<T>(claimName) ?? default(T)!; }
 
     /// <summary>
     /// Gets the user name from the current user claims.

@@ -79,7 +79,7 @@ public static class RepositoryAuditExtensions
         ArgumentNullException.ThrowIfNull(predicate);
 
         var entities = await repository.FindAsync(predicate, cancellationToken);
-        
+
         foreach (var entity in entities)
         {
             entity.MarkAsDeleted(deletedByUserId);
