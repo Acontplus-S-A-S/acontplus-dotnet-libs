@@ -1,10 +1,10 @@
-﻿using Acontplus.Services.Configuration;
+using Acontplus.Services.Configuration;
 
 namespace Acontplus.TestApi.Extensions;
 
 public static class ApplicationServicesExtensions
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services,
+    public static IServiceCollection AddTestServices(this IServiceCollection services,
     IConfiguration configuration)
     {
 

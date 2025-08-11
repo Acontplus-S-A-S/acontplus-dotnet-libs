@@ -1,5 +1,4 @@
 using Acontplus.Services.Configuration;
-using Acontplus.Services.Extensions.Infrastructure;
 using Acontplus.Services.Extensions.Middleware;
 using Acontplus.Services.Extensions.Security;
 using Acontplus.Services.Filters;
@@ -7,35 +6,33 @@ using Acontplus.Services.Middleware;
 using Acontplus.Services.Policies;
 using Acontplus.Services.Services.Abstractions;
 using Acontplus.Services.Services.Implementations;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
 
 namespace Acontplus.Services.Extensions;
 
 /// <summary>
-/// Extension methods for registering enterprise service patterns and configurations.
+/// Extension methods for registering application services, filters, and policies.
 /// </summary>
-public static class EnterpriseServiceExtensions
+public static class ApplicationServiceExtensions
 {
     /// <summary>
-    /// Registers all enterprise service patterns including services, filters, and policies.
+    /// Registers all application services including core services, filters, and policies.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddEnterpriseServices(
+    public static IServiceCollection AddApplicationServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         // Register core services
         services.AddHttpContextAccessor();
 
-        // Register enterprise service implementations
+        // Register service implementations
         services.AddScoped<IRequestContextService, RequestContextService>();
         services.AddScoped<ISecurityHeaderService, SecurityHeaderService>();
         services.AddScoped<IDeviceDetectionService, DeviceDetectionService>();
+        services.AddScoped<ICircuitBreakerService, CircuitBreakerService>();
 
         // Register action filters
         services.AddScoped<ValidationActionFilter>();
@@ -46,16 +43,20 @@ public static class EnterpriseServiceExtensions
         services.Configure<RequestContextConfiguration>(
             configuration.GetSection("RequestContext"));
 
+        // Configure resilience services
+        services.Configure<ResilienceConfiguration>(
+            configuration.GetSection("Resilience"));
+
         return services;
     }
 
     /// <summary>
-    /// Registers enterprise authorization policies for multi-tenant and device-aware scenarios.
+    /// Registers authorization policies for multi-tenant and device-aware scenarios.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="allowedClientIds">Optional list of allowed client IDs.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddEnterpriseAuthorizationPolicies(
+    public static IServiceCollection AddAuthorizationPolicies(
         this IServiceCollection services,
         List<string>? allowedClientIds = null)
     {
@@ -67,12 +68,12 @@ public static class EnterpriseServiceExtensions
     }
 
     /// <summary>
-    /// Configures enterprise middleware pipeline with proper ordering for security and context management.
+    /// Configures application middleware pipeline with proper ordering for security and context management.
     /// </summary>
     /// <param name="app">The application builder.</param>
     /// <param name="environment">The web host environment.</param>
     /// <returns>The application builder for chaining.</returns>
-    public static IApplicationBuilder UseEnterpriseMiddleware(
+    public static IApplicationBuilder UseApplicationMiddleware(
         this IApplicationBuilder app,
         IWebHostEnvironment environment)
     {
@@ -81,6 +82,9 @@ public static class EnterpriseServiceExtensions
 
         // CSP nonce generation
         app.UseMiddleware<CspNonceMiddleware>();
+
+        // Advanced rate limiting
+        app.UseAdvancedRateLimiting();
 
         // Request context and tracking
         app.UseMiddleware<RequestContextMiddleware>();
@@ -97,12 +101,12 @@ public static class EnterpriseServiceExtensions
     }
 
     /// <summary>
-    /// Configures MVC with enterprise filters and JSON serialization options.
+    /// Configures MVC with application filters and JSON serialization options.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="enableGlobalFilters">Whether to enable global action filters.</param>
     /// <returns>The MVC builder for further configuration.</returns>
-    public static IMvcBuilder AddEnterpriseMvc(
+    public static IMvcBuilder AddApplicationMvc(
         this IServiceCollection services,
         bool enableGlobalFilters = true)
     {
@@ -124,18 +128,16 @@ public static class EnterpriseServiceExtensions
     }
 
     /// <summary>
-    /// Adds comprehensive health checks for enterprise applications.
+    /// Adds comprehensive health checks for application services.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddEnterpriseHealthChecks(
+    public static IServiceCollection AddApplicationHealthChecks(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddAdvancedHealthChecks(configuration);
-
-        // Add custom health checks for enterprise services
+        // Add custom health checks for application services
         services.AddHealthChecks()
             .AddCheck<RequestContextHealthCheck>("request-context")
             .AddCheck<SecurityHeaderHealthCheck>("security-headers")
@@ -145,18 +147,18 @@ public static class EnterpriseServiceExtensions
     }
 
     /// <summary>
-    /// Configures API explorer for documentation tools (use with your ApiDocumentation project).
+    /// Configures API explorer for documentation tools.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddEnterpriseApiExplorer(this IServiceCollection services)
+    public static IServiceCollection AddApiExplorer(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
         return services;
     }
 }
 
-// Health check implementations for enterprise services
+// Health check implementations for application services
 public class RequestContextHealthCheck : IHealthCheck
 {
     private readonly IRequestContextService _requestContextService;

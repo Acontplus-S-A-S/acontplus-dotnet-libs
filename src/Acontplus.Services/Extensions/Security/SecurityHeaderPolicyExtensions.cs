@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Acontplus.Services.Configuration;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Acontplus.Services.Extensions.Security;
 

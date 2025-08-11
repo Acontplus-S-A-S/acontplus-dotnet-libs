@@ -4,7 +4,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Services</PackageId>
-		<Version>1.4.4</Version>
+		<Version>1.5.0</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
 		<Description>Comprehensive library for API services, authentication, claims, middleware, and configuration. Includes JWT authentication, user context management, exception handling, security headers, and enterprise-ready service patterns for ASP.NET Core applications.</Description>
@@ -38,8 +38,14 @@
 		<PackageReference Include="Acontplus.Core" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" />
 		<PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" />
+		<PackageReference Include="Polly" />
+		<PackageReference Include="Polly.Extensions.Http" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
 	</ItemGroup>
 </Project>

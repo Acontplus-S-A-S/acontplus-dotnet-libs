@@ -1,13 +1,17 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.IO.Compression;
 using System.Threading.RateLimiting;
 
 namespace Acontplus.Services.Extensions.Infrastructure;
 
+/// <summary>
+/// Extension methods for core infrastructure services like compression and basic rate limiting.
+/// </summary>
 public static class InfrastructureServiceExtensions
 {
+    /// <summary>
+    /// Add response compression services with Brotli and Gzip support.
+    /// </summary>
     public static IServiceCollection AddResponseCompressionServices(this IServiceCollection services)
     {
         services.Configure<BrotliCompressionProviderOptions>(options =>
@@ -39,7 +43,10 @@ public static class InfrastructureServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddRateLimitingServices(this IServiceCollection services)
+    /// <summary>
+    /// Add basic rate limiting services with global limits.
+    /// </summary>
+    public static IServiceCollection AddBasicRateLimiting(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
         {
@@ -59,38 +66,6 @@ public static class InfrastructureServiceExtensions
                 context.HttpContext.Response.StatusCode = 429;
                 await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", token);
             };
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddAdvancedHealthChecks(this IServiceCollection services, IConfiguration configuration)
-    {
-        var healthChecksBuilder = services.AddHealthChecks();
-
-        // Add database health check if connection string exists
-        //var connectionString = configuration.GetConnectionString("DefaultConnection");
-        //if (!string.IsNullOrEmpty(connectionString))
-        //{
-        //    healthChecksBuilder.AddSqlServer(connectionString, "database");
-        //}
-
-        // Add memory health check
-        healthChecksBuilder.AddCheck("memory", () =>
-        {
-            var allocated = GC.GetTotalMemory(forceFullCollection: false);
-            var data = new Dictionary<string, object>()
-            {
-                { "AllocatedBytes", allocated },
-                { "Gen0Collections", GC.CollectionCount(0) },
-                { "Gen1Collections", GC.CollectionCount(1) },
-                { "Gen2Collections", GC.CollectionCount(2) }
-            };
-
-            // Consider unhealthy if more than 1GB allocated
-            var status = allocated < 1_000_000_000 ? HealthStatus.Healthy : HealthStatus.Degraded;
-
-            return HealthCheckResult.Healthy("Memory usage is within acceptable limits", data);
         });
 
         return services;

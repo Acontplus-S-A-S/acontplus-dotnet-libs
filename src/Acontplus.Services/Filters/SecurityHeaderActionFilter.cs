@@ -1,7 +1,6 @@
 using Acontplus.Services.Configuration;
 using Acontplus.Services.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Options;
 
 namespace Acontplus.Services.Filters;
 
