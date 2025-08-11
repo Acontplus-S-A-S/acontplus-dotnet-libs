@@ -141,6 +141,26 @@
             List of allowed connect sources (domains) for connect-src directive.
             </summary>
         </member>
+        <member name="P:Acontplus.Services.Configuration.CspConfiguration.AllowedFrameSources">
+            <summary>
+            List of allowed frame sources (domains) for frame-src directive.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CspConfiguration.AllowedMediaSources">
+            <summary>
+            List of allowed media sources (domains) for media-src directive.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CspConfiguration.AllowedBaseUriSources">
+            <summary>
+            List of allowed base URI sources (domains) for base-uri directive.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CspConfiguration.AllowedFormActionSources">
+            <summary>
+            List of allowed form action sources (domains) for form-action directive.
+            </summary>
+        </member>
         <member name="T:Acontplus.Services.Configuration.ResilienceConfiguration">
             <summary>
             Configuration for resilience patterns including rate limiting and circuit breakers.

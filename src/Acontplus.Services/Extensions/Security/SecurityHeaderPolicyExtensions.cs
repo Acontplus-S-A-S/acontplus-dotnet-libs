@@ -46,7 +46,13 @@ public static class SecurityHeaderPolicyExtensions
         {
             builder.AddDefaultSrc().Self();
             builder.AddObjectSrc().None();
-            builder.AddScriptSrc().Self().UnsafeInline().UnsafeEval(); // Required for Angular
+
+            // Allow configured script sources and inline scripts
+            var scriptSrc = builder.AddScriptSrc().Self().UnsafeInline().UnsafeEval(); // Required for Angular
+            foreach (var source in cspConfig.AllowedScriptSources)
+            {
+                scriptSrc.From(source);
+            }
 
             // Allow configured style sources and inline styles
             var styleSrc = builder.AddStyleSrc().Self().UnsafeInline(); // Required for Angular inline styles
@@ -75,10 +81,34 @@ public static class SecurityHeaderPolicyExtensions
             {
                 connectSrc.From(source);
             }
-            builder.AddMediaSrc().Self();
-            builder.AddFrameSrc().None(); // Prevent embedding in frames
-            builder.AddBaseUri().Self();
-            builder.AddFormAction().Self(); // Only allow forms to submit to same origin
+
+            // Allow configured media sources
+            var mediaSrc = builder.AddMediaSrc().Self();
+            foreach (var source in cspConfig.AllowedMediaSources)
+            {
+                mediaSrc.From(source);
+            }
+
+            // Allow configured frame sources instead of blocking all
+            var frameSrc = builder.AddFrameSrc().Self();
+            foreach (var source in cspConfig.AllowedFrameSources)
+            {
+                frameSrc.From(source);
+            }
+
+            // Allow configured base URI sources
+            var baseUri = builder.AddBaseUri().Self();
+            foreach (var source in cspConfig.AllowedBaseUriSources)
+            {
+                baseUri.From(source);
+            }
+
+            // Allow configured form action sources
+            var formAction = builder.AddFormAction().Self();
+            foreach (var source in cspConfig.AllowedFormActionSources)
+            {
+                formAction.From(source);
+            }
         });
     }
 
@@ -89,7 +119,13 @@ public static class SecurityHeaderPolicyExtensions
         {
             builder.AddDefaultSrc().Self();
             builder.AddObjectSrc().None();
-            builder.AddScriptSrc().Self().WithNonce(); // Use nonces instead of unsafe-inline
+
+            // Allow configured script sources with nonces
+            var scriptSrc = builder.AddScriptSrc().Self().WithNonce(); // Use nonces instead of unsafe-inline
+            foreach (var source in cspConfig.AllowedScriptSources)
+            {
+                scriptSrc.From(source);
+            }
 
             // Allow configured style sources with nonces
             var styleSrc = builder.AddStyleSrc().Self().WithNonce(); // Use nonces for styles
@@ -118,10 +154,34 @@ public static class SecurityHeaderPolicyExtensions
             {
                 connectSrc.From(source);
             }
-            builder.AddMediaSrc().Self();
-            builder.AddFrameSrc().None(); // Prevent embedding in frames
-            builder.AddBaseUri().Self();
-            builder.AddFormAction().Self(); // Only allow forms to submit to same origin
+
+            // Allow configured media sources
+            var mediaSrc = builder.AddMediaSrc().Self();
+            foreach (var source in cspConfig.AllowedMediaSources)
+            {
+                mediaSrc.From(source);
+            }
+
+            // Allow configured frame sources instead of blocking all
+            var frameSrc = builder.AddFrameSrc().Self();
+            foreach (var source in cspConfig.AllowedFrameSources)
+            {
+                frameSrc.From(source);
+            }
+
+            // Allow configured base URI sources
+            var baseUri = builder.AddBaseUri().Self();
+            foreach (var source in cspConfig.AllowedBaseUriSources)
+            {
+                baseUri.From(source);
+            }
+
+            // Allow configured form action sources
+            var formAction = builder.AddFormAction().Self();
+            foreach (var source in cspConfig.AllowedFormActionSources)
+            {
+                formAction.From(source);
+            }
         });
     }
 }

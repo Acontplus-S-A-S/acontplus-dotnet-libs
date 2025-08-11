@@ -70,4 +70,24 @@ public class CspConfiguration
     /// List of allowed connect sources (domains) for connect-src directive.
     /// </summary>
     public List<string> AllowedConnectSources { get; set; } = new();
+
+    /// <summary>
+    /// List of allowed frame sources (domains) for frame-src directive.
+    /// </summary>
+    public List<string> AllowedFrameSources { get; set; } = new() { "https://www.youtube-nocookie.com" };
+
+    /// <summary>
+    /// List of allowed media sources (domains) for media-src directive.
+    /// </summary>
+    public List<string> AllowedMediaSources { get; set; } = new();
+
+    /// <summary>
+    /// List of allowed base URI sources (domains) for base-uri directive.
+    /// </summary>
+    public List<string> AllowedBaseUriSources { get; set; } = new();
+
+    /// <summary>
+    /// List of allowed form action sources (domains) for form-action directive.
+    /// </summary>
+    public List<string> AllowedFormActionSources { get; set; } = new();
 }
