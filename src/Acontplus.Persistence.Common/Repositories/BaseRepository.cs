@@ -30,8 +30,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     {
         // Look for common Id property names
         var type = typeof(TEntity);
-        var idProperty = type.GetProperty("Id") ?? 
-                        type.GetProperty("ID") ?? 
+        var idProperty = type.GetProperty("Id") ??
+                        type.GetProperty("ID") ??
                         type.GetProperty($"{type.Name}Id");
         return idProperty?.Name;
     }
@@ -82,7 +82,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             var query = BuildQuery(includeProperties: includeProperties);
             if (_idPropertyName == null)
                 throw new InvalidOperationException($"Entity {typeof(TEntity).Name} does not have a recognizable Id property");
-                
+
             // Use dynamic property access
             return await query.Where(e => idList.Contains(EF.Property<int>(e, _idPropertyName))).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -1068,8 +1068,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     {
         if (orderExpressions is null || orderExpressions.Length == 0)
         {
-            return _idPropertyName != null ? 
-                query.OrderBy(e => EF.Property<object>(e, _idPropertyName)) : 
+            return _idPropertyName != null ?
+                query.OrderBy(e => EF.Property<object>(e, _idPropertyName)) :
                 query; // Default order
         }
 
