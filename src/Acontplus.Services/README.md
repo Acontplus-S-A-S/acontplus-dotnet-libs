@@ -75,10 +75,38 @@ Add to your `appsettings.json`:
     "ReferrerPolicy": "strict-origin-when-cross-origin",
     "RequireClientId": false,
     "AnonymousClientId": "anonymous",
-    "AllowedClientIds": ["web-app", "mobile-app", "admin-portal"]
+    "AllowedClientIds": ["web-app", "mobile-app", "admin-portal"],
+    "Csp": {
+      "AllowedImageSources": [
+        "https://i.ytimg.com",
+        "https://example.com"
+      ],
+      "AllowedStyleSources": [
+        "https://fonts.googleapis.com"
+      ],
+      "AllowedFontSources": [
+        "https://fonts.gstatic.com"
+      ],
+      "AllowedScriptSources": [
+        "https://cdnjs.cloudflare.com"
+      ],
+      "AllowedConnectSources": [
+        "https://api.example.com"
+      ]
+    }
   }
 }
 ```
+
+#### Dynamic Content Security Policy
+
+The CSP configuration is now fully dynamic and configurable through settings:
+
+- **AllowedImageSources**: Domains allowed for images (e.g., YouTube thumbnails, CDN images)
+- **AllowedStyleSources**: Domains allowed for stylesheets (e.g., Google Fonts, CDN CSS)
+- **AllowedFontSources**: Domains allowed for fonts (e.g., Google Fonts, icon fonts)
+- **AllowedScriptSources**: Domains allowed for external scripts (e.g., CDN libraries)
+- **AllowedConnectSources**: Domains allowed for API calls and WebSocket connections
 
 ## Services
 
