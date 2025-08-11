@@ -172,10 +172,38 @@ public class RequestContextHealthCheck : IHealthCheck
     {
         try
         {
-            // Basic service availability check
+            // Test core functionality of request context service
             var contextData = _requestContextService.GetRequestContext();
-            return Task.FromResult(HealthCheckResult.Healthy("Request context service is operational",
-                contextData.Where(kvp => kvp.Value != null).ToDictionary(kvp => kvp.Key, kvp => kvp.Value!)));
+
+            // Verify essential context data is available
+            var hasRequestId = !string.IsNullOrEmpty(contextData.GetValueOrDefault("requestId")?.ToString());
+            var hasCorrelationId = !string.IsNullOrEmpty(contextData.GetValueOrDefault("correlationId")?.ToString());
+            var hasTimestamp = contextData.ContainsKey("timestamp");
+
+            var healthData = contextData.Where(kvp => kvp.Value != null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value!);
+
+            healthData["hasRequestId"] = hasRequestId;
+            healthData["hasCorrelationId"] = hasCorrelationId;
+            healthData["hasTimestamp"] = hasTimestamp;
+            healthData["lastCheckTime"] = DateTime.UtcNow;
+
+            if (hasRequestId && hasCorrelationId && hasTimestamp)
+            {
+                return Task.FromResult(HealthCheckResult.Healthy("Request context service is fully operational", healthData));
+            }
+
+            return Task.FromResult(HealthCheckResult.Degraded("Request context service is partially operational", data: healthData));
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("HTTP context is not available"))
+        {
+            // This is expected when health check runs outside of HTTP context
+            var data = new Dictionary<string, object>
+            {
+                ["status"] = "No HTTP context available (expected during startup)",
+                ["lastCheckTime"] = DateTime.UtcNow
+            };
+            return Task.FromResult(HealthCheckResult.Healthy("Request context service is available", data));
         }
         catch (Exception ex)
         {
@@ -221,9 +249,42 @@ public class DeviceDetectionHealthCheck : IHealthCheck
     {
         try
         {
-            var capabilities = _deviceDetectionService.GetDeviceCapabilities("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-            return Task.FromResult(HealthCheckResult.Healthy("Device detection service is operational",
-                new Dictionary<string, object> { ["testCapabilities"] = capabilities }));
+            // Test with multiple user agents to verify detection accuracy
+            var testCases = new[]
+            {
+                ("Desktop Chrome", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", DeviceType.Desktop),
+                ("Mobile Safari", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1", DeviceType.Mobile),
+                ("iPad", "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1", DeviceType.Tablet)
+            };
+
+            var results = new Dictionary<string, object>();
+            var allTestsPassed = true;
+
+            foreach (var (name, userAgent, expectedType) in testCases)
+            {
+                var capabilities = _deviceDetectionService.GetDeviceCapabilities(userAgent);
+                var testPassed = capabilities.Type == expectedType;
+                allTestsPassed &= testPassed;
+
+                results[$"test_{name.Replace(" ", "_").ToLower()}"] = new
+                {
+                    Expected = expectedType.ToString(),
+                    Actual = capabilities.Type.ToString(),
+                    Passed = testPassed,
+                    Browser = capabilities.Browser,
+                    OS = capabilities.OperatingSystem
+                };
+            }
+
+            results["lastCheckTime"] = DateTime.UtcNow;
+            results["allTestsPassed"] = allTestsPassed;
+
+            if (allTestsPassed)
+            {
+                return Task.FromResult(HealthCheckResult.Healthy("Device detection service is fully operational", results));
+            }
+
+            return Task.FromResult(HealthCheckResult.Degraded("Device detection service has some detection issues", data: results));
         }
         catch (Exception ex)
         {

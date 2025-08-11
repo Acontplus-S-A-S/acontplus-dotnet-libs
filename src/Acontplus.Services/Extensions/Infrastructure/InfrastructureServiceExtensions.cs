@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
-using System.Threading.RateLimiting;
 
 namespace Acontplus.Services.Extensions.Infrastructure;
 

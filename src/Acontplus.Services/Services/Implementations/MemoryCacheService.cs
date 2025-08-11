@@ -145,9 +145,9 @@ public class MemoryCacheService : ICacheService
     {
         try
         {
-            if (_cache.TryGetValue(key, out var value))
+            if (_cache.TryGetValue(key, out var value) && value is T typedValue)
             {
-                return (T)value;
+                return typedValue;
             }
 
             var newValue = factory();
@@ -165,9 +165,9 @@ public class MemoryCacheService : ICacheService
     {
         try
         {
-            if (_cache.TryGetValue(key, out var value))
+            if (_cache.TryGetValue(key, out var value) && value is T typedValue)
             {
-                return (T)value;
+                return typedValue;
             }
 
             var newValue = await factory();

@@ -136,14 +136,16 @@ public class DistributedCacheService : ICacheService
 
     public void Clear()
     {
-        // Distributed cache doesn't support clearing all entries
-        _logger.LogWarning("Clear operation not supported for distributed cache");
+        // Note: Distributed cache doesn't support clearing all entries by design
+        // This is a limitation of Redis and other distributed cache providers
+        _logger.LogWarning("Clear operation not supported for distributed cache - this is a platform limitation");
     }
 
     public Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        // Distributed cache doesn't support clearing all entries
-        _logger.LogWarning("Clear operation not supported for distributed cache");
+        // Note: Distributed cache doesn't support clearing all entries by design
+        // This is a limitation of Redis and other distributed cache providers
+        _logger.LogWarning("Clear operation not supported for distributed cache - this is a platform limitation");
         return Task.CompletedTask;
     }
 
@@ -177,15 +179,16 @@ public class DistributedCacheService : ICacheService
 
     public CacheStatistics GetStatistics()
     {
-        // Distributed cache doesn't provide direct statistics
+        // Note: Distributed cache providers (Redis, etc.) don't expose detailed statistics
+        // through the IDistributedCache interface. For detailed Redis stats, use Redis-specific clients.
         return new CacheStatistics
         {
-            TotalEntries = 0,
-            TotalMemoryBytes = 0,
-            HitRatePercentage = 0,
-            MissRatePercentage = 0,
-            Evictions = 0,
-            LastCleanup = null
+            TotalEntries = 0, // Not available through IDistributedCache
+            TotalMemoryBytes = 0, // Not available through IDistributedCache
+            HitRatePercentage = 0, // Not available through IDistributedCache
+            MissRatePercentage = 0, // Not available through IDistributedCache
+            Evictions = 0, // Not available through IDistributedCache
+            LastCleanup = null // Not available through IDistributedCache
         };
     }
 }

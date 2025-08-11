@@ -1,6 +1,6 @@
 # Acontplus.Services
 
-[![NuGet](https://img.shields.io/badge/nuget-v1.4.4-blue.svg)](https://www.nuget.org/packages/Acontplus.Services)
+[![NuGet](https://img.shields.io/nuget/v/Acontplus.Services.svg)](https://www.nuget.org/packages/Acontplus.Services)
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -9,6 +9,7 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 ## 🚀 .NET 9 Modern Features
 
 ### 🎯 Latest C# Language Features
+
 - **Collection Expressions** - Modern `[]` syntax for efficient collection initialization
 - **Primary Constructors** - Concise record and class definitions
 - **Required Properties** - Compile-time null safety with `required` keyword
@@ -19,6 +20,7 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 - **Global Usings** - Clean namespace management with global using directives
 
 ### 🏗️ Modern Architecture Patterns
+
 - **Domain-Driven Design (DDD)** - Complete DDD implementation with modern C# features
 - **Functional Result Pattern** - Railway-oriented programming with record structs
 - **Repository Pattern** - Comprehensive data access with bulk operations
@@ -66,58 +68,641 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 - **Smart Pagination** - Advanced pagination with search and filtering
 - **Modern JSON** - System.Text.Json with source generation
 
+### 🗄️ Caching Architecture
+
+- **Unified Interface** - Single `ICacheService` interface for both in-memory and distributed caching
+- **Automatic Fallback** - Graceful degradation when cache operations fail
+- **Statistics Support** - Comprehensive cache statistics (in-memory only)
+- **Distributed Limitations** - Clear documentation of Redis/distributed cache limitations
+- **Health Monitoring** - Functional health checks that test actual cache operations
+
+## 🚀 Quick Start
+
+### 1. Install the Package
+
+```bash
+dotnet add package Acontplus.Services
+```
+
+### 2. Add to Your Program.cs
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add all services with one line
+builder.Services.AddAcontplusServices(builder.Configuration);
+
+var app = builder.Build();
+
+// Use all middleware with one line
+app.UseAcontplusServices(builder.Environment);
+
+app.MapControllers();
+app.Run();
+```
+
+### 3. Add Basic Configuration
+
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true
+  }
+}
+```
+
+### 4. Use in Your Controller
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class HelloController : ControllerBase
+{
+    private readonly ICacheService _cache;
+
+    public HelloController(ICacheService cache) => _cache = cache;
+
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var message = await _cache.GetOrCreateAsync("hello", 
+            () => Task.FromResult("Hello from Acontplus.Services!"), 
+            TimeSpan.FromMinutes(5));
+        
+        return Ok(message);
+    }
+}
+```
+
+That's it! You now have caching, security headers, device detection, and resilience patterns working in your application.
+
 ## 📦 Installation
 
 ### NuGet Package Manager
+
 ```bash
 Install-Package Acontplus.Services
 ```
 
 ### .NET CLI
+
 ```bash
 dotnet add package Acontplus.Services
 ```
 
 ### PackageReference
+
 ```xml
-<PackageReference Include="Acontplus.Services" Version="1.4.4" />
+<PackageReference Include="Acontplus.Services" Version="1.5.0" />
 ```
 
-## 🎯 Quick Start
+## 🎯 Usage Examples
 
-### 1. Basic Setup
+### 🟢 Basic Usage - Simple Setup
+
+Perfect for small applications or getting started quickly.
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
+// Program.cs (.NET 6+)
+var builder = WebApplication.CreateBuilder(args);
+
+// One-line setup with sensible defaults
+builder.Services.AddAcontplusServices(builder.Configuration);
+
+// Add MVC with built-in filters
+builder.Services.AddAcontplusMvc();
+
+var app = builder.Build();
+
+// Complete middleware pipeline in one call
+app.UseAcontplusServices(builder.Environment);
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+#### Basic Controller Example
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class BasicController : ControllerBase
 {
-    // Add application services with all patterns
-    services.AddApplicationServices(Configuration);
+    private readonly ICacheService _cache;
+    private readonly IRequestContextService _context;
 
-    // Add authorization policies
-    services.AddAuthorizationPolicies();
+    public BasicController(ICacheService cache, IRequestContextService context)
+    {
+        _cache = cache;
+        _context = context;
+    }
 
-    // Add MVC with application filters
-    services.AddApplicationMvc();
+    [HttpGet("hello")]
+    public async Task<IActionResult> Hello()
+    {
+        var message = await _cache.GetOrCreateAsync(
+            "hello-message",
+            () => Task.FromResult("Hello from Acontplus.Services!"),
+            TimeSpan.FromMinutes(5)
+        );
 
-    // Add health checks
-    services.AddApplicationHealthChecks(Configuration);
-}
-
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{
-    // Use application middleware pipeline
-    app.UseApplicationMiddleware(env);
-
-    app.UseRouting();
-    app.UseAuthentication();
-    app.UseAuthorization();
-    app.UseEndpoints(endpoints => endpoints.MapControllers());
+        return Ok(new { 
+            Message = message, 
+            CorrelationId = _context.GetCorrelationId() 
+        });
+    }
 }
 ```
 
-### 2. Configuration
+#### Basic Configuration
 
-Add to your `appsettings.json`:
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "RequireClientId": false
+  },
+  "Caching": {
+    "UseDistributedCache": false
+  }
+}
+```
+
+### 🟡 Intermediate Usage - Granular Control
+
+For applications that need fine-grained control over services and middleware.
+
+```csharp
+// Program.cs with granular control
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services individually for more control
+builder.Services.AddCachingServices(builder.Configuration);
+builder.Services.AddResilienceServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddAuthorizationPolicies(new List<string> { "web-app", "mobile-app" });
+
+// Add health checks
+builder.Services.AddApplicationHealthChecks(builder.Configuration);
+builder.Services.AddServiceHealthChecks(builder.Configuration);
+
+// Add MVC with custom filters
+builder.Services.AddApplicationMvc(enableGlobalFilters: true);
+
+var app = builder.Build();
+
+// Configure middleware pipeline manually
+app.UseSecurityHeaders(builder.Environment);
+app.UseMiddleware<CspNonceMiddleware>();
+app.UseAdvancedRateLimiting();
+app.UseMiddleware<RequestContextMiddleware>();
+app.UseAcontplusExceptionHandling();
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.MapHealthChecks("/health");
+
+app.Run();
+```
+
+#### Intermediate Controller with Device Detection
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class IntermediateController : ControllerBase
+{
+    private readonly ICacheService _cache;
+    private readonly IDeviceDetectionService _deviceDetection;
+    private readonly ICircuitBreakerService _circuitBreaker;
+
+    public IntermediateController(
+        ICacheService cache, 
+        IDeviceDetectionService deviceDetection,
+        ICircuitBreakerService circuitBreaker)
+    {
+        _cache = cache;
+        _deviceDetection = deviceDetection;
+        _circuitBreaker = circuitBreaker;
+    }
+
+    [HttpGet("content")]
+    public async Task<IActionResult> GetContent()
+    {
+        var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
+        var cacheKey = $"content:{deviceType}";
+
+        var content = await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            // Simulate external API call with circuit breaker
+            return await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                await Task.Delay(100); // Simulate API call
+                return deviceType switch
+                {
+                    DeviceType.Mobile => "Mobile-optimized content",
+                    DeviceType.Tablet => "Tablet-optimized content",
+                    _ => "Desktop content"
+                };
+            }, "content-api");
+        }, TimeSpan.FromMinutes(10));
+
+        return Ok(new { Content = content, DeviceType = deviceType.ToString() });
+    }
+
+    [HttpGet("health")]
+    public IActionResult GetHealth()
+    {
+        var circuitBreakerStatus = _circuitBreaker.GetCircuitBreakerState("content-api");
+        var cacheStats = _cache.GetStatistics();
+
+        return Ok(new
+        {
+            CircuitBreaker = circuitBreakerStatus,
+            Cache = new
+            {
+                TotalEntries = cacheStats.TotalEntries,
+                HitRate = $"{cacheStats.HitRatePercentage:F1}%"
+            }
+        });
+    }
+}
+```
+
+#### Intermediate Configuration
+
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "RequireClientId": true,
+    "AllowedClientIds": ["web-app", "mobile-app"]
+  },
+  "Caching": {
+    "UseDistributedCache": false,
+    "MemoryCacheSizeLimit": 52428800
+  },
+  "Resilience": {
+    "CircuitBreaker": {
+      "Enabled": true,
+      "ExceptionsAllowedBeforeBreaking": 3
+    },
+    "RetryPolicy": {
+      "Enabled": true,
+      "MaxRetries": 2
+    }
+  }
+}
+```
+
+### 🔴 Enterprise Usage - Full Configuration
+
+Complete setup for enterprise applications with all features enabled.
+
+```csharp
+// Program.cs for enterprise applications
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddApplicationInsights();
+
+// Add all Acontplus services
+builder.Services.AddAcontplusServices(builder.Configuration);
+
+// Add authentication and authorization
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+// Add authorization policies
+builder.Services.AddAuthorizationPolicies(new List<string>
+{
+    "web-app", "mobile-app", "admin-portal", "api-client"
+});
+
+// Add API documentation
+builder.Services.AddAcontplusApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Add MVC with all features
+builder.Services.AddAcontplusMvc(enableGlobalFilters: true);
+
+var app = builder.Build();
+
+// Configure middleware pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAcontplusServices(app.Environment);
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("live")
+});
+
+app.Run();
+```
+
+#### Enterprise Controller with Multi-Tenant Support
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Policy = "RequireClientId")]
+public class EnterpriseController : ControllerBase
+{
+    private readonly ICacheService _cache;
+    private readonly IRequestContextService _requestContext;
+    private readonly ICircuitBreakerService _circuitBreaker;
+    private readonly IDeviceDetectionService _deviceDetection;
+    private readonly ISecurityHeaderService _securityHeaders;
+
+    public EnterpriseController(
+        ICacheService cache,
+        IRequestContextService requestContext,
+        ICircuitBreakerService circuitBreaker,
+        IDeviceDetectionService deviceDetection,
+        ISecurityHeaderService securityHeaders)
+    {
+        _cache = cache;
+        _requestContext = requestContext;
+        _circuitBreaker = circuitBreaker;
+        _deviceDetection = deviceDetection;
+        _securityHeaders = securityHeaders;
+    }
+
+    [HttpGet("dashboard")]
+    [EnableRateLimiting("api")]
+    public async Task<IActionResult> GetDashboard()
+    {
+        var tenantId = _requestContext.GetTenantId();
+        var clientId = _requestContext.GetClientId();
+        var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
+        
+        var cacheKey = $"dashboard:{tenantId}:{clientId}:{deviceType}";
+
+        var dashboard = await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            return await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                // Simulate complex dashboard data retrieval
+                await Task.Delay(200);
+                return new
+                {
+                    TenantId = tenantId,
+                    ClientId = clientId,
+                    DeviceType = deviceType.ToString(),
+                    Data = new
+                    {
+                        Metrics = new { Requests = 1500, Errors = 2, Uptime = 99.8 },
+                        RecentActivity = new[] { "User login", "Data export", "Report generated" },
+                        Alerts = new[] { "High memory usage", "Database slow queries" }
+                    }
+                };
+            }, "dashboard-service");
+        }, TimeSpan.FromMinutes(5));
+
+        return Ok(dashboard);
+    }
+
+    [HttpPost("audit")]
+    [Authorize(Policy = "AdminOnly")]
+    public IActionResult LogAuditEvent([FromBody] AuditEvent auditEvent)
+    {
+        var context = _requestContext.GetRequestContext();
+        
+        var auditLog = new
+        {
+            Event = auditEvent,
+            Context = new
+            {
+                CorrelationId = context.CorrelationId,
+                TenantId = context.TenantId,
+                ClientId = context.ClientId,
+                UserId = User.Identity?.Name,
+                Timestamp = DateTime.UtcNow,
+                UserAgent = Request.Headers.UserAgent.ToString(),
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+            }
+        };
+
+        // In a real application, you would log this to your audit system
+        _logger.LogInformation("Audit event: {@AuditLog}", auditLog);
+
+        return Ok(new { Message = "Audit event logged", CorrelationId = context.CorrelationId });
+    }
+
+    [HttpGet("security-status")]
+    public IActionResult GetSecurityStatus()
+    {
+        var headers = _securityHeaders.GetRecommendedHeaders(false);
+        var cspNonce = _securityHeaders.GenerateCspNonce();
+        
+        return Ok(new
+        {
+            SecurityHeaders = headers,
+            CspNonce = cspNonce,
+            CircuitBreakerStatus = new
+            {
+                Dashboard = _circuitBreaker.GetCircuitBreakerState("dashboard-service"),
+                Auth = _circuitBreaker.GetCircuitBreakerState("auth-service"),
+                Database = _circuitBreaker.GetCircuitBreakerState("database-service")
+            }
+        });
+    }
+}
+
+public class AuditEvent
+{
+    public string Action { get; set; } = string.Empty;
+    public string Resource { get; set; } = string.Empty;
+    public Dictionary<string, object>? Metadata { get; set; }
+}
+```
+
+#### Enterprise Configuration
+
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "FrameOptionsDeny": true,
+    "ReferrerPolicy": "strict-origin-when-cross-origin",
+    "RequireClientId": true,
+    "AllowedClientIds": ["web-app", "mobile-app", "admin-portal", "api-client"],
+    "Csp": {
+      "AllowedImageSources": ["https://cdn.example.com", "https://images.example.com"],
+      "AllowedStyleSources": ["https://fonts.googleapis.com", "https://cdn.example.com"],
+      "AllowedScriptSources": ["https://cdn.example.com", "https://js.example.com"],
+      "AllowedConnectSources": ["https://api.example.com", "https://auth.example.com"]
+    }
+  },
+  "Resilience": {
+    "RateLimiting": {
+      "Enabled": true,
+      "WindowSeconds": 60,
+      "MaxRequestsPerWindow": 1000,
+      "SlidingWindow": true,
+      "ByIpAddress": true,
+      "ByClientId": true
+    },
+    "CircuitBreaker": {
+      "Enabled": true,
+      "ExceptionsAllowedBeforeBreaking": 5,
+      "DurationOfBreakSeconds": 60,
+      "SamplingDurationSeconds": 120,
+      "MinimumThroughput": 20
+    },
+    "RetryPolicy": {
+      "Enabled": true,
+      "MaxRetries": 3,
+      "BaseDelaySeconds": 1,
+      "ExponentialBackoff": true,
+      "MaxDelaySeconds": 30
+    },
+    "Timeout": {
+      "Enabled": true,
+      "DefaultTimeoutSeconds": 30,
+      "DatabaseTimeoutSeconds": 60,
+      "HttpClientTimeoutSeconds": 30,
+      "LongRunningTimeoutSeconds": 300
+    }
+  },
+  "Caching": {
+    "UseDistributedCache": true,
+    "RedisConnectionString": "your-redis-connection-string",
+    "RedisInstanceName": "acontplus-enterprise",
+    "MemoryCacheSizeLimit": 209715200
+  }
+}
+```
+
+```csharp
+// Simple controller using basic services
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    private readonly ICacheService _cache;
+    private readonly IRequestContextService _context;
+
+    public ProductsController(ICacheService cache, IRequestContextService context)
+    {
+        _cache = cache;
+        _context = context;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProduct(int id)
+    {
+        // Simple caching
+        var product = await _cache.GetOrCreateAsync(
+            $"product:{id}",
+            async () => await GetProductFromDatabase(id),
+            TimeSpan.FromMinutes(15)
+        );
+
+        // Basic request context
+        var correlationId = _context.GetCorrelationId();
+
+        return Ok(new { product, correlationId });
+    }
+
+    private async Task<Product> GetProductFromDatabase(int id)
+    {
+        // Simulate database call
+        await Task.Delay(100);
+        return new Product { Id = id, Name = $"Product {id}" };
+    }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+}
+```
+
+### 🟡 Intermediate Usage - Multi-Tenant & Device-Aware
+
+For applications with multiple tenants, device detection, and resilience patterns.
+
+````csharp
+// Program.cs - Granular service registration
+public void ConfigureServices(IServiceCollection services)
+{
+    // Core infrastructure
+    services.AddResponseCompressionServices();
+    services.AddBasicRateLimiting();
+
+    // Caching with Redis
+    services.AddCachingServices(Configuration);
+
+    // Resilience patterns
+    services.AddResilienceServices(Configuration);
+## ⚙️ Configuration Examples
+
+### 🟢 Basic Configuration
+
+Minimal configuration for getting started:
+
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "RequireClientId": false
+  },
+  "Caching": {
+    "UseDistributedCache": false
+  },
+  "Resilience": {
+    "CircuitBreaker": {
+      "Enabled": true
+    },
+    "RetryPolicy": {
+      "Enabled": true,
+      "MaxRetries": 3
+    }
+  }
+}
+````
+
+### 🟡 Production Configuration
+
+Complete configuration for production environments:
 
 ```json
 {
@@ -129,91 +714,1331 @@ Add to your `appsettings.json`:
     "AnonymousClientId": "anonymous",
     "AllowedClientIds": ["web-app", "mobile-app", "admin-portal"],
     "Csp": {
-      "AllowedImageSources": [
-        "https://i.ytimg.com",
-        "https://example.com"
-      ],
-      "AllowedStyleSources": [
-        "https://fonts.googleapis.com"
-      ],
-      "AllowedFontSources": [
-        "https://fonts.gstatic.com"
-      ],
-      "AllowedScriptSources": [
-        "https://cdnjs.cloudflare.com"
-      ],
-      "AllowedConnectSources": [
-        "https://api.example.com"
-      ]
+      "AllowedImageSources": ["https://i.ytimg.com", "https://example.com"],
+      "AllowedStyleSources": ["https://fonts.googleapis.com"],
+      "AllowedFontSources": ["https://fonts.gstatic.com"],
+      "AllowedScriptSources": ["https://cdnjs.cloudflare.com"],
+      "AllowedConnectSources": ["https://api.example.com"]
     }
   },
   "Resilience": {
+    "RateLimiting": {
+      "Enabled": true,
+      "WindowSeconds": 60,
+      "MaxRequestsPerWindow": 100,
+      "SlidingWindow": true,
+      "ByIpAddress": true,
+      "ByClientId": true
+    },
     "CircuitBreaker": {
       "Enabled": true,
-      "FailureThreshold": 5,
-      "RecoveryTime": "00:01:00"
+      "ExceptionsAllowedBeforeBreaking": 5,
+      "DurationOfBreakSeconds": 30,
+      "SamplingDurationSeconds": 60,
+      "MinimumThroughput": 10
     },
-    "Retry": {
+    "RetryPolicy": {
       "Enabled": true,
       "MaxRetries": 3,
-      "BackoffPower": 2
+      "BaseDelaySeconds": 1,
+      "ExponentialBackoff": true,
+      "MaxDelaySeconds": 30
+    },
+    "Timeout": {
+      "Enabled": true,
+      "DefaultTimeoutSeconds": 30,
+      "DatabaseTimeoutSeconds": 60,
+      "HttpClientTimeoutSeconds": 30,
+      "LongRunningTimeoutSeconds": 300
     }
   },
   "Caching": {
-    "DefaultExpirationMinutes": 60,
-    "RedisConnectionString": "localhost:6379"
+    "UseDistributedCache": false,
+    "RedisConnectionString": "localhost:6379",
+    "RedisInstanceName": "acontplus",
+    "MemoryCacheSizeLimit": 104857600,
+    "ExpirationScanFrequencyMinutes": 5
   }
 }
 ```
 
-## 🔧 Modern Service Registration
+## � Serevice Usage Examples
 
-### Core Services
-
-```csharp
-// Add caching services (in-memory and Redis)
-services.AddCachingServices(Configuration);
-
-// Add resilience services (circuit breakers, retry policies)
-services.AddResilienceServices(Configuration);
-
-// Add resilient HTTP clients
-services.AddResilientHttpClients(Configuration);
-
-// Add monitoring and telemetry
-services.AddMonitoringServices(Configuration);
-```
-
-### Infrastructure Services
+### 🗄️ Cache Service Usage
 
 ```csharp
-// Add response compression
-services.AddResponseCompressionServices();
-
-// Add basic rate limiting
-services.AddBasicRateLimiting();
-
-// Add advanced rate limiting (if needed)
-services.AddAdvancedRateLimiting(Configuration);
-```
-
-### Application Services
-
-```csharp
-// Add all application services
-services.AddApplicationServices(Configuration);
-
-// Add authorization policies
-services.AddAuthorizationPolicies(new List<string>
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
 {
-    "web-app", "mobile-app", "admin-portal"
+    private readonly ICacheService _cache;
+    private readonly IProductRepository _repository;
+
+    public ProductsController(ICacheService cache, IProductRepository repository)
+    {
+        _cache = cache;
+        _repository = repository;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Product>> GetProduct(int id)
+    {
+        var cacheKey = $"product:{id}";
+
+        // Try to get from cache first
+        var product = await _cache.GetAsync<Product>(cacheKey);
+        if (product != null)
+        {
+            return Ok(product);
+        }
+
+        // Get from database and cache it
+        product = await _repository.GetByIdAsync(id);
+        if (product != null)
+        {
+            await _cache.SetAsync(cacheKey, product, TimeSpan.FromMinutes(30));
+        }
+
+        return product != null ? Ok(product) : NotFound();
+    }
+
+    [HttpGet("stats")]
+    public ActionResult<CacheStatistics> GetCacheStats()
+    {
+        var stats = _cache.GetStatistics();
+        return Ok(stats);
+    }
+
+    [HttpDelete("cache/{id}")]
+    public async Task<IActionResult> InvalidateCache(int id)
+    {
+        var cacheKey = $"product:{id}";
+        await _cache.RemoveAsync(cacheKey);
+        return NoContent();
+    }
+}
+```
+
+### 🔄 Circuit Breaker Usage
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ExternalApiController : ControllerBase
+{
+    private readonly ICircuitBreakerService _circuitBreaker;
+    private readonly HttpClient _httpClient;
+
+    public ExternalApiController(ICircuitBreakerService circuitBreaker, HttpClient httpClient)
+    {
+        _circuitBreaker = circuitBreaker;
+        _httpClient = httpClient;
+    }
+
+    [HttpGet("external-data")]
+    public async Task<ActionResult<ExternalData>> GetExternalData()
+    {
+        try
+        {
+            // Use circuit breaker for external API calls
+            var result = await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                var response = await _httpClient.GetAsync("https://api.external.com/data");
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<ExternalData>();
+            }, "external");
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(503, new { error = "External service unavailable", details = ex.Message });
+        }
+    }
+
+    [HttpGet("circuit-status")]
+    public ActionResult GetCircuitBreakerStatus()
+    {
+        var status = new
+        {
+            Default = _circuitBreaker.GetCircuitBreakerState("default"),
+            Api = _circuitBreaker.GetCircuitBreakerState("api"),
+            Database = _circuitBreaker.GetCircuitBreakerState("database"),
+            External = _circuitBreaker.GetCircuitBreakerState("external"),
+            Auth = _circuitBreaker.GetCircuitBreakerState("auth")
+        };
+
+        return Ok(status);
+    }
+}
+```
+
+### 📱 Device Detection Usage
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ContentController : ControllerBase
+{
+    private readonly IDeviceDetectionService _deviceDetection;
+    private readonly IRequestContextService _requestContext;
+
+    public ContentController(IDeviceDetectionService deviceDetection, IRequestContextService requestContext)
+    {
+        _deviceDetection = deviceDetection;
+        _requestContext = requestContext;
+    }
+
+    [HttpGet("adaptive-content")]
+    public ActionResult<ContentResponse> GetAdaptiveContent()
+    {
+        var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
+        var isMobile = _deviceDetection.IsMobileDevice(HttpContext);
+        var userAgent = Request.Headers.UserAgent.ToString();
+        var capabilities = _deviceDetection.GetDeviceCapabilities(userAgent);
+
+        var content = deviceType switch
+        {
+            DeviceType.Mobile => GetMobileContent(),
+            DeviceType.Tablet => GetTabletContent(),
+            DeviceType.Desktop => GetDesktopContent(),
+            _ => GetDefaultContent()
+        };
+
+        return Ok(new ContentResponse
+        {
+            Content = content,
+            DeviceInfo = new
+            {
+                Type = deviceType.ToString(),
+                IsMobile = isMobile,
+                Browser = capabilities.Browser,
+                OS = capabilities.OperatingSystem,
+                SupportsTouch = capabilities.SupportsTouch
+            }
+        });
+    }
+
+    [HttpGet("device-info")]
+    public ActionResult GetDeviceInfo()
+    {
+        var userAgent = Request.Headers.UserAgent.ToString();
+        var capabilities = _deviceDetection.GetDeviceCapabilities(userAgent);
+        var context = _requestContext.GetRequestContext();
+
+        return Ok(new
+        {
+            DeviceCapabilities = capabilities,
+            RequestContext = context,
+            Headers = new
+            {
+                UserAgent = userAgent,
+                AcceptLanguage = Request.Headers.AcceptLanguage.ToString(),
+                AcceptEncoding = Request.Headers.AcceptEncoding.ToString()
+            }
+        });
+    }
+
+    private string GetMobileContent() => "Optimized mobile content with touch-friendly UI";
+    private string GetTabletContent() => "Tablet-optimized content with larger touch targets";
+    private string GetDesktopContent() => "Full desktop experience with hover effects";
+    private string GetDefaultContent() => "Standard responsive content";
+}
+```
+
+### 🔒 Security Headers Usage
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class SecurityController : ControllerBase
+{
+    private readonly ISecurityHeaderService _securityHeaders;
+
+    public SecurityController(ISecurityHeaderService securityHeaders)
+    {
+        _securityHeaders = securityHeaders;
+    }
+
+    [HttpGet("headers")]
+    public ActionResult GetSecurityHeaders()
+    {
+        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+        var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment);
+
+        return Ok(new
+        {
+            RecommendedHeaders = headers,
+            Environment = isDevelopment ? "Development" : "Production",
+            CspNonce = _securityHeaders.GenerateCspNonce()
+        });
+    }
+
+    [HttpPost("validate-headers")]
+    public ActionResult ValidateHeaders()
+    {
+        var isValid = _securityHeaders.ValidateSecurityHeaders(HttpContext);
+
+        return Ok(new
+        {
+            IsValid = isValid,
+            AppliedHeaders = Response.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()),
+            Timestamp = DateTime.UtcNow
+        });
+    }
+}
+```
+
+### 📊 Request Context Usage
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ContextController : ControllerBase
+{
+    private readonly IRequestContextService _requestContext;
+
+    public ContextController(IRequestContextService requestContext)
+    {
+        _requestContext = requestContext;
+    }
+
+    [HttpGet("info")]
+    public ActionResult GetRequestInfo()
+    {
+        var context = _requestContext.GetRequestContext();
+
+        return Ok(new
+        {
+            RequestId = _requestContext.GetRequestId(),
+            CorrelationId = _requestContext.GetCorrelationId(),
+            TenantId = _requestContext.GetTenantId(),
+            ClientId = _requestContext.GetClientId(),
+            DeviceType = _requestContext.GetDeviceType(),
+            IsMobile = _requestContext.IsMobileRequest(),
+            FullContext = context
+        });
+    }
+
+    [HttpPost("track-action")]
+    public ActionResult TrackAction([FromBody] ActionRequest request)
+    {
+        var correlationId = _requestContext.GetCorrelationId();
+        var tenantId = _requestContext.GetTenantId();
+
+        // Log action with context
+        var logEntry = new
+        {
+            Action = request.Action,
+            CorrelationId = correlationId,
+            TenantId = tenantId,
+            Timestamp = DateTime.UtcNow,
+            UserId = User.Identity?.Name
+        };
+
+        // Here you would typically log to your logging system
+        Console.WriteLine($"Action tracked: {System.Text.Json.JsonSerializer.Serialize(logEntry)}");
+
+        return Ok(new { Message = "Action tracked successfully", CorrelationId = correlationId });
+    }
+}
+
+public class ActionRequest
+{
+    public string Action { get; set; } = string.Empty;
+    public Dictionary<string, object>? Data { get; set; }
+}
+
+public class ContentResponse
+{
+    public string Content { get; set; } = string.Empty;
+    public object? DeviceInfo { get; set; }
+}
+
+public class ExternalData
+{
+    public string Data { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
+}
+```
+
+## 🔧 Service Usage Patterns
+
+### 🗄️ Advanced Caching Patterns
+
+#### Cache-Aside with Bulk Operations
+
+```csharp
+public class ProductService
+{
+    private readonly ICacheService _cache;
+    private readonly IProductRepository _repository;
+
+    public ProductService(ICacheService cache, IProductRepository repository)
+    {
+        _cache = cache;
+        _repository = repository;
+    }
+
+    public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category)
+    {
+        var cacheKey = $"products:category:{category}";
+        
+        return await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            var products = await _repository.GetByCategoryAsync(category);
+            
+            // Cache individual products for quick access
+            var cacheTasks = products.Select(p => 
+                _cache.SetAsync($"product:{p.Id}", p, TimeSpan.FromHours(1)));
+            
+            await Task.WhenAll(cacheTasks);
+            
+            return products;
+        }, TimeSpan.FromMinutes(30));
+    }
+
+    public async Task InvalidateCategoryCacheAsync(string category)
+    {
+        var cacheKey = $"products:category:{category}";
+        await _cache.RemoveAsync(cacheKey);
+    }
+
+    public async Task<CacheStatistics> GetCachePerformanceAsync()
+    {
+        var stats = _cache.GetStatistics();
+        
+        // Calculate additional metrics
+        var efficiency = stats.TotalEntries > 0 
+            ? (stats.HitRatePercentage / 100.0) * stats.TotalEntries 
+            : 0;
+            
+        return new CacheStatistics
+        {
+            TotalEntries = stats.TotalEntries,
+            HitRatePercentage = stats.HitRatePercentage,
+            Efficiency = efficiency
+        };
+    }
+}
+```
+
+#### Distributed Cache with Fallback
+
+```csharp
+public class HybridCacheService
+{
+    private readonly ICacheService _distributedCache;
+    private readonly ICacheService _localCache;
+    private readonly ILogger<HybridCacheService> _logger;
+
+    public HybridCacheService(
+        ICacheService distributedCache,
+        ICacheService localCache,
+        ILogger<HybridCacheService> logger)
+    {
+        _distributedCache = distributedCache;
+        _localCache = localCache;
+        _logger = logger;
+    }
+
+    public async Task<T?> GetWithFallbackAsync<T>(string key, Func<Task<T>> factory, TimeSpan expiration)
+    {
+        try
+        {
+            // Try distributed cache first
+            var value = await _distributedCache.GetAsync<T>(key);
+            if (value != null) return value;
+
+            // Fallback to local cache
+            value = await _localCache.GetAsync<T>(key);
+            if (value != null) return value;
+
+            // Generate and cache in both
+            value = await factory();
+            
+            var cacheTasks = new[]
+            {
+                _distributedCache.SetAsync(key, value, expiration),
+                _localCache.SetAsync(key, value, TimeSpan.FromMinutes(5)) // Shorter local TTL
+            };
+            
+            await Task.WhenAll(cacheTasks);
+            return value;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Cache operation failed for key: {Key}", key);
+            
+            // Fallback to local cache only
+            return await _localCache.GetOrCreateAsync(key, factory, TimeSpan.FromMinutes(5));
+        }
+    }
+}
+```
+
+### 🔄 Advanced Resilience Patterns
+
+#### Composite Circuit Breaker
+
+```csharp
+public class CompositeResilienceService
+{
+    private readonly ICircuitBreakerService _circuitBreaker;
+    private readonly ILogger<CompositeResilienceService> _logger;
+
+    public CompositeResilienceService(
+        ICircuitBreakerService circuitBreaker,
+        ILogger<CompositeResilienceService> logger)
+    {
+        _circuitBreaker = circuitBreaker;
+        _logger = logger;
+    }
+
+    public async Task<T> ExecuteWithResilienceAsync<T>(
+        Func<Task<T>> operation,
+        string operationName,
+        ResilienceOptions options)
+    {
+        try
+        {
+            return await _circuitBreaker.ExecuteAsync(operation, operationName);
+        }
+        catch (Exception ex) when (options.FallbackValue != null)
+        {
+            _logger.LogWarning(ex, "Operation {OperationName} failed, using fallback", operationName);
+            return (T)options.FallbackValue;
+        }
+        catch (Exception ex) when (options.RetryCount > 0)
+        {
+            _logger.LogInformation(ex, "Retrying operation {OperationName}, attempt 1", operationName);
+            
+            for (int attempt = 1; attempt <= options.RetryCount; attempt++)
+            {
+                try
+                {
+                    await Task.Delay(options.RetryDelay * attempt);
+                    return await _circuitBreaker.ExecuteAsync(operation, operationName);
+                }
+                catch (Exception retryEx) when (attempt < options.RetryCount)
+                {
+                    _logger.LogInformation(retryEx, 
+                        "Retry attempt {Attempt} failed for {OperationName}", 
+                        attempt + 1, operationName);
+                }
+            }
+            
+            throw new ResilienceException($"Operation {operationName} failed after {options.RetryCount} retries", ex);
+        }
+    }
+}
+
+public class ResilienceOptions
+{
+    public int RetryCount { get; set; } = 0;
+    public int RetryDelay { get; set; } = 1000; // milliseconds
+    public object? FallbackValue { get; set; }
+}
+
+public class ResilienceException : Exception
+{
+    public ResilienceException(string message, Exception innerException) 
+        : base(message, innerException) { }
+}
+```
+
+### 📱 Advanced Device Detection
+
+#### Device-Aware Content Optimization
+
+```csharp
+public class AdaptiveContentService
+{
+    private readonly IDeviceDetectionService _deviceDetection;
+    private readonly ICacheService _cache;
+
+    public AdaptiveContentService(
+        IDeviceDetectionService deviceDetection,
+        ICacheService cache)
+    {
+        _deviceDetection = deviceDetection;
+        _cache = cache;
+    }
+
+    public async Task<AdaptiveContent> GetOptimizedContentAsync(HttpContext context, string contentId)
+    {
+        var userAgent = context.Request.Headers.UserAgent.ToString();
+        var capabilities = _deviceDetection.GetDeviceCapabilities(userAgent);
+        var deviceType = _deviceDetection.DetectDeviceType(context);
+        
+        var cacheKey = $"content:{contentId}:{deviceType}:{capabilities.Browser}";
+        
+        return await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            var baseContent = await GetBaseContentAsync(contentId);
+            
+            return new AdaptiveContent
+            {
+                Id = contentId,
+                Title = baseContent.Title,
+                Content = OptimizeContentForDevice(baseContent.Content, deviceType, capabilities),
+                Media = GetOptimizedMedia(baseContent.Media, deviceType, capabilities),
+                Layout = GetLayoutForDevice(deviceType, capabilities),
+                Features = GetSupportedFeatures(capabilities)
+            };
+        }, TimeSpan.FromMinutes(15));
+    }
+
+    private string OptimizeContentForDevice(string content, DeviceType deviceType, DeviceCapabilities capabilities)
+    {
+        return deviceType switch
+        {
+            DeviceType.Mobile when !capabilities.SupportsTouch => 
+                content.Replace("touch-friendly", "mobile-optimized"),
+            DeviceType.Mobile when capabilities.SupportsTouch => 
+                content.Replace("mobile-optimized", "touch-friendly"),
+            DeviceType.Tablet => 
+                content.Replace("desktop", "tablet-optimized"),
+            _ => content
+        };
+    }
+
+    private object GetLayoutForDevice(DeviceType deviceType, DeviceCapabilities capabilities)
+    {
+        return deviceType switch
+        {
+            DeviceType.Mobile => new
+            {
+                Columns = 1,
+                Spacing = "compact",
+                TouchTargets = "large",
+                SwipeGestures = capabilities.SupportsTouch
+            },
+            DeviceType.Tablet => new
+            {
+                Columns = 2,
+                Spacing = "comfortable",
+                TouchTargets = "medium",
+                SwipeGestures = capabilities.SupportsTouch
+            },
+            _ => new
+            {
+                Columns = 3,
+                Spacing = "spacious",
+                TouchTargets = "standard",
+                HoverEffects = true
+            }
+        };
+    }
+}
+
+public class AdaptiveContent
+{
+    public string Id { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public object? Media { get; set; }
+    public object? Layout { get; set; }
+    public string[]? Features { get; set; }
+}
+```
+
+## 🔧 Middleware Usage Examples
+
+### 🛡️ Custom Exception Handling
+
+```csharp
+// Custom exception handling with detailed logging
+app.UseAcontplusExceptionHandling(options =>
+{
+    options.IncludeRequestDetails = true;
+    options.LogRequestBody = app.Environment.IsDevelopment();
+    options.IncludeDebugDetailsInResponse = app.Environment.IsDevelopment();
+    options.CustomErrorHandler = (context, exception) =>
+    {
+        // Custom logic for specific exceptions
+        if (exception is BusinessLogicException businessEx)
+        {
+            context.Response.StatusCode = 400;
+            return Task.FromResult(new { error = businessEx.Message, code = businessEx.ErrorCode });
+        }
+        return Task.FromResult<object?>(null);
+    };
+});
+```
+
+### 🚦 Advanced Rate Limiting
+
+```csharp
+// Configure advanced rate limiting with custom policies
+builder.Services.AddAdvancedRateLimiting(builder.Configuration, options =>
+{
+    // Per-endpoint rate limiting
+    options.AddPolicy("api", new RateLimitPolicy
+    {
+        WindowSize = TimeSpan.FromMinutes(1),
+        PermitLimit = 100,
+        QueueLimit = 10
+    });
+
+    // Stricter limits for authentication endpoints
+    options.AddPolicy("auth", new RateLimitPolicy
+    {
+        WindowSize = TimeSpan.FromMinutes(1),
+        PermitLimit = 10,
+        QueueLimit = 0
+    });
 });
 
-// Add MVC with filters
-services.AddApplicationMvc();
+// Apply rate limiting to specific endpoints
+[EnableRateLimiting("api")]
+[HttpGet("data")]
+public ActionResult GetData() => Ok("Data");
 
-// Add health checks
-services.AddApplicationHealthChecks(Configuration);
+[EnableRateLimiting("auth")]
+[HttpPost("login")]
+public ActionResult Login() => Ok("Login");
+```
+
+### 📝 Request Logging and Correlation
+
+```csharp
+// Custom request logging middleware
+public class CustomRequestLoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<CustomRequestLoggingMiddleware> _logger;
+    private readonly IRequestContextService _requestContext;
+
+    public CustomRequestLoggingMiddleware(
+        RequestDelegate next,
+        ILogger<CustomRequestLoggingMiddleware> logger,
+        IRequestContextService requestContext)
+    {
+        _next = next;
+        _logger = logger;
+        _requestContext = requestContext;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var correlationId = _requestContext.GetCorrelationId();
+        var requestId = _requestContext.GetRequestId();
+
+        using (_logger.BeginScope(new Dictionary<string, object>
+        {
+            ["CorrelationId"] = correlationId,
+            ["RequestId"] = requestId
+        }))
+        {
+            _logger.LogInformation("Request started: {Method} {Path}",
+                context.Request.Method, context.Request.Path);
+
+            var stopwatch = Stopwatch.StartNew();
+
+            await _next(context);
+
+            stopwatch.Stop();
+
+            _logger.LogInformation("Request completed: {Method} {Path} {StatusCode} in {ElapsedMs}ms",
+                context.Request.Method,
+                context.Request.Path,
+                context.Response.StatusCode,
+                stopwatch.ElapsedMilliseconds);
+        }
+    }
+}
+
+// Register the middleware
+app.UseMiddleware<CustomRequestLoggingMiddleware>();
+```
+
+### 🔐 Custom Authorization Policies
+
+```csharp
+// Custom authorization requirements
+public class TenantAccessRequirement : IAuthorizationRequirement
+{
+    public string RequiredTenant { get; }
+
+    public TenantAccessRequirement(string requiredTenant)
+    {
+        RequiredTenant = requiredTenant;
+    }
+}
+
+public class TenantAccessHandler : AuthorizationHandler<TenantAccessRequirement>
+{
+    private readonly IRequestContextService _requestContext;
+
+    public TenantAccessHandler(IRequestContextService requestContext)
+    {
+        _requestContext = requestContext;
+    }
+
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        TenantAccessRequirement requirement)
+    {
+        var tenantId = _requestContext.GetTenantId();
+
+        if (tenantId == requirement.RequiredTenant)
+        {
+            context.Succeed(requirement);
+        }
+
+        return Task.CompletedTask;
+    }
+}
+
+// Register the handler
+builder.Services.AddScoped<IAuthorizationHandler, TenantAccessHandler>();
+
+// Add custom policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TenantA", policy =>
+        policy.Requirements.Add(new TenantAccessRequirement("tenant-a")));
+
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin")
+              .Requirements.Add(new TenantAccessRequirement("admin-tenant")));
+});
+
+// Use in controllers
+[Authorize(Policy = "TenantA")]
+[HttpGet("tenant-data")]
+public ActionResult GetTenantData() => Ok("Tenant-specific data");
+```
+
+## 🌐 Real-World Integration Examples
+
+### 🔌 External API Integration
+
+#### Resilient Third-Party Service Client
+
+```csharp
+public class ExternalApiClient
+{
+    private readonly HttpClient _httpClient;
+    private readonly ICircuitBreakerService _circuitBreaker;
+    private readonly ICacheService _cache;
+    private readonly ILogger<ExternalApiClient> _logger;
+
+    public ExternalApiClient(
+        HttpClient httpClient,
+        ICircuitBreakerService circuitBreaker,
+        ICacheService cache,
+        ILogger<ExternalApiClient> logger)
+    {
+        _httpClient = httpClient;
+        _circuitBreaker = circuitBreaker;
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task<WeatherData> GetWeatherAsync(string city)
+    {
+        var cacheKey = $"weather:{city}";
+        
+        return await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            return await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                var response = await _httpClient.GetAsync($"/weather?city={city}");
+                response.EnsureSuccessStatusCode();
+                
+                var weather = await response.Content.ReadFromJsonAsync<WeatherData>();
+                _logger.LogInformation("Retrieved weather for {City}: {Temperature}°C", 
+                    city, weather?.Temperature);
+                
+                return weather ?? new WeatherData { City = city, Temperature = 0 };
+            }, "weather-api");
+        }, TimeSpan.FromMinutes(30));
+    }
+
+    public async Task<StockQuote> GetStockQuoteAsync(string symbol)
+    {
+        var cacheKey = $"stock:{symbol}";
+        
+        return await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            return await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                var response = await _httpClient.GetAsync($"/stocks/{symbol}");
+                response.EnsureSuccessStatusCode();
+                
+                var quote = await response.Content.ReadFromJsonAsync<StockQuote>();
+                _logger.LogInformation("Retrieved stock quote for {Symbol}: ${Price}", 
+                    symbol, quote?.Price);
+                
+                return quote ?? new StockQuote { Symbol = symbol, Price = 0 };
+            }, "stock-api");
+        }, TimeSpan.FromMinutes(5)); // Shorter cache for stock data
+    }
+}
+
+public class WeatherData
+{
+    public string City { get; set; } = string.Empty;
+    public double Temperature { get; set; }
+    public string Description { get; set; } = string.Empty;
+}
+
+public class StockQuote
+{
+    public string Symbol { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public DateTime Timestamp { get; set; }
+}
+```
+
+#### Multi-Service Orchestration
+
+```csharp
+public class OrderProcessingService
+{
+    private readonly ICircuitBreakerService _circuitBreaker;
+    private readonly ICacheService _cache;
+    private readonly IRequestContextService _requestContext;
+    private readonly ILogger<OrderProcessingService> _logger;
+
+    public OrderProcessingService(
+        ICircuitBreakerService circuitBreaker,
+        ICacheService cache,
+        IRequestContextService requestContext,
+        ILogger<OrderProcessingService> logger)
+    {
+        _circuitBreaker = circuitBreaker;
+        _cache = cache;
+        _requestContext = requestContext;
+        _logger = logger;
+    }
+
+    public async Task<OrderResult> ProcessOrderAsync(OrderRequest request)
+    {
+        var correlationId = _requestContext.GetCorrelationId();
+        var tenantId = _requestContext.GetTenantId();
+        
+        using var scope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            ["CorrelationId"] = correlationId,
+            ["TenantId"] = tenantId,
+            ["OrderId"] = request.OrderId
+        });
+
+        try
+        {
+            // Step 1: Validate inventory with circuit breaker
+            var inventory = await _circuitBreaker.ExecuteAsync(
+                () => ValidateInventoryAsync(request.Items), "inventory-service");
+
+            if (!inventory.IsAvailable)
+            {
+                return OrderResult.Failed("Insufficient inventory", inventory.UnavailableItems);
+            }
+
+            // Step 2: Process payment with circuit breaker
+            var payment = await _circuitBreaker.ExecuteAsync(
+                () => ProcessPaymentAsync(request.Payment, request.Total), "payment-service");
+
+            if (!payment.IsSuccessful)
+            {
+                return OrderResult.Failed("Payment failed", payment.ErrorMessage);
+            }
+
+            // Step 3: Create order with fallback
+            var order = await _circuitBreaker.ExecuteAsync(
+                () => CreateOrderAsync(request, inventory, payment), "order-service");
+
+            // Cache order details
+            await _cache.SetAsync($"order:{order.Id}", order, TimeSpan.FromHours(24));
+
+            _logger.LogInformation("Order {OrderId} processed successfully", order.Id);
+
+            return OrderResult.Success(order);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Order processing failed for {OrderId}", request.OrderId);
+            throw;
+        }
+    }
+
+    private async Task<InventoryValidation> ValidateInventoryAsync(List<OrderItem> items)
+    {
+        // Simulate inventory validation
+        await Task.Delay(100);
+        return new InventoryValidation { IsAvailable = true, UnavailableItems = new List<string>() };
+    }
+
+    private async Task<PaymentResult> ProcessPaymentAsync(PaymentInfo payment, decimal total)
+    {
+        // Simulate payment processing
+        await Task.Delay(200);
+        return new PaymentResult { IsSuccessful = true, TransactionId = Guid.NewGuid().ToString() };
+    }
+
+    private async Task<Order> CreateOrderAsync(OrderRequest request, InventoryValidation inventory, PaymentResult payment)
+    {
+        // Simulate order creation
+        await Task.Delay(150);
+        return new Order
+        {
+            Id = Guid.NewGuid().ToString(),
+            Items = request.Items,
+            Total = request.Total,
+            Status = "Created",
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+}
+
+public class OrderRequest
+{
+    public string OrderId { get; set; } = string.Empty;
+    public List<OrderItem> Items { get; set; } = new();
+    public PaymentInfo Payment { get; set; } = new();
+    public decimal Total { get; set; }
+}
+
+public class OrderResult
+{
+    public bool IsSuccess { get; set; }
+    public Order? Order { get; set; }
+    public string? ErrorMessage { get; set; }
+    public List<string>? Details { get; set; }
+
+    public static OrderResult Success(Order order) => new() { IsSuccess = true, Order = order };
+    public static OrderResult Failed(string message, List<string>? details = null) => 
+        new() { IsSuccess = false, ErrorMessage = message, Details = details };
+}
+
+public class InventoryValidation
+{
+    public bool IsAvailable { get; set; }
+    public List<string> UnavailableItems { get; set; } = new();
+}
+
+public class PaymentResult
+{
+    public bool IsSuccessful { get; set; }
+    public string? TransactionId { get; set; }
+    public string? ErrorMessage { get; set; }
+}
+
+public class Order
+{
+    public string Id { get; set; } = string.Empty;
+    public List<OrderItem> Items { get; set; } = new();
+    public decimal Total { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+}
+
+public class OrderItem
+{
+    public string ProductId { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+}
+
+public class PaymentInfo
+{
+    public string Method { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+}
+```
+
+### 🏢 Enterprise Integration Patterns
+
+#### Multi-Tenant Service with Isolation
+
+```csharp
+public class TenantAwareService
+{
+    private readonly ICacheService _cache;
+    private readonly IRequestContextService _requestContext;
+    private readonly ILogger<TenantAwareService> _logger;
+
+    public TenantAwareService(
+        ICacheService cache,
+        IRequestContextService requestContext,
+        ILogger<TenantAwareService> logger)
+    {
+        _cache = cache;
+        _requestContext = requestContext;
+        _logger = logger;
+    }
+
+    public async Task<TenantData> GetTenantDataAsync(string dataType)
+    {
+        var tenantId = _requestContext.GetTenantId();
+        var clientId = _requestContext.GetClientId();
+        
+        if (string.IsNullOrEmpty(tenantId))
+        {
+            throw new UnauthorizedAccessException("Tenant ID is required");
+        }
+
+        var cacheKey = $"tenant:{tenantId}:{clientId}:{dataType}";
+        
+        return await _cache.GetOrCreateAsync(cacheKey, async () =>
+        {
+            _logger.LogInformation("Retrieving {DataType} for tenant {TenantId} and client {ClientId}", 
+                dataType, tenantId, clientId);
+
+            // Simulate tenant-specific data retrieval
+            await Task.Delay(100);
+            
+            return new TenantData
+            {
+                TenantId = tenantId,
+                ClientId = clientId,
+                DataType = dataType,
+                Content = $"Tenant-specific {dataType} for {tenantId}",
+                LastUpdated = DateTime.UtcNow,
+                Metadata = new Dictionary<string, object>
+                {
+                    ["tenant-tier"] = GetTenantTier(tenantId),
+                    ["data-version"] = "1.0",
+                    ["cache-key"] = cacheKey
+                }
+            };
+        }, TimeSpan.FromMinutes(15));
+    }
+
+    public async Task InvalidateTenantCacheAsync(string tenantId, string? dataType = null)
+    {
+        var clientId = _requestContext.GetClientId();
+        
+        if (dataType != null)
+        {
+            var cacheKey = $"tenant:{tenantId}:{clientId}:{dataType}";
+            await _cache.RemoveAsync(cacheKey);
+            _logger.LogInformation("Invalidated cache for tenant {TenantId}, data type {DataType}", 
+                tenantId, dataType);
+        }
+        else
+        {
+            // Invalidate all tenant data for this client
+            // Note: This is a simplified approach - in production you might use cache tags or patterns
+            _logger.LogInformation("Bulk cache invalidation requested for tenant {TenantId}", tenantId);
+        }
+    }
+
+    private string GetTenantTier(string tenantId)
+    {
+        // Simulate tenant tier determination
+        return tenantId.StartsWith("premium") ? "premium" : "standard";
+    }
+}
+
+public class TenantData
+{
+    public string TenantId { get; set; } = string.Empty;
+    public string ClientId { get; set; } = string.Empty;
+    public string DataType { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public DateTime LastUpdated { get; set; }
+    public Dictionary<string, object>? Metadata { get; set; }
+}
+```
+
+## 🧪 Testing Examples
+
+### 🟢 Unit Testing Services
+
+```csharp
+public class CacheServiceTests
+{
+    private readonly Mock<IMemoryCache> _mockCache;
+    private readonly Mock<ILogger<MemoryCacheService>> _mockLogger;
+    private readonly Mock<IOptions<MemoryCacheOptions>> _mockOptions;
+    private readonly MemoryCacheService _cacheService;
+
+    public CacheServiceTests()
+    {
+        _mockCache = new Mock<IMemoryCache>();
+        _mockLogger = new Mock<ILogger<MemoryCacheService>>();
+        _mockOptions = new Mock<IOptions<MemoryCacheOptions>>();
+        _mockOptions.Setup(x => x.Value).Returns(new MemoryCacheOptions());
+
+        _cacheService = new MemoryCacheService(_mockCache.Object, _mockLogger.Object, _mockOptions.Object);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenKeyExists_ReturnsValue()
+    {
+        // Arrange
+        var key = "test-key";
+        var expectedValue = "test-value";
+        object cacheValue = expectedValue;
+
+        _mockCache.Setup(x => x.TryGetValue(key, out cacheValue)).Returns(true);
+
+        // Act
+        var result = await _cacheService.GetAsync<string>(key);
+
+        // Assert
+        Assert.Equal(expectedValue, result);
+    }
+
+    [Fact]
+    public async Task SetAsync_WhenCalled_StoresValue()
+    {
+        // Arrange
+        var key = "test-key";
+        var value = "test-value";
+        var expiration = TimeSpan.FromMinutes(30);
+
+        // Act
+        await _cacheService.SetAsync(key, value, expiration);
+
+        // Assert
+        _mockCache.Verify(x => x.Set(key, value, It.IsAny<MemoryCacheEntryOptions>()), Times.Once);
+    }
+}
+```
+
+### 🟡 Integration Testing
+
+```csharp
+public class AcontplusServicesIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+
+    public AcontplusServicesIntegrationTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory;
+        _client = _factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task HealthCheck_ReturnsHealthy()
+    {
+        // Act
+        var response = await _client.GetAsync("/health");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        var healthResult = JsonSerializer.Deserialize<HealthCheckResponse>(content);
+
+        Assert.Equal("Healthy", healthResult?.Status);
+    }
+
+    [Fact]
+    public async Task SecurityHeaders_AreApplied()
+    {
+        // Act
+        var response = await _client.GetAsync("/api/test");
+
+        // Assert
+        Assert.True(response.Headers.Contains("X-Content-Type-Options"));
+        Assert.True(response.Headers.Contains("X-Frame-Options"));
+        Assert.True(response.Headers.Contains("Referrer-Policy"));
+    }
+
+    [Fact]
+    public async Task RateLimiting_EnforcesLimits()
+    {
+        // Arrange
+        var tasks = new List<Task<HttpResponseMessage>>();
+
+        // Act - Send many requests quickly
+        for (int i = 0; i < 150; i++)
+        {
+            tasks.Add(_client.GetAsync("/api/test"));
+        }
+
+        var responses = await Task.WhenAll(tasks);
+
+        // Assert - Some requests should be rate limited
+        var rateLimitedResponses = responses.Count(r => r.StatusCode == HttpStatusCode.TooManyRequests);
+        Assert.True(rateLimitedResponses > 0);
+    }
+}
+
+public class HealthCheckResponse
+{
+    public string? Status { get; set; }
+    public Dictionary<string, object>? Results { get; set; }
+}
+```
+
+### 🔴 Performance Testing
+
+```csharp
+[MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net90)]
+public class CacheServiceBenchmarks
+{
+    private ICacheService _memoryCache = null!;
+    private ICacheService _distributedCache = null!;
+
+    [GlobalSetup]
+    public void Setup()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddMemoryCache();
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "localhost:6379";
+        });
+
+        var provider = services.BuildServiceProvider();
+
+        _memoryCache = new MemoryCacheService(
+            provider.GetRequiredService<IMemoryCache>(),
+            provider.GetRequiredService<ILogger<MemoryCacheService>>(),
+            provider.GetRequiredService<IOptions<MemoryCacheOptions>>());
+
+        _distributedCache = new DistributedCacheService(
+            provider.GetRequiredService<IDistributedCache>(),
+            provider.GetRequiredService<ILogger<DistributedCacheService>>());
+    }
+
+    [Benchmark]
+    public async Task MemoryCache_SetAndGet()
+    {
+        await _memoryCache.SetAsync("benchmark-key", "benchmark-value");
+        await _memoryCache.GetAsync<string>("benchmark-key");
+    }
+
+    [Benchmark]
+    public async Task DistributedCache_SetAndGet()
+    {
+        await _distributedCache.SetAsync("benchmark-key", "benchmark-value");
+        await _distributedCache.GetAsync<string>("benchmark-key");
+    }
+
+    [Benchmark]
+    [Arguments(100)]
+    [Arguments(1000)]
+    public async Task MemoryCache_BulkOperations(int count)
+    {
+        var tasks = new List<Task>();
+
+        for (int i = 0; i < count; i++)
+        {
+            tasks.Add(_memoryCache.SetAsync($"key-{i}", $"value-{i}"));
+        }
+
+        await Task.WhenAll(tasks);
+
+        tasks.Clear();
+
+        for (int i = 0; i < count; i++)
+        {
+            tasks.Add(_memoryCache.GetAsync<string>($"key-{i}"));
+        }
+
+        await Task.WhenAll(tasks);
+    }
+}
 ```
 
 ## 🚀 Modern Features Examples
@@ -224,19 +2049,27 @@ services.AddApplicationHealthChecks(Configuration);
 public class ProductService
 {
     private readonly ICacheService _cache;
-    
+
     public ProductService(ICacheService cache) => _cache = cache;
-    
+
     public async Task<Product?> GetProductAsync(int id)
     {
         var cacheKey = $"product:{id}";
-        
+
         // Modern async caching with factory pattern
+        // Works with both in-memory and distributed (Redis) caching
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async () => await _repository.GetByIdAsync(id),
             TimeSpan.FromMinutes(30)
         );
+    }
+
+    public async Task<CacheStatistics> GetCacheStatsAsync()
+    {
+        // Note: Statistics are only available for in-memory cache
+        // Distributed cache returns empty statistics due to platform limitations
+        return _cache.GetStatistics();
     }
 }
 ```
@@ -248,9 +2081,9 @@ public class ProductService
 public class ExternalApiService
 {
     private readonly HttpClient _httpClient;
-    
+
     public ExternalApiService(HttpClient httpClient) => _httpClient = httpClient;
-    
+
     // Automatically wrapped with circuit breaker and retry policies
     public async Task<ApiResponse> GetDataAsync()
     {
@@ -267,7 +2100,7 @@ public class ExternalApiService
 public class CustomHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
-        HealthCheckContext context, 
+        HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
         // Your health check logic
@@ -285,17 +2118,17 @@ public class ProductController : ControllerBase
 {
     private readonly IDeviceDetectionService _deviceDetection;
     private readonly IRequestContextService _requestContext;
-    
+
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts()
     {
         var userAgent = Request.Headers.UserAgent.ToString();
         var capabilities = _deviceDetection.GetDeviceCapabilities(userAgent);
-        
-        var products = capabilities.IsMobile 
+
+        var products = capabilities.IsMobile
             ? await _productService.GetMobileProductsAsync()
             : await _productService.GetDesktopProductsAsync();
-            
+
         return Ok(products);
     }
 }
@@ -307,18 +2140,18 @@ public class ProductController : ControllerBase
 public class OrderController : ControllerBase
 {
     private readonly IRequestContextService _requestContext;
-    
+
     [HttpPost("orders")]
     public async Task<IActionResult> CreateOrder(CreateOrderRequest request)
     {
         var context = _requestContext.GetRequestContext();
         var correlationId = context.CorrelationId;
         var tenantId = context.TenantId;
-        
+
         // Use context for logging, tracking, and tenant isolation
-        _logger.LogInformation("Creating order {OrderId} for tenant {TenantId}", 
+        _logger.LogInformation("Creating order {OrderId} for tenant {TenantId}",
             request.OrderId, tenantId);
-            
+
         return Ok(new { OrderId = request.OrderId, CorrelationId = correlationId });
     }
 }
@@ -371,7 +2204,7 @@ public class SecurityController : ControllerBase
 
 ### Health Checks
 
-Access health information at `/health`:
+Access comprehensive health information at `/health`:
 
 ```json
 {
@@ -379,19 +2212,45 @@ Access health information at `/health`:
   "results": {
     "memory": {
       "status": "Healthy",
-      "description": "Memory usage is within acceptable limits"
+      "description": "Memory usage is within acceptable limits",
+      "data": {
+        "allocatedBytes": 52428800,
+        "gen0Collections": 5,
+        "gen1Collections": 2,
+        "gen2Collections": 1
+      }
     },
-    "request-context": {
+    "cache": {
       "status": "Healthy",
-      "description": "Request context service is operational"
+      "description": "Cache service is fully operational",
+      "data": {
+        "totalEntries": 150,
+        "hitRatePercentage": 85.5,
+        "lastTestTime": "2024-01-15T10:30:00Z"
+      }
     },
-    "security-headers": {
+    "circuit-breaker": {
       "status": "Healthy",
-      "description": "Security header service is operational"
+      "description": "All circuit breakers are operational",
+      "data": {
+        "default": "Closed",
+        "api": "Closed",
+        "database": "Closed",
+        "external": "Closed",
+        "auth": "Closed"
+      }
     },
     "device-detection": {
       "status": "Healthy",
-      "description": "Device detection service is operational"
+      "description": "Device detection service is fully operational",
+      "data": {
+        "allTestsPassed": true,
+        "test_desktop_chrome": {
+          "expected": "Desktop",
+          "actual": "Desktop",
+          "passed": true
+        }
+      }
     }
   }
 }
@@ -404,15 +2263,15 @@ Access health information at `/health`:
 public class MetricsController : ControllerBase
 {
     private readonly IMetricsService _metrics;
-    
+
     public MetricsController(IMetricsService metrics) => _metrics = metrics;
-    
+
     [HttpGet("metrics")]
     public IActionResult GetMetrics()
     {
         var requestCount = _metrics.GetCounter("http_requests_total");
         var responseTime = _metrics.GetHistogram("http_request_duration_seconds");
-        
+
         return Ok(new { requestCount, responseTime });
     }
 }
@@ -423,15 +2282,18 @@ public class MetricsController : ControllerBase
 ### From Legacy Services
 
 1. **Replace old extension class names**:
+
    - `ModernServiceExtensions` → `ServiceExtensions`
    - `EnterpriseServiceExtensions` → `ApplicationServiceExtensions`
 
 2. **Update method calls**:
+
    - `AddModernCaching` → `AddCachingServices`
    - `AddEnterpriseServices` → `AddApplicationServices`
    - `UseEnterpriseMiddleware` → `UseApplicationMiddleware`
 
 3. **Adopt new service patterns**:
+
    ```csharp
    // Old approach
    var userId = HttpContext.User.GetUserId();
@@ -443,12 +2305,14 @@ public class MetricsController : ControllerBase
 ## 🏗️ Architecture Patterns
 
 ### Service Layer Architecture
+
 - **Clean Separation**: Clear boundaries between business logic and infrastructure
 - **Dependency Injection**: Proper service registration and lifetime management
 - **Interface Segregation**: Focused service contracts for specific concerns
 - **Testability**: Easy mocking and unit testing of services
 
 ### Middleware Pipeline
+
 The application middleware pipeline is automatically configured in the correct order:
 
 1. **Security Headers**: Applied early for all responses
@@ -459,6 +2323,7 @@ The application middleware pipeline is automatically configured in the correct o
 6. **Compression**: Response compression for performance
 
 ### Error Handling
+
 - **Global Exception Handling**: Centralized error handling with standardized responses
 - **Domain Errors**: Business logic errors with proper HTTP status codes
 - **Validation Errors**: Model validation with consistent error format
@@ -467,6 +2332,7 @@ The application middleware pipeline is automatically configured in the correct o
 ## 📚 API Reference
 
 ### Core Services
+
 - `ICacheService` - Caching service supporting in-memory and distributed caching
 - `IRequestContextService` - Request context management and correlation
 - `ISecurityHeaderService` - HTTP security header management
@@ -474,11 +2340,13 @@ The application middleware pipeline is automatically configured in the correct o
 - `IMetricsService` - Metrics collection and monitoring
 
 ### Configuration
+
 - `ResilienceConfiguration` - Circuit breaker and retry policy configuration
 - `RequestContextConfiguration` - Request context and security settings
 - `CachingConfiguration` - Cache settings and Redis configuration
 
 ### Middleware
+
 - `GlobalExceptionMiddleware` - Global exception handling
 - `RequestContextMiddleware` - Request context extraction
 - `SecurityHeadersMiddleware` - Security header application
@@ -487,22 +2355,215 @@ The application middleware pipeline is automatically configured in the correct o
 ## 🚀 Performance Features
 
 ### Caching Strategies
+
 - **In-Memory Caching**: Fast local caching for frequently accessed data
 - **Distributed Caching**: Redis-based caching for multi-instance applications
 - **Cache-Aside Pattern**: Automatic cache population and invalidation
 - **TTL Management**: Configurable expiration times for different data types
 
 ### Resilience Patterns
+
 - **Circuit Breaker**: Prevents cascading failures in distributed systems
 - **Retry Policies**: Exponential backoff with jitter for transient failures
 - **Timeout Policies**: Configurable timeouts for external service calls
 - **Bulkhead Isolation**: Resource isolation for different service types
 
 ### Rate Limiting
+
 - **Basic Rate Limiting**: Global rate limits for all endpoints
 - **Advanced Rate Limiting**: Per-endpoint and per-user rate limiting
 - **Sliding Window**: Smooth rate limiting without burst effects
 - **Configurable Policies**: Different limits for different client types
+
+## 💡 Common Use Cases & Best Practices
+
+### 🎯 When to Use Each Service
+
+#### ICacheService
+- **Use in-memory caching** for single-instance applications with moderate memory usage
+- **Use distributed caching (Redis)** for multi-instance deployments and shared state
+- **Cache frequently accessed data** like user preferences, configuration, and lookup tables
+- **Avoid caching** user-specific data that changes frequently or sensitive information
+
+#### ICircuitBreakerService
+- **Use for external API calls** to prevent cascading failures
+- **Use for database operations** that might become slow or unavailable
+- **Use for third-party service integration** like payment gateways or weather APIs
+- **Don't use for** simple, fast operations that rarely fail
+
+#### IDeviceDetectionService
+- **Use for responsive design** and mobile-first applications
+- **Use for content optimization** based on device capabilities
+- **Use for analytics** and user experience tracking
+- **Don't rely solely on** user agent strings for critical functionality
+
+#### IRequestContextService
+- **Use for correlation tracking** across microservices
+- **Use for tenant isolation** in multi-tenant applications
+- **Use for audit logging** and request tracing
+- **Always validate** tenant and client IDs before use
+
+#### ISecurityHeaderService
+- **Use in production** to protect against common web vulnerabilities
+- **Configure CSP carefully** to avoid breaking legitimate functionality
+- **Test headers** in development before deploying to production
+- **Monitor security headers** using browser developer tools
+
+### 🔄 Caching Strategies
+
+#### Cache Key Design
+```csharp
+// Good: Descriptive and hierarchical
+"user:123:preferences"
+"products:category:electronics:page:1:size:20"
+"weather:city:london:country:uk"
+
+// Avoid: Generic or unclear keys
+"data"
+"temp"
+"123"
+```
+
+#### Cache Invalidation Patterns
+```csharp
+// Pattern 1: Time-based expiration
+await _cache.SetAsync("user:123", userData, TimeSpan.FromHours(1));
+
+// Pattern 2: Event-based invalidation
+await _cache.RemoveAsync("user:123");
+await _cache.RemoveAsync("users:list");
+
+// Pattern 3: Version-based caching
+await _cache.SetAsync("products:v2:123", product, TimeSpan.FromDays(1));
+```
+
+### 🛡️ Security Best Practices
+
+#### Content Security Policy
+```csharp
+// Configure CSP for your specific needs
+var cspConfig = new
+{
+    DefaultSrc = "'self'",
+    ScriptSrc = "'self' 'unsafe-inline' 'nonce-" + _securityHeaders.GenerateCspNonce() + "'",
+    StyleSrc = "'self' 'unsafe-inline' https://fonts.googleapis.com",
+    ImgSrc = "'self' data: https:",
+    ConnectSrc = "'self' https://api.example.com"
+};
+```
+
+#### Client ID Validation
+```csharp
+// Always validate client IDs
+public class ClientValidationAttribute : ActionFilterAttribute
+{
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        var requestContext = context.HttpContext.RequestServices
+            .GetRequiredService<IRequestContextService>();
+        
+        var clientId = requestContext.GetClientId();
+        if (!IsValidClient(clientId))
+        {
+            context.Result = new UnauthorizedResult();
+            return;
+        }
+        
+        base.OnActionExecuting(context);
+    }
+}
+```
+
+### 📱 Device Detection Best Practices
+
+#### Progressive Enhancement
+```csharp
+public class ContentService
+{
+    public async Task<ContentResponse> GetContentAsync(HttpContext context)
+    {
+        var deviceType = _deviceDetection.DetectDeviceType(context);
+        var capabilities = _deviceDetection.GetDeviceCapabilities(
+            context.Request.Headers.UserAgent.ToString());
+
+        var baseContent = await GetBaseContentAsync();
+        
+        return deviceType switch
+        {
+            DeviceType.Mobile when capabilities.SupportsTouch => 
+                EnhanceForTouch(baseContent),
+            DeviceType.Mobile => 
+                EnhanceForMobile(baseContent),
+            DeviceType.Tablet => 
+                EnhanceForTablet(baseContent),
+            _ => baseContent
+        };
+    }
+}
+```
+
+### 🔄 Resilience Patterns
+
+#### Fallback Strategies
+```csharp
+public class ResilientService
+{
+    public async Task<T> ExecuteWithFallbackAsync<T>(
+        Func<Task<T>> primaryOperation,
+        Func<Task<T>> fallbackOperation,
+        string operationName)
+    {
+        try
+        {
+            return await _circuitBreaker.ExecuteAsync(primaryOperation, operationName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Primary operation failed, using fallback");
+            return await fallbackOperation();
+        }
+    }
+}
+```
+
+#### Bulkhead Isolation
+```csharp
+// Use different circuit breakers for different service types
+await _circuitBreaker.ExecuteAsync(operation, "database-service");
+await _circuitBreaker.ExecuteAsync(operation, "external-api-service");
+await _circuitBreaker.ExecuteAsync(operation, "payment-service");
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### Cache Service Issues
+
+- **Distributed cache statistics are empty**: This is expected - Redis and other distributed caches don't expose statistics through `IDistributedCache`
+- **Clear operations don't work with distributed cache**: This is a platform limitation - distributed caches don't support clearing all entries
+
+#### Circuit Breaker Issues
+
+- **Circuit breakers always show as Closed**: Ensure resilience configuration is properly loaded and circuit breaker is enabled
+- **Health checks show degraded status**: Check if any circuit breakers are open due to recent failures
+
+#### Configuration Issues
+
+- **Services not registering**: Ensure you're calling `AddAcontplusServices(configuration)` in your startup
+- **Configuration not loading**: Verify your `appsettings.json` structure matches the documented format
+
+#### Health Check Issues
+
+- **Request context health check fails**: This is expected when running outside HTTP context (e.g., during startup)
+- **Device detection tests fail**: Verify user agent parsing logic if you've modified the detection patterns
+
+### Performance Tips
+
+- Use in-memory caching for single-instance applications
+- Use distributed caching (Redis) for multi-instance deployments
+- Configure circuit breaker thresholds based on your service's error tolerance
+- Monitor health check endpoints for early problem detection
 
 ## 🤝 Contributing
 
@@ -510,9 +2571,10 @@ When adding new features:
 
 1. Follow the established patterns (Services, Filters, Policies)
 2. Add comprehensive logging
-3. Include health checks for new services
-4. Update this documentation
+3. Include functional health checks for new services
+4. Update this documentation with configuration examples
 5. Add unit tests for new functionality
+6. Document any platform limitations or known issues
 
 ## 📄 License
 

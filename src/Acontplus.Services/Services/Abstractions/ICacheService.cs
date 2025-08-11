@@ -18,6 +18,7 @@ public interface ICacheService
     /// </summary>
     /// <typeparam name="T">The type of the cached value.</typeparam>
     /// <param name="key">The cache key.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The cached value or default if not found.</returns>
     Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
 

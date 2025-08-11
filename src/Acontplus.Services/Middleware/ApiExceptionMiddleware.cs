@@ -223,7 +223,7 @@ public class ApiExceptionMiddleware(
                     type = ex.InnerException.GetType().Name,
                     message = ex.InnerException.Message
                 }
-                : null,
+                : (object?)null,
             ["activityId"] = Activity.Current?.Id ?? "none"
         };
     }
