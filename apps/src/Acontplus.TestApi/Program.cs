@@ -46,21 +46,21 @@ try
     //    This is where builder.Services (an IServiceCollection) is available.
     builder.Services.AddAdvancedLoggingOptions(builder.Configuration);
 
+    // Configure Acontplus.Services - Core infrastructure
+    builder.Services.AddAcontplusServices(builder.Configuration);
+
     // Configure application services
-    builder.Services.AddApplicationServices(builder.Configuration);
     builder.Services.AddTestServices(builder.Configuration);
     builder.Services.AddAuthorizationPolicies(new List<string>
     {
         "web-app", "mobile-app", "admin-portal", "test-client"
     });
     builder.Services.AddApplicationMvc();
-    builder.Services.AddApplicationHealthChecks(builder.Configuration);
 
 
     // --- Start new try-catch block for service registration ---
     try
     {
-        builder.Services.AddApplicationServices(builder.Configuration); // <--- This is a likely suspect
 
 
 
@@ -133,6 +133,9 @@ try
         app.UseApiVersioningAndDocumentation();
     }
 
+    // Use Acontplus.Services middleware pipeline
+    app.UseAcontplusServices(app.Environment);
+
     // Use application middleware pipeline
     app.UseApplicationMiddleware(app.Environment);
 
@@ -149,6 +152,8 @@ try
 
     // Map health checks
     app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health/ready");
+    app.MapHealthChecks("/health/live");
 
     app.MapAllEndpoints();
 

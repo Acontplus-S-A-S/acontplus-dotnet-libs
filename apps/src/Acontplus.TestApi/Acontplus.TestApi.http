@@ -69,3 +69,88 @@ GET {{Acontplus.TestApi_HostAddress}}/api/usuario/ado
 GET {{Acontplus.TestApi_HostAddress}}/api/usuario/get-dynamic
 
 ###
+
+### ========================================
+### ADVANCED USAGE EXAMPLES
+### ========================================
+
+### Basic Usage - Simple caching and request context
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/basic/hello
+Content-Type: application/json
+
+### Basic Usage - Simple product retrieval with caching
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/basic/products/123
+Content-Type: application/json
+
+### Intermediate Usage - Device-aware content with caching and circuit breaker
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/intermediate/content
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### Intermediate Usage - Health monitoring for services
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/intermediate/health
+Content-Type: application/json
+
+### Intermediate Usage - Cache performance monitoring
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/intermediate/cache-stats
+Content-Type: application/json
+
+### Enterprise Usage - Security status and monitoring
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/enterprise/security-status
+Content-Type: application/json
+
+### Advanced Pattern - Hybrid caching with fallback
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/advanced/hybrid-cache/weather-data
+Content-Type: application/json
+
+### Advanced Pattern - Device-aware content optimization
+GET {{Acontplus.TestApi_HostAddress}}/api/AdvancedUsage/advanced/adaptive-content/news-article-123
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### ========================================
+### ENTERPRISE EXAMPLES (Existing)
+### ========================================
+
+### Enterprise Examples - Request context service usage
+GET {{Acontplus.TestApi_HostAddress}}/api/EnterpriseExamples/context
+Content-Type: application/json
+
+### Enterprise Examples - Device detection capabilities
+GET {{Acontplus.TestApi_HostAddress}}/api/EnterpriseExamples/device
+Content-Type: application/json
+
+### Enterprise Examples - Security headers service
+GET {{Acontplus.TestApi_HostAddress}}/api/EnterpriseExamples/security-headers
+Content-Type: application/json
+
+### Enterprise Examples - Test exception handling
+GET {{Acontplus.TestApi_HostAddress}}/api/EnterpriseExamples/test-exception
+Content-Type: application/json
+
+### ========================================
+### CONFIGURATION TEST ENDPOINTS
+### ========================================
+
+### Test all Acontplus.Services are working
+GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/services
+Content-Type: application/json
+
+### Test cache service functionality
+GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/cache
+Content-Type: application/json
+
+### Test device detection service
+GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/device
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15
+
+### Test security headers service
+GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/security
+Content-Type: application/json
+
+### Test request context service
+GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/context
+Content-Type: application/json
+X-Client-ID: test-client
+X-Tenant-ID: test-tenant
