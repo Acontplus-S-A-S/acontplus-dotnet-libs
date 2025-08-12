@@ -1,6 +1,6 @@
-# Acontplus.Persistence.Postgres
+# Acontplus.Persistence.PostgreSQL
 
-[![NuGet](https://img.shields.io/nuget/v/Acontplus.Persistence.Postgres.svg)](https://www.nuget.org/packages/Acontplus.Persistence.Postgres)
+[![NuGet](https://img.shields.io/nuget/v/Acontplus.Persistence.PostgreSQL.svg)](https://www.nuget.org/packages/Acontplus.Persistence.PostgreSQL)
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -19,18 +19,18 @@ A modern .NET 9+ library for PostgreSQL persistence, ADO.NET, and Entity Framewo
 
 ### NuGet Package Manager
 ```bash
-Install-Package Acontplus.Persistence.Postgres
+Install-Package Acontplus.Persistence.PostgreSQL
 ```
 
 ### .NET CLI
 ```bash
-dotnet add package Acontplus.Persistence.Postgres
+dotnet add package Acontplus.Persistence.PostgreSQL
 ```
 
 ### PackageReference
 ```xml
 <ItemGroup>
-  <PackageReference Include="Acontplus.Persistence.Postgres" Version="1.0.0" />
+  <PackageReference Include="Acontplus.Persistence.PostgreSQL" Version="1.0.0" />
 </ItemGroup>
 ```
 
