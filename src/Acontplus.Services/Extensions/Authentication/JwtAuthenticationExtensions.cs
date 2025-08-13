@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
 namespace Acontplus.Services.Extensions.Authentication;
 
 public static class JwtAuthenticationExtensions
@@ -10,32 +6,47 @@ public static class JwtAuthenticationExtensions
     {
         // Extract and validate configuration values
         var issuer = config["JwtSettings:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is required");
-        var audience = config["JwtSettings:Audience"] ?? throw new InvalidOperationException("JWT Audience is required");
         var securityKey = config["JwtSettings:SecurityKey"] ?? throw new InvalidOperationException("JWT SecurityKey is required");
 
+        // Get audience(s) - supports both string and array
+        var audienceSection = config.GetSection("JwtSettings:Audience");
+        string[] audiences;
+
+        if (audienceSection.Value != null)
+        {
+            // Single audience (string)
+            audiences = new[] { audienceSection.Value };
+        }
+        else
+        {
+            // Multiple audiences (array)
+            audiences = audienceSection.Get<string[]>() ??
+                throw new InvalidOperationException("JWT Audience is required");
+        }
+
         services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Security best practices - hardcoded for security
+                    // Security best practices
                     RequireExpirationTime = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
-                    // Enhanced security - hardcoded for security
+                    // Enhanced security
                     RequireSignedTokens = true,
                     ValidateTokenReplay = true,
 
                     // Configuration values
                     ValidIssuer = issuer,
-                    ValidAudience = audience,
+                    ValidAudiences = audiences, // Supports both single and multiple audiences
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(securityKey)),
 
@@ -47,8 +58,8 @@ public static class JwtAuthenticationExtensions
                 // Enhanced JWT bearer options
                 options.RequireHttpsMetadata = Convert.ToBoolean(
                     config["JwtSettings:RequireHttps"] ?? "true");
-                options.SaveToken = false; // Don't save tokens in claims
-                options.IncludeErrorDetails = false; // Don't expose internal errors
+                options.SaveToken = false;
+                options.IncludeErrorDetails = false;
             });
 
         services.AddAuthorization();
