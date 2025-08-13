@@ -1243,6 +1243,603 @@ public class MetricsController : ControllerBase
 }
 ```
 
+## 🔐 JWT Authentication Usage
+
+### 🎯 Overview
+
+The JWT authentication extension provides enterprise-grade JWT validation with enhanced security features. It's designed for both single-service applications and complex gateway architectures with multiple APIs.
+
+### 🚀 Quick Start
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add JWT authentication with one line
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+### ⚙️ Configuration
+
+#### Basic Configuration
+
+```json
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "api.acontplus.com",
+    "SecurityKey": "your-super-secret-key-at-least-32-characters-long",
+    "ClockSkew": "5",
+    "RequireHttps": "true"
+  }
+}
+```
+
+#### Advanced Configuration
+
+```json
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "api.acontplus.com",
+    "SecurityKey": "your-super-secret-key-at-least-32-characters-long",
+    "ClockSkew": "2",
+    "RequireHttps": "true"
+  }
+}
+```
+
+### 🏗️ Architecture Patterns
+
+#### 1. Single Service Architecture
+
+For standalone applications that handle their own authentication:
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add JWT authentication
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireValidToken", policy =>
+        policy.RequireAuthenticatedUser());
+});
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+**Controller Example:**
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Policy = "RequireValidToken")]
+public class SecureController : ControllerBase
+{
+    [HttpGet("data")]
+    public IActionResult GetSecureData()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        
+        return Ok(new { 
+            Message = "Secure data accessed", 
+            UserId = userId, 
+            Email = email 
+        });
+    }
+}
+```
+
+#### 2. Multiple Services Architecture
+
+For applications with multiple APIs that share the same authentication service:
+
+```csharp
+// Program.cs for each API
+var builder = WebApplication.CreateBuilder(args);
+
+// Each API validates against the same auth service
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add service-specific authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UsersApi", policy =>
+        policy.RequireClaim("scope", "users.read", "users.write"));
+});
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+**Configuration for Each API:**
+```json
+// Users API
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "users-api",
+    "SecurityKey": "your-super-secret-key",
+    "ClockSkew": "5"
+  }
+}
+
+// Orders API
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "orders-api",
+    "SecurityKey": "your-super-secret-key",
+    "ClockSkew": "5"
+  }
+}
+```
+
+**Token with Multiple Audiences:**
+```json
+{
+  "iss": "https://auth.acontplus.com",
+  "aud": ["users-api", "orders-api", "gateway"],
+  "sub": "user123",
+  "scope": ["users.read", "users.write", "orders.read"],
+  "exp": 1234567890
+}
+```
+
+#### 3. Gateway Architecture (Recommended)
+
+For enterprise applications using API gateways like Ocelot:
+
+```csharp
+// Gateway Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Gateway validates against auth service
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add gateway-specific authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("GatewayAccess", policy =>
+        policy.RequireClaim("scope", "gateway"));
+});
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Ocelot configuration
+app.UseOcelot();
+
+app.Run();
+```
+
+**Gateway Configuration:**
+```json
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "gateway.acontplus.com",
+    "SecurityKey": "your-super-secret-key",
+    "ClockSkew": "2",
+    "RequireHttps": "true"
+  }
+}
+```
+
+**API Configuration (Each API):**
+```json
+{
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "users-api",
+    "SecurityKey": "your-super-secret-key",
+    "ClockSkew": "5"
+  }
+}
+```
+
+### 🔒 Security Features
+
+#### Enhanced Token Validation
+
+The JWT authentication extension includes:
+
+- **Full Validation**: Issuer, audience, lifetime, and signing key validation
+- **Enhanced Security**: Signed tokens and replay protection
+- **HTTPS Enforcement**: Requires HTTPS metadata in production
+- **Token Security**: Prevents token storage in claims
+- **Error Handling**: Secure error responses without information leakage
+
+#### Security Best Practices
+
+```csharp
+// Always use HTTPS in production
+options.RequireHttpsMetadata = true;
+
+// Don't save tokens in claims (security risk)
+options.SaveToken = false;
+
+// Don't expose internal errors
+options.IncludeErrorDetails = false;
+
+// Validate token replay attacks
+ValidateTokenReplay = true;
+
+// Require signed tokens
+RequireSignedTokens = true;
+```
+
+### 📱 Multi-Device Support
+
+#### Device-Aware Authentication
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class DeviceController : ControllerBase
+{
+    private readonly IDeviceDetectionService _deviceDetection;
+
+    public DeviceController(IDeviceDetectionService deviceDetection)
+    {
+        _deviceDetection = deviceDetection;
+    }
+
+    [HttpGet("content")]
+    public IActionResult GetContent()
+    {
+        var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        var content = deviceType switch
+        {
+            DeviceType.Mobile => GetMobileContent(userId),
+            DeviceType.Tablet => GetTabletContent(userId),
+            _ => GetDesktopContent(userId)
+        };
+        
+        return Ok(content);
+    }
+}
+```
+
+### 🔄 Token Refresh & Management
+
+#### Refresh Token Pattern
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        try
+        {
+            // Validate refresh token
+            var principal = ValidateRefreshToken(request.RefreshToken);
+            
+            // Generate new access token
+            var newToken = GenerateAccessToken(principal);
+            
+            return Ok(new { 
+                AccessToken = newToken,
+                ExpiresIn = 3600 
+            });
+        }
+        catch (SecurityTokenException)
+        {
+            return Unauthorized(new { Message = "Invalid refresh token" });
+        }
+    }
+}
+```
+
+### 🧪 Testing JWT Authentication
+
+#### Unit Testing
+
+```csharp
+public class JwtAuthenticationTests
+{
+    [Fact]
+    public void AddJwtAuthentication_RegistersRequiredServices()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["JwtSettings:Issuer"] = "https://test.com",
+                ["JwtSettings:Audience"] = "test-api",
+                ["JwtSettings:SecurityKey"] = "test-key-32-characters-long"
+            })
+            .Build();
+
+        // Act
+        services.AddJwtAuthentication(config);
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        var authService = provider.GetService<IAuthenticationService>();
+        Assert.NotNull(authService);
+    }
+}
+```
+
+#### Integration Testing
+
+```csharp
+public class JwtAuthenticationIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+
+    public JwtAuthenticationIntegrationTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory;
+        _client = _factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task SecureEndpoint_WithoutToken_ReturnsUnauthorized()
+    {
+        // Act
+        var response = await _client.GetAsync("/api/secure");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SecureEndpoint_WithValidToken_ReturnsOk()
+    {
+        // Arrange
+        var token = GenerateValidJwtToken();
+        _client.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await _client.GetAsync("/api/secure");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+}
+```
+
+### 🚨 Error Handling
+
+#### Authentication Errors
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ErrorHandlingController : ControllerBase
+{
+    [HttpGet("test")]
+    [Authorize]
+    public IActionResult Test()
+    {
+        // This will be caught by the global exception handler
+        throw new UnauthorizedAccessException("Custom auth error");
+    }
+}
+```
+
+#### Custom Error Responses
+
+```csharp
+public class JwtAuthenticationOptions
+{
+    public static void ConfigureJwtBearer(JwtBearerOptions options)
+    {
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                
+                var result = JsonSerializer.Serialize(new
+                {
+                    Error = "Authentication failed",
+                    Message = "Invalid or expired token",
+                    Timestamp = DateTime.UtcNow
+                });
+                
+                return context.Response.WriteAsync(result);
+            },
+            
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                
+                var result = JsonSerializer.Serialize(new
+                {
+                    Error = "Authentication required",
+                    Message = "Valid JWT token is required",
+                    Timestamp = DateTime.UtcNow
+                });
+                
+                return context.Response.WriteAsync(result);
+            }
+        };
+    }
+}
+```
+
+### 🔧 Advanced Configuration
+
+#### Custom Token Validation
+
+```csharp
+public static class CustomJwtExtensions
+{
+    public static IServiceCollection AddCustomJwtAuthentication(
+        this IServiceCollection services, 
+        IConfiguration config)
+    {
+        services.AddJwtAuthentication(config);
+        
+        // Add custom validation
+        services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            options.TokenValidationParameters.ValidateIssuerSigningKey = true;
+            options.TokenValidationParameters.ValidateLifetime = true;
+            
+            // Custom validation logic
+            options.TokenValidationParameters.ValidateIssuer = (issuer, token, parameters) =>
+            {
+                // Custom issuer validation logic
+                return issuer == "https://custom.auth.com";
+            };
+        });
+        
+        return services;
+    }
+}
+```
+
+#### Multiple Authentication Schemes
+
+```csharp
+public static class MultiSchemeExtensions
+{
+    public static IServiceCollection AddMultiSchemeAuthentication(
+        this IServiceCollection services, 
+        IConfiguration config)
+    {
+        // Add JWT authentication
+        services.AddJwtAuthentication(config);
+        
+        // Add API key authentication
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = "MultiScheme";
+            options.DefaultChallengeScheme = "MultiScheme";
+        })
+        .AddPolicyScheme("MultiScheme", "MultiScheme", options =>
+        {
+            options.ForwardDefaultSelector = context =>
+            {
+                var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+                
+                if (authHeader?.StartsWith("Bearer ") == true)
+                    return JwtBearerDefaults.AuthenticationScheme;
+                
+                if (authHeader?.StartsWith("ApiKey ") == true)
+                    return "ApiKey";
+                
+                return JwtBearerDefaults.AuthenticationScheme;
+            };
+        });
+        
+        return services;
+    }
+}
+```
+
+### 📊 Monitoring & Health Checks
+
+#### JWT Authentication Health Check
+
+```csharp
+public class JwtAuthenticationHealthCheck : IHealthCheck
+{
+    public Task<HealthCheckResult> CheckHealthAsync(
+        HealthCheckContext context, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Validate JWT configuration
+            var config = context.Registration.GetService<IConfiguration>();
+            var issuer = config?["JwtSettings:Issuer"];
+            var audience = config?["JwtSettings:Audience"];
+            var securityKey = config?["JwtSettings:SecurityKey"];
+            
+            if (string.IsNullOrEmpty(issuer) || 
+                string.IsNullOrEmpty(audience) || 
+                string.IsNullOrEmpty(securityKey))
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy(
+                    "JWT configuration is incomplete"));
+            }
+            
+            return Task.FromResult(HealthCheckResult.Healthy(
+                "JWT authentication is properly configured"));
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(HealthCheckResult.Unhealthy(
+                "JWT authentication health check failed", ex));
+        }
+    }
+}
+```
+
+### 🎯 Best Practices Summary
+
+#### ✅ Do's
+
+- **Use the same issuer** across all services in your architecture
+- **Use different audiences** for each API/service
+- **Always validate tokens** in both gateway and APIs
+- **Use HTTPS** in production environments
+- **Implement proper error handling** without information leakage
+- **Monitor authentication failures** for security insights
+
+#### ❌ Don'ts
+
+- **Don't modify JWT tokens** after they're signed
+- **Don't use weak security keys** (minimum 32 characters)
+- **Don't expose internal errors** in authentication responses
+- **Don't store tokens** in claims or cookies
+- **Don't disable security validations** in production
+
+#### 🔐 Security Checklist
+
+- [ ] JWT issuer validation enabled
+- [ ] JWT audience validation enabled
+- [ ] Token lifetime validation enabled
+- [ ] Signing key validation enabled
+- [ ] HTTPS metadata required in production
+- [ ] Token replay protection enabled
+- [ ] Signed tokens required
+- [ ] Error details disabled in production
+- [ ] Proper security headers configured
+- [ ] Rate limiting on authentication endpoints
+
 ## 🔄 Migration Guide
 
 ### From Legacy Services
