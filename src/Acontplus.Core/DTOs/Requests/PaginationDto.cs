@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs.Requests;
+namespace Acontplus.Core.DTOs.Requests;
 
 public record PaginationDto
 {
@@ -23,7 +23,7 @@ public record PaginationDto
     }
 
     public string? SortBy { get; init; }
-    public SortDirection SortDirection { get; init; } = SortDirection.Ascending;
+    public SortDirection SortDirection { get; init; } = SortDirection.Asc;
     public string? SearchTerm { get; init; }
     public IReadOnlyDictionary<string, object>? Filters { get; init; }
 
