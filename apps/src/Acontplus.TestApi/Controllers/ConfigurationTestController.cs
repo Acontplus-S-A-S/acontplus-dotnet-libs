@@ -1,5 +1,4 @@
 using Acontplus.Services.Services.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Acontplus.TestApi.Controllers;
 

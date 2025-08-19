@@ -24,6 +24,11 @@ public static class JwtAuthenticationExtensions
                 throw new InvalidOperationException("JWT Audience is required");
         }
 
+        if (audiences.Length == 0)
+        {
+            throw new InvalidOperationException("At least one JWT Audience is required");
+        }
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -2,6 +2,7 @@
 
 public enum SortDirection
 {
-    Ascending = 0,
-    Descending = 1
+    Default = 0,
+    Asc = 1,
+    Desc = 2
 }
