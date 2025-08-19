@@ -1,5 +1,3 @@
-using Acontplus.Persistence.PostgreSQL.Ado.Parameters;
-using Acontplus.Persistence.PostgreSQL.Exceptions;
 using Acontplus.Persistence.PostgreSQL.Mapping;
 
 namespace Acontplus.Persistence.PostgreSQL.Repositories;

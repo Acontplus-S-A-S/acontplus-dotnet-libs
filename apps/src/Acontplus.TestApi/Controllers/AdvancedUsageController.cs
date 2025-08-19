@@ -1,8 +1,6 @@
-using Acontplus.Services.Services.Abstractions;
 using Acontplus.Core.Domain.Enums;
+using Acontplus.Services.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace Acontplus.TestApi.Controllers;
 
@@ -51,7 +49,8 @@ public class AdvancedUsageController : ControllerBase
             TimeSpan.FromMinutes(5)
         );
 
-        return Ok(new {
+        return Ok(new
+        {
             Message = message,
             CorrelationId = _requestContext.GetCorrelationId()
         });
@@ -72,7 +71,8 @@ public class AdvancedUsageController : ControllerBase
             return new BasicProduct { Id = id, Name = $"Product {id}", Price = id * 10.99m };
         }, TimeSpan.FromMinutes(15));
 
-        return Ok(new {
+        return Ok(new
+        {
             Product = product,
             CorrelationId = _requestContext.GetCorrelationId(),
             Cached = true
@@ -107,7 +107,8 @@ public class AdvancedUsageController : ControllerBase
             }, "content-api");
         }, TimeSpan.FromMinutes(10));
 
-        return Ok(new {
+        return Ok(new
+        {
             Content = content,
             DeviceType = deviceType.ToString(),
             CacheKey = cacheKey
@@ -238,7 +239,7 @@ public class AdvancedUsageController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     public IActionResult LogAuditEvent([FromBody] AuditEvent auditEvent)
     {
-                var auditLog = new EnterpriseAuditLog
+        var auditLog = new EnterpriseAuditLog
         {
             Event = auditEvent,
             Context = new AuditContext
@@ -258,7 +259,8 @@ public class AdvancedUsageController : ControllerBase
         // In a real application, you would log this to your audit system
         _logger.LogInformation("Enterprise audit event: {@AuditLog}", auditLog);
 
-                return Ok(new {
+        return Ok(new
+        {
             Message = "Audit event logged successfully",
             CorrelationId = _requestContext.GetCorrelationId(),
             AuditId = Guid.NewGuid().ToString(),
@@ -402,7 +404,8 @@ public class AdvancedUsageController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(503, new {
+            return StatusCode(503, new
+            {
                 Error = "Operation failed after all retry attempts",
                 Operation = operation,
                 FallbackUsed = true,

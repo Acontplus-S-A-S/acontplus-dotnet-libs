@@ -16,7 +16,6 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using Microsoft.IdentityModel.Tokens;
-global using NetEscapades.AspNetCore.SecurityHeaders;
 global using Polly;
 global using System;
 global using System.Collections.Generic;

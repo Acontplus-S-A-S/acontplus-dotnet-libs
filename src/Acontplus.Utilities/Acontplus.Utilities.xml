@@ -70,6 +70,42 @@
             Generic method to serialize any object to JSON
             </summary>
         </member>
+        <member name="T:Acontplus.Utilities.DTOs.PaginationQuery">
+            <summary>
+            Represents a pagination query with sorting and search capabilities.
+            Implements the minimal API binding pattern for automatic parameter binding.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.#ctor(System.Int32,System.Int32,System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String)">
+            <summary>
+            Represents a pagination query with sorting and search capabilities.
+            Implements the minimal API binding pattern for automatic parameter binding.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.Skip">
+            <summary>
+            Gets the number of items to skip for database queries.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.Take">
+            <summary>
+            Gets the number of items to take for database queries.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.IsEmpty">
+            <summary>
+            Gets whether the query has no search criteria.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.BindAsync(Microsoft.AspNetCore.Http.HttpContext,System.Reflection.ParameterInfo)">
+            <summary>
+            Binds query parameters from the HTTP context to create a PaginationQuery instance.
+            This method enables automatic parameter binding in minimal APIs.
+            </summary>
+            <param name="context">The HTTP context containing query parameters</param>
+            <param name="parameter">The parameter information (required by the binding contract)</param>
+            <returns>A ValueTask containing the bound PaginationQuery or null</returns>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToBaseResponse``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
         <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
         <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
