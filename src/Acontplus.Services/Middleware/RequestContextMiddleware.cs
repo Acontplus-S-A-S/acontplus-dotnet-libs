@@ -129,7 +129,7 @@ public sealed class RequestContextMiddleware(
 
     private static DeviceType GetDeviceType(HttpContext context)
     {
-        // Try modern Device-Type header first
+        // Try Device-Type header first (preferred method)
         if (Enum.TryParse<DeviceType>(context.Request.Headers["Device-Type"].FirstOrDefault(),
                 ignoreCase: true,
                 out var parsedType))

@@ -55,7 +55,7 @@ public static class DataConverters
         {
             dataSetDict[table.TableName] = ConvertDataTableToList(table);
         }
-        return dataSetDict.SerializeModern();
+        return dataSetDict.SerializeOptimized();
     }
     /// <summary>
     /// Converts a JSON string to DataTable
@@ -65,13 +65,13 @@ public static class DataConverters
         if (string.IsNullOrWhiteSpace(json))
             return new DataTable();
 
-        var dt = json.DeserializeModern<DataTable>();
+        var dt = json.DeserializeOptimized<DataTable>();
         return dt;
     }
 
     public static string SerializeDictionary(Dictionary<string, object> data)
     {
-        return data.SerializeModern();
+        return data.SerializeOptimized();
     }
     /// <summary>
     /// Helper method to sanitize values for serialization
@@ -189,12 +189,12 @@ public static class DataConverters
 
     public static string SerializeWithOptions(object data, JsonSerializerOptions? options = null)
     {
-        return data.SerializeModern(options == JsonExtensions.PrettyOptions);
+        return data.SerializeOptimized(options == JsonExtensions.PrettyOptions);
     }
 
     public static string SerializeSanitizedData(object data)
     {
         var sanitizedData = SanitizeValueForSerialization(data);
-        return sanitizedData.SerializeModern();
+        return sanitizedData.SerializeOptimized();
     }
 }

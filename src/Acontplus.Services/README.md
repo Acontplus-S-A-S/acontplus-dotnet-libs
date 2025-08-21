@@ -4,13 +4,13 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A comprehensive .NET 9+ service library providing enterprise-grade patterns, security, caching, resilience, and monitoring for ASP.NET Core applications. Built with modern .NET features and best practices.
+A comprehensive .NET 9+ service library providing business-grade patterns, security, caching, resilience, and monitoring for ASP.NET Core applications. Built with .NET features and best practices.
 
-## 🚀 .NET 9 Modern Features
+## 🚀 .NET 9 Features
 
 ### 🎯 Latest C# Language Features
 
-- **Collection Expressions** - Modern `[]` syntax for efficient collection initialization
+- **Collection Expressions** - `[]` syntax for efficient collection initialization
 - **Primary Constructors** - Concise record and class definitions
 - **Required Properties** - Compile-time null safety with `required` keyword
 - **Pattern Matching** - Advanced `switch` expressions and `is` patterns
@@ -19,13 +19,13 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 - **Source Generators** - JSON serialization with AOT compilation support
 - **Global Usings** - Clean namespace management with global using directives
 
-### 🏗️ Modern Architecture Patterns
+### 🏗️ Architecture Patterns
 
-- **Domain-Driven Design (DDD)** - Complete DDD implementation with modern C# features
+- **Domain-Driven Design (DDD)** - Complete DDD implementation with C# features
 - **Functional Result Pattern** - Railway-oriented programming with record structs
 - **Repository Pattern** - Comprehensive data access with bulk operations
 - **Specification Pattern** - Type-safe query composition with expressions
-- **Event Sourcing Ready** - Domain events with modern event patterns
+- **Event Sourcing Ready** - Domain events with event patterns
 
 ## 🎯 Core Features
 
@@ -33,7 +33,7 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 
 - **Service Layer**: Clean separation of concerns with dependency injection
 - **Action Filters**: Reusable cross-cutting concerns (validation, logging, security)
-- **Authorization Policies**: Fine-grained access control for modern scenarios
+- **Authorization Policies**: Fine-grained access control for scenarios
 - **Middleware Pipeline**: Properly ordered middleware for security and context management
 
 ### 🔒 Security & Compliance
@@ -55,7 +55,7 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 - **Health Checks**: Comprehensive health monitoring for all services
 - **Response Compression**: Optimized content delivery
 - **Rate Limiting**: Built-in rate limiting capabilities
-- **Modern Resilience**: Circuit breakers, retry policies, and timeouts using Polly
+- **Resilience**: Circuit breakers, retry policies, and timeouts using Polly
 - **Advanced Caching**: In-memory and distributed caching with Redis support
 - **HTTP Client Resilience**: Resilient HTTP clients with automatic retry and circuit breaker
 - **Metrics & Monitoring**: Built-in metrics collection and Application Insights integration
@@ -66,7 +66,7 @@ A comprehensive .NET 9+ service library providing enterprise-grade patterns, sec
 - **Projections** - Expression-based data transfer for performance
 - **Bulk Operations** - High-performance batch processing with EF Core 9
 - **Smart Pagination** - Advanced pagination with search and filtering
-- **Modern JSON** - System.Text.Json with source generation
+- **JSON** - System.Text.Json with source generation
 
 ### 🗄️ Caching Architecture
 
@@ -1007,9 +1007,9 @@ public class CacheServiceBenchmarks
 }
 ```
 
-## 🚀 Modern Features Examples
+## 🚀 Features Examples
 
-### Modern Caching Service
+### Caching Service
 
 ```csharp
 public class ProductService
@@ -1022,7 +1022,7 @@ public class ProductService
     {
         var cacheKey = $"product:{id}";
 
-        // Modern async caching with factory pattern
+        // Async caching with factory pattern
         // Works with both in-memory and distributed (Redis) caching
         return await _cache.GetOrCreateAsync(
             cacheKey,
@@ -1040,7 +1040,7 @@ public class ProductService
 }
 ```
 
-### Modern Resilience with Polly
+### Resilience with Polly
 
 ```csharp
 // Automatically configured with AddResilienceServices
@@ -1059,7 +1059,7 @@ public class ExternalApiService
 }
 ```
 
-### Modern Health Checks
+### Health Checks
 
 ```csharp
 // Automatically configured with AddApplicationHealthChecks
@@ -2155,7 +2155,7 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions, Ecuador
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions, Ecuador
 
 ---
 

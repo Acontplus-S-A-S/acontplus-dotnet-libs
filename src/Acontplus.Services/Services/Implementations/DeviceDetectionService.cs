@@ -30,7 +30,7 @@ public class DeviceDetectionService : IDeviceDetectionService
 
     public DeviceType DetectDeviceType(HttpContext context)
     {
-        // Try modern Device-Type header first
+        // Try Device-Type header first (preferred method)
         if (context.Request.Headers.TryGetValue("Device-Type", out var deviceTypeHeader) &&
             Enum.TryParse<DeviceType>(deviceTypeHeader.FirstOrDefault(), ignoreCase: true, out var parsedType))
         {

@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A comprehensive .NET 9+ utility library providing common functionality for enterprise applications. Modern async, extension methods, minimal API support, and more.
+A comprehensive .NET 9+ utility library providing common functionality for business applications. Async, extension methods, minimal API support, and more.
 
 ## 🚀 Features
 
@@ -72,6 +72,244 @@ string decrypted = await encryptionService.DecryptFromBytesAsync("password", enc
 ```csharp
 var metadata = new Dictionary<string, object>()
     .WithPagination(page: 1, pageSize: 10, totalItems: 100);
+```
+
+## 📄 Core Examples
+
+### PaginationQuery with Minimal APIs
+
+The `PaginationQuery` record provides automatic parameter binding in minimal APIs with support for multiple filters, sorting, and pagination.
+
+#### Backend (Minimal API)
+
+```csharp
+// Program.cs or endpoint definition
+app.MapGet("/api/users", async (PaginationQuery pagination, IUserService userService) =>
+{
+    var result = await userService.GetPaginatedUsersAsync(pagination);
+    return Results.Ok(result);
+})
+.WithName("GetUsers")
+.WithOpenApi();
+
+// Service implementation
+public async Task<PagedResult<UserDto>> GetPaginatedUsersAsync(PaginationQuery pagination)
+{
+    var spParameters = new Dictionary<string, object>
+    {
+        ["@PageIndex"] = pagination.PageIndex,
+        ["@PageSize"] = pagination.PageSize,
+        ["@SearchTerm"] = pagination.SearchTerm ?? (object)DBNull.Value,
+        ["@SortBy"] = pagination.SortBy ?? "CreatedAt",
+        ["@SortDirection"] = (pagination.SortDirection ?? SortDirection.Asc).ToString()
+    };
+
+    // Add filters from PaginationQuery.Filters
+    if (pagination.Filters != null)
+    {
+        foreach (var filter in pagination.Filters)
+        {
+            var paramName = $"@{filter.Key}";
+            spParameters[paramName] = filter.Value ?? DBNull.Value;
+        }
+    }
+
+    // Execute stored procedure with all parameters
+    var dataSet = await _adoRepository.GetDataSetAsync("sp_GetPaginatedUsers", spParameters);
+    // Process results and return PagedResult
+}
+```
+
+#### Frontend (JavaScript/TypeScript)
+
+```typescript
+// API client function
+async function getUsers(filters: UserFilters = {}) {
+    const params = new URLSearchParams({
+        pageIndex: '1',
+        pageSize: '20',
+        searchTerm: filters.searchTerm || '',
+        sortBy: 'createdAt',
+        sortDirection: 'desc'
+    });
+
+    // Add filters
+    if (filters.status) params.append('filters[status]', filters.status);
+    if (filters.role) params.append('filters[role]', filters.role);
+    if (filters.isActive !== undefined) params.append('filters[isActive]', filters.isActive.toString());
+    if (filters.createdDate) params.append('filters[createdDate]', filters.createdDate);
+
+    const response = await fetch(`/api/users?${params.toString()}`);
+    return response.json();
+}
+
+// Usage examples
+const users = await getUsers({
+    searchTerm: 'john',
+    status: 'active',
+    role: 'admin',
+    isActive: true
+});
+
+// URL generated: /api/users?pageIndex=1&pageSize=20&searchTerm=john&sortBy=createdAt&sortDirection=desc&filters[status]=active&filters[role]=admin&filters[isActive]=true
+```
+
+#### React Component Example
+
+```tsx
+import React, { useState, useEffect } from 'react';
+
+interface UserFilters {
+    searchTerm?: string;
+    status?: string;
+    role?: string;
+    isActive?: boolean;
+}
+
+const UserList: React.FC = () => {
+    const [users, setUsers] = useState([]);
+    const [filters, setFilters] = useState<UserFilters>({});
+    const [pagination, setPagination] = useState({ pageIndex: 1, pageSize: 20 });
+
+    const fetchUsers = async () => {
+        const params = new URLSearchParams({
+            pageIndex: pagination.pageIndex.toString(),
+            pageSize: pagination.pageSize.toString(),
+            sortBy: 'createdAt',
+            sortDirection: 'desc'
+        });
+
+        // Add search term
+        if (filters.searchTerm) {
+            params.append('searchTerm', filters.searchTerm);
+        }
+
+        // Add filters
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && key !== 'searchTerm') {
+                params.append(`filters[${key}]`, value.toString());
+            }
+        });
+
+        const response = await fetch(`/api/users?${params.toString()}`);
+        const data = await response.json();
+        setUsers(data.items);
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, [filters, pagination]);
+
+    return (
+        <div>
+            {/* Filter controls */}
+            <input
+                type="text"
+                placeholder="Search users..."
+                onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+            />
+            <select onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}>
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+            
+            {/* User list */}
+            {users.map(user => (
+                <div key={user.id}>{user.name}</div>
+            ))}
+        </div>
+    );
+};
+```
+
+#### Query Parameter Examples
+
+```
+# Basic pagination
+GET /api/users?pageIndex=1&pageSize=20
+
+# With search and sorting
+GET /api/users?pageIndex=1&pageSize=20&searchTerm=john&sortBy=name&sortDirection=asc
+
+# With multiple filters
+GET /api/users?pageIndex=1&pageSize=20&filters[status]=active&filters[role]=admin&filters[isActive]=true
+
+# Complex filter combinations
+GET /api/users?pageIndex=1&pageSize=20&searchTerm=john&filters[status]=active&filters[role]=admin&filters[createdDate]=2024-01-01&filters[departments][]=IT&filters[departments][]=HR
+```
+
+### Result & API Response Patterns with Usuario Module
+
+#### Controller Usage
+
+```csharp
+[HttpGet("{id:int}")]
+public async Task<IActionResult> GetUsuario(int id)
+{
+    var result = await _usuarioService.GetByIdAsync(id);
+    return result.ToGetActionResult();
+}
+
+[HttpPost]
+public async Task<IActionResult> CreateUsuario([FromBody] UsuarioDto dto)
+{
+    var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(dto);
+    var result = await _usuarioService.AddAsync(usuario);
+    if (result.IsSuccess && result.Value is not null)
+    {
+        var locationUri = $"/api/Usuario/{result.Value.Id}";
+        return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario creado exitosamente." }).ToActionResult();
+    }
+    return result.ToActionResult();
+}
+
+[HttpPut("{id:int}")]
+public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioDto dto)
+{
+    var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(dto);
+    var result = await _usuarioService.UpdateAsync(id, usuario);
+    if (result.IsSuccess)
+    {
+        return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario actualizado correctamente." }).ToActionResult();
+    }
+    return result.ToActionResult();
+}
+
+[HttpDelete("{id:int}")]
+public async Task<IActionResult> DeleteUsuario(int id)
+{
+    var result = await _usuarioService.DeleteAsync(id);
+    return result.ToDeleteActionResult();
+}
+```
+
+#### Minimal API Usage
+
+```csharp
+app.MapGet("/usuarios/{id:int}", async (int id, IUsuarioService service) =>
+{
+    var result = await service.GetByIdAsync(id);
+    return result.ToMinimalApiResult();
+});
+```
+
+#### Service Layer Example
+
+```csharp
+public async Task<Result<Usuario, DomainErrors>> AddAsync(Usuario usuario)
+{
+    var errors = new List<DomainError>();
+    if (string.IsNullOrWhiteSpace(usuario.Username))
+        errors.Add(DomainError.Validation("USERNAME_REQUIRED", "Username is required"));
+    if (string.IsNullOrWhiteSpace(usuario.Email))
+        errors.Add(DomainError.Validation("EMAIL_REQUIRED", "Email is required"));
+
+    if (errors.Count > 0)
+        return DomainErrors.Multiple(errors);
+
+    // ... check for existing user, add, etc.
+}
 ```
 
 ## 🗃️ Data Utilities
@@ -217,81 +455,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
 
 ---
 
 **Built with ❤️ for the .NET community**
-
-## 🧑‍💻 Example: Result & API Response Patterns with Usuario Module
-
-### Controller Usage
-
-```csharp
-[HttpGet("{id:int}")]
-public async Task<IActionResult> GetUsuario(int id)
-{
-    var result = await _usuarioService.GetByIdAsync(id);
-    return result.ToGetActionResult();
-}
-
-[HttpPost]
-public async Task<IActionResult> CreateUsuario([FromBody] UsuarioDto dto)
-{
-    var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(dto);
-    var result = await _usuarioService.AddAsync(usuario);
-    if (result.IsSuccess && result.Value is not null)
-    {
-        var locationUri = $"/api/Usuario/{result.Value.Id}";
-        return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario creado exitosamente." }).ToActionResult();
-    }
-    return result.ToActionResult();
-}
-
-[HttpPut("{id:int}")]
-public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UsuarioDto dto)
-{
-    var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(dto);
-    var result = await _usuarioService.UpdateAsync(id, usuario);
-    if (result.IsSuccess)
-    {
-        return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario actualizado correctamente." }).ToActionResult();
-    }
-    return result.ToActionResult();
-}
-
-[HttpDelete("{id:int}")]
-public async Task<IActionResult> DeleteUsuario(int id)
-{
-    var result = await _usuarioService.DeleteAsync(id);
-    return result.ToDeleteActionResult();
-}
-```
-
-### Minimal API Usage
-
-```csharp
-app.MapGet("/usuarios/{id:int}", async (int id, IUsuarioService service) =>
-{
-    var result = await service.GetByIdAsync(id);
-    return result.ToMinimalApiResult();
-});
-```
-
-### Service Layer Example
-
-```csharp
-public async Task<Result<Usuario, DomainErrors>> AddAsync(Usuario usuario)
-{
-    var errors = new List<DomainError>();
-    if (string.IsNullOrWhiteSpace(usuario.Username))
-        errors.Add(DomainError.Validation("USERNAME_REQUIRED", "Username is required"));
-    if (string.IsNullOrWhiteSpace(usuario.Email))
-        errors.Add(DomainError.Validation("EMAIL_REQUIRED", "Email is required"));
-
-    if (errors.Count > 0)
-        return DomainErrors.Multiple(errors);
-
-    // ... check for existing user, add, etc.
-}
-```
