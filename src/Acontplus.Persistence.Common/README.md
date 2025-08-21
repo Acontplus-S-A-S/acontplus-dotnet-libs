@@ -4,16 +4,16 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.
+Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with business-ready abstractions.
 
 ## 🚀 Features
 
 ### 🏗️ Core Abstractions
-- **Generic Repository Pattern** - Type-safe data access with cutting-edge C# features
+- **Generic Repository Pattern** - Type-safe data access with C# features
 - **Context Factory** - Flexible database context creation and management
 - **Connection String Provider** - Hierarchical and environment-based connection management
 - **Multi-Provider Support** - SQL Server, PostgreSQL, and extensible for other databases
-- **Enterprise Patterns** - Unit of work, specification pattern, and audit trail support
+- **Business Patterns** - Unit of work, specification pattern, and audit trail support
 
 ### 🔧 Contemporary Architecture
 - **.NET 9+ Compatible** - Latest C# features and performance optimizations
@@ -363,7 +363,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
 
 ---
 

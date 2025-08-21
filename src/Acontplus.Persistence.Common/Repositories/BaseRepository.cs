@@ -6,7 +6,7 @@
 namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
-/// A modern, generic repository implementation for Entity Framework Core, targeting .NET 9+.
+/// A generic repository implementation for Entity Framework Core, targeting .NET 9+.
 /// </summary>
 /// TEntity: The type of the entity.
 /// int: The type of the entity's primary key, must be not null.
