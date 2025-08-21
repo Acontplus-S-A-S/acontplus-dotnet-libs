@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A modern .NET 9+ library for standardized API versioning and OpenAPI/Swagger documentation. Supports both controller-based and minimal APIs, with advanced customization and versioning support.
+A .NET 9+ library for standardized API versioning and OpenAPI/Swagger documentation. Supports both controller-based and minimal APIs, with advanced customization and versioning support.
 
 ---
 
@@ -16,7 +16,7 @@ A modern .NET 9+ library for standardized API versioning and OpenAPI/Swagger doc
 - **JWT Bearer Auth UI** - Secure your APIs and test with tokens
 - **XML Comments** - Show your code docs in Swagger UI
 - **Custom Metadata** - Configure contact, license, and more from `appsettings.json`
-- **.NET 9+ Ready** - Modern, fast, and future-proof
+- **.NET 9+ Ready** - Fast and future-proof
 
 ---
 

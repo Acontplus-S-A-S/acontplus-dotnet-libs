@@ -40,7 +40,15 @@ public static class JsonExtensions
         NumberHandling = JsonNumberHandling.Strict
     };
 
-    public static T DeserializeModern<T>(this string json)
+    /// <summary>
+    /// Deserializes JSON string to the specified type using optimized options.
+    /// </summary>
+    /// <typeparam name="T">The target type to deserialize to.</typeparam>
+    /// <param name="json">The JSON string to deserialize.</param>
+    /// <returns>The deserialized object.</returns>
+    /// <exception cref="ArgumentException">Thrown when JSON string is null or empty.</exception>
+    /// <exception cref="JsonException">Thrown when deserialization fails.</exception>
+    public static T DeserializeOptimized<T>(this string json)
     {
         if (string.IsNullOrWhiteSpace(json))
             throw new ArgumentException("JSON string cannot be null or empty", nameof(json));
@@ -55,7 +63,14 @@ public static class JsonExtensions
         }
     }
 
-    public static T DeserializeModernSafe<T>(this string json, T fallback = default!)
+    /// <summary>
+    /// Deserializes JSON string to the specified type with fallback value on failure.
+    /// </summary>
+    /// <typeparam name="T">The target type to deserialize to.</typeparam>
+    /// <param name="json">The JSON string to deserialize.</param>
+    /// <param name="fallback">The fallback value to return if deserialization fails.</param>
+    /// <returns>The deserialized object or fallback value.</returns>
+    public static T DeserializeSafe<T>(this string json, T fallback = default!)
     {
         if (string.IsNullOrWhiteSpace(json))
             return fallback;
@@ -70,7 +85,14 @@ public static class JsonExtensions
         }
     }
 
-    public static string SerializeModern<T>(this T obj, bool pretty = false)
+    /// <summary>
+    /// Serializes object to JSON string using optimized options.
+    /// </summary>
+    /// <typeparam name="T">The type of object to serialize.</typeparam>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="pretty">Whether to format the JSON with indentation.</param>
+    /// <returns>The JSON string representation of the object.</returns>
+    public static string SerializeOptimized<T>(this T obj, bool pretty = false)
     {
         if (obj == null)
             return "null";
@@ -79,7 +101,13 @@ public static class JsonExtensions
         return JsonSerializer.Serialize(obj, options);
     }
 
-    public static T CloneViaJson<T>(this T obj)
+    /// <summary>
+    /// Creates a deep clone of an object via JSON serialization and deserialization.
+    /// </summary>
+    /// <typeparam name="T">The type of object to clone.</typeparam>
+    /// <param name="obj">The object to clone.</param>
+    /// <returns>A deep clone of the object.</returns>
+    public static T CloneDeep<T>(this T obj)
     {
         if (obj == null)
             return default!;

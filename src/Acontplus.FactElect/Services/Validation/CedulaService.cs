@@ -93,7 +93,7 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
     private async Task<Result<ContribuyenteCedulaDto, DomainError>> GetCedulaSriAsync(string cedula, CookieContainer cookies,
         string captcha)
     {
-        var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
+        var captchaDeserialized = JsonExtensions.DeserializeOptimized<TokenSri>(captcha);
 
         var tokenSri = captchaDeserialized.Mensaje;
 
@@ -124,7 +124,7 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
         var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
         sriResponse = sriResponse.Replace("[", "");
         sriResponse = sriResponse.Replace("]", "");
-        var result = JsonExtensions.DeserializeModern<ContribuyenteCedulaDto>(sriResponse);
+        var result = JsonExtensions.DeserializeOptimized<ContribuyenteCedulaDto>(sriResponse);
         if (result != null) return Result<ContribuyenteCedulaDto, DomainError>.Success(result);
         return Result<ContribuyenteCedulaDto, DomainError>.Failure(new DomainError
         {

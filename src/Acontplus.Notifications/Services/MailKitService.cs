@@ -271,7 +271,7 @@ public class MailKitService : IMailKitService, IDisposable
 
                     var htmlString = await File.ReadAllTextAsync(pathToHtmlFile, ct);
                     var emailBody = ProcessTemplate(htmlString,
-                        JsonExtensions.DeserializeModern<IDictionary<string, object>>(email.Body)!);
+                        JsonExtensions.DeserializeOptimized<IDictionary<string, object>>(email.Body)!);
 
                     body.HtmlBody = emailBody;
 
@@ -379,7 +379,7 @@ public class MailKitService : IMailKitService, IDisposable
             WriteIndented = false,
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
         };
-        var reportData = JsonExtensions.DeserializeModern<ExpandoObject>(JsonSerializer.Serialize(data, options));
+        var reportData = JsonExtensions.DeserializeOptimized<ExpandoObject>(JsonSerializer.Serialize(data, options));
 
         var scriptObject = new ScriptObject();
         foreach (var prop in reportData)

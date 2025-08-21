@@ -1,6 +1,6 @@
 # Acontplus.Core Usage Guide
 
-Acontplus.Core provides foundational components for enterprise .NET applications, including DDD patterns, error handling, DTOs, and modern C# features.
+Acontplus.Core provides foundational components for business .NET applications, including DDD patterns, error handling, DTOs, and C# features.
 
 ## 📦 Installation
 
@@ -14,7 +14,7 @@ Install-Package Acontplus.Core
 - Functional error handling (Result pattern)
 - Structured API responses and pagination
 - Validation utilities (XML, JSON, data)
-- Modern .NET 9+ features (nullable, pattern matching, source generators)
+- .NET 9+ features (nullable, pattern matching, source generators)
 
 ## 🛠️ Basic Usage
 

@@ -11,7 +11,8 @@ public sealed record PaginationQuery(
     int PageSize = 10,
     string? SortBy = null,
     SortDirection? SortDirection = null,
-    string? SearchTerm = null
+    string? SearchTerm = null,
+    IReadOnlyDictionary<string, object>? Filters = null
 )
 {
     /// <summary>
@@ -27,7 +28,8 @@ public sealed record PaginationQuery(
     /// <summary>
     /// Gets whether the query has no search criteria.
     /// </summary>
-    public bool IsEmpty => string.IsNullOrWhiteSpace(SearchTerm);
+    public bool IsEmpty => string.IsNullOrWhiteSpace(SearchTerm) &&
+                          (Filters is null || !Filters.Any());
 
     /// <summary>
     /// Binds query parameters from the HTTP context to create a PaginationQuery instance.
@@ -43,6 +45,7 @@ public sealed record PaginationQuery(
         const string sortByKey = "sortBy";
         const string sortDirectionKey = "sortDirection";
         const string searchTermKey = "searchTerm";
+        const string filtersKey = "filters";
 
         // Parse page index with fallback to 1
         int.TryParse(context.Request.Query[pageIndexKey], out var pageIndex);
@@ -61,13 +64,27 @@ public sealed record PaginationQuery(
         Enum.TryParse<SortDirection>(context.Request.Query[sortDirectionKey],
                                    ignoreCase: true, out var sortDirection);
 
+        // Parse filters from query parameters
+        var filters = new Dictionary<string, object>();
+        foreach (var queryParam in context.Request.Query)
+        {
+            if (queryParam.Key.StartsWith(filtersKey + "["))
+            {
+                var filterName = queryParam.Key.Substring(
+                    filtersKey.Length + 1,
+                    queryParam.Key.Length - filtersKey.Length - 2);
+                filters[filterName] = queryParam.Value.ToString();
+            }
+        }
+
         var result = new PaginationQuery
         {
             PageIndex = pageIndex,
             PageSize = pageSize,
             SortBy = context.Request.Query[sortByKey],
             SortDirection = sortDirection,
-            SearchTerm = context.Request.Query[searchTermKey]
+            SearchTerm = context.Request.Query[searchTermKey],
+            Filters = filters.Any() ? filters : null
         };
 
         return ValueTask.FromResult<PaginationQuery?>(result);

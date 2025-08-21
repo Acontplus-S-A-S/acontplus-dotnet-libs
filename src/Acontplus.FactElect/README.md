@@ -151,7 +151,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
 
 ---
 

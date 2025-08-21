@@ -2,7 +2,7 @@
 
 public class AtsXmlService : IAtsXmlService
 {
-    // You could inject ILogger<AtsXmlService> here for enterprise logging
+    // You could inject ILogger<AtsXmlService> here for comprehensive logging
     // private readonly ILogger<AtsXmlService> _logger;
     // public AtsXmlService(ILogger<AtsXmlService> logger)
     // {

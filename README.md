@@ -1,24 +1,24 @@
 # Acontplus .NET Libraries
 
-**Acontplus S.A.S. (Ecuador) – Modern .NET Libraries for Enterprise Solutions**
+**Acontplus S.A.S. (Ecuador) – .NET Libraries for Business Solutions**
 
 ---
 
-Welcome to the official monorepo for Acontplus S.A.S. enterprise .NET libraries and applications. This solution provides a comprehensive set of modular, production-ready libraries and sample applications for building robust, scalable, and modern business software, with a focus on the Ecuadorian market and global best practices.
+Welcome to the official monorepo for Acontplus S.A.S. .NET libraries and applications. This solution provides a comprehensive set of modular, production-ready libraries and sample applications for building robust, scalable business software, with a focus on the Ecuadorian market and global best practices.
 
 ## 🏢 About Acontplus S.A.S.
 
-[Acontplus S.A.S.](https://acontplus.com.ec) is a leading provider of enterprise software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET 9+.
+[Acontplus S.A.S.](https://acontplus.com.ec) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET 9+.
 
 ---
 
 ## 📦 Solution Structure
 
-This repository contains multiple libraries and sample applications, each in its own directory. All projects target modern .NET (9+) and are distributed as NuGet packages.
+This repository contains multiple libraries and sample applications, each in its own directory. All projects target .NET (9+) and are distributed as NuGet packages.
 
 ### Main Libraries (src/)
 
-- **Acontplus.Core**: Foundational DDD components, error handling, specification pattern, DTOs, and modern C# features for enterprise apps.
+- **Acontplus.Core**: Foundational DDD components, error handling, specification pattern, DTOs, and C# features for business apps.
 - **Acontplus.FactElect**: Electronic invoicing and SRI (Ecuadorian Tax Authority) integration. Models, XML, validation, and web service support for Ecuadorian digital documents.
 - **Acontplus.Notifications**: Advanced notification system supporting email (MailKit, Amazon SES), WhatsApp, push, templates, and queueing.
 - **Acontplus.Reports**: RDLC report generation, export (PDF/Excel), and template management for .NET apps.
@@ -85,7 +85,7 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** – Enterprise software solutions, Ecuador
+**[Acontplus S.A.S.](https://acontplus.com.ec)** – Software solutions, Ecuador
 
 ---
 

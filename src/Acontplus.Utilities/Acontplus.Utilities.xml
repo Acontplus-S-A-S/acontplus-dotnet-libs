@@ -76,7 +76,7 @@
             Implements the minimal API binding pattern for automatic parameter binding.
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.#ctor(System.Int32,System.Int32,System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String)">
+        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.#ctor(System.Int32,System.Int32,System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
             <summary>
             Represents a pagination query with sorting and search capabilities.
             Implements the minimal API binding pattern for automatic parameter binding.

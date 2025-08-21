@@ -99,7 +99,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         CookieContainer cookieContainer,
         string captcha)
     {
-        var captchaDeserialized = JsonExtensions.DeserializeModern<TokenSri>(captcha);
+        var captchaDeserialized = JsonExtensions.DeserializeOptimized<TokenSri>(captcha);
 
         var tokenSri = captchaDeserialized.Mensaje;
 
@@ -133,7 +133,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         var stream = await response.Content.ReadAsStreamAsync();
         using var streamReader = new StreamReader(stream);
         var sriResponse = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
-        var rucs = JsonExtensions.DeserializeModern<List<ContribuyenteRucDto>>(sriResponse);
+        var rucs = JsonExtensions.DeserializeOptimized<List<ContribuyenteRucDto>>(sriResponse);
         if (rucs.Count == 0 || rucs[0].NumeroRuc != idCard)
         {
             return Result<ContribuyenteCompleteDto, DomainError>.Failure(new DomainError
@@ -185,7 +185,7 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         var stream = await sriResponse.Content.ReadAsStreamAsync();
         using var streamReader = new StreamReader(stream);
         var serializedEstabs = HttpUtility.HtmlDecode(await streamReader.ReadToEndAsync());
-        var establecimientos = JsonExtensions.DeserializeModern<List<EstablecimientoDto>>(serializedEstabs);
+        var establecimientos = JsonExtensions.DeserializeOptimized<List<EstablecimientoDto>>(serializedEstabs);
 
         var response = new ContribuyenteCompleteDto
         {
