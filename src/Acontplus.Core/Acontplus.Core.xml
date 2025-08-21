@@ -54,6 +54,62 @@
         <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Warnings">
             <summary>Optional warnings that occurred during the operation.</summary>
         </member>
+        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildFilters">
+            <summary>
+            Builds a dictionary of filters if they exist, otherwise returns null.
+            Useful for converting to stored procedure parameters or other filter formats.
+            </summary>
+            <returns>Dictionary of filters or null if no filters exist</returns>
+        </member>
+        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildFiltersWithPrefix(System.String)">
+            <summary>
+            Builds a dictionary of filters with custom key prefix (e.g., "@" for SQL parameters).
+            </summary>
+            <param name="prefix">Prefix to add to filter keys</param>
+            <returns>Dictionary of filters with prefixed keys or null if no filters exist</returns>
+        </member>
+        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildSqlParameters">
+            <summary>
+            Builds a dictionary of filters with "@" prefix for SQL parameters.
+            </summary>
+            <returns>Dictionary of filters with "@" prefix or null if no filters exist</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeOptimized``1(System.String)">
+            <summary>
+            Deserializes JSON string to the specified type using optimized options.
+            </summary>
+            <typeparam name="T">The target type to deserialize to.</typeparam>
+            <param name="json">The JSON string to deserialize.</param>
+            <returns>The deserialized object.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when JSON string is null or empty.</exception>
+            <exception cref="T:System.Text.Json.JsonException">Thrown when deserialization fails.</exception>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeSafe``1(System.String,``0)">
+            <summary>
+            Deserializes JSON string to the specified type with fallback value on failure.
+            </summary>
+            <typeparam name="T">The target type to deserialize to.</typeparam>
+            <param name="json">The JSON string to deserialize.</param>
+            <param name="fallback">The fallback value to return if deserialization fails.</param>
+            <returns>The deserialized object or fallback value.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.SerializeOptimized``1(``0,System.Boolean)">
+            <summary>
+            Serializes object to JSON string using optimized options.
+            </summary>
+            <typeparam name="T">The type of object to serialize.</typeparam>
+            <param name="obj">The object to serialize.</param>
+            <param name="pretty">Whether to format the JSON with indentation.</param>
+            <returns>The JSON string representation of the object.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.CloneDeep``1(``0)">
+            <summary>
+            Creates a deep clone of an object via JSON serialization and deserialization.
+            </summary>
+            <typeparam name="T">The type of object to clone.</typeparam>
+            <param name="obj">The object to clone.</param>
+            <returns>A deep clone of the object.</returns>
+        </member>
         <member name="T:Acontplus.Core.Extensions.RepositoryAuditExtensions">
             <summary>
             Extension methods for audit functionality on repositories with BaseEntity types.
