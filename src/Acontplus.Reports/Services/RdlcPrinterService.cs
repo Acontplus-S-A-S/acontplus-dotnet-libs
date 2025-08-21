@@ -22,7 +22,7 @@ public class RdlcPrinterService : IRdlcPrinterService
             foreach (var item in printRequest.DataSources)
             {
                 lr.DataSources.Add(new ReportDataSource(item.Key,
-                    DataConverters.JsonToDataTable(JsonExtensions.SerializeModern(item.Value))));
+                    DataConverters.JsonToDataTable(JsonExtensions.SerializeOptimized(item.Value))));
             }
         }
 

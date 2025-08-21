@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A modern .NET 9+ library for PostgreSQL persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling for robust data access with PostgreSQL.
+A .NET 9+ library for PostgreSQL persistence, ADO.NET, and Entity Framework Core integration. Includes repositories, context management, and advanced error handling for robust data access with PostgreSQL.
 
 ## 🚀 Features
 
@@ -102,7 +102,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
 
 ---
 

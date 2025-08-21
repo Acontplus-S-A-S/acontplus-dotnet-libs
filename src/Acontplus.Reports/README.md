@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A modern .NET 9+ library for RDLC (Report Definition Language Client-side) report generation, export, and management. Includes PDF/Excel export, template support, and ReportViewer integration.
+A .NET 9+ library for RDLC (Report Definition Language Client-side) report generation, export, and management. Includes PDF/Excel export, template support, and ReportViewer integration.
 
 ## 🚀 Features
 
@@ -102,7 +102,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Enterprise software solutions
+**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
 
 ---
 

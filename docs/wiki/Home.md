@@ -20,7 +20,7 @@ Welcome to the documentation wiki for the Acontplus S.A.S. .NET Libraries soluti
 
 ## 🏢 About Acontplus S.A.S.
 
-[Acontplus S.A.S.](https://acontplus.com.ec) is a leading provider of enterprise software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation.
+[Acontplus S.A.S.](https://acontplus.com.ec) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation.
 
 ---
 
