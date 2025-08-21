@@ -175,14 +175,14 @@ public class AdvancedUsageController : ControllerBase
 
     #endregion
 
-    #region Enterprise Usage Examples
+    #region Advanced Usage Examples
 
     /// <summary>
-    /// Enterprise usage - Multi-tenant dashboard with comprehensive monitoring.
+    /// Advanced usage - Multi-tenant dashboard with comprehensive monitoring.
     /// </summary>
-    [HttpGet("enterprise/dashboard")]
+    [HttpGet("advanced/dashboard")]
     [Authorize(Policy = "RequireClientId")]
-    public async Task<IActionResult> GetEnterpriseDashboard()
+    public async Task<IActionResult> GetAdvancedDashboard()
     {
         var tenantId = _requestContext.GetTenantId();
         var clientId = _requestContext.GetClientId();
@@ -196,7 +196,7 @@ public class AdvancedUsageController : ControllerBase
             {
                 // Simulate complex dashboard data retrieval
                 await Task.Delay(200);
-                return new EnterpriseDashboard
+                return new AdvancedDashboard
                 {
                     TenantId = tenantId,
                     ClientId = clientId,
@@ -233,13 +233,13 @@ public class AdvancedUsageController : ControllerBase
     }
 
     /// <summary>
-    /// Enterprise usage - Audit logging with comprehensive context.
+    /// Advanced usage - Audit logging with comprehensive context.
     /// </summary>
-    [HttpPost("enterprise/audit")]
+    [HttpPost("advanced/audit")]
     [Authorize(Policy = "AdminOnly")]
     public IActionResult LogAuditEvent([FromBody] AuditEvent auditEvent)
     {
-        var auditLog = new EnterpriseAuditLog
+        var auditLog = new AdvancedAuditLog
         {
             Event = auditEvent,
             Context = new AuditContext
@@ -269,15 +269,15 @@ public class AdvancedUsageController : ControllerBase
     }
 
     /// <summary>
-    /// Enterprise usage - Security status and monitoring.
+    /// Advanced usage - Security status and monitoring.
     /// </summary>
-    [HttpGet("enterprise/security-status")]
-    public IActionResult GetEnterpriseSecurityStatus()
+    [HttpGet("advanced/security-status")]
+    public IActionResult GetAdvancedSecurityStatus()
     {
         var headers = _securityHeaders.GetRecommendedHeaders(false);
         var cspNonce = _securityHeaders.GenerateCspNonce();
 
-        return Ok(new EnterpriseSecurityStatus
+        return Ok(new AdvancedSecurityStatus
         {
             SecurityHeaders = headers,
             CspNonce = cspNonce,
@@ -299,9 +299,9 @@ public class AdvancedUsageController : ControllerBase
     }
 
     /// <summary>
-    /// Enterprise usage - Multi-tenant data with isolation.
+    /// Advanced usage - Multi-tenant data with isolation.
     /// </summary>
-    [HttpGet("enterprise/tenant-data/{dataType}")]
+    [HttpGet("advanced/tenant-data/{dataType}")]
     [Authorize(Policy = "RequireTenant")]
     public async Task<IActionResult> GetTenantData(string dataType)
     {
@@ -328,14 +328,14 @@ public class AdvancedUsageController : ControllerBase
                 TenantId = tenantId,
                 ClientId = clientId,
                 DataType = dataType,
-                Content = $"Enterprise tenant-specific {dataType} for {tenantId}",
+                Content = $"Advanced tenant-specific {dataType} for {tenantId}",
                 LastUpdated = DateTime.UtcNow,
                 Metadata = new Dictionary<string, object>
                 {
-                    ["tenant-tier"] = GetTenantTier(tenantId),
+                    ["tenant-tier"] = GetTenantTier(tenantId) ?? "default",
                     ["data-version"] = "2.0",
                     ["cache-key"] = cacheKey,
-                    ["access-level"] = "enterprise",
+                    ["access-level"] = "advanced",
                     ["encryption"] = "AES-256",
                     ["backup-frequency"] = "hourly"
                 }
@@ -402,7 +402,7 @@ public class AdvancedUsageController : ControllerBase
 
             return Ok(new { Result = result, Operation = operation, Strategy = "resilient" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(503, new
             {
@@ -439,7 +439,7 @@ public class AdvancedUsageController : ControllerBase
                 Layout = GetLayoutForDevice(deviceType, capabilities),
                 Features = GetSupportedFeatures(capabilities),
                 OptimizedFor = deviceType.ToString(),
-                Browser = capabilities.Browser,
+                Browser = capabilities.Browser ?? "Unknown",
                 TouchSupport = capabilities.SupportsTouch
             };
         }, TimeSpan.FromMinutes(15));
@@ -604,10 +604,10 @@ public class AdvancedUsageController : ControllerBase
         if (capabilities.SupportsTouch)
             features.Add("Touch gestures");
 
-        if (capabilities.Browser.Contains("Chrome"))
+        if (capabilities.Browser != null && capabilities.Browser.Contains("Chrome"))
             features.Add("PWA support");
 
-        if (capabilities.OperatingSystem.Contains("iOS"))
+        if (capabilities.OperatingSystem != null && capabilities.OperatingSystem.Contains("iOS"))
             features.Add("Apple Pay");
 
         return features.ToArray();
@@ -625,13 +625,17 @@ public class BasicProduct
     public decimal Price { get; set; }
 }
 
-public class EnterpriseDashboard
+public class AdvancedDashboard
 {
     public string TenantId { get; set; } = string.Empty;
     public string ClientId { get; set; } = string.Empty;
     public string DeviceType { get; set; } = string.Empty;
+    public string CorrelationId { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
     public DashboardData Data { get; set; } = new();
     public DateTime GeneratedAt { get; set; }
+    public object Metrics { get; set; } = new();
+    public object[] Alerts { get; set; } = Array.Empty<object>();
 }
 
 public class DashboardData
@@ -656,7 +660,7 @@ public class AuditEvent
     public Dictionary<string, object>? Metadata { get; set; }
 }
 
-public class EnterpriseAuditLog
+public class AdvancedAuditLog
 {
     public AuditEvent Event { get; set; } = new();
     public AuditContext Context { get; set; } = new();
@@ -675,7 +679,7 @@ public class AuditContext
     public string RequestMethod { get; set; } = string.Empty;
 }
 
-public class EnterpriseSecurityStatus
+public class AdvancedSecurityStatus
 {
     public Dictionary<string, string> SecurityHeaders { get; set; } = new();
     public string CspNonce { get; set; } = string.Empty;

@@ -147,8 +147,8 @@ try
 
     app.MapControllers();
 
-    // Map enterprise demonstration endpoints
-    app.MapEnterpriseEndpoints();
+    // Map advanced demonstration endpoints
+    app.MapAdvancedEndpoints();
 
     // Map health checks
     app.MapHealthChecks("/health");
@@ -287,7 +287,7 @@ try
     //Results.Json(new ApiResponse { Status = ResponseStatus.Success }));
     Results.Json(ApiResponse.Success("great")));
     var options = JsonExtensions.DefaultOptions;
-    var json = ApiResponse.Success("Test").SerializeModern();
+    var json = ApiResponse.Success("Test").SerializeOptimized();
     Console.WriteLine(json);
 
     var test = new Test { Status = ResponseStatus.Success };
