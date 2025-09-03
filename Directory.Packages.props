@@ -11,9 +11,9 @@
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageVersion Include="AWSSDK.Core" Version="4.0.0.25" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.6.8" />
-    <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.0.4.1" />
+    <PackageVersion Include="AWSSDK.Core" Version="4.0.0.26" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.6.13" />
+    <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.0.5.1" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageVersion Include="MailKit" Version="4.13.0" />
@@ -63,8 +63,8 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageVersion Include="Serilog.Sinks.MSSqlServer" Version="8.2.2" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.116.1" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.3" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.4" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.4" />
     <PackageVersion Include="System.Drawing.Common" Version="9.0.8" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     <PackageVersion Include="ZXing.Net" Version="0.16.10" />
