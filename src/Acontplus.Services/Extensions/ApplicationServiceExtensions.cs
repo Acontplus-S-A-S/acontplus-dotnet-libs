@@ -33,6 +33,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ISecurityHeaderService, SecurityHeaderService>();
         services.AddScoped<IDeviceDetectionService, DeviceDetectionService>();
         services.AddScoped<ICircuitBreakerService, CircuitBreakerService>();
+        services.AddScoped<IMetricsService, MetricsService>();
 
         // Register action filters
         services.AddScoped<ValidationActionFilter>();

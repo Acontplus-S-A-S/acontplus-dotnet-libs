@@ -4,6 +4,36 @@
         <name>Acontplus.Services</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Services.Configuration.CacheConfiguration">
+            <summary>
+            Configuration for caching services.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.UseDistributedCache">
+            <summary>
+            Use distributed cache (Redis) instead of in-memory cache.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.RedisConnectionString">
+            <summary>
+            Redis connection string.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.RedisInstanceName">
+            <summary>
+            Redis instance name.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.MemoryCacheSizeLimit">
+            <summary>
+            Memory cache size limit in bytes.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.ExpirationScanFrequencyMinutes">
+            <summary>
+            Expiration scan frequency in minutes.
+            </summary>
+        </member>
         <member name="T:Acontplus.Services.Configuration.JsonConfigurationService">
             <summary>
             Service for configuring JSON serialization in applications
@@ -523,56 +553,6 @@
             Add monitoring and telemetry services.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Extensions.CacheConfiguration">
-            <summary>
-            Configuration for caching services.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Extensions.CacheConfiguration.UseDistributedCache">
-            <summary>
-            Use distributed cache (Redis) instead of in-memory cache.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Extensions.CacheConfiguration.RedisConnectionString">
-            <summary>
-            Redis connection string.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Extensions.CacheConfiguration.RedisInstanceName">
-            <summary>
-            Redis instance name.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Extensions.CacheConfiguration.MemoryCacheSizeLimit">
-            <summary>
-            Memory cache size limit in bytes.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Extensions.CacheConfiguration.ExpirationScanFrequencyMinutes">
-            <summary>
-            Expiration scan frequency in minutes.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Extensions.IMetricsService">
-            <summary>
-            Interface for metrics service.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Extensions.MetricsService">
-            <summary>
-            Implementation of metrics service.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Extensions.CircuitBreakerHealthCheck">
-            <summary>
-            Health check for circuit breaker service.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Extensions.CacheHealthCheck">
-            <summary>
-            Health check for cache service.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Filters.RequestLoggingActionFilter">
             <summary>
             Action filter for logging request details and performance metrics.
@@ -586,6 +566,16 @@
         <member name="T:Acontplus.Services.Filters.ValidationActionFilter">
             <summary>
             Action filter for automatic model validation with standardized error responses.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.HealthChecks.CacheHealthCheck">
+            <summary>
+            Health check for cache service.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.HealthChecks.CircuitBreakerHealthCheck">
+            <summary>
+            Health check for circuit breaker service.
             </summary>
         </member>
         <member name="T:Acontplus.Services.Middleware.ApiExceptionMiddleware">
@@ -930,6 +920,34 @@
             Represents device capabilities and characteristics.
             </summary>
         </member>
+        <member name="T:Acontplus.Services.Services.Abstractions.IMetricsService">
+            <summary>
+            Interface for metrics service.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.IncrementCounter(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Increment a counter metric.
+            </summary>
+            <param name="name">The name of the counter.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.RecordGauge(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a gauge metric.
+            </summary>
+            <param name="name">The name of the gauge.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.RecordHistogram(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a histogram metric.
+            </summary>
+            <param name="name">The name of the histogram.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
         <member name="T:Acontplus.Services.Services.Abstractions.IRequestContextService">
             <summary>
             Service for managing request context information across the application.
@@ -1026,6 +1044,34 @@
             <summary>
             In-memory cache service implementation.
             </summary>
+        </member>
+        <member name="T:Acontplus.Services.Services.Implementations.MetricsService">
+            <summary>
+            Implementation of metrics service.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.IncrementCounter(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Increment a counter metric.
+            </summary>
+            <param name="name">The name of the counter.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.RecordGauge(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a gauge metric.
+            </summary>
+            <param name="name">The name of the gauge.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.RecordHistogram(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a histogram metric.
+            </summary>
+            <param name="name">The name of the histogram.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
         </member>
         <member name="T:Acontplus.Services.Services.Implementations.RequestContextService">
             <summary>
