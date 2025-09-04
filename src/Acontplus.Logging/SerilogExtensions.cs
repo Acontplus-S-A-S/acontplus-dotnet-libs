@@ -1,3 +1,5 @@
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Serilog.Sinks;
 using Serilog.Formatting.Display;
 
 namespace Acontplus.Logging;
@@ -40,16 +42,16 @@ public static class SerilogExtensions
             ConfigureLocalLogging(loggerConfiguration, loggingOptions, environment);
         }
 
-        // Configure S3 logging
-        if (loggingOptions.EnableS3Logging)
-        {
-            ConfigureS3Logging(loggerConfiguration, loggingOptions);
-        }
-
         // Configure SQL Server logging
         if (loggingOptions.EnableDatabaseLogging)
         {
             ConfigureDatabaseLogging(loggerConfiguration, configuration, loggingOptions);
+        }
+
+        // Configure Elasticsearch logging
+        if (loggingOptions.EnableElasticsearchLogging)
+        {
+            ConfigureElasticsearchLogging(loggerConfiguration, loggingOptions);
         }
 
         return loggerConfiguration; // Return the configured loggerConfiguration
@@ -90,27 +92,6 @@ public static class SerilogExtensions
             buffered: true,
             shared: false,
             formatter: environment == Environments.Development ? new MessageTemplateTextFormatter("{CustomTimestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") : new CompactJsonFormatter()
-        ));
-    }
-
-    private static void ConfigureS3Logging(LoggerConfiguration loggerConfiguration, LoggingOptions options)
-    {
-        if (string.IsNullOrEmpty(options.S3BucketName) || string.IsNullOrEmpty(options.S3AccessKey) || string.IsNullOrEmpty(options.S3SecretKey))
-        {
-            Serilog.Debugging.SelfLog.WriteLine("S3 logging is enabled but required settings are missing. Disabling S3 logging.");
-            return;
-        }
-
-        loggerConfiguration.WriteTo.Async(a => a.AmazonS3(
-            path: options.LocalFilePath, // S3 path uses a similar convention
-            bucketName: options.S3BucketName,
-            Amazon.RegionEndpoint.USEast1, // Consider making region configurable
-            awsAccessKeyId: options.S3AccessKey,
-            awsSecretAccessKey: options.S3SecretKey,
-            encoding: System.Text.Encoding.UTF8,
-            formatter: new CompactJsonFormatter(), // Typically structured JSON for cloud sinks
-            rollingInterval: Serilog.Sinks.AmazonS3.RollingInterval.Minute,
-            failureCallback: e => Serilog.Debugging.SelfLog.WriteLine($"An error occurred in the S3 sink: {e.Message}")
         ));
     }
 
@@ -166,6 +147,30 @@ public static class SerilogExtensions
         catch (Exception ex)
         {
             Serilog.Debugging.SelfLog.WriteLine($"Failed to configure database logging: {ex.Message}");
+        }
+    }
+
+    private static void ConfigureElasticsearchLogging(LoggerConfiguration loggerConfiguration, LoggingOptions options)
+    {
+        if (string.IsNullOrEmpty(options.ElasticsearchUrl))
+        {
+            Serilog.Debugging.SelfLog.WriteLine("Elasticsearch logging is enabled but URL is missing. Disabling Elasticsearch logging.");
+            return;
+        }
+
+        try
+        {
+            // Using the basic API from Elastic.Serilog.Sinks documentation
+            loggerConfiguration.WriteTo.Elasticsearch(new[] { new Uri(options.ElasticsearchUrl) }, opts =>
+            {
+                opts.BootstrapMethod = BootstrapMethod.Silent;
+            });
+
+            Serilog.Debugging.SelfLog.WriteLine("Elasticsearch logging configured successfully.");
+        }
+        catch (Exception ex)
+        {
+            Serilog.Debugging.SelfLog.WriteLine($"Failed to configure Elasticsearch logging: {ex.Message}");
         }
     }
 }

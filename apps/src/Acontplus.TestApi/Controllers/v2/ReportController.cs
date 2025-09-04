@@ -1,3 +1,4 @@
+using Acontplus.Core.Extensions;
 using Acontplus.Persistence.SqlServer.Utilities;
 using Acontplus.Utilities.Data;
 
@@ -19,8 +20,8 @@ public class ReportController(
         var dt = await emailService.GetAsync(cantidad);
         var dataRow = dt.Rows[0];
 
-        var mainParams = JsonConvert.DeserializeObject<Notification>(dataRow.Field<string>("params"));
-        var emailData = JsonConvert.DeserializeObject<EmailModel>(dataRow.Field<string>("emailData"));
+        var mainParams = JsonExtensions.DeserializeOptimized<Notification>(dataRow.Field<string>("params"));
+        var emailData = JsonExtensions.DeserializeOptimized<EmailModel>(dataRow.Field<string>("emailData"));
 
 
         if (mainParams.HasFile)

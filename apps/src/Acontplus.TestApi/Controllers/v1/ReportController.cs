@@ -1,3 +1,4 @@
+using Acontplus.Core.Extensions;
 using Acontplus.Persistence.SqlServer.Utilities;
 using Acontplus.Utilities.Data;
 
@@ -19,7 +20,7 @@ public class ReportController(
         var dt = await emailService.GetAsync(1);
         var dataRow = dt.Rows[0];
 
-        var mainParams = JsonConvert.DeserializeObject<Notification>(dataRow.Field<string>("params"));
+        var mainParams = JsonExtensions.DeserializeOptimized<Notification>(dataRow.Field<string>("params"));
         var emailData = DataTableMapper.MapDataRowToModel<EmailModel>(dataRow);
 
 

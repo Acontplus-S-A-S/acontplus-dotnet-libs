@@ -1,7 +1,34 @@
 # Acontplus.Logging
 
 ## Description
-`Acontplus.Logging` is a library that provides an advanced logging system for .NET applications, built on top of Serilog. It allows storing logs in local files, Amazon S3, or a database, depending on the configuration defined in `appsettings.json`. It seamlessly integrates with the .NET Generic Host and ASP.NET Core applications.
+`Acontplus.Logging` is an advanced logging library for .NET applications, built on top of Serilog. It provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Seamlessly integrates with the .NET Generic Host and ASP.NET Core applications.
+
+## Key Features
+
+### 🔧 **Multi-Sink Architecture**
+- **Console Logging**: Development-friendly output with color coding
+- **File Logging**: Rolling file support with configurable retention
+- **Database Logging**: SQL Server integration for structured querying
+- **Elasticsearch Integration**: Official ELK stack support with ECS compliance
+
+### 📊 **Structured Logging**
+- JSON formatting for production environments
+- Custom timezone enrichers
+- Environment-aware configurations
+- Async logging for optimal performance
+
+### 🚀 **Enterprise Features**
+- **ELK Stack Integration**: Official Elastic.Serilog.Sinks package
+- **ECS Compliance**: Elastic Common Schema adherence
+- **Data Streams**: Modern Elasticsearch data stream support
+- **ILM Integration**: Index Lifecycle Management ready
+- **High Performance**: Optimized for production workloads
+
+### ⚙️ **Easy Configuration**
+- Simple JSON configuration
+- Environment-specific settings
+- Dependency injection ready
+- Bootstrap logger support
 
 ## Installation
 To install the library, run the following command in the NuGet Package Manager Console:
@@ -23,161 +50,190 @@ Additionally, ensure you have the appropriate Serilog integration package for yo
   ```
 
 ## Configuration
-To enable and customize the logging system, edit the `appsettings.json` file and add the `AdvancedLogging` section. This section will control the behavior of your custom sinks.
+
+Configure the logging system by adding the `AdvancedLogging` section to your `appsettings.json`:
 
 ```json
-"AdvancedLogging": {
+{
+  "AdvancedLogging": {
     "EnableLocalFile": true,
     "Shared": false,
     "Buffered": true,
     "LocalFilePath": "logs/log-.log",
     "RollingInterval": "Day",
     "RetainedFileCountLimit": 7,
-    "FileSizeLimitBytes": 10485760, // 10MB in bytes
-    "EnableS3Logging": false,
-    "S3BucketName": "my-application-logs",
-    "S3AccessKey": "your-access-key",
-    "S3SecretKey": "your-secret-key",
+    "FileSizeLimitBytes": 10485760,
     "EnableDatabaseLogging": false,
     "DatabaseConnectionString": "Server=...",
+    "EnableElasticsearchLogging": false,
+    "ElasticsearchUrl": "http://localhost:9200",
+    "ElasticsearchIndexFormat": "logs-{0:yyyy.MM.dd}",
+    "ElasticsearchUsername": "elastic",
+    "ElasticsearchPassword": "your-password",
     "TimeZoneId": "America/Guayaquil"
-}
-```
-
-You can also leverage Serilog's built-in configuration capabilities via the `Serilog` section in `appsettings.json` to define default log levels and global enrichers, which will merge with your `AdvancedLogging` settings:
-
-```json
-"Serilog": {
-  "MinimumLevel": {
-    "Default": "Information",
-    "Override": {
-      "Microsoft": "Warning",
-      "System": "Warning",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "Enrich": [
-    "FromLogContext",
-    "WithEnvironmentUserName",
-    "WithMachineName"
-  ],
-  "Properties": {
-    "Application": "YourAppName"
   }
 }
 ```
 
 ### Configuration Options
+
+#### **File Logging**
 - **EnableLocalFile** *(bool)*: Enables or disables storing logs in local files.
 - **Shared** *(bool)*: Enables or disables shared log files (multiple processes can write to the same file).
 - **Buffered** *(bool)*: Enables or disables buffered logging for local files (improves performance by writing in chunks).
-- **LocalFilePath** *(string)*: Path to the log file. It can include `{Date}` to generate a file per day (e.g., `logs/log-.log`).
-- **RollingInterval** *(string)*: Interval to roll log files. Possible values: `Year`, `Month`, `Day`, `Hour`, `Minute`.
+- **LocalFilePath** *(string)*: Path to the log file. Supports rolling file patterns.
+- **RollingInterval** *(string)*: Interval to roll log files. Values: `Year`, `Month`, `Day`, `Hour`, `Minute`.
 - **RetainedFileCountLimit** *(int)*: Number of historical log files to keep.
 - **FileSizeLimitBytes** *(int)*: Maximum size of a single log file in bytes before it rolls over.
-- **EnableS3Logging** *(bool)*: Enables or disables storing logs in Amazon S3.
-- **S3BucketName** *(string)*: Name of the S3 bucket where logs will be stored.
-- **S3AccessKey** *(string)*: AWS access key for the S3 bucket (use environment variables or secrets in production).
-- **S3SecretKey** *(string)*: AWS secret key for the S3 bucket (use environment variables or secrets in production).
+
+#### **Database Logging**
 - **EnableDatabaseLogging** *(bool)*: Enables or disables storing logs in a database.
-- **DatabaseConnectionString** *(string)*: Connection string to the database where logs will be stored (use secrets in production).
+- **DatabaseConnectionString** *(string)*: Connection string to the database where logs will be stored.
+
+#### **Elasticsearch Logging**
+- **EnableElasticsearchLogging** *(bool)*: Enables or disables storing logs in Elasticsearch for ELK stack integration.
+- **ElasticsearchUrl** *(string)*: URL of the Elasticsearch instance (e.g., "http://localhost:9200").
+- **ElasticsearchIndexFormat** *(string)*: Index format for Elasticsearch (default: "logs-{0:yyyy.MM.dd}").
+- **ElasticsearchUsername** *(string)*: Username for Elasticsearch authentication (optional).
+- **ElasticsearchPassword** *(string)*: Password for Elasticsearch authentication (optional).
+
+#### **General Settings**
 - **TimeZoneId** *(string)*: Time zone ID for the custom timestamp enricher (e.g., "America/Guayaquil", "UTC").
 
 ## Usage
 
-Integrating `Acontplus.Common.Logging` involves two main steps in your `Program.cs` file to ensure Serilog is properly configured and your custom options are available in the Dependency Injection container.
+### Basic Integration
+
+Integrate `Acontplus.Logging` in your `Program.cs`:
 
 ```csharp
-using Acontplus.Logging; // Your NuGet namespace
+using Acontplus.Logging;
 using Serilog;
-using Microsoft.Extensions.DependencyInjection; // For IServiceCollection and casting
-using Microsoft.Extensions.Hosting; // For Environments
-using Microsoft.AspNetCore.Builder; // For WebApplication.CreateBuilder (if using ASP.NET Core)
-using System; // For Exception and Task
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        // 1. Optional: Create a bootstrap logger for very early startup issues.
-        //    This temporary logger captures logs before the main Serilog configuration is built.
+        // Bootstrap logger for early startup issues
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateBootstrapLogger();
 
         try
         {
-            var builder = WebApplication.CreateBuilder(args); // For ASP.NET Core Web API
-            // Or for a Generic Host (Worker Service): var builder = Host.CreateDefaultBuilder(args);
-
+            var builder = WebApplication.CreateBuilder(args);
             var environment = builder.Environment.EnvironmentName;
 
-            // 2. Configure Serilog for the host. This integrates Serilog with Microsoft.Extensions.Logging.
-            //    Call your ConfigureAdvancedLogger extension within this callback.
+            // Configure Serilog with advanced logging
             builder.Host.UseSerilog((hostContext, services, loggerConfiguration) =>
             {
-                // Apply your custom advanced logging settings from appsettings.json
-                // This method configures Serilog's sinks, enrichers, and base minimum level.
                 loggerConfiguration.ConfigureAdvancedLogger(hostContext.Configuration, environment);
-
-                // Read additional Serilog configuration from the "Serilog" section of appsettings.json.
-                // This merges with your programmatic configuration and allows for overrides/additions.
                 loggerConfiguration.ReadFrom.Configuration(hostContext.Configuration);
-                // Resolve services for Serilog sinks/enrichers if they need DI.
                 loggerConfiguration.ReadFrom.Services(services);
             });
 
-            // 3. Register your custom LoggingOptions class into the Dependency Injection container.
-            //    This makes your 'AdvancedLogging' configuration available to other services if needed.
+            // Register logging options
             builder.Services.AddAdvancedLoggingOptions(builder.Configuration);
-
-            // Add other application services here (e.g., builder.Services.AddControllers();)
-            // ... your application service registrations ...
 
             var app = builder.Build();
 
-            // 4. (For ASP.NET Core APIs) Add Serilog's request logging middleware.
-            //    Place this early in your HTTP request pipeline to capture request/response details.
+            // Add request logging middleware
             app.UseSerilogRequestLogging();
-
-            // ... your other middleware configurations ...
-            // e.g., app.UseHttpsRedirection();
-            // e.g., app.UseAuthorization();
-            // e.g., app.MapControllers();
 
             app.Run();
         }
         catch (Exception ex)
         {
-            // Catch any critical startup errors and log them using the bootstrap logger
-            Log.Fatal(ex, "Host terminated unexpectedly during bootstrap.");
+            Log.Fatal(ex, "Host terminated unexpectedly.");
         }
         finally
         {
-            // Ensure all buffered logs are flushed on application shutdown
             Log.CloseAndFlush();
         }
     }
 }
 ```
 
-## Requirements
-- .NET 6 or higher
-- Proper write permissions if `EnableLocalFile` is enabled.
-- AWS account with S3 permissions if `EnableS3Logging` is enabled.
-- Accessible database if `EnableDatabaseLogging` is enabled.
+### Advanced Configuration
 
-## Contributions
-Contributions to improve this library are welcome. To report bugs or suggestions, open an issue in the official repository.
+For more advanced Serilog configuration, add a `Serilog` section to your `appsettings.json`:
+
+```json
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "Enrich": [
+      "FromLogContext",
+      "WithEnvironmentUserName",
+      "WithMachineName"
+    ],
+    "Properties": {
+      "Application": "YourAppName"
+    }
+  }
+}
+```
+
+## Requirements
+- .NET 9.0 or higher
+- Proper write permissions if `EnableLocalFile` is enabled
+- Accessible database if `EnableDatabaseLogging` is enabled
+- Elasticsearch 8.x+ instance if `EnableElasticsearchLogging` is enabled
+
+## ELK Stack Integration
+
+This library provides seamless integration with the ELK (Elasticsearch, Logstash, Kibana) stack for advanced log management and analytics:
+
+### Benefits of ELK Integration:
+- **Centralized Log Management**: Aggregate logs from multiple services
+- **Advanced Search & Analytics**: Powerful querying capabilities with Elasticsearch
+- **Real-time Monitoring**: Live dashboards and alerts with Kibana
+- **Scalability**: Handle high-volume logging with distributed architecture
+- **Visualization**: Create custom dashboards and reports
+- **Alerting**: Set up automated alerts based on log patterns
+
+### Setup Instructions:
+1. **Install Elasticsearch**: Deploy Elasticsearch 8.x+ on your infrastructure
+2. **Configure Kibana**: Set up Kibana for visualization and monitoring
+3. **Enable Logging**: Set `EnableElasticsearchLogging: true` in your configuration
+4. **Configure Connection**: Provide Elasticsearch URL and credentials
+5. **Monitor**: Access Kibana to view and analyze your logs
+
+### Example ELK Configuration:
+```json
+{
+  "AdvancedLogging": {
+    "EnableElasticsearchLogging": true,
+    "ElasticsearchUrl": "https://your-elasticsearch-cluster:9200",
+    "ElasticsearchIndexFormat": "acontplus-logs-{0:yyyy.MM.dd}",
+    "ElasticsearchUsername": "elastic",
+    "ElasticsearchPassword": "your-secure-password"
+  }
+}
+```
+
+**Note:** The library uses `Elastic.Serilog.Sinks` package which provides better integration with Elasticsearch 8.x and newer versions. This is the **official** Elastic package that adheres to newer best practices around logging, datastreams and ILM. For advanced configuration options, refer to the [Elastic.Serilog.Sinks documentation](https://www.nuget.org/packages/Elastic.Serilog.Sinks/).
+
+### Key Benefits of Elastic.Serilog.Sinks:
+- **Official Elastic Support**: Maintained by Elastic team
+- **ECS Compliance**: Adheres to Elastic Common Schema
+- **Data Streams**: Uses modern Elasticsearch data streams
+- **ILM Integration**: Built-in Index Lifecycle Management support
+- **Performance**: Optimized for high-throughput logging
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Author
-
 [Ivan Paz](https://linktr.ee/iferpaz7)
 
 ## Company
-
 [Acontplus S.A.S.](https://acontplus.com.ec)
 ```

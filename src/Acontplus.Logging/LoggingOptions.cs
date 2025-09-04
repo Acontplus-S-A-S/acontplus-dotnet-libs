@@ -9,11 +9,12 @@ public class LoggingOptions
     public string RollingInterval { get; set; } = "Day";
     public int? RetainedFileCountLimit { get; set; } = 7;
     public long? FileSizeLimitBytes { get; set; } = 10 * 1024 * 1024;
-    public bool EnableS3Logging { get; set; }
-    public string? S3BucketName { get; set; }
-    public string? S3AccessKey { get; set; }
-    public string? S3SecretKey { get; set; }
     public bool EnableDatabaseLogging { get; set; }
     public string? DatabaseConnectionString { get; set; }
+    public bool EnableElasticsearchLogging { get; set; }
+    public string? ElasticsearchUrl { get; set; }
+    public string? ElasticsearchIndexFormat { get; set; } = "logs-{0:yyyy.MM.dd}";
+    public string? ElasticsearchUsername { get; set; }
+    public string? ElasticsearchPassword { get; set; }
     public string TimeZoneId { get; set; } = "UTC"; // Default to UTC
 }
