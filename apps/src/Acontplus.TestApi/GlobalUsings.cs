@@ -23,7 +23,6 @@ global using Acontplus.Utilities.Services;
 global using Asp.Versioning;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
-global using Newtonsoft.Json;
 global using System;
 global using System.Data;
 global using Notification = Acontplus.TestDomain.Models.Notification;

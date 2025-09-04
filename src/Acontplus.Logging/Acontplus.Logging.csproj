@@ -6,17 +6,17 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Logging</PackageId>
-    <Version>1.0.8</Version>
+    <Version>1.1.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
-    <Description>Advanced logging library with Serilog integration. Supports structured logging, multiple sinks (console, file, database, AWS S3), custom enrichers, and enterprise-grade logging patterns for cloud-native applications.</Description>
-    <PackageTags>dotnet9;logging;serilog;structured-logging;aws-s3;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing</PackageTags>
+    <Description>Advanced logging library with Serilog integration. Provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Features official ELK stack integration with Elastic.Serilog.Sinks, ECS compliance, and high-performance logging for .NET 9 applications.</Description>
+    <PackageTags>dotnet9;logging;serilog;structured-logging;elasticsearch;elk-stack;ecs-compliance;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing;elastic-sinks;data-streams;ilm</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Enhanced with structured logging, multiple sink support (console, file, database, AWS S3), custom enrichers, and enterprise-grade logging patterns. Improved configuration options and cloud-native observability features.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with official Elastic.Serilog.Sinks integration for ELK stack support, ECS compliance, and data streams. Removed S3 dependencies for simplified architecture. Added enterprise-grade logging capabilities with structured logging, custom enrichers, and cloud-native observability patterns. Optimized for .NET 9 and high-performance production workloads.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
@@ -26,6 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Elastic.Serilog.Sinks" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
@@ -34,7 +35,6 @@
     <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Formatting.Compact" />
     <PackageReference Include="Serilog.Settings.Configuration" />
-    <PackageReference Include="Serilog.Sinks.AmazonS3" />
     <PackageReference Include="Serilog.Sinks.Async" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
