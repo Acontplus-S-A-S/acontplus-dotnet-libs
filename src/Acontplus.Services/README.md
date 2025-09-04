@@ -101,6 +101,98 @@ app.MapControllers();
 app.Run();
 ```
 
+### 3. Extensions Usage Patterns
+
+#### 🎯 One-Line Setup (Recommended)
+```csharp
+// Program.cs - Complete setup with one line
+var builder = WebApplication.CreateBuilder(args);
+
+// Register all services, middleware, and configuration
+builder.Services.AddAcontplusServices(builder.Configuration);
+
+var app = builder.Build();
+
+// Configure complete middleware pipeline
+app.UseAcontplusServices(builder.Environment);
+
+app.MapControllers();
+app.Run();
+```
+
+#### 🔧 Granular Control Setup
+```csharp
+// Program.cs - Granular control for advanced scenarios
+var builder = WebApplication.CreateBuilder(args);
+
+// Register services individually
+builder.Services.AddCachingServices(builder.Configuration);
+builder.Services.AddResilienceServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add authorization policies
+builder.Services.AddAuthorizationPolicies(new List<string> { "web-app", "mobile-app" });
+
+var app = builder.Build();
+
+// Configure middleware individually
+app.UseSecurityHeaders(builder.Environment);
+app.UseMiddleware<CspNonceMiddleware>();
+app.UseAdvancedRateLimiting();
+app.UseMiddleware<RequestContextMiddleware>();
+app.UseAcontplusExceptionHandling();
+
+app.MapControllers();
+app.Run();
+```
+
+#### 🏢 Enterprise Setup with Custom Configuration
+```csharp
+// Program.cs - Enterprise setup with custom policies
+var builder = WebApplication.CreateBuilder(args);
+
+// Add core services
+builder.Services.AddAcontplusServices(builder.Configuration);
+
+// Add custom authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        // Custom JWT configuration
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
+// Add custom authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireClaim("role", "admin"));
+    
+    options.AddPolicy("TenantAccess", policy =>
+        policy.RequireClaim("tenant_id"));
+});
+
+var app = builder.Build();
+
+// Use complete middleware pipeline
+app.UseAcontplusServices(builder.Environment);
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();
+```
+
 ### 3. Add Basic Configuration
 
 ```json
@@ -1102,6 +1194,7 @@ public class ProductController : ControllerBase
 
 ### Request Context Management
 
+#### Basic Context Usage
 ```csharp
 public class OrderController : ControllerBase
 {
@@ -1119,6 +1212,147 @@ public class OrderController : ControllerBase
             request.OrderId, tenantId);
 
         return Ok(new { OrderId = request.OrderId, CorrelationId = correlationId });
+    }
+}
+```
+
+#### Advanced Context Extensions Usage
+```csharp
+public class AdvancedController : ControllerBase
+{
+    private readonly IRequestContextService _requestContext;
+
+    [HttpGet("context-info")]
+    public IActionResult GetContextInfo()
+    {
+        // Get full request context
+        var context = _requestContext.GetRequestContext();
+        
+        // Get individual context values
+        var correlationId = _requestContext.GetCorrelationId();
+        var tenantId = _requestContext.GetTenantId();
+        var clientId = _requestContext.GetClientId();
+        var userId = _requestContext.GetUserId();
+        
+        // Get HTTP context extensions
+        var userAgent = HttpContext.GetUserAgent();
+        var ipAddress = HttpContext.GetClientIpAddress();
+        var requestPath = HttpContext.GetRequestPath();
+        
+        // Get claims principal extensions
+        var userEmail = User.GetEmail();
+        var userRoles = User.GetRoles();
+        var userPermissions = User.GetPermissions();
+        
+        return Ok(new
+        {
+            Context = new
+            {
+                CorrelationId = correlationId,
+                TenantId = tenantId,
+                ClientId = clientId,
+                UserId = userId
+            },
+            Request = new
+            {
+                UserAgent = userAgent,
+                IpAddress = ipAddress,
+                Path = requestPath
+            },
+            User = new
+            {
+                Email = userEmail,
+                Roles = userRoles,
+                Permissions = userPermissions
+            }
+        });
+    }
+}
+```
+
+#### Context Extensions for Claims Principal
+```csharp
+// Extensions for ClaimsPrincipal
+public class UserController : ControllerBase
+{
+    [HttpGet("profile")]
+    [Authorize]
+    public IActionResult GetProfile()
+    {
+        // Get user information from claims
+        var userId = User.GetUserId();
+        var email = User.GetEmail();
+        var name = User.GetName();
+        var roles = User.GetRoles();
+        var permissions = User.GetPermissions();
+        var tenantId = User.GetTenantId();
+        
+        // Check specific claims
+        var isAdmin = User.HasRole("admin");
+        var canEdit = User.HasPermission("users.edit");
+        var isInTenant = User.IsInTenant("tenant-123");
+        
+        return Ok(new
+        {
+            UserId = userId,
+            Email = email,
+            Name = name,
+            Roles = roles,
+            Permissions = permissions,
+            TenantId = tenantId,
+            IsAdmin = isAdmin,
+            CanEdit = canEdit,
+            IsInTenant = isInTenant
+        });
+    }
+}
+```
+
+#### HTTP Context Extensions
+```csharp
+public class RequestInfoController : ControllerBase
+{
+    [HttpGet("request-info")]
+    public IActionResult GetRequestInfo()
+    {
+        // Get request information
+        var userAgent = HttpContext.GetUserAgent();
+        var ipAddress = HttpContext.GetClientIpAddress();
+        var requestPath = HttpContext.GetRequestPath();
+        var method = HttpContext.GetRequestMethod();
+        var headers = HttpContext.GetRequestHeaders();
+        
+        // Get response information
+        var statusCode = HttpContext.GetResponseStatusCode();
+        var responseHeaders = HttpContext.GetResponseHeaders();
+        
+        // Get connection information
+        var isHttps = HttpContext.IsHttps();
+        var host = HttpContext.GetHost();
+        var port = HttpContext.GetPort();
+        
+        return Ok(new
+        {
+            Request = new
+            {
+                UserAgent = userAgent,
+                IpAddress = ipAddress,
+                Path = requestPath,
+                Method = method,
+                Headers = headers
+            },
+            Response = new
+            {
+                StatusCode = statusCode,
+                Headers = responseHeaders
+            },
+            Connection = new
+            {
+                IsHttps = isHttps,
+                Host = host,
+                Port = port
+            }
+        });
     }
 }
 ```
@@ -1152,6 +1386,7 @@ public IActionResult MobileOnlyEndpoint()
 
 ### Security Headers
 
+#### Basic Security Headers Usage
 ```csharp
 public class SecurityController : ControllerBase
 {
@@ -1162,6 +1397,106 @@ public class SecurityController : ControllerBase
     {
         var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment: false);
         return Ok(headers);
+    }
+}
+```
+
+#### Advanced Security Extensions Usage
+```csharp
+public class AdvancedSecurityController : ControllerBase
+{
+    private readonly ISecurityHeaderService _securityHeaders;
+
+    [HttpGet("security-config")]
+    public IActionResult GetSecurityConfiguration()
+    {
+        // Get recommended security headers
+        var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment: false);
+        
+        // Generate CSP nonce for inline scripts
+        var cspNonce = _securityHeaders.GenerateCspNonce();
+        
+        // Get specific security policies
+        var cspPolicy = _securityHeaders.GetContentSecurityPolicy();
+        var hstsPolicy = _securityHeaders.GetHstsPolicy();
+        var referrerPolicy = _securityHeaders.GetReferrerPolicy();
+        
+        // Check security features
+        var hasSecurityHeaders = _securityHeaders.HasSecurityHeaders(HttpContext);
+        var hasCspHeader = _securityHeaders.HasCspHeader(HttpContext);
+        
+        return Ok(new
+        {
+            Headers = headers,
+            CspNonce = cspNonce,
+            Policies = new
+            {
+                Csp = cspPolicy,
+                Hsts = hstsPolicy,
+                Referrer = referrerPolicy
+            },
+            Status = new
+            {
+                HasSecurityHeaders = hasSecurityHeaders,
+                HasCspHeader = hasCspHeader
+            }
+        });
+    }
+
+    [HttpGet("csp-nonce")]
+    public IActionResult GetCspNonce()
+    {
+        // Generate a new CSP nonce for this request
+        var nonce = _securityHeaders.GenerateCspNonce();
+        
+        return Ok(new { Nonce = nonce });
+    }
+
+    [HttpPost("validate-csp")]
+    public IActionResult ValidateCspPolicy([FromBody] CspValidationRequest request)
+    {
+        // Validate CSP policy
+        var isValid = _securityHeaders.ValidateCspPolicy(request.Policy);
+        var violations = _securityHeaders.GetCspViolations(request.Policy);
+        
+        return Ok(new
+        {
+            IsValid = isValid,
+            Violations = violations
+        });
+    }
+}
+
+public class CspValidationRequest
+{
+    public string Policy { get; set; } = string.Empty;
+}
+```
+
+#### Security Header Policy Extensions
+```csharp
+public class SecurityPolicyController : ControllerBase
+{
+    [HttpGet("security-policies")]
+    public IActionResult GetSecurityPolicies()
+    {
+        // Get different security policy configurations
+        var strictPolicy = SecurityHeaderPolicyExtensions.GetStrictSecurityPolicy();
+        var moderatePolicy = SecurityHeaderPolicyExtensions.GetModerateSecurityPolicy();
+        var permissivePolicy = SecurityHeaderPolicyExtensions.GetPermissiveSecurityPolicy();
+        
+        // Get custom policy for specific use case
+        var apiPolicy = SecurityHeaderPolicyExtensions.GetApiSecurityPolicy();
+        var webPolicy = SecurityHeaderPolicyExtensions.GetWebSecurityPolicy();
+        
+        return Ok(new
+        {
+            Strict = strictPolicy,
+            Moderate = moderatePolicy,
+            Permissive = permissivePolicy,
+            Api = apiPolicy,
+            Web = webPolicy
+        });
     }
 }
 ```
@@ -1865,6 +2200,188 @@ public class JwtAuthenticationHealthCheck : IHealthCheck
    var userId = _requestContext.GetUserId(); // via IRequestContextService
    ```
 
+### 🏗️ Infrastructure Extensions Usage
+
+#### Infrastructure Service Extensions
+```csharp
+public static class CustomInfrastructureExtensions
+{
+    public static IServiceCollection AddCustomInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Add infrastructure services
+        services.AddInfrastructureServices(configuration);
+        
+        // Add custom infrastructure components
+        services.AddScoped<ICustomInfrastructureService, CustomInfrastructureService>();
+        services.AddSingleton<ICustomConfigurationService, CustomConfigurationService>();
+        
+        // Configure infrastructure options
+        services.Configure<InfrastructureOptions>(configuration.GetSection("Infrastructure"));
+        
+        return services;
+    }
+}
+
+// Custom infrastructure service example
+public interface ICustomInfrastructureService
+{
+    Task<bool> IsServiceAvailableAsync(string serviceName);
+    Task<ServiceHealth> GetServiceHealthAsync(string serviceName);
+    Task<Dictionary<string, object>> GetServiceMetricsAsync(string serviceName);
+}
+
+public class CustomInfrastructureService : ICustomInfrastructureService
+{
+    private readonly ILogger<CustomInfrastructureService> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public CustomInfrastructureService(
+        ILogger<CustomInfrastructureService> logger,
+        IHttpClientFactory httpClientFactory)
+    {
+        _logger = logger;
+        _httpClientFactory = httpClientFactory;
+    }
+
+    public async Task<bool> IsServiceAvailableAsync(string serviceName)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("health-check");
+            var response = await client.GetAsync($"/health/{serviceName}");
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Service {ServiceName} health check failed", serviceName);
+            return false;
+        }
+    }
+
+    public async Task<ServiceHealth> GetServiceHealthAsync(string serviceName)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("health-check");
+            var response = await client.GetAsync($"/health/{serviceName}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var healthData = await response.Content.ReadFromJsonAsync<ServiceHealth>();
+                return healthData ?? new ServiceHealth { Status = "Unknown" };
+            }
+            
+            return new ServiceHealth { Status = "Unhealthy" };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get health for service {ServiceName}", serviceName);
+            return new ServiceHealth { Status = "Error" };
+        }
+    }
+
+    public async Task<Dictionary<string, object>> GetServiceMetricsAsync(string serviceName)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("metrics");
+            var response = await client.GetAsync($"/metrics/{serviceName}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var metrics = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+                return metrics ?? new Dictionary<string, object>();
+            }
+            
+            return new Dictionary<string, object>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get metrics for service {ServiceName}", serviceName);
+            return new Dictionary<string, object>();
+        }
+    }
+}
+
+public class ServiceHealth
+{
+    public string Status { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public Dictionary<string, object>? Details { get; set; }
+}
+
+public class InfrastructureOptions
+{
+    public string HealthCheckEndpoint { get; set; } = "/health";
+    public string MetricsEndpoint { get; set; } = "/metrics";
+    public TimeSpan HealthCheckTimeout { get; set; } = TimeSpan.FromSeconds(30);
+    public bool EnableDetailedHealthChecks { get; set; } = true;
+}
+```
+
+#### Infrastructure Health Checks
+```csharp
+public class InfrastructureHealthCheck : IHealthCheck
+{
+    private readonly ICustomInfrastructureService _infrastructureService;
+    private readonly IConfiguration _configuration;
+
+    public InfrastructureHealthCheck(
+        ICustomInfrastructureService infrastructureService,
+        IConfiguration configuration)
+    {
+        _infrastructureService = infrastructureService;
+        _configuration = configuration;
+    }
+
+    public async Task<HealthCheckResult> CheckHealthAsync(
+        HealthCheckContext context,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var services = _configuration.GetSection("Infrastructure:Services").Get<string[]>() ?? [];
+            var results = new Dictionary<string, object>();
+            var unhealthyServices = new List<string>();
+
+            foreach (var service in services)
+            {
+                var isAvailable = await _infrastructureService.IsServiceAvailableAsync(service);
+                results[service] = isAvailable ? "Healthy" : "Unhealthy";
+                
+                if (!isAvailable)
+                {
+                    unhealthyServices.Add(service);
+                }
+            }
+
+            if (unhealthyServices.Any())
+            {
+                return HealthCheckResult.Degraded(
+                    "Some infrastructure services are unhealthy",
+                    data: results);
+            }
+
+            return HealthCheckResult.Healthy(
+                "All infrastructure services are healthy",
+                data: results);
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy(
+                "Infrastructure health check failed",
+                ex,
+                data: new Dictionary<string, object>
+                {
+                    ["Error"] = ex.Message
+                });
+        }
+    }
+}
+```
+
 ## 🏗️ Architecture Patterns
 
 ### Service Layer Architecture
@@ -2015,6 +2532,153 @@ var cspConfig = new
 };
 ```
 
+### 🔧 Middleware Extensions Usage
+
+#### Global Exception Handling Extensions
+```csharp
+public class ExceptionHandlingController : ControllerBase
+{
+    [HttpGet("test-exception")]
+    public IActionResult TestException()
+    {
+        // This will be caught by the global exception handler
+        throw new InvalidOperationException("Test exception for global handling");
+    }
+
+    [HttpGet("test-validation")]
+    public IActionResult TestValidation([FromQuery] string required)
+    {
+        if (string.IsNullOrEmpty(required))
+        {
+            // This will be handled by the global exception handler
+            throw new ValidationException("Required parameter is missing");
+        }
+        
+        return Ok(new { Message = "Validation passed", Value = required });
+    }
+}
+
+// Custom exception handling configuration
+public static class CustomExceptionHandlingExtensions
+{
+    public static IApplicationBuilder UseCustomExceptionHandling(
+        this IApplicationBuilder app,
+        IWebHostEnvironment environment)
+    {
+        return app.UseAcontplusExceptionHandling(options =>
+        {
+            options.IncludeRequestDetails = true;
+            options.LogRequestBody = environment.IsDevelopment();
+            options.IncludeDebugDetailsInResponse = environment.IsDevelopment();
+            options.LogLevel = LogLevel.Warning;
+            options.CorrelationIdHeader = "X-Correlation-ID";
+            
+            // Custom exception mappings
+            options.MapException<ValidationException>(HttpStatusCode.BadRequest);
+            options.MapException<UnauthorizedAccessException>(HttpStatusCode.Unauthorized);
+            options.MapException<NotFoundException>(HttpStatusCode.NotFound);
+        });
+    }
+}
+```
+
+#### Middleware Pipeline Extensions
+```csharp
+public static class CustomMiddlewareExtensions
+{
+    public static IApplicationBuilder UseCustomPipeline(
+        this IApplicationBuilder app,
+        IWebHostEnvironment environment)
+    {
+        // Security headers (early in pipeline)
+        app.UseSecurityHeaders(environment);
+        
+        // CSP nonce generation
+        app.UseMiddleware<CspNonceMiddleware>();
+        
+        // Advanced rate limiting
+        app.UseAdvancedRateLimiting();
+        
+        // Request context and tracking
+        app.UseMiddleware<RequestContextMiddleware>();
+        
+        // Custom middleware
+        app.UseMiddleware<CustomLoggingMiddleware>();
+        app.UseMiddleware<PerformanceMonitoringMiddleware>();
+        
+        // Global exception handling (late in pipeline, before MVC)
+        app.UseAcontplusExceptionHandling(options =>
+        {
+            options.IncludeRequestDetails = true;
+            options.LogRequestBody = environment.IsDevelopment();
+            options.IncludeDebugDetailsInResponse = environment.IsDevelopment();
+        });
+        
+        return app;
+    }
+}
+
+// Custom middleware examples
+public class CustomLoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<CustomLoggingMiddleware> _logger;
+
+    public CustomLoggingMiddleware(RequestDelegate next, ILogger<CustomLoggingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var startTime = DateTime.UtcNow;
+        
+        try
+        {
+            await _next(context);
+        }
+        finally
+        {
+            var duration = DateTime.UtcNow - startTime;
+            _logger.LogInformation(
+                "Request {Method} {Path} completed in {Duration}ms with status {StatusCode}",
+                context.Request.Method,
+                context.Request.Path,
+                duration.TotalMilliseconds,
+                context.Response.StatusCode);
+        }
+    }
+}
+
+public class PerformanceMonitoringMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IMetricsService _metrics;
+
+    public PerformanceMonitoringMiddleware(RequestDelegate next, IMetricsService metrics)
+    {
+        _next = next;
+        _metrics = metrics;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var startTime = DateTime.UtcNow;
+        
+        try
+        {
+            await _next(context);
+        }
+        finally
+        {
+            var duration = DateTime.UtcNow - startTime;
+            _metrics.RecordRequestDuration(context.Request.Path, duration);
+        }
+    }
+}
+```
+
 #### Client ID Validation
 ```csharp
 // Always validate client IDs
@@ -2142,6 +2806,220 @@ When adding new features:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
+## 📋 Complete Feature Summary
+
+### 🎯 What's Included in Acontplus.Services
+
+#### ✅ **Core Services**
+- **Caching Service** - In-memory and distributed (Redis) caching with unified interface
+- **Request Context Service** - Correlation IDs, tenant isolation, and request tracking
+- **Security Header Service** - HTTP security headers and CSP management
+- **Device Detection Service** - Smart device type detection and capabilities
+- **Circuit Breaker Service** - Resilience patterns with Polly integration
+
+#### ✅ **Extensions & Middleware**
+- **Application Service Extensions** - Complete service registration
+- **Service Extensions** - Core service patterns (caching, resilience)
+- **JWT Authentication Extensions** - Enterprise-grade JWT validation
+- **Security Extensions** - Security header policies and CSP management
+- **Context Extensions** - HTTP context and claims principal utilities
+- **Middleware Extensions** - Global exception handling and pipeline management
+- **Infrastructure Extensions** - Infrastructure service management
+
+#### ✅ **Security Features**
+- **Security Headers** - X-Content-Type-Options, X-Frame-Options, CSP, HSTS
+- **Content Security Policy** - CSP nonce generation and validation
+- **Client ID Validation** - Multi-client application support
+- **Tenant Isolation** - Multi-tenant security policies
+- **JWT Authentication** - Complete JWT validation with enhanced security
+
+#### ✅ **Performance & Resilience**
+- **Caching Strategies** - Cache-aside pattern with TTL management
+- **Circuit Breaker** - Prevents cascading failures
+- **Retry Policies** - Exponential backoff with jitter
+- **Rate Limiting** - Basic and advanced rate limiting
+- **HTTP Client Resilience** - Resilient HTTP clients with automatic retry
+
+#### ✅ **Monitoring & Observability**
+- **Health Checks** - Comprehensive health monitoring
+- **Request Logging** - Structured logging with correlation IDs
+- **Metrics Collection** - Built-in metrics and Application Insights integration
+- **Performance Monitoring** - Request duration and performance tracking
+
+#### ✅ **Device & Context Awareness**
+- **Device Detection** - Mobile, tablet, and desktop detection
+- **Request Context** - Correlation tracking across services
+- **User Context** - Claims principal extensions and utilities
+- **HTTP Context** - Request and response information extraction
+
+### 🚀 **Quick Reference - All Extension Methods**
+
+#### **Service Registration Extensions**
+```csharp
+// One-line setup
+builder.Services.AddAcontplusServices(configuration);
+
+// Granular setup
+builder.Services.AddCachingServices(configuration);
+builder.Services.AddResilienceServices(configuration);
+builder.Services.AddApplicationServices(configuration);
+builder.Services.AddJwtAuthentication(configuration);
+builder.Services.AddInfrastructureServices(configuration);
+builder.Services.AddAuthorizationPolicies(allowedClientIds);
+```
+
+#### **Middleware Extensions**
+```csharp
+// One-line middleware setup
+app.UseAcontplusServices(environment);
+
+// Granular middleware setup
+app.UseSecurityHeaders(environment);
+app.UseMiddleware<CspNonceMiddleware>();
+app.UseAdvancedRateLimiting();
+app.UseMiddleware<RequestContextMiddleware>();
+app.UseAcontplusExceptionHandling();
+```
+
+#### **Context Extensions**
+```csharp
+// Request context
+var correlationId = _requestContext.GetCorrelationId();
+var tenantId = _requestContext.GetTenantId();
+var clientId = _requestContext.GetClientId();
+
+// HTTP context
+var userAgent = HttpContext.GetUserAgent();
+var ipAddress = HttpContext.GetClientIpAddress();
+var requestPath = HttpContext.GetRequestPath();
+
+// Claims principal
+var userId = User.GetUserId();
+var email = User.GetEmail();
+var roles = User.GetRoles();
+var isAdmin = User.HasRole("admin");
+```
+
+#### **Security Extensions**
+```csharp
+// Security headers
+var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment: false);
+var cspNonce = _securityHeaders.GenerateCspNonce();
+
+// Security policies
+var strictPolicy = SecurityHeaderPolicyExtensions.GetStrictSecurityPolicy();
+var apiPolicy = SecurityHeaderPolicyExtensions.GetApiSecurityPolicy();
+```
+
+### 🎯 **Configuration Reference**
+
+#### **Basic Configuration**
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "RequireClientId": false
+  },
+  "Caching": {
+    "UseDistributedCache": false
+  },
+  "Resilience": {
+    "CircuitBreaker": { "Enabled": true },
+    "RetryPolicy": { "Enabled": true }
+  }
+}
+```
+
+#### **Enterprise Configuration**
+```json
+{
+  "RequestContext": {
+    "EnableSecurityHeaders": true,
+    "RequireClientId": true,
+    "AllowedClientIds": ["web-app", "mobile-app"]
+  },
+  "Caching": {
+    "UseDistributedCache": true,
+    "RedisConnectionString": "your-redis-connection"
+  },
+  "Resilience": {
+    "RateLimiting": { "Enabled": true },
+    "CircuitBreaker": { "Enabled": true },
+    "RetryPolicy": { "Enabled": true },
+    "Timeout": { "Enabled": true }
+  },
+  "JwtSettings": {
+    "Issuer": "https://auth.acontplus.com",
+    "Audience": "api.acontplus.com",
+    "SecurityKey": "your-super-secret-key"
+  }
+}
+```
+
+### 🔧 **Common Patterns**
+
+#### **Caching Pattern**
+```csharp
+var result = await _cache.GetOrCreateAsync(
+    $"key:{id}",
+    async () => await GetDataFromSource(id),
+    TimeSpan.FromMinutes(30)
+);
+```
+
+#### **Resilience Pattern**
+```csharp
+var result = await _circuitBreaker.ExecuteAsync(
+    async () => await ExternalApiCall(),
+    "external-api"
+);
+```
+
+#### **Context Pattern**
+```csharp
+var context = _requestContext.GetRequestContext();
+_logger.LogInformation("Processing request {CorrelationId}", context.CorrelationId);
+```
+
+#### **Security Pattern**
+```csharp
+[Authorize(Policy = "RequireClientId")]
+[EnableRateLimiting("api")]
+public async Task<IActionResult> SecureEndpoint()
+{
+    var clientId = _requestContext.GetClientId();
+    return Ok(new { ClientId = clientId });
+}
+```
+
+### 📊 **Health Check Endpoints**
+
+- `/health` - Overall application health
+- `/health/ready` - Readiness probe
+- `/health/live` - Liveness probe
+- `/health/cache` - Cache service health
+- `/health/circuit-breaker` - Circuit breaker status
+- `/health/device-detection` - Device detection service health
+
+### 🎯 **Best Practices Summary**
+
+#### ✅ **Do's**
+- Use one-line setup for simple applications
+- Use granular setup for complex enterprise applications
+- Always validate client IDs and tenant IDs
+- Configure CSP policies carefully
+- Monitor health check endpoints
+- Use correlation IDs for request tracking
+- Implement proper error handling
+
+#### ❌ **Don'ts**
+- Don't disable security headers in production
+- Don't use weak JWT security keys
+- Don't expose internal errors in responses
+- Don't cache sensitive user data
+- Don't ignore health check failures
+- Don't use generic cache keys
 
 ## 🆘 Support
 
