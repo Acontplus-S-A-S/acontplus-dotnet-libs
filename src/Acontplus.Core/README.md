@@ -6,7 +6,7 @@
 
 A cutting-edge .NET 9+ foundational library leveraging the latest C# language features and business patterns. Built with performance, type safety, and developer experience in mind.
 
-## 🚀 .NET 9 Features
+## 🚀 .NET Features
 
 ### 🎯 Latest C# Language Features
 - **Collection Expressions** - `[]` syntax for efficient collection initialization
@@ -24,46 +24,80 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 - **Repository Pattern** - Comprehensive data access with bulk operations
 - **Specification Pattern** - Type-safe query composition with expressions
 - **Event Sourcing Ready** - Domain events with event patterns
+- **Warnings System** - Success with warnings pattern for complex business operations
 
 ### 📊 Advanced Data Patterns
 - **Async Streaming** - `IAsyncEnumerable<T>` for memory-efficient processing
-- **Projections** - Expression-based data transfer for performance
-- **Bulk Operations** - High-performance batch processing with EF Core 9
+- **Projections** - Expression-based data transfer for performance  
+- **Bulk Operations** - High-performance batch processing interfaces
 - **Smart Pagination** - Advanced pagination with search and filtering
 - **JSON Utilities** - System.Text.Json with source generation
+- **Repository Interfaces** - Complete repository abstractions with CRUD, specifications, and bulk operations
+- **Clean Architecture** - No persistence dependencies, implementations provided in separate packages
 
 ## 🔥 Core Features
 
-### 🎯 Entity System
+### 🌟 **NEW: Global Business Enums**
+
+**17 comprehensive business enums** available globally across all applications - no more duplicate definitions!
+
+#### **🔄 Process & Status Management**
+- **`BusinessStatus`** - 13 lifecycle states (Draft → Active → Archived)
+- **`Priority`** - 5 priority levels (Low → Emergency) 
+- **`DocumentType`** - 16 document types (Invoice, Contract, Report, etc.)
+- **`EventType`** - 19 event types (Authentication, CRUD operations, Workflow, etc.)
+
+#### **👤 Person & Demographics** 
+- **`Gender`** - 5 inclusive options (Male, Female, NonBinary, Other, NotSpecified)
+- **`MaritalStatus`** - 8 relationship states (Single, Married, Divorced, etc.)
+- **`Title`** - 12 honorifics (Mr, Mrs, Dr, Prof, Sir, Dame, etc.)
+
+#### **🏢 Business & Organization**
+- **`Industry`** - 19 industry classifications (Technology, Healthcare, Finance, etc.)
+- **`CompanySize`** - 11 size categories (Startup → Multinational Corporation)
+
+#### **💰 Financial & Commerce**
+- **`Currency`** - 15 international currencies (USD, EUR + Latin American)
+- **`PaymentMethod`** - 15 payment options (Cards, Digital wallets, BNPL, etc.)
+
+#### **🔐 Security & Access**
+- **`UserRole`** - 14 role levels (Guest → SuperAdmin → ServiceAccount)
+
+#### **🌍 Internationalization**
+- **`Language`** - 20 languages (Major world languages + Latin American Spanish)  
+- **`TimeZone`** - 16 time zones (UTC, regional + Latin American zones)
+
+#### **📱 Communication & Content**
+- **`CommunicationChannel`** - 11 channels (Email, SMS, WhatsApp, Teams, etc.)
+- **`AddressType`** - 12 address categories (Home, Work, Billing, Shipping, etc.)
+- **`ContentType`** - 20 media types (Text, Images, Videos, Documents, Archives)
 
 ```csharp
-// Entity with required properties and collection expressions
-public class Product : BaseEntity
+// ✅ Available everywhere via global using
+public class Customer : BaseEntity 
 {
-    public required string Name { get; set; }
-    public required decimal Price { get; set; }
-    public string? Description { get; set; }
-    public required int CategoryId { get; set; }
-    
-    // Factory method with syntax
-    public static Product Create(int id, string name, decimal price, string description, int categoryId, int createdByUserId) =>
-        new()
-        {
-            Id = id,
-            Name = name,
-            Price = price,
-            Description = description,
-            CategoryId = categoryId,
-            CreatedAt = DateTime.UtcNow,
-            CreatedByUserId = createdByUserId
-        };
+    public Gender Gender { get; set; }                    // 🌟 Global enum
+    public Title Title { get; set; }                      // 🌟 Global enum  
+    public MaritalStatus MaritalStatus { get; set; }      // 🌟 Global enum
+    public Language PreferredLanguage { get; set; }       // 🌟 Global enum
+    public CommunicationChannel PreferredChannel { get; set; } // 🌟 Global enum
+}
+
+public class Order : BaseEntity
+{
+    public BusinessStatus Status { get; set; }            // 🌟 Global enum
+    public Priority Priority { get; set; }                // 🌟 Global enum
+    public Currency Currency { get; set; }                // 🌟 Global enum  
+    public PaymentMethod PaymentMethod { get; set; }      // 🌟 Global enum
 }
 ```
 
-### 🔄 Functional Result Pattern
+### 🔄 **Functional Result Pattern with Warnings**
+
+Advanced result handling with support for warnings that don't prevent success:
 
 ```csharp
-// Result pattern with record structs
+// Basic Result Pattern
 public async Task<Result<Product>> GetProductAsync(int id)
 {
     var product = await _repository.GetByIdAsync(id);
@@ -73,733 +107,307 @@ public async Task<Result<Product>> GetProductAsync(int id)
         : Result<Product>.Failure(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found"));
 }
 
-// Pattern matching with syntax
-var response = result.Match(
-    success: product => ApiResponse<Product>.Success(product),
-    failure: error => error.ToApiResponse<Product>()
-);
-```
-
-### 📊 Pagination
-
-```csharp
-// Collection expressions and initialization
-var pagination = new PaginationDto
+// Success with Warnings Pattern
+public async Task<SuccessWithWarnings<List<Product>>> ImportProductsAsync(List<ProductDto> dtos)
 {
-    PageIndex = 1,
-    PageSize = 20,
-    SortBy = "CreatedAt",
-    SortDirection = SortDirection.Descending,
-    SearchTerm = "search term",
-    Filters = new Dictionary<string, object>
+    var products = new List<Product>();
+    var warnings = new List<DomainError>();
+
+    foreach (var dto in dtos)
     {
-        ["CategoryId"] = 1,
-        ["IsActive"] = true
+        try
+        {
+            var product = await CreateProductAsync(dto);
+            products.Add(product);
+        }
+        catch (ValidationException ex)
+        {
+            warnings.Add(DomainError.Validation("IMPORT_WARNING", $"Product {dto.Name} skipped: {ex.Message}"));
+        }
     }
-};
 
-// Specification pattern
-public class ActiveProductsSpecification : BaseSpecification<Product>
-{
-    public ActiveProductsSpecification(PaginationDto pagination) : base(p => p.IsActive)
-    {
-        ApplyPaging(pagination);
-        AddOrderBy(p => p.CreatedAt, isDescending: true);
-        AddInclude(p => p.Category);
-    }
-}
-```
-
-### 🚀 Async Streaming & Projections
-
-```csharp
-// Memory-efficient async streaming
-await foreach (var product in repository.FindAsyncEnumerable(p => p.IsActive))
-{
-    await ProcessProductAsync(product);
+    return new SuccessWithWarnings<List<Product>>(products, new DomainWarnings(warnings));
 }
 
-// High-performance projections
-var summaries = await repository.GetPagedProjectionAsync(
-    pagination,
-    p => new ProductSummary(p.Id, p.Name, p.Price),
-    p => p.IsActive
-);
+// Domain Warnings System
+public class DomainWarnings
+{
+    public static DomainWarnings FromSingle(DomainError warning) => new([warning]);
+    public static DomainWarnings Multiple(params DomainError[] warnings) => new(warnings);
+    
+    public bool HasWarnings => Warnings.Count > 0;
+    public bool HasWarningsOfType(ErrorType type) => Warnings.Any(w => w.Type == type);
+    public string GetAggregateWarningMessage() => string.Join("; ", Warnings.Select(w => w.Message));
+}
+
+// Extensions for easy creation
+var result = products.WithWarning(DomainError.Validation("WARN_001", "Some data was incomplete"));
+var resultMultiple = products.WithWarnings(warnings);
 ```
 
-### 🔥 JSON Extensions
+### 🎯 **Advanced Error Handling System**
+
+Comprehensive error handling with HTTP status code mapping and structured responses:
 
 ```csharp
-// Business-optimized JSON with source generation
-var json = myObject.SerializeOptimized();
-var obj = jsonString.DeserializeOptimized<MyType>();
-var clone = myObject.CloneDeep();
-
-// JSON options for different scenarios
-var options = JsonExtensions.DefaultOptions; // Production
-var prettyOptions = JsonExtensions.PrettyOptions; // Development
-var strictOptions = JsonExtensions.StrictOptions; // APIs
-```
-
-### 🎯 Error Handling
-
-```csharp
-// Error creation with record structs
+// Domain Error Creation
 var validationError = DomainError.Validation(
     code: "PRODUCT_INVALID_PRICE",
     message: "Product price must be greater than zero",
-    target: "price"
+    target: "price",
+    details: new Dictionary<string, object> { ["actualValue"] = -10, ["minValue"] = 0 }
 );
 
-// Error aggregation with LINQ
+// Error Type Mapping
+var httpStatusCode = validationError.GetHttpStatusCode(); // Returns 422 for Validation
+var severity = validationError.Type.ToSeverityString(); // Returns "Warning", "Error", etc.
+
+// Error Aggregation and Analysis
 var errors = new List<DomainError>();
 if (string.IsNullOrWhiteSpace(request.Name))
-    errors.Add(DomainError.Validation("INVALID_NAME", "Product name is required"));
+    errors.Add(DomainError.Validation("INVALID_NAME", "Product name is required", "name"));
+
+if (request.Price <= 0)
+    errors.Add(DomainError.Validation("INVALID_PRICE", "Price must be greater than zero", "price"));
 
 if (errors.Any())
-    return Result<Product>.Failure(errors.GetMostSevereError());
+{
+    var mostSevereError = errors.GetMostSevereError();
+    return Result<Product>.Failure(mostSevereError);
+}
+
+// Convert to API Response
+var apiResponse = result.ToApiResponse<ProductDto>();
+var apiResponseWithMessage = result.ToApiResponse<ProductDto>("Product processed successfully");
 ```
 
-### 🔍 Validation Utilities
+### 🔍 **Validation Utilities**
+
+Comprehensive validation utilities for common business scenarios:
 
 ```csharp
-// Data validation with pattern matching
+// Data Validation
+public static class DataValidation
+{
+    public static bool IsValidJson(string json);
+    public static bool IsValidXml(string xml);
+    public static bool IsValidEmail(string email);
+    public static bool IsValidUrl(string url);
+    public static bool IsValidPhoneNumber(string phoneNumber);
+}
+
+// XML Validation with Schemas
+public static class XmlValidator
+{
+    public static IEnumerable<ValidationError> Validate(string xmlContent, string xsdSchema);
+    public static bool IsValid(string xmlContent, string xsdSchema);
+    public static ValidationResult ValidateWithDetails(string xmlContent, string xsdSchema);
+}
+
+// Usage Examples
 var validationResult = input switch
 {
     { Length: 0 } => DomainError.Validation("EMPTY_INPUT", "Input cannot be empty"),
     { Length: > 100 } => DomainError.Validation("TOO_LONG", "Input too long"),
+    _ when !DataValidation.IsValidEmail(input) => DomainError.Validation("INVALID_EMAIL", "Invalid email format"),
     _ => null
 };
 
-// JSON validation
+// JSON Validation
 if (!DataValidation.IsValidJson(jsonContent))
 {
     return DomainError.Validation("INVALID_JSON", "Invalid JSON format");
 }
 
-// XML validation
+// XML Validation with Schema
 var xmlErrors = XmlValidator.Validate(xmlContent, xsdSchema);
 if (xmlErrors.Any())
 {
-    return DomainError.Validation("INVALID_XML", "XML validation failed");
+    return DomainError.Validation("INVALID_XML", "XML validation failed", 
+        details: new Dictionary<string, object> { ["errors"] = xmlErrors.ToList() });
 }
 ```
 
-### 🧩 Extension Methods
+### 🔥 **Advanced JSON Extensions**
+
+Business-optimized JSON handling with multiple serialization options:
 
 ```csharp
-// Pagination extensions
-var pagination = new PaginationDto()
-    .WithSearch("laptop")
-    .WithSort("Price", SortDirection.Asc)
-    .WithFilters(new Dictionary<string, object>
+// JSON Serialization Options
+public static class JsonExtensions
+{
+    public static JsonSerializerOptions DefaultOptions { get; } // Production-optimized
+    public static JsonSerializerOptions PrettyOptions { get; }  // Development-friendly
+    public static JsonSerializerOptions StrictOptions { get; }  // API-strict validation
+}
+
+// Serialization Methods
+var json = myObject.SerializeOptimized(); // Uses DefaultOptions
+var prettyJson = myObject.SerializeOptimized(pretty: true); // Uses PrettyOptions
+
+// Deserialization with Error Handling
+try
+{
+    var obj = jsonString.DeserializeOptimized<MyType>();
+}
+catch (JsonException ex)
+{
+    // Detailed error information
+    var error = DomainError.Validation("JSON_DESERIALIZE_ERROR", ex.Message);
+}
+
+// Safe Deserialization with Fallback
+var obj = jsonString.DeserializeSafe<MyType>(fallback: new MyType());
+
+// Deep Cloning via JSON
+var clone = myObject.CloneDeep(); // Creates deep copy via JSON serialization
+
+// Business Examples
+public class ProductService
+{
+    public async Task<string> ExportProductsAsync(List<Product> products, bool prettyFormat = false)
     {
-        ["categoryId"] = 1,
-        ["isActive"] = true
-    });
-
-// Repository audit extensions
-await repository.AddWithAuditAsync(entity, userId);
-await repository.UpdateWithAuditAsync(entity, userId);
-
-// JSON extensions
-var json = myObject.SerializeOptimized();
-var obj = jsonString.DeserializeOptimized<MyType>();
-
-// Nullable extensions
-var result = nullableValue.OrElse("default");
-var safeValue = nullableValue.ThrowIfNull("Value is required");
-```
-
-### 📊 Constants & Metadata
-
-```csharp
-// API metadata keys for consistent responses
-var metadata = new Dictionary<string, object>
-{
-    [ApiMetadataKeys.Page] = 1,
-    [ApiMetadataKeys.PageSize] = 20,
-    [ApiMetadataKeys.TotalItems] = 100,
-    [ApiMetadataKeys.TotalPages] = 5
-};
-
-// API response helpers
-var response = ApiResponseHelpers.CreateSuccessResponse(data, "Operation successful");
-var errorResponse = ApiResponseHelpers.CreateErrorResponse("Operation failed", "ERROR_CODE");
-```
-
-## 📦 Installation
-
-### NuGet Package Manager
-```bash
-Install-Package Acontplus.Core
-```
-
-### .NET CLI
-```bash
-dotnet add package Acontplus.Core
-```
-
-### PackageReference
-```xml
-<PackageReference Include="Acontplus.Core" Version="1.3.3" />
-```
-
-## 🎯 Quick Start with .NET 9
-
-### 1. Entity Definition
-
-```csharp
-// Entity with required properties
-public class Product : BaseEntity
-{
-    public required string Name { get; set; }
-    public required decimal Price { get; set; }
-    public string? Description { get; set; }
-    public required int CategoryId { get; set; }
-    
-    // Factory method with syntax
-    public static Product Create(int id, string name, decimal price, string description, int categoryId, int createdByUserId) =>
-        new()
-        {
-            Id = id,
-            Name = name,
-            Price = price,
-            Description = description,
-            CategoryId = categoryId,
-            CreatedAt = DateTime.UtcNow,
-            CreatedByUserId = createdByUserId
-        };
-}
-```
-
-### 2. Error Handling
-
-```csharp
-// Error creation with record structs
-var validationError = DomainError.Validation(
-    code: "PRODUCT_INVALID_PRICE",
-    message: "Product price must be greater than zero",
-    target: "price"
-);
-
-// Pattern matching with syntax
-var response = result.Match(
-    success: product => ApiResponse<ProductDto>.Success(product.ToDto()),
-    failure: error => error.ToApiResponse<ProductDto>()
-);
-```
-
-### 3. Repository Pattern
-
-```csharp
-// Repository interface
-public interface IProductRepository : IRepository<Product>
-{
-    Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId);
-    Task<bool> ExistsByNameAsync(string name);
-}
-
-// Repository implementation
-public class ProductRepository : BaseRepository<Product>, IProductRepository
-{
-    public ProductRepository(DbContext context) : base(context) { }
-    
-    public async Task<IReadOnlyList<Product>> GetByCategoryAsync(int categoryId) =>
-        await FindAsync(p => p.CategoryId == categoryId);
-    
-    public async Task<bool> ExistsByNameAsync(string name) =>
-        await ExistsAsync(p => p.Name == name);
-}
-```
-
-### 4. Specification Pattern
-
-```csharp
-// Specification with primary constructor
-public class ActiveProductsSpecification : BaseSpecification<Product>
-{
-    public ActiveProductsSpecification(PaginationDto pagination) : base(p => p.IsActive)
-    {
-        ApplyPaging(pagination);
-        AddOrderBy(p => p.CreatedAt, isDescending: true);
-        AddInclude(p => p.Category);
-    }
-}
-
-// Usage with syntax
-var spec = new ActiveProductsSpecification(new PaginationDto { PageIndex = 1, PageSize = 10 });
-var products = await _repository.FindWithSpecificationAsync(spec);
-```
-
-### 5. API Response Handling
-
-```csharp
-[HttpGet("{id}")]
-public async Task<ApiResponse<ProductDto>> GetProduct(int id)
-{
-    var result = await _productService.GetByIdAsync(id);
-    
-    return result.Match(
-        success: product => ApiResponse<ProductDto>.Success(product.ToDto()),
-        failure: error => error.ToApiResponse<ProductDto>()
-    );
-}
-```
-
-## 📄 Core Examples
-
-### PaginationDto with Multiple Filters
-
-The `PaginationDto` provides advanced pagination capabilities with search, sorting, and multiple filters for business applications.
-
-#### Backend (Controller) with Stored Procedures
-
-```csharp
-[HttpGet]
-public async Task<ActionResult<PagedResult<ProductDto>>> GetProducts([FromQuery] PaginationDto pagination)
-{
-    var result = await _productService.GetPaginatedProductsAsync(pagination);
-    return Ok(result);
-}
-
-// Service implementation
-public async Task<PagedResult<ProductDto>> GetPaginatedProductsAsync(PaginationDto pagination)
-{
-    var spParameters = new Dictionary<string, object>
-    {
-        ["@PageIndex"] = pagination.PageIndex,
-        ["@PageSize"] = pagination.PageSize,
-        ["@SearchTerm"] = pagination.SearchTerm ?? (object)DBNull.Value,
-        ["@SortBy"] = pagination.SortBy ?? "CreatedAt",
-        ["@SortDirection"] = pagination.SortDirection.ToString()
-    };
-
-    // Add filters using the built-in methods
-    var filterParams = pagination.BuildSqlParameters();
-    if (filterParams != null)
-    {
-        foreach (var param in filterParams)
-        {
-            spParameters[param.Key] = param.Value;
-        }
+        return products.SerializeOptimized(pretty: prettyFormat);
     }
 
-    // Execute stored procedure with all parameters
-    var dataSet = await _adoRepository.GetDataSetAsync("sp_GetPaginatedProducts", spParameters);
-    
-    // Process results and return PagedResult
-    var products = ProcessStoredProcedureResults(dataSet);
-    var totalCount = GetTotalCountFromDataSet(dataSet);
-    
-    return new PagedResult<ProductDto>(products, pagination.PageIndex, pagination.PageSize, totalCount);
-}
-```
-
-#### Frontend (JavaScript/TypeScript)
-
-```typescript
-// API client function
-async function getProducts(filters: ProductFilters = {}) {
-    const params = new URLSearchParams({
-        pageIndex: '1',
-        pageSize: '20',
-        searchTerm: filters.searchTerm || '',
-        sortBy: 'createdAt',
-        sortDirection: 'desc'
-    });
-
-    // Add filters
-    if (filters.categoryId) params.append('filters[categoryId]', filters.categoryId.toString());
-    if (filters.isActive !== undefined) params.append('filters[isActive]', filters.isActive.toString());
-    if (filters.minPrice) params.append('filters[minPrice]', filters.minPrice.toString());
-    if (filters.maxPrice) params.append('filters[maxPrice]', filters.maxPrice.toString());
-    if (filters.createdDate) params.append('filters[createdDate]', filters.createdDate);
-
-    const response = await fetch(`/api/products?${params.toString()}`);
-    return response.json();
-}
-
-// Usage examples
-const products = await getProducts({
-    searchTerm: 'laptop',
-    categoryId: 1,
-    isActive: true,
-    minPrice: 500,
-    maxPrice: 2000
-});
-
-// URL generated: /api/products?pageIndex=1&pageSize=20&searchTerm=laptop&sortBy=createdAt&sortDirection=desc&filters[categoryId]=1&filters[isActive]=true&filters[minPrice]=500&filters[maxPrice]=2000
-```
-
-#### React Component Example
-
-```tsx
-import React, { useState, useEffect } from 'react';
-
-interface ProductFilters {
-    searchTerm?: string;
-    categoryId?: number;
-    isActive?: boolean;
-    minPrice?: number;
-    maxPrice?: number;
-}
-
-const ProductList: React.FC = () => {
-    const [products, setProducts] = useState([]);
-    const [filters, setFilters] = useState<ProductFilters>({});
-    const [pagination, setPagination] = useState({ pageIndex: 1, pageSize: 20 });
-
-    const fetchProducts = async () => {
-        const params = new URLSearchParams({
-            pageIndex: pagination.pageIndex.toString(),
-            pageSize: pagination.pageSize.toString(),
-            sortBy: 'createdAt',
-            sortDirection: 'desc'
-        });
-
-        // Add search term
-        if (filters.searchTerm) {
-            params.append('searchTerm', filters.searchTerm);
-        }
-
-        // Add filters
-        Object.entries(filters).forEach(([key, value]) => {
-            if (value !== undefined && key !== 'searchTerm') {
-                params.append(`filters[${key}]`, value.toString());
-            }
-        });
-
-        const response = await fetch(`/api/products?${params.toString()}`);
-        const data = await response.json();
-        setProducts(data.items);
-    };
-
-    useEffect(() => {
-        fetchProducts();
-    }, [filters, pagination]);
-
-    return (
-        <div>
-            {/* Filter controls */}
-            <input
-                type="text"
-                placeholder="Search products..."
-                onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-            />
-            <select onChange={(e) => setFilters(prev => ({ ...prev, categoryId: Number(e.target.value) }))}>
-                <option value="">All Categories</option>
-                <option value="1">Electronics</option>
-                <option value="2">Clothing</option>
-            </select>
-            <input
-                type="number"
-                placeholder="Min Price"
-                onChange={(e) => setFilters(prev => ({ ...prev, minPrice: Number(e.target.value) }))}
-            />
-            <input
-                type="number"
-                placeholder="Max Price"
-                onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: Number(e.target.value) }))}
-            />
-            
-            {/* Product list */}
-            {products.map(product => (
-                <div key={product.id}>{product.name} - ${product.price}</div>
-            ))}
-        </div>
-    );
-};
-```
-
-#### Using Extension Methods
-
-```csharp
-// Create pagination with extension methods
-var pagination = new PaginationDto()
-    .WithSearch("laptop")
-    .WithSort("Price", SortDirection.Asc)
-    .WithFilters(new Dictionary<string, object>
+    public async Task<List<Product>> ImportProductsAsync(string json)
     {
-        ["categoryId"] = 1,
-        ["isActive"] = true,
-        ["minPrice"] = 500,
-        ["maxPrice"] = 2000
-    });
-
-// Use built-in filter building methods
-var sqlParams = pagination.BuildSqlParameters();
-// Result: { ["@categoryId"] = 1, ["@isActive"] = true, ["@minPrice"] = 500, ["@maxPrice"] = 2000 }
-
-var customParams = pagination.BuildFiltersWithPrefix(":");
-// Result: { [":categoryId"] = 1, [":isActive"] = true, [":minPrice"] = 500, [":maxPrice"] = 2000 }
-```
-
-#### Query Parameter Examples
-
-```
-# Basic pagination
-GET /api/products?pageIndex=1&pageSize=20
-
-# With search and sorting
-GET /api/products?pageIndex=1&pageSize=20&searchTerm=laptop&sortBy=price&sortDirection=asc
-
-# With multiple filters
-GET /api/products?pageIndex=1&pageSize=20&filters[categoryId]=1&filters[isActive]=true&filters[minPrice]=500
-
-# Complex filter combinations
-GET /api/products?pageIndex=1&pageSize=20&searchTerm=laptop&filters[categoryId]=1&filters[isActive]=true&filters[minPrice]=500&filters[maxPrice]=2000&filters[createdDate]=2024-01-01
-```
-
-#### Stored Procedure with Dynamic WHERE
-
-```sql
-CREATE OR ALTER PROCEDURE sp_GetPaginatedProducts
-    @PageIndex INT = 1,
-    @PageSize INT = 10,
-    @SearchTerm NVARCHAR(100) = NULL,
-    @SortBy NVARCHAR(50) = 'CreatedAt',
-    @SortDirection NVARCHAR(4) = 'ASC',
-    -- Dynamic filters
-    @CategoryId INT = NULL,
-    @IsActive BIT = NULL,
-    @MinPrice DECIMAL(18,2) = NULL,
-    @MaxPrice DECIMAL(18,2) = NULL,
-    @CreatedDate DATE = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    DECLARE @SQL NVARCHAR(MAX);
-    DECLARE @WhereClause NVARCHAR(MAX) = '';
-    
-    -- Build WHERE clause dynamically
-    IF @SearchTerm IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND (Name LIKE @SearchTerm OR Description LIKE @SearchTerm)';
-    
-    IF @CategoryId IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND CategoryId = @CategoryId';
-    
-    IF @IsActive IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND IsActive = @IsActive';
-    
-    IF @MinPrice IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND Price >= @MinPrice';
-    
-    IF @MaxPrice IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND Price <= @MaxPrice';
-    
-    IF @CreatedDate IS NOT NULL
-        SET @WhereClause = @WhereClause + ' AND CAST(CreatedAt AS DATE) = @CreatedDate';
-    
-    -- Remove leading ' AND ' if exists
-    IF LEN(@WhereClause) > 0
-        SET @WhereClause = ' WHERE ' + SUBSTRING(@WhereClause, 6, LEN(@WhereClause));
-    
-    -- Build and execute final query with pagination
-    SET @SQL = '
-        WITH PaginatedData AS (
-            SELECT 
-                Id, Name, Description, Price, CategoryId, IsActive, CreatedAt,
-                ROW_NUMBER() OVER (ORDER BY ' + @SortBy + ' ' + @SortDirection + ') AS RowNum
-            FROM Products
-            WHERE IsDeleted = 0' + @WhereClause + '
-        )
-        SELECT 
-            Id, Name, Description, Price, CategoryId, IsActive, CreatedAt
-        FROM PaginatedData
-        WHERE RowNum BETWEEN (@PageIndex - 1) * @PageSize + 1 
-                          AND @PageIndex * @PageSize;
-        
-        -- Get total count for pagination
-        SELECT COUNT(*) AS TotalCount
-        FROM Products
-        WHERE IsDeleted = 0' + @WhereClause + ';';
-    
-    EXEC sp_executesql @SQL,
-        N'@PageIndex INT, @PageSize INT, @SearchTerm NVARCHAR(100), @CategoryId INT, @IsActive BIT, @MinPrice DECIMAL(18,2), @MaxPrice DECIMAL(18,2), @CreatedDate DATE',
-        @PageIndex, @PageSize, @SearchTerm, @CategoryId, @IsActive, @MinPrice, @MaxPrice, @CreatedDate;
-END
-```
-
-## 🔧 Advanced .NET 9 Features
-
-### Domain Events
-
-```csharp
-// Domain event with record
-public record ProductCreatedEvent(int ProductId, string ProductName, DateTime OccurredOn) : IDomainEvent
-{
-    public ProductCreatedEvent(int productId, string productName) : this(productId, productName, DateTime.UtcNow) { }
-}
-
-// Entity with domain events
-public class Product : BaseEntity
-{
-    public void MarkAsCreated() =>
-        AddDomainEvent(new ProductCreatedEvent(Id, Name));
+        try
+        {
+            return json.DeserializeOptimized<List<Product>>();
+        }
+        catch (JsonException ex)
+        {
+            throw new BusinessException("Failed to import products", ex);
+        }
+    }
 }
 ```
 
-### Bulk Operations
+### 🧩 **Powerful Extension Methods**
 
+Comprehensive extension methods for enhanced productivity:
+
+#### **Nullable Extensions**
 ```csharp
-// High-performance bulk operations
-await repository.BulkInsertAsync(products);
-await repository.BulkUpdateAsync(p => p.CategoryId == 1, p => p.Status, "Active");
-await repository.BulkDeleteAsync(p => p.CreatedAt < DateTime.UtcNow.AddDays(-30));
-
-// Projections for efficient data transfer
-var summaries = await repository.GetPagedProjectionAsync(
-    pagination,
-    p => new ProductSummary(p.Id, p.Name, p.Price),
-    p => p.IsActive
-);
-```
-
-### Async Streaming
-
-```csharp
-// Memory-efficient processing with async streaming
-await foreach (var product in repository.FindAsyncEnumerable(p => p.IsActive))
+public static class NullableExtensions
 {
-    await ProcessProductAsync(product);
+    public static bool IsNull<T>(this T? value) where T : class;
+    public static bool IsNotNull<T>(this T? value) where T : class;
+    public static T OrDefault<T>(this T? value, T defaultValue) where T : class;
+    public static T OrThrow<T>(this T? value, Exception exception) where T : class;
+    public static T OrThrow<T>(this T? value, string message) where T : class;
+}
+
+// Usage Examples
+var result = nullableValue.OrDefault("default value");
+var safeValue = nullableValue.OrThrow("Value is required");
+var user = userRepository.GetByIdAsync(id).OrThrow(new UserNotFoundException(id));
+
+if (product.IsNotNull())
+{
+    // Process product
 }
 ```
 
-### JSON Handling
-
+#### **Enum Extensions**
 ```csharp
-// Business-optimized JSON with source generation
-var json = myObject.SerializeOptimized();
-var obj = jsonString.DeserializeOptimized<MyType>();
-var clone = myObject.CloneDeep();
-
-// JSON options for different scenarios
-var options = JsonExtensions.DefaultOptions; // Production
-var prettyOptions = JsonExtensions.PrettyOptions; // Development
-var strictOptions = JsonExtensions.StrictOptions; // APIs
-```
-
-## 🏗️ Architecture Patterns
-
-### Domain-Driven Design
-- **Entities**: Record-based entities with primary constructors
-- **Value Objects**: Immutable objects with C# features
-- **Domain Events**: Record-based events with patterns
-- **Specifications**: Type-safe query composition with expressions
-
-### Repository Pattern
-- **Generic Repository**: Type-safe data access with features
-- **Specification Pattern**: Flexible query composition with syntax
-- **Unit of Work**: Transaction management with patterns
-- **Bulk Operations**: High-performance batch processing with EF Core 9
-
-### Error Handling
-- **Domain Errors**: Record struct-based error types with HTTP mapping
-- **Result Pattern**: Functional error handling with syntax
-- **API Responses**: Consistent error response format with features
-- **Error Aggregation**: Multiple error handling with LINQ
-
-## 🔍 Validation Examples
-
-```csharp
-// Validation with pattern matching
-var validationResult = input switch
+public static class EnumExtensions
 {
-    { Length: 0 } => DomainError.Validation("EMPTY_INPUT", "Input cannot be empty"),
-    { Length: > 100 } => DomainError.Validation("TOO_LONG", "Input too long"),
-    _ => null
-};
-
-// JSON validation
-if (!DataValidation.IsValidJson(jsonContent))
-{
-    return DomainError.Validation("INVALID_JSON", "Invalid JSON format");
+    public static string DisplayName(this Enum value); // Gets Description attribute or ToString()
 }
 
-// XML validation
-var xmlErrors = XmlValidator.Validate(xmlContent, xsdSchema);
-if (xmlErrors.Any())
+// Usage with Description Attributes
+public enum Priority
 {
-    return DomainError.Validation("INVALID_XML", "XML validation failed");
+    [Description("Low Priority")]
+    Low = 1,
+    
+    [Description("Normal Priority")]
+    Normal = 2,
+    
+    [Description("High Priority - Urgent")]
+    High = 3
+}
+
+var displayName = Priority.High.DisplayName(); // Returns "High Priority - Urgent"
+```
+
+#### **Pagination Extensions**
+```csharp
+public static class PaginationExtensions
+{
+    public static PaginationDto WithSearch(this PaginationDto pagination, string searchTerm);
+    public static PaginationDto WithSort(this PaginationDto pagination, string sortBy, SortDirection direction);
+    public static PaginationDto WithFilters(this PaginationDto pagination, Dictionary<string, object> filters);
+    public static Dictionary<string, object> BuildSqlParameters(this PaginationDto pagination);
+    public static Dictionary<string, object> BuildFiltersWithPrefix(this PaginationDto pagination, string prefix);
 }
 ```
 
-## 📚 API Documentation
+#### **Domain Error Extensions**
+```csharp
+public static class DomainErrorExtensions
+{
+    public static ApiResponse<T> ToApiResponse<T>(this DomainError error, string? correlationId = null);
+    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string? correlationId = null);
+    public static DomainError GetMostSevereError(this IEnumerable<DomainError> errors);
+    public static HttpStatusCode GetHttpStatusCode(this DomainError error);
+    public static string GetAggregateErrorMessage(this DomainErrors errors);
+}
+```
 
-### Entity Base Classes
-- `Entity<TId>` - Base entity with domain events
-- `BaseEntity` - Base for int-keyed entities with audit trail
-- `IAuditableEntity` - Interface for audit trail support
-- `IEntityWithDomainEvents` - Interface for domain event support
+### Validation System
 
-### DTOs
-- `ApiResponse<T>` - API response format with record structs
-- `PaginationDto` - Pagination with search and filtering
-- `PagedResult<T>` - Paginated results with metadata
-- `ApiError` - Error information with record structs
+#### **Data Validation**
+```csharp
+public static class DataValidation
+{
+    public static bool IsValidJson(string json);
+    public static bool IsValidXml(string xml);
+    public static bool IsValidEmail(string email);
+    public static bool IsValidUrl(string url);
+    public static bool IsValidPhoneNumber(string phoneNumber);
+}
+```
 
-### Error Handling
-- `DomainError` - Business logic errors with HTTP mapping
-- `Result<T>` - Functional result pattern with record structs
-- `ErrorType` - Error type categorization
-- `ErrorTypeExtensions` - Error type utilities
-
-### Repository
-- `IRepository<TEntity>` - Comprehensive repository interface
-- `ISpecification<T>` - Query specification pattern
-- `BaseSpecification<T>` - Base class for specifications
-- `PagedResult<T>` - Paginated query results
-
-### Validation
-- `DataValidation` - Data validation utilities
-- `XmlValidator` - XML validation with XSD schemas
-- `ValidationExtensions` - Extension methods for validation
-
-### Extensions
-- `PaginationExtensions` - Pagination builder methods
-- `RepositoryAuditExtensions` - Audit trail extensions
-- `JsonExtensions` - JSON serialization utilities (with optimized and deprecated methods)
-- `NullableExtensions` - Nullable type helpers
-- `EnumExtensions` - Enum manipulation utilities
+#### **XML Validation**
+```csharp
+public static class XmlValidator
+{
+    public static IEnumerable<ValidationError> Validate(string xmlContent, string xsdSchema);
+    public static bool IsValid(string xmlContent, string xsdSchema);
+    public static ValidationResult ValidateWithDetails(string xmlContent, string xsdSchema);
+}
+```
 
 ### Constants & Helpers
-- `ApiMetadataKeys` - Standard API metadata keys
-- `ApiResponseHelpers` - API response creation utilities
 
-### Features
-- **Collection Expressions**: `[]` syntax for collection initialization
-- **Required Properties**: Compile-time null safety with `required` keyword
-- **Record Structs**: High-performance value types for DTOs and results
-- **Primary Constructors**: Concise type definitions with syntax
-- **Pattern Matching**: Advanced type-safe operations with patterns
-- **Async Streaming**: Memory-efficient data processing with `IAsyncEnumerable<T>`
-- **Source Generation**: JSON serialization with AOT compilation support
+#### **API Metadata Keys**
+```csharp
+public static class ApiMetadataKeys
+{
+    public const string Page = "page";
+    public const string PageSize = "pageSize";
+    public const string TotalItems = "totalItems";
+    public const string TotalPages = "totalPages";
+    public const string HasNextPage = "hasNextPage";
+    public const string HasPreviousPage = "hasPreviousPage";
+    public const string CorrelationId = "correlationId";
+    // ... and more
+}
+```
 
-## 🆕 What's New in Version 1.3.3
-
-### .NET 9 Features
-- **Primary Constructors**: Concise record and class definitions
-- **Collection Expressions**: `[]` syntax for efficient initialization
-- **Required Properties**: Compile-time null safety with `required` keyword
-- **Record Structs**: High-performance value types for DTOs and results
-- **Pattern Matching**: Advanced `switch` expressions and `is` patterns
-- **Source Generators**: JSON serialization with AOT compilation support
-- **Global Usings**: Clean namespace management with global using directives
-
-### Performance Improvements
-- **Source Generation**: JSON serialization with source generation for AOT
-- **Record Structs**: High-performance value types for DTOs and results
-- **Collection Expressions**: Collection initialization with better performance
-- **Async Streaming**: Memory-efficient data processing with `IAsyncEnumerable<T>`
-- **Bulk Operations**: Optimized batch processing with EF Core 9
-
-### Developer Experience
-- **C# Features**: Latest .NET 9+ language capabilities
-- **Type Safety**: Enhanced compile-time safety with features
-- **Better Documentation**: Comprehensive examples with syntax
-- **Error Handling**: Improved error aggregation with patterns
+#### **API Response Helpers**
+```csharp
+public static class ApiResponseHelpers
+{
+    public static ApiResponse<T> CreateSuccessResponse<T>(T data, string message);
+    public static ApiResponse<T> CreateErrorResponse<T>(string message, string errorCode);
+    public static ApiResponse<T> CreateValidationErrorResponse<T>(IEnumerable<ValidationError> errors);
+    public static ApiResponse<T> CreateNotFoundResponse<T>(string message);
+}
+```
 
 ## 🤝 Contributing
 

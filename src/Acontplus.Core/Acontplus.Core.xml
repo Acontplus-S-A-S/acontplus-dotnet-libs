@@ -4,6 +4,34 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Core.Domain.Common.Events.IDomainEventHandler`1">
+            <summary>
+            Interface for handling domain events
+            </summary>
+            <typeparam name="TDomainEvent">The type of domain event to handle</typeparam>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Events.IDomainEventHandler`1.HandleAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Handles the domain event asynchronously
+            </summary>
+            <param name="domainEvent">The domain event to handle</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
+        <member name="T:Acontplus.Core.Domain.Common.Events.BaseDomainEventHandler`1">
+            <summary>
+            Base class for domain event handlers
+            </summary>
+            <typeparam name="TDomainEvent">The type of domain event to handle</typeparam>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Events.BaseDomainEventHandler`1.HandleAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Handles the domain event asynchronously
+            </summary>
+            <param name="domainEvent">The domain event to handle</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>A task representing the asynchronous operation</returns>
+        </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainErrors">
             <summary>
             Represents multiple domain errors that can occur during validation or complex operations.
@@ -36,23 +64,55 @@
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1">
             <summary>
-            Represents a successful result that may also contain warnings.
+            Represents a successful result that includes warnings
             </summary>
-            <param name="Value">The success value.</param>
-            <param name="Warnings">Optional warnings that occurred during the operation.</param>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.#ctor(`0,System.Nullable{Acontplus.Core.Domain.Common.Results.DomainWarnings})">
-            <summary>
-            Represents a successful result that may also contain warnings.
-            </summary>
-            <param name="Value">The success value.</param>
-            <param name="Warnings">Optional warnings that occurred during the operation.</param>
+            <typeparam name="T">The type of the success value</typeparam>
         </member>
         <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Value">
-            <summary>The success value.</summary>
+            <summary>
+            The successful result value
+            </summary>
         </member>
         <member name="P:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Warnings">
-            <summary>Optional warnings that occurred during the operation.</summary>
+            <summary>
+            The warnings associated with the result
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.#ctor(`0,Acontplus.Core.Domain.Common.Results.DomainWarnings)">
+            <summary>
+            Initializes a new instance of SuccessWithWarnings
+            </summary>
+            <param name="value">The success value</param>
+            <param name="warnings">The warnings</param>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.#ctor(`0,Acontplus.Core.Domain.Common.Results.DomainError[])">
+            <summary>
+            Initializes a new instance of SuccessWithWarnings
+            </summary>
+            <param name="value">The success value</param>
+            <param name="warnings">The warnings</param>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Create(`0,Acontplus.Core.Domain.Common.Results.DomainWarnings)">
+            <summary>
+            Creates a success with warnings result
+            </summary>
+            <param name="value">The success value</param>
+            <param name="warnings">The warnings</param>
+            <returns>A new SuccessWithWarnings instance</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.Create(`0,Acontplus.Core.Domain.Common.Results.DomainError[])">
+            <summary>
+            Creates a success with warnings result
+            </summary>
+            <param name="value">The success value</param>
+            <param name="warnings">The warnings</param>
+            <returns>A new SuccessWithWarnings instance</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1.ToString">
+            <summary>
+            Converts the result to a string representation
+            </summary>
+            <returns>String representation</returns>
         </member>
         <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildFilters">
             <summary>
@@ -73,6 +133,1246 @@
             Builds a dictionary of filters with "@" prefix for SQL parameters.
             </summary>
             <returns>Dictionary of filters with "@" prefix or null if no filters exist</returns>
+        </member>
+        <member name="T:Acontplus.Core.Enums.AddressType">
+            <summary>
+            Address type enum for different types of addresses in business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Home">
+            <summary>
+            Home/residential address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Work">
+            <summary>
+            Work/business address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Billing">
+            <summary>
+            Billing address for payments
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Shipping">
+            <summary>
+            Shipping/delivery address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Mailing">
+            <summary>
+            Mailing address for correspondence
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Temporary">
+            <summary>
+            Temporary address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Primary">
+            <summary>
+            Primary address (main)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Secondary">
+            <summary>
+            Secondary address (alternative)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Emergency">
+            <summary>
+            Emergency contact address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Headquarters">
+            <summary>
+            Business headquarters address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Branch">
+            <summary>
+            Branch office address
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.AddressType.Warehouse">
+            <summary>
+            Warehouse address
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.BusinessStatus">
+            <summary>
+            Common business status states that can be applied across different business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Draft">
+            <summary>
+            Entity is in draft state, not yet submitted or processed
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Pending">
+            <summary>
+            Entity is pending review or approval
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.InProgress">
+            <summary>
+            Entity is currently being processed
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Approved">
+            <summary>
+            Entity has been approved
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Rejected">
+            <summary>
+            Entity has been rejected
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Completed">
+            <summary>
+            Entity has been completed successfully
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Cancelled">
+            <summary>
+            Entity has been cancelled
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.OnHold">
+            <summary>
+            Entity is on hold or suspended
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Expired">
+            <summary>
+            Entity has expired
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Active">
+            <summary>
+            Entity is active and operational
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Inactive">
+            <summary>
+            Entity is inactive or disabled
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Archived">
+            <summary>
+            Entity has been archived
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.BusinessStatus.Deleted">
+            <summary>
+            Entity has been deleted (soft delete)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.CommunicationChannel">
+            <summary>
+            Communication channel enum for notifications and contact preferences
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Email">
+            <summary>
+            Email communication
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.SMS">
+            <summary>
+            SMS text message
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Phone">
+            <summary>
+            Phone call
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Push">
+            <summary>
+            Push notification (mobile/web)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.InApp">
+            <summary>
+            In-app notification
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Mail">
+            <summary>
+            Postal mail
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Fax">
+            <summary>
+            Fax communication
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.WhatsApp">
+            <summary>
+            WhatsApp message
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Telegram">
+            <summary>
+            Telegram message
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Slack">
+            <summary>
+            Slack message
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Teams">
+            <summary>
+            Teams message
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.CompanySize">
+            <summary>
+            Company size classifications for business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.NotSpecified">
+            <summary>
+            Company size not specified
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Startup">
+            <summary>
+            Startup or very small company (1-10 employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Small">
+            <summary>
+            Small business (11-50 employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Medium">
+            <summary>
+            Medium business (51-250 employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Large">
+            <summary>
+            Large business (251-1000 employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Enterprise">
+            <summary>
+            Enterprise (1001-5000 employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Corporation">
+            <summary>
+            Corporation (5000+ employees)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Multinational">
+            <summary>
+            Multinational corporation (10000+ employees, multiple countries)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Government">
+            <summary>
+            Government entity
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.NonProfit">
+            <summary>
+            Non-profit organization
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.CompanySize.Individual">
+            <summary>
+            Individual or sole proprietorship
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.ContentType">
+            <summary>
+            Content type enum for media and file management applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Text">
+            <summary>
+            Plain text content
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Html">
+            <summary>
+            HTML content
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Json">
+            <summary>
+            JSON content
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Xml">
+            <summary>
+            XML content
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Pdf">
+            <summary>
+            PDF document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Image">
+            <summary>
+            Image content (generic)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ImageJpeg">
+            <summary>
+            JPEG image
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ImagePng">
+            <summary>
+            PNG image
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ImageGif">
+            <summary>
+            GIF image
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ImageSvg">
+            <summary>
+            SVG image
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Video">
+            <summary>
+            Video content (generic)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.VideoMp4">
+            <summary>
+            MP4 video
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Audio">
+            <summary>
+            Audio content (generic)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.AudioMp3">
+            <summary>
+            MP3 audio
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.WordDocument">
+            <summary>
+            Microsoft Word document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ExcelSpreadsheet">
+            <summary>
+            Microsoft Excel spreadsheet
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.PowerPointPresentation">
+            <summary>
+            Microsoft PowerPoint presentation
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.ZipArchive">
+            <summary>
+            ZIP archive
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.RarArchive">
+            <summary>
+            RAR archive
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.ContentType.Binary">
+            <summary>
+            Binary content (generic)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Currency">
+            <summary>
+            Currency enum for international financial applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.USD">
+            <summary>
+            US Dollar
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.EUR">
+            <summary>
+            Euro
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.GBP">
+            <summary>
+            British Pound
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.JPY">
+            <summary>
+            Japanese Yen
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.CAD">
+            <summary>
+            Canadian Dollar
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.AUD">
+            <summary>
+            Australian Dollar
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.CHF">
+            <summary>
+            Swiss Franc
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.CNY">
+            <summary>
+            Chinese Yuan
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.MXN">
+            <summary>
+            Mexican Peso
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.BRL">
+            <summary>
+            Brazilian Real
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.USD_EC">
+            <summary>
+            Ecuadorian US Dollar (Ecuador uses USD)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.COP">
+            <summary>
+            Colombian Peso
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.PEN">
+            <summary>
+            Peruvian Sol
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.CLP">
+            <summary>
+            Chilean Peso
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Currency.ARS">
+            <summary>
+            Argentine Peso
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.DocumentType">
+            <summary>
+            Common document and record types used across business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Document">
+            <summary>
+            General document type
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Invoice">
+            <summary>
+            Invoice document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Receipt">
+            <summary>
+            Receipt document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.PurchaseOrder">
+            <summary>
+            Purchase order
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.SalesOrder">
+            <summary>
+            Sales order
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Contract">
+            <summary>
+            Contract document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Report">
+            <summary>
+            Report document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Certificate">
+            <summary>
+            Certificate document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.License">
+            <summary>
+            License document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Permit">
+            <summary>
+            Permit document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Legal">
+            <summary>
+            Legal document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Financial">
+            <summary>
+            Financial document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Technical">
+            <summary>
+            Technical document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Administrative">
+            <summary>
+            Administrative document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.Marketing">
+            <summary>
+            Marketing document
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.DocumentType.HumanResources">
+            <summary>
+            Human resources document
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.EventType">
+            <summary>
+            Event types for business applications and audit trails
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.General">
+            <summary>
+            General or unspecified event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Authentication">
+            <summary>
+            User authentication event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Authorization">
+            <summary>
+            User authorization event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Create">
+            <summary>
+            Data creation event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Update">
+            <summary>
+            Data update or modification event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Delete">
+            <summary>
+            Data deletion event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Read">
+            <summary>
+            Data read or access event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Configuration">
+            <summary>
+            System configuration change
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Workflow">
+            <summary>
+            Business workflow or process event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Payment">
+            <summary>
+            Payment or financial transaction
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Communication">
+            <summary>
+            Communication event (email, notification)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Import">
+            <summary>
+            Import or export operation
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Export">
+            <summary>
+            Export operation
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Error">
+            <summary>
+            System error or exception
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Security">
+            <summary>
+            Security-related event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Performance">
+            <summary>
+            Performance or monitoring event
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Integration">
+            <summary>
+            Integration with external systems
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Maintenance">
+            <summary>
+            Backup or maintenance operation
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.EventType.Compliance">
+            <summary>
+            Compliance or regulatory event
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Gender">
+            <summary>
+            Gender enum for person entities across business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Gender.NotSpecified">
+            <summary>
+            Not specified or prefer not to disclose
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Gender.Male">
+            <summary>
+            Male gender
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Gender.Female">
+            <summary>
+            Female gender
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Gender.NonBinary">
+            <summary>
+            Non-binary gender
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Gender.Other">
+            <summary>
+            Other gender identity
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Industry">
+            <summary>
+            Industry types for business classification across different sectors
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.NotSpecified">
+            <summary>
+            Industry not specified or classified
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Technology">
+            <summary>
+            Technology and software industry
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Healthcare">
+            <summary>
+            Healthcare and medical industry
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Finance">
+            <summary>
+            Financial services and banking
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Education">
+            <summary>
+            Education and training sector
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Manufacturing">
+            <summary>
+            Manufacturing and production
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Retail">
+            <summary>
+            Retail and consumer goods
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.RealEstate">
+            <summary>
+            Real estate and property
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Construction">
+            <summary>
+            Construction and engineering
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Transportation">
+            <summary>
+            Transportation and logistics
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Hospitality">
+            <summary>
+            Hospitality and tourism
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Media">
+            <summary>
+            Media and entertainment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Energy">
+            <summary>
+            Energy and utilities
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Agriculture">
+            <summary>
+            Agriculture and farming
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Government">
+            <summary>
+            Government and public sector
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.NonProfit">
+            <summary>
+            Non-profit and charitable organizations
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Consulting">
+            <summary>
+            Consulting and professional services
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Legal">
+            <summary>
+            Legal services
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Industry.Other">
+            <summary>
+            Other industry not listed
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Language">
+            <summary>
+            Language enum for internationalization and localization
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.English">
+            <summary>
+            English
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Spanish">
+            <summary>
+            Spanish (Spain)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.French">
+            <summary>
+            French
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.German">
+            <summary>
+            German
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Italian">
+            <summary>
+            Italian
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Portuguese">
+            <summary>
+            Portuguese (Brazil)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.ChineseSimplified">
+            <summary>
+            Chinese (Simplified)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.ChineseTraditional">
+            <summary>
+            Chinese (Traditional)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Japanese">
+            <summary>
+            Japanese
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Korean">
+            <summary>
+            Korean
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Russian">
+            <summary>
+            Russian
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Arabic">
+            <summary>
+            Arabic
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Dutch">
+            <summary>
+            Dutch
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Swedish">
+            <summary>
+            Swedish
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Norwegian">
+            <summary>
+            Norwegian
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Danish">
+            <summary>
+            Danish
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Finnish">
+            <summary>
+            Finnish
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Polish">
+            <summary>
+            Polish
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.Hindi">
+            <summary>
+            Hindi
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Language.SpanishLatinAmerica">
+            <summary>
+            Spanish (Latin America)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.MaritalStatus">
+            <summary>
+            Marital status enum for person entities across business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.NotSpecified">
+            <summary>
+            Not specified or prefer not to disclose
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.Single">
+            <summary>
+            Single/Never married
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.Married">
+            <summary>
+            Married
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.Divorced">
+            <summary>
+            Divorced
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.Widowed">
+            <summary>
+            Widowed
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.Separated">
+            <summary>
+            Separated (but not legally divorced)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.DomesticPartnership">
+            <summary>
+            In a domestic partnership or civil union
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.MaritalStatus.CommonLaw">
+            <summary>
+            Common law marriage
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.PaymentMethod">
+            <summary>
+            Payment method enum for e-commerce and financial applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.Cash">
+            <summary>
+            Cash payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.CreditCard">
+            <summary>
+            Credit card payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.DebitCard">
+            <summary>
+            Debit card payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.BankTransfer">
+            <summary>
+            Bank transfer
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.PayPal">
+            <summary>
+            PayPal payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.ApplePay">
+            <summary>
+            Apple Pay
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.GooglePay">
+            <summary>
+            Google Pay
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.Stripe">
+            <summary>
+            Stripe payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.Cryptocurrency">
+            <summary>
+            Cryptocurrency payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.Check">
+            <summary>
+            Check payment
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.MoneyOrder">
+            <summary>
+            Money order
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.GiftCard">
+            <summary>
+            Gift card or voucher
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.StoreCredit">
+            <summary>
+            Store credit
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.BuyNowPayLater">
+            <summary>
+            Buy now, pay later (BNPL)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.PaymentMethod.MobilePayment">
+            <summary>
+            Mobile payment (generic)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Priority">
+            <summary>
+            Priority levels commonly used in business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Priority.Low">
+            <summary>
+            Lowest priority level
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Priority.Normal">
+            <summary>
+            Normal priority level (default)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Priority.High">
+            <summary>
+            High priority level
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Priority.Critical">
+            <summary>
+            Critical priority level - requires immediate attention
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Priority.Emergency">
+            <summary>
+            Emergency priority level - highest possible priority
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.TimeZone">
+            <summary>
+            Time zone enum for scheduling and international applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.UTC">
+            <summary>
+            Coordinated Universal Time
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.EST">
+            <summary>
+            Eastern Standard Time (UTC-5)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.CST">
+            <summary>
+            Central Standard Time (UTC-6)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.MST">
+            <summary>
+            Mountain Standard Time (UTC-7)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.PST">
+            <summary>
+            Pacific Standard Time (UTC-8)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.GMT">
+            <summary>
+            Greenwich Mean Time (UTC+0)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.CET">
+            <summary>
+            Central European Time (UTC+1)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.EET">
+            <summary>
+            Eastern European Time (UTC+2)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.JST">
+            <summary>
+            Japan Standard Time (UTC+9)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.AEST">
+            <summary>
+            Australian Eastern Standard Time (UTC+10)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.ECT">
+            <summary>
+            Ecuador Time (UTC-5)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.COT">
+            <summary>
+            Colombia Time (UTC-5)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.PET">
+            <summary>
+            Peru Time (UTC-5)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.CLT">
+            <summary>
+            Chile Time (UTC-3/UTC-4)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.ART">
+            <summary>
+            Argentina Time (UTC-3)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.TimeZone.BRT">
+            <summary>
+            Brazil Time (UTC-3)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.Title">
+            <summary>
+            Title/Honorific enum for person entities across business applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.None">
+            <summary>
+            No title specified
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Mr">
+            <summary>
+            Mister (Mr.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Mrs">
+            <summary>
+            Missus (Mrs.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Ms">
+            <summary>
+            Miss (Ms.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Dr">
+            <summary>
+            Doctor (Dr.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Prof">
+            <summary>
+            Professor (Prof.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Rev">
+            <summary>
+            Reverend (Rev.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Hon">
+            <summary>
+            Honorable (Hon.)
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Sir">
+            <summary>
+            Sir
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Dame">
+            <summary>
+            Dame
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Lord">
+            <summary>
+            Lord
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.Title.Lady">
+            <summary>
+            Lady
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Enums.UserRole">
+            <summary>
+            User role enum for authorization and access control across applications
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Guest">
+            <summary>
+            Guest user with minimal access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.User">
+            <summary>
+            Standard user with basic access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Customer">
+            <summary>
+            Customer with purchase access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Employee">
+            <summary>
+            Employee with internal access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Manager">
+            <summary>
+            Manager with team management access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Supervisor">
+            <summary>
+            Supervisor with oversight access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Administrator">
+            <summary>
+            Administrator with elevated access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.SuperAdmin">
+            <summary>
+            Super administrator with full system access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.SystemAdmin">
+            <summary>
+            System administrator with technical access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Support">
+            <summary>
+            Support agent with help desk access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Moderator">
+            <summary>
+            Moderator with content moderation access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.Auditor">
+            <summary>
+            Auditor with read-only audit access
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.ApiUser">
+            <summary>
+            API user for system integrations
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Enums.UserRole.ServiceAccount">
+            <summary>
+            Service account for automated processes
+            </summary>
         </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeOptimized``1(System.String)">
             <summary>

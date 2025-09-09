@@ -1,6 +1,4 @@
-using Acontplus.Core.Abstractions.Persistence;
 using Acontplus.Core.Domain.Common.Entities;
-using System.Linq.Expressions;
 
 namespace Acontplus.Core.Extensions;
 
