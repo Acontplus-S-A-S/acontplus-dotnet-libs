@@ -1,5 +1,3 @@
-﻿using Acontplus.Core.Domain.Extensions;
-
 namespace Acontplus.Core.Domain.Common.Results;
 
 /// <summary>
@@ -27,22 +25,4 @@ public readonly record struct DomainWarnings(IReadOnlyList<DomainError> Warnings
         _ => $"Multiple warnings occurred ({Warnings.Count}): " +
              string.Join("; ", Warnings.Select(w => $"[{w.Type}] {w.Message}"))
     };
-}
-
-/// <summary>
-/// Represents a successful result that may also contain warnings.
-/// </summary>
-/// <param name="Value">The success value.</param>
-/// <param name="Warnings">Optional warnings that occurred during the operation.</param>
-public readonly record struct SuccessWithWarnings<TValue>(TValue Value, DomainWarnings? Warnings = null)
-{
-    public bool HasWarnings => Warnings?.HasWarnings ?? false;
-
-    public static implicit operator SuccessWithWarnings<TValue>(TValue value) => new(value);
-
-    public SuccessWithWarnings<TValue> AddWarning(DomainError warning) =>
-        new(Value, Warnings?.Warnings.AddToCopy(warning) ?? DomainWarnings.FromSingle(warning));
-
-    public SuccessWithWarnings<TValue> AddWarnings(IEnumerable<DomainError> warnings) =>
-        new(Value, Warnings?.Warnings.AddRangeToCopy(warnings) ?? DomainWarnings.Multiple(warnings));
 }

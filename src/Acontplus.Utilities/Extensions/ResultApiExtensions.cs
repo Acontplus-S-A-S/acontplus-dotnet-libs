@@ -143,10 +143,10 @@ public static class ResultApiExtensions
         this SuccessWithWarnings<TValue> successWithWarnings,
         string? correlationId = null)
     {
-        return successWithWarnings.HasWarnings
+        return successWithWarnings.Warnings.HasWarnings
             ? CreateWarningResponse(
                 successWithWarnings.Value,
-                successWithWarnings.Warnings!.Value,
+                successWithWarnings.Warnings,
                 correlationId)
             : CreateSuccessResponse(successWithWarnings.Value, correlationId);
     }
@@ -155,10 +155,10 @@ public static class ResultApiExtensions
         this SuccessWithWarnings<TValue> successWithWarnings,
         string? correlationId = null)
     {
-        return successWithWarnings.HasWarnings
+        return successWithWarnings.Warnings.HasWarnings
             ? CreateWarningResult(
                 successWithWarnings.Value,
-                successWithWarnings.Warnings!.Value,
+                successWithWarnings.Warnings,
                 correlationId)
             : CreateSuccessResult(successWithWarnings.Value, correlationId);
     }
@@ -460,7 +460,7 @@ public static class ResultApiExtensions
     {
         var response = ApiResponse<TValue>.Warning(
             data: value,
-            warnings: warnings.ToApiErrors(),
+            warnings: warnings.ToApiErrors()?.ToArray() ?? Array.Empty<ApiError>(),
             new ApiResponseOptions
             {
                 CorrelationId = correlationId,
@@ -492,7 +492,7 @@ public static class ResultApiExtensions
     {
         var response = ApiResponse<TValue>.Warning(
             data: value,
-            warnings: warnings.ToApiErrors(),
+            warnings: warnings.ToApiErrors()?.ToArray() ?? Array.Empty<ApiError>(),
             new ApiResponseOptions
             {
                 CorrelationId = correlationId,

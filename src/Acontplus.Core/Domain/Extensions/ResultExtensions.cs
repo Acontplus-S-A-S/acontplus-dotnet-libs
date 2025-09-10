@@ -1,5 +1,3 @@
-using Acontplus.Core.Domain.Common.Results;
-
 namespace Acontplus.Core.Domain.Extensions;
 
 public static class ResultExtensions

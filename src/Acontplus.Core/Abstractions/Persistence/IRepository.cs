@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IRepository<TEntity>
