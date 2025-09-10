@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Utilities</PackageId>
-    <Version>1.3.6</Version>
+    <Version>1.3.7</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Comprehensive utilities library with cross-cutting concerns and general-purpose tools. Includes encryption, IO operations, text processing, time utilities, API helpers, JSON utilities, and security features for enterprise applications.</Description>
@@ -15,7 +15,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Enhanced with cutting-edge C# features, comprehensive utility functions, encryption with BCrypt, IO operations, text processing, time utilities, JSON helpers, and enterprise-ready cross-cutting concerns.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed compilation errors in ResultApiExtensions, updated README to remove incorrect barcode generation claims, enhanced documentation with correct feature descriptions and better examples.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

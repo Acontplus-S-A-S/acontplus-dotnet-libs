@@ -8,15 +8,19 @@ A comprehensive .NET 9+ utility library providing common functionality for busin
 
 ## 🚀 Features
 
-- **Encryption** - Data encryption/decryption utilities
-- **External Validations** - Third-party validation integrations
-- **Barcode Generation** - Barcode creation and processing
+- **Encryption** - Data encryption/decryption utilities with BCrypt support
+- **External Validations** - Third-party validation integrations and data validation helpers
 - **Custom Logging** - Enhanced logging capabilities
 - **Enum Extensions** - Enhanced enum functionality
 - **Picture Helper** - Image processing utilities
 - **Text Handlers** - Text manipulation and processing
 - **API Response Extensions** - Convert results to `IActionResult` or `IResult` for MVC/Minimal APIs
 - **Pagination & Metadata** - Helpers for API metadata, pagination, and diagnostics
+- **Data Utilities** - JSON manipulation, DataTable mapping, and data converters
+- **Object Mapping** - AutoMapper-like object mapping utilities
+- **File Extensions** - File handling, MIME types, and compression utilities
+
+> **Note:** For barcode generation features, see the separate [**Acontplus.Barcode**](https://www.nuget.org/packages/Acontplus.Barcode) package which provides QR codes, Code 128, EAN-13, and other barcode formats.
 
 ## 📦 Installation
 
@@ -33,7 +37,7 @@ dotnet add package Acontplus.Utilities
 ### PackageReference
 ```xml
 <ItemGroup>
-  <PackageReference Include="Acontplus.Utilities" Version="1.0.12" />
+  <PackageReference Include="Acontplus.Utilities" Version="1.3.7" />
 </ItemGroup>
 ```
 
@@ -420,12 +424,15 @@ byte[] decompressed = CompressionUtils.DecompressGZip(compressed);
 
 ## 📚 API Documentation
 
-- `SensitiveDataEncryptionService` - AES encryption/decryption helpers
-- `FileExtensions` - File name and byte array utilities
+- `SensitiveDataEncryptionService` - AES encryption/decryption helpers with BCrypt support
+- `FileExtensions` - File name sanitization and byte array utilities
 - `CompressionUtils` - GZip/Deflate compression helpers
-- `TextHandlers` - String formatting and splitting
+- `TextHandlers` - String formatting and splitting utilities
 - `ApiResponseExtensions` - API response helpers for MVC/Minimal APIs
 - `DirectoryHelper` / `EnvironmentHelper` - Runtime and environment utilities
+- `DataConverters` - DataTable/DataSet JSON conversion
+- `JsonHelper` - JSON validation and manipulation
+- `ObjectMapper` - Object-to-object mapping utilities
 
 ## 🤝 Contributing
 
