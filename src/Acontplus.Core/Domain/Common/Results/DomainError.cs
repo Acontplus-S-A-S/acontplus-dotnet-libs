@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 
 namespace Acontplus.Core.Domain.Common.Results;
@@ -192,6 +192,34 @@ public readonly record struct DomainError(
 
     #endregion
 
+    #region Result Factory Methods
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue&gt; with this domain error.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <returns>A failed Result&lt;TValue&gt; containing this error.</returns>
+    public Result<TValue> Failure<TValue>() => Result<TValue>.Failure(this);
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue, TError&gt; with this domain error.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
+    /// <returns>A failed Result&lt;TValue, TError&gt; containing this error.</returns>
+    public Result<TValue, TError> Failure<TValue, TError>()
+        where TError : notnull
+    {
+        if (this is TError error)
+            return Result<TValue, TError>.Failure(error);
+
+        throw new InvalidOperationException($"Cannot convert DomainError to {typeof(TError).Name}");
+    }
+
+    #endregion
+
+    #region Conversion Methods
+
     public ApiError ToApiError() => new(
         Code: Code,
         Message: Message,
@@ -212,4 +240,6 @@ public readonly record struct DomainError(
         ErrorType.Conflict => $"https://errors.acontplus.com/conflict/{Code.ToLowerInvariant()}",
         _ => $"https://errors.acontplus.com/{Type.ToString().ToLowerInvariant()}/{Code.ToLowerInvariant()}"
     };
+
+    #endregion
 }
