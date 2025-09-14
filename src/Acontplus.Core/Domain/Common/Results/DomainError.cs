@@ -202,6 +202,24 @@ public readonly record struct DomainError(
     public Result<TValue> Failure<TValue>() => Result<TValue>.Failure(this);
 
     /// <summary>
+    /// Creates a failed Result&lt;TValue&gt; with a domain error using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <param name="type">The error type.</param>
+    /// <param name="code">The error code.</param>
+    /// <param name="message">The error message.</param>
+    /// <param name="target">The target field or object that caused the error.</param>
+    /// <param name="details">Additional error details.</param>
+    /// <returns>A failed Result&lt;TValue&gt; containing the created error.</returns>
+    public static Result<TValue> Failure<TValue>(
+        ErrorType type,
+        string code,
+        string message,
+        string? target = null,
+        Dictionary<string, object>? details = null) =>
+        Result<TValue>.Failure(new DomainError(type, code, message, target, details));
+
+    /// <summary>
     /// Creates a failed Result&lt;TValue, TError&gt; with this domain error.
     /// </summary>
     /// <typeparam name="TValue">The type of the success value.</typeparam>
@@ -211,6 +229,33 @@ public readonly record struct DomainError(
         where TError : notnull
     {
         if (this is TError error)
+            return Result<TValue, TError>.Failure(error);
+
+        throw new InvalidOperationException($"Cannot convert DomainError to {typeof(TError).Name}");
+    }
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue, TError&gt; with a domain error using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
+    /// <param name="type">The error type.</param>
+    /// <param name="code">The error code.</param>
+    /// <param name="message">The error message.</param>
+    /// <param name="target">The target field or object that caused the error.</param>
+    /// <param name="details">Additional error details.</param>
+    /// <returns>A failed Result&lt;TValue, TError&gt; containing the created error.</returns>
+    public static Result<TValue, TError> Failure<TValue, TError>(
+        ErrorType type,
+        string code,
+        string message,
+        string? target = null,
+        Dictionary<string, object>? details = null)
+        where TError : notnull
+    {
+        var domainError = new DomainError(type, code, message, target, details);
+        
+        if (domainError is TError error)
             return Result<TValue, TError>.Failure(error);
 
         throw new InvalidOperationException($"Cannot convert DomainError to {typeof(TError).Name}");

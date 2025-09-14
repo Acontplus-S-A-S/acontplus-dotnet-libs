@@ -39,6 +39,18 @@
             <typeparam name="TValue">The type of the success value.</typeparam>
             <returns>A failed Result&lt;TValue&gt; containing this error.</returns>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``1(Acontplus.Core.Domain.Enums.ErrorType,System.String,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Creates a failed Result&lt;TValue&gt; with a domain error using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <param name="type">The error type.</param>
+            <param name="code">The error code.</param>
+            <param name="message">The error message.</param>
+            <param name="target">The target field or object that caused the error.</param>
+            <param name="details">Additional error details.</param>
+            <returns>A failed Result&lt;TValue&gt; containing the created error.</returns>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``2">
             <summary>
             Creates a failed Result&lt;TValue, TError&gt; with this domain error.
@@ -46,6 +58,19 @@
             <typeparam name="TValue">The type of the success value.</typeparam>
             <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
             <returns>A failed Result&lt;TValue, TError&gt; containing this error.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``2(Acontplus.Core.Domain.Enums.ErrorType,System.String,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Creates a failed Result&lt;TValue, TError&gt; with a domain error using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
+            <param name="type">The error type.</param>
+            <param name="code">The error code.</param>
+            <param name="message">The error message.</param>
+            <param name="target">The target field or object that caused the error.</param>
+            <param name="details">Additional error details.</param>
+            <returns>A failed Result&lt;TValue, TError&gt; containing the created error.</returns>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainErrors">
             <summary>
@@ -71,12 +96,44 @@
             <typeparam name="TValue">The type of the success value.</typeparam>
             <returns>A failed Result&lt;TValue&gt; containing the first error.</returns>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1(System.Collections.Generic.IEnumerable{Acontplus.Core.Domain.Common.Results.DomainError})">
+            <summary>
+            Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <param name="errors">Collection of domain errors.</param>
+            <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1(Acontplus.Core.Domain.Common.Results.DomainError[])">
+            <summary>
+            Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <param name="errors">Array of domain errors.</param>
+            <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1">
             <summary>
             Creates a failed Result&lt;TValue, DomainErrors&gt; with these domain errors.
             </summary>
             <typeparam name="TValue">The type of the success value.</typeparam>
             <returns>A failed Result&lt;TValue, DomainErrors&gt; containing these errors.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1(System.Collections.Generic.IEnumerable{Acontplus.Core.Domain.Common.Results.DomainError})">
+            <summary>
+            Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <param name="errors">Collection of domain errors.</param>
+            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1(Acontplus.Core.Domain.Common.Results.DomainError[])">
+            <summary>
+            Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <param name="errors">Array of domain errors.</param>
+            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainWarnings">
             <summary>
