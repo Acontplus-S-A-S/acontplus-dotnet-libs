@@ -24,11 +24,13 @@ This repository contains multiple libraries and sample applications, each in its
 - **Acontplus.Reports**: RDLC report generation, export (PDF/Excel), and template management for .NET apps.
 - **Acontplus.Persistence.SqlServer**: SQL Server persistence with ADO.NET and EF Core, repository/unit-of-work patterns, and advanced error handling.
 - **Acontplus.Services**: API services, authentication, claims, JWT, middleware, and configuration for robust APIs.
-- **Acontplus.Utilities**: Cross-cutting utilities: encryption, IO, text, time, API helpers, and more.
+- **Acontplus.Utilities**: Cross-cutting utilities with consolidated domain-to-API conversion extensions: encryption, IO, text, time, comprehensive API helpers, and clean architectural separation.
 - **Acontplus.ApiDocumentation**: Standardized API versioning and OpenAPI/Swagger documentation for .NET APIs.
 - **Acontplus.Logging**: Advanced logging with Serilog, supporting local, S3, and database sinks, with rich configuration.
 - **Acontplus.Barcode**: Barcode and QR code generation utilities for .NET applications.
 - **Acontplus.S3Application**: Simple, strongly-typed AWS S3 storage operations with async CRUD support.
+
+> **🏗️ Architecture Note**: The libraries follow clean architecture principles with clear separation between domain logic (`Acontplus.Core`) and API conversion logic (`Acontplus.Utilities`), enabling maintainable and testable code.
 
 ### Sample Applications (apps/)
 

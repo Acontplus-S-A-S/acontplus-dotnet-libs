@@ -8,19 +8,54 @@ A comprehensive .NET 9+ utility library providing common functionality for busin
 
 ## 🚀 Features
 
+- **API Response Extensions** - Comprehensive Result<T> to IActionResult/IResult conversions with domain error handling, pagination, and warnings support
+- **Domain Extensions** - Consolidated domain-to-API conversion logic for clean architectural separation
 - **Encryption** - Data encryption/decryption utilities with BCrypt support
 - **External Validations** - Third-party validation integrations and data validation helpers
 - **Custom Logging** - Enhanced logging capabilities
 - **Enum Extensions** - Enhanced enum functionality
 - **Picture Helper** - Image processing utilities
 - **Text Handlers** - Text manipulation and processing
-- **API Response Extensions** - Convert results to `IActionResult` or `IResult` for MVC/Minimal APIs
 - **Pagination & Metadata** - Helpers for API metadata, pagination, and diagnostics
 - **Data Utilities** - JSON manipulation, DataTable mapping, and data converters
 - **Object Mapping** - AutoMapper-like object mapping utilities
 - **File Extensions** - File handling, MIME types, and compression utilities
 
 > **Note:** For barcode generation features, see the separate [**Acontplus.Barcode**](https://www.nuget.org/packages/Acontplus.Barcode) package which provides QR codes, Code 128, EAN-13, and other barcode formats.
+
+## 🏗️ Architecture & Domain Extensions
+
+This package provides a clean architectural separation between domain logic (in `Acontplus.Core`) and API conversion logic (in `Acontplus.Utilities`). All domain-to-API conversions are consolidated here for maintainability.
+
+### Consolidated Domain Extensions
+
+The following domain extensions have been consolidated into this package for clean separation:
+
+- **Domain Error Extensions**: Convert `DomainError`, `DomainErrors`, and `Result<T>` to `ApiResponse<T>` with proper HTTP status codes
+- **Pagination Extensions**: Build pagination links for `PagedResult<T>` with navigation metadata
+- **Domain Warnings Extensions**: Handle `DomainWarnings` and `SuccessWithWarnings<T>` conversions
+- **Error Analysis**: Severity-based error prioritization and aggregate error messaging
+
+### Result-to-API Conversion Pipeline
+
+```csharp
+// Domain layer (Acontplus.Core) - Pure domain logic
+public Result<User, DomainError> GetUser(int id) { /* domain logic */ }
+
+// API layer (Acontplus.Utilities) - Clean conversions
+public IActionResult GetUser(int id)
+{
+    var result = _userService.GetUser(id);
+    return result.ToActionResult(); // Automatic conversion with error handling
+}
+
+// Minimal API
+app.MapGet("/users/{id}", (int id) =>
+{
+    var result = userService.GetUser(id);
+    return result.ToMinimalApiResult(); // Clean, type-safe responses
+});
+```
 
 ## 📦 Installation
 
@@ -43,36 +78,76 @@ dotnet add package Acontplus.Utilities
 
 ## 🎯 Quick Start
 
-### 1. API Response Extensions (Minimal API)
+### 1. Consolidated API Response Extensions
+
+The `ResultApiExtensions` class provides comprehensive conversions from domain `Result<T>` types to API responses:
+
 ```csharp
 using Acontplus.Utilities.Extensions;
 
-app.MapGet("/example", () =>
+// Domain result to API response (automatic error handling)
+public IActionResult GetUser(int id)
 {
-    var response = new ApiResponse<string>("Hello World");
-    return response.ToMinimalApiResult();
+    var result = userService.GetUser(id);
+    return result.ToActionResult(); // Handles success/error automatically
+}
+
+// With custom success message
+var result = userService.CreateUser(user);
+return result.ToActionResult("User created successfully");
+
+// Minimal API support
+app.MapGet("/users/{id}", (int id) =>
+{
+    var result = userService.GetUser(id);
+    return result.ToMinimalApiResult();
 });
 ```
 
-### 2. API Response Extensions (Controller)
+### 2. Domain Error Handling
+
 ```csharp
 using Acontplus.Utilities.Extensions;
 
-public IActionResult Get()
+// Automatic domain error to API response conversion
+public IActionResult UpdateUser(int id, UserDto dto)
 {
-    var response = new ApiResponse<string>("Hello World");
-    return response.ToActionResult();
+    var result = userService.UpdateUser(id, dto);
+    return result.ToActionResult(); // DomainError automatically becomes 400/404/500 etc.
+}
+
+// Multiple errors with severity-based HTTP status
+var errors = DomainErrors.Multiple(new[] {
+    DomainError.Validation("EMAIL_INVALID", "Invalid email format"),
+    DomainError.NotFound("USER_NOT_FOUND", "User not found")
+});
+return errors.ToActionResult<UserDto>();
+```
+
+### 3. Pagination with Links
+
+```csharp
+using Acontplus.Utilities.Extensions;
+
+// Build pagination links automatically
+public IActionResult GetUsers(PaginationQuery query)
+{
+    var result = userService.GetUsers(query);
+    var links = result.BuildPaginationLinks("/api/users", query.PageSize);
+    return result.ToActionResult();
 }
 ```
 
-### 3. Encryption Example
+### 4. Encryption Example
+
 ```csharp
 var encryptionService = new SensitiveDataEncryptionService();
 byte[] encrypted = await encryptionService.EncryptToBytesAsync("password", "data");
 string decrypted = await encryptionService.DecryptFromBytesAsync("password", encrypted);
 ```
 
-### 4. Pagination Metadata Example
+### 5. Pagination Metadata Example
+
 ```csharp
 var metadata = new Dictionary<string, object>()
     .WithPagination(page: 1, pageSize: 10, totalItems: 100);
@@ -424,11 +499,17 @@ byte[] decompressed = CompressionUtils.DecompressGZip(compressed);
 
 ## 📚 API Documentation
 
+### Consolidated Domain Extensions
+- `ResultApiExtensions` - Comprehensive Result<T> to IActionResult/IResult conversions with domain error handling
+- `DomainErrorExtensions` - Convert DomainError/DomainErrors to ApiResponse with HTTP status mapping
+- `PagedResultExtensions` - Build pagination links and metadata for API responses
+- `DomainWarningsExtensions` - Handle DomainWarnings and SuccessWithWarnings conversions
+
+### Core Utilities
 - `SensitiveDataEncryptionService` - AES encryption/decryption helpers with BCrypt support
 - `FileExtensions` - File name sanitization and byte array utilities
 - `CompressionUtils` - GZip/Deflate compression helpers
 - `TextHandlers` - String formatting and splitting utilities
-- `ApiResponseExtensions` - API response helpers for MVC/Minimal APIs
 - `DirectoryHelper` / `EnvironmentHelper` - Runtime and environment utilities
 - `DataConverters` - DataTable/DataSet JSON conversion
 - `JsonHelper` - JSON validation and manipulation

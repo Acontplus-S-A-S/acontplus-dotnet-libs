@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A cutting-edge .NET 9+ foundational library leveraging the latest C# language features and business patterns. Built with performance, type safety, and developer experience in mind.
+A cutting-edge .NET 9+ foundational library leveraging the latest C# language features and business patterns. Built with performance, type safety, and developer experience in mind. Focuses on pure domain logic with clean separation from API concerns.
 
 ## 🚀 What's New (Latest Version)
 
@@ -323,10 +323,6 @@ ErrorType.External        → 502 Bad Gateway
 ErrorType.RateLimited     → 429 Too Many Requests
 ErrorType.Timeout         → 408 Request Timeout
 // ... and more
-
-// API Response integration
-var apiResponse = error.ToApiResponse<ProductDto>();
-var resultResponse = result.ToApiResponse("Operation completed successfully");
 ```
 
 #### **🎨 Real-World Usage Examples**
@@ -532,15 +528,6 @@ public static class NullableExtensions
 public static class EnumExtensions
 {
     public static string DisplayName(this Enum value); // Gets Description attribute or ToString()
-}
-
-// Domain Error Extensions
-public static class DomainErrorExtensions
-{
-    public static ApiResponse<T> ToApiResponse<T>(this DomainError error, string? correlationId = null);
-    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, string? correlationId = null);
-    public static HttpStatusCode GetHttpStatusCode(this DomainError error);
-    public static string GetAggregateErrorMessage(this DomainErrors errors);
 }
 ```
 

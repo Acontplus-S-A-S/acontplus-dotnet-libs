@@ -442,8 +442,8 @@ public readonly record struct Result<TValue, TError>
     {
         if (!_initialized)
             throw new InvalidOperationException("Uninitialized Result (default struct).");
-        return _isSuccess 
-            ? _value! 
+        return _isSuccess
+            ? _value!
             : throw new InvalidOperationException($"Result failed with error: {_error}");
     }
 
@@ -455,8 +455,8 @@ public readonly record struct Result<TValue, TError>
     {
         if (!_initialized)
             throw new InvalidOperationException("Uninitialized Result (default struct).");
-        return _isSuccess 
-            ? _value! 
+        return _isSuccess
+            ? _value!
             : throw exceptionFactory(_error!);
     }
 
@@ -543,8 +543,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     public Result<TNewValue> Map<TNewValue>(Func<TValue, TNewValue> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess 
-            ? Result<TNewValue>.Success(mapper(_value!)) 
+        return _isSuccess
+            ? Result<TNewValue>.Success(mapper(_value!))
             : Result<TNewValue>.Failure(_error!.Value);
     }
 
@@ -554,8 +554,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     public async Task<Result<TNewValue>> MapAsync<TNewValue>(Func<TValue, Task<TNewValue>> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess 
-            ? Result<TNewValue>.Success(await mapper(_value!)) 
+        return _isSuccess
+            ? Result<TNewValue>.Success(await mapper(_value!))
             : Result<TNewValue>.Failure(_error!.Value);
     }
 
@@ -565,8 +565,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     public async ValueTask<Result<TNewValue>> MapAsync<TNewValue>(Func<TValue, ValueTask<TNewValue>> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess 
-            ? Result<TNewValue>.Success(await mapper(_value!)) 
+        return _isSuccess
+            ? Result<TNewValue>.Success(await mapper(_value!))
             : Result<TNewValue>.Failure(_error!.Value);
     }
 
@@ -576,8 +576,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     public async Task<Result<TNewValue>> MapAsync<TNewValue>(Func<TValue, CancellationToken, Task<TNewValue>> mapper, CancellationToken cancellationToken)
         where TNewValue : notnull
     {
-        return _isSuccess 
-            ? Result<TNewValue>.Success(await mapper(_value!, cancellationToken)) 
+        return _isSuccess
+            ? Result<TNewValue>.Success(await mapper(_value!, cancellationToken))
             : Result<TNewValue>.Failure(_error!.Value);
     }
 
@@ -586,8 +586,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     /// </summary>
     public Result<TValue> MapError(Func<DomainError, DomainError> mapper)
     {
-        return _isSuccess 
-            ? this 
+        return _isSuccess
+            ? this
             : Result<TValue>.Failure(mapper(_error!.Value));
     }
 
@@ -922,8 +922,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     {
         if (!_initialized)
             throw new InvalidOperationException("Uninitialized Result (default struct).");
-        return _isSuccess 
-            ? _value! 
+        return _isSuccess
+            ? _value!
             : throw new InvalidOperationException($"Result failed with error: {_error!.Value.Message}");
     }
 
@@ -935,8 +935,8 @@ public readonly record struct Result<TValue> : IEquatable<Result<TValue>>
     {
         if (!_initialized)
             throw new InvalidOperationException("Uninitialized Result (default struct).");
-        return _isSuccess 
-            ? _value! 
+        return _isSuccess
+            ? _value!
             : throw exceptionFactory(_error!.Value);
     }
 
