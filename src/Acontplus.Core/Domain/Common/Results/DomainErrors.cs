@@ -73,11 +73,64 @@ public readonly record struct DomainErrors(IReadOnlyList<DomainError> Errors)
             : throw new InvalidOperationException("Cannot create failure result from empty error collection");
 
     /// <summary>
+    /// Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <param name="errors">Collection of domain errors.</param>
+    /// <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
+    public static Result<TValue> Failure<TValue>(IEnumerable<DomainError> errors)
+    {
+        var errorList = errors.ToList();
+        if (errorList.Count == 0)
+            throw new InvalidOperationException("Cannot create failure result from empty error collection");
+            
+        return Result<TValue>.Failure(errorList[0]);
+    }
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <param name="errors">Array of domain errors.</param>
+    /// <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
+    public static Result<TValue> Failure<TValue>(params DomainError[] errors)
+    {
+        if (errors.Length == 0)
+            throw new InvalidOperationException("Cannot create failure result from empty error collection");
+            
+        return Result<TValue>.Failure(errors[0]);
+    }
+
+    /// <summary>
     /// Creates a failed Result&lt;TValue, DomainErrors&gt; with these domain errors.
     /// </summary>
     /// <typeparam name="TValue">The type of the success value.</typeparam>
     /// <returns>A failed Result&lt;TValue, DomainErrors&gt; containing these errors.</returns>
     public Result<TValue, DomainErrors> FailureMultiple<TValue>() => Result<TValue, DomainErrors>.Failure(this);
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <param name="errors">Collection of domain errors.</param>
+    /// <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
+    public static Result<TValue, DomainErrors> FailureMultiple<TValue>(IEnumerable<DomainError> errors)
+    {
+        var domainErrors = new DomainErrors(errors.ToList());
+        return Result<TValue, DomainErrors>.Failure(domainErrors);
+    }
+
+    /// <summary>
+    /// Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the success value.</typeparam>
+    /// <param name="errors">Array of domain errors.</param>
+    /// <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
+    public static Result<TValue, DomainErrors> FailureMultiple<TValue>(params DomainError[] errors)
+    {
+        var domainErrors = new DomainErrors(errors);
+        return Result<TValue, DomainErrors>.Failure(domainErrors);
+    }
 
     #endregion
 

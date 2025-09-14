@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.PostgreSQL</PackageId>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus S.A.S.</Company>
     <Description>Advanced library for PostgreSQL persistence with Entity Framework Core integration. Includes repositories, context management, ADO.NET support, advanced error handling, and enterprise-ready data access patterns for PostgreSQL databases.</Description>
