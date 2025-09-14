@@ -32,6 +32,21 @@
             <param name="cancellationToken">Cancellation token</param>
             <returns>A task representing the asynchronous operation</returns>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``1">
+            <summary>
+            Creates a failed Result&lt;TValue&gt; with this domain error.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <returns>A failed Result&lt;TValue&gt; containing this error.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``2">
+            <summary>
+            Creates a failed Result&lt;TValue, TError&gt; with this domain error.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
+            <returns>A failed Result&lt;TValue, TError&gt; containing this error.</returns>
+        </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainErrors">
             <summary>
             Represents multiple domain errors that can occur during validation or complex operations.
@@ -46,6 +61,22 @@
         </member>
         <member name="P:Acontplus.Core.Domain.Common.Results.DomainErrors.Errors">
             <summary>Collection of individual domain errors.</summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1">
+            <summary>
+            Creates a failed Result&lt;TValue&gt; with these domain errors.
+            Note: Only the first error will be used as Result&lt;TValue&gt; accepts single DomainError.
+            Consider using Result&lt;TValue, DomainErrors&gt; for multiple errors.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <returns>A failed Result&lt;TValue&gt; containing the first error.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1">
+            <summary>
+            Creates a failed Result&lt;TValue, DomainErrors&gt; with these domain errors.
+            </summary>
+            <typeparam name="TValue">The type of the success value.</typeparam>
+            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing these errors.</returns>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainWarnings">
             <summary>

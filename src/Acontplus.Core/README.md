@@ -92,22 +92,159 @@ public class Order : BaseEntity
 }
 ```
 
-### 🔄 **Functional Result Pattern with Warnings**
+### 🔄 **Comprehensive Result Pattern System**
 
-Advanced result handling with support for warnings that don't prevent success:
+**Complete Railway-Oriented Programming implementation** with functional composition, multiple error handling, and fluent API design.
+
+#### **🎯 Core Result Types**
 
 ```csharp
-// Basic Result Pattern
-public async Task<Result<Product>> GetProductAsync(int id)
+// Generic Result with custom error type
+Result<TValue, TError>
+
+// Result with fixed DomainError (most common)
+Result<TValue>
+
+// Multiple errors support
+Result<TValue, DomainErrors>
+
+// Success with warnings pattern
+SuccessWithWarnings<TValue>
+```
+
+#### **✨ Fluent API - Create Results from Errors**
+
+```csharp
+// ✅ NEW: Fluent API from DomainError
+public static Result<User> GetUser(int id) =>
+    id <= 0 
+        ? DomainError.Validation("INVALID_ID", "ID must be positive").Failure<User>()
+        : new User { Id = id };
+
+// ✅ NEW: Fluent API from DomainErrors
+public static Result<User, DomainErrors> ValidateUser(CreateUserRequest request)
 {
-    var product = await _repository.GetByIdAsync(id);
+    var errors = new List<DomainError>();
     
-    return product is not null 
-        ? Result<Product>.Success(product)
-        : Result<Product>.Failure(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found"));
+    if (string.IsNullOrEmpty(request.Name))
+        errors.Add(DomainError.Validation("NAME_REQUIRED", "Name required"));
+        
+    if (string.IsNullOrEmpty(request.Email))
+        errors.Add(DomainError.Validation("EMAIL_REQUIRED", "Email required"));
+        
+    return errors.Count > 0 
+        ? DomainErrors.Multiple(errors).FailureMultiple<User>()
+        : new User { Name = request.Name, Email = request.Email };
+}
+```
+
+#### **🔧 Traditional Factory Methods (Still Supported)**
+
+```csharp
+// Traditional approach still works
+Result<Product>.Success(product);
+Result<Product>.Failure(domainError);
+
+// Generic version
+Result<Product, DomainError>.Success(product);
+Result<Product, DomainError>.Failure(domainError);
+```
+
+#### **🚀 Advanced Error Types**
+
+```csharp
+// 🔸 Single Domain Error
+var singleError = DomainError.NotFound("USER_001", "User not found");
+
+// 🔸 Multiple Domain Errors
+var multipleErrors = DomainErrors.Multiple(
+    DomainError.Validation("NAME_REQUIRED", "Name is required"),
+    DomainError.Validation("EMAIL_INVALID", "Email format is invalid")
+);
+
+// 🔸 Domain Warnings (Success with issues)
+var warnings = DomainWarnings.Multiple(
+    DomainError.Validation("DATA_INCOMPLETE", "Some optional fields missing"),
+    DomainError.Validation("DEPRECATED_API", "Using deprecated API version")
+);
+```
+
+#### **⚡ Functional Composition**
+
+```csharp
+// Railway-oriented programming
+public async Task<Result<OrderConfirmation>> ProcessOrderAsync(CreateOrderRequest request)
+{
+    return await ValidateOrderRequest(request)
+        .Map(order => CalculateTotal(order))
+        .MapAsync(order => ProcessPaymentAsync(order))
+        .Map(order => GenerateConfirmation(order))
+        .OnFailure(error => _logger.LogError("Order processing failed: {Error}", error));
 }
 
-// Success with Warnings Pattern
+// Pattern matching
+public IActionResult HandleOrderResult(Result<Order> result)
+{
+    return result.Match(
+        success: order => Ok(order),
+        failure: error => BadRequest(error.ToApiError())
+    );
+}
+
+// Async pattern matching
+public async Task<string> FormatOrderResultAsync(Result<Order> result)
+{
+    return await result.MatchAsync(
+        success: async order => await FormatOrderAsync(order),
+        failure: async error => await FormatErrorAsync(error)
+    );
+}
+```
+
+#### **🔗 Chaining Operations**
+
+```csharp
+// Chain operations with Map
+var result = await GetUserAsync(userId)
+    .Map(user => ValidateUser(user))
+    .MapAsync(user => EnrichUserDataAsync(user))
+    .Map(user => ConvertToDto(user));
+
+// Handle side effects
+var result = await ProcessDataAsync()
+    .OnSuccess(data => _logger.LogInformation("Processing completed"))
+    .OnFailure(error => _logger.LogError("Processing failed: {Error}", error));
+
+// Transform errors
+var result = await CallExternalApiAsync()
+    .MapError(error => DomainError.External("API_ERROR", $"External service failed: {error}"));
+```
+
+#### **🚨 Error Analysis & Handling**
+
+```csharp
+// Error severity analysis
+var errors = DomainErrors.Multiple(
+    DomainError.Internal("DB_ERROR", "Database connection failed"),
+    DomainError.Validation("INVALID_EMAIL", "Invalid email format")
+);
+
+var mostSevere = errors.GetMostSevereErrorType(); // Returns ErrorType.Internal
+var httpStatus = mostSevere.ToHttpStatusCode();   // Returns 500
+
+// Error filtering and grouping
+var validationErrors = errors.GetErrorsOfType(ErrorType.Validation);
+var hasServerErrors = errors.HasErrorsOfType(ErrorType.Internal);
+
+// Aggregate error messages
+var summary = errors.GetAggregateErrorMessage();
+// "Multiple errors occurred (2): [Internal] Database connection failed; [Validation] Invalid email format"
+```
+
+#### **⚠️ Success with Warnings Pattern**
+
+```csharp
+// Business operations that succeed but have warnings
 public async Task<SuccessWithWarnings<List<Product>>> ImportProductsAsync(List<ProductDto> dtos)
 {
     var products = new List<Product>();
@@ -122,63 +259,139 @@ public async Task<SuccessWithWarnings<List<Product>>> ImportProductsAsync(List<P
         }
         catch (ValidationException ex)
         {
-            warnings.Add(DomainError.Validation("IMPORT_WARNING", $"Product {dto.Name} skipped: {ex.Message}"));
+            warnings.Add(DomainError.Validation("IMPORT_WARNING", 
+                $"Product {dto.Name} skipped: {ex.Message}"));
         }
     }
 
     return new SuccessWithWarnings<List<Product>>(products, new DomainWarnings(warnings));
 }
 
-// Domain Warnings System
-public class DomainWarnings
-{
-    public static DomainWarnings FromSingle(DomainError warning) => new([warning]);
-    public static DomainWarnings Multiple(params DomainError[] warnings) => new(warnings);
-    
-    public bool HasWarnings => Warnings.Count > 0;
-    public bool HasWarningsOfType(ErrorType type) => Warnings.Any(w => w.Type == type);
-    public string GetAggregateWarningMessage() => string.Join("; ", Warnings.Select(w => w.Message));
-}
-
-// Extensions for easy creation
-var result = products.WithWarning(DomainError.Validation("WARN_001", "Some data was incomplete"));
+// Extension methods for warnings
+var result = products.WithWarning(DomainError.Validation("WARN_001", "Some data incomplete"));
 var resultMultiple = products.WithWarnings(warnings);
 ```
 
-### 🎯 **Advanced Error Handling System**
-
-Comprehensive error handling with HTTP status code mapping and structured responses:
+#### **🌐 HTTP Integration**
 
 ```csharp
-// Domain Error Creation
-var validationError = DomainError.Validation(
-    code: "PRODUCT_INVALID_PRICE",
-    message: "Product price must be greater than zero",
-    target: "price",
-    details: new Dictionary<string, object> { ["actualValue"] = -10, ["minValue"] = 0 }
-);
+// Automatic HTTP status code mapping
+var error = DomainError.Validation("INVALID_INPUT", "Input validation failed");
+var statusCode = error.GetHttpStatusCode(); // Returns 422 (Unprocessable Entity)
 
-// Error Type Mapping
-var httpStatusCode = validationError.GetHttpStatusCode(); // Returns 422 for Validation
-var severity = validationError.Type.ToSeverityString(); // Returns "Warning", "Error", etc.
+// Convert to API responses
+var apiResponse = error.ToApiResponse<ProductDto>();
+var resultResponse = result.ToApiResponse<ProductDto>("Operation completed");
 
-// Error Aggregation and Analysis
-var errors = new List<DomainError>();
-if (string.IsNullOrWhiteSpace(request.Name))
-    errors.Add(DomainError.Validation("INVALID_NAME", "Product name is required", "name"));
+// Built-in error type mappings:
+ErrorType.Validation      → 422 Unprocessable Entity
+ErrorType.NotFound        → 404 Not Found
+ErrorType.Unauthorized    → 401 Unauthorized
+ErrorType.Forbidden       → 403 Forbidden
+ErrorType.Conflict        → 409 Conflict
+ErrorType.Internal        → 500 Internal Server Error
+ErrorType.External        → 502 Bad Gateway
+ErrorType.RateLimited     → 429 Too Many Requests
+// ... and more
+```
 
-if (request.Price <= 0)
-    errors.Add(DomainError.Validation("INVALID_PRICE", "Price must be greater than zero", "price"));
+#### **🎨 Real-World Examples**
 
-if (errors.Any())
+```csharp
+// ✅ Simple validation
+public Result<User> CreateUser(string name, string email)
 {
-    var mostSevereError = errors.GetMostSevereError();
-    return Result<Product>.Failure(mostSevereError);
+    if (string.IsNullOrWhiteSpace(name))
+        return DomainError.Validation("NAME_REQUIRED", "Name is required").Failure<User>();
+        
+    if (!IsValidEmail(email))
+        return DomainError.Validation("EMAIL_INVALID", "Invalid email format").Failure<User>();
+        
+    return new User { Name = name, Email = email };
 }
 
-// Convert to API Response
-var apiResponse = result.ToApiResponse<ProductDto>();
-var apiResponseWithMessage = result.ToApiResponse<ProductDto>("Product processed successfully");
+// ✅ Complex business logic with multiple errors
+public async Task<Result<Order, DomainErrors>> ProcessOrderAsync(OrderRequest request)
+{
+    var errors = new List<DomainError>();
+    
+    // Validate customer
+    var customer = await _customerService.GetByIdAsync(request.CustomerId);
+    if (customer is null)
+        errors.Add(DomainError.NotFound("CUSTOMER_NOT_FOUND", "Customer not found"));
+    
+    // Validate products
+    foreach (var item in request.Items)
+    {
+        var product = await _productService.GetByIdAsync(item.ProductId);
+        if (product is null)
+            errors.Add(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {item.ProductId} not found"));
+        else if (product.Stock < item.Quantity)
+            errors.Add(DomainError.Conflict("INSUFFICIENT_STOCK", $"Not enough stock for {product.Name}"));
+    }
+    
+    if (errors.Count > 0)
+        return DomainErrors.Multiple(errors).FailureMultiple<Order>();
+        
+    // Process order
+    var order = new Order
+    {
+        CustomerId = request.CustomerId,
+        Items = request.Items,
+        Status = BusinessStatus.Active
+    };
+    
+    return await _orderRepository.CreateAsync(order);
+}
+
+// ✅ Functional composition for complex workflows
+public async Task<Result<InvoiceDto>> GenerateInvoiceAsync(int orderId)
+{
+    return await GetOrderAsync(orderId)
+        .MapAsync(order => ValidateOrderForInvoicingAsync(order))
+        .MapAsync(order => CalculateInvoiceAmountsAsync(order))
+        .MapAsync(invoice => ApplyTaxCalculationsAsync(invoice))
+        .MapAsync(invoice => GeneratePdfAsync(invoice))
+        .Map(invoice => ConvertToDto(invoice))
+        .OnSuccess(invoice => _logger.LogInformation("Invoice generated: {InvoiceId}", invoice.Id))
+        .OnFailure(error => _logger.LogError("Invoice generation failed: {Error}", error));
+}
+```
+
+#### **🎯 Best Practices**
+
+```csharp
+// ✅ DO: Use specific error codes and messages
+DomainError.NotFound("USER_NOT_FOUND", $"User with ID {id} was not found");
+
+// ❌ DON'T: Use generic error messages
+DomainError.NotFound("ERROR", "Something went wrong");
+
+// ✅ DO: Use fluent API for cleaner code
+return id <= 0 
+    ? DomainError.Validation("INVALID_ID", "ID must be positive").Failure<User>()
+    : GetUserFromDatabase(id);
+
+// ✅ DO: Use pattern matching for flow control
+return result.Match(
+    success: user => ProcessUser(user),
+    failure: error => HandleError(error)
+);
+
+// ✅ DO: Chain operations for complex workflows
+var result = await ValidateInput(input)
+    .MapAsync(data => ProcessDataAsync(data))
+    .Map(processed => FormatOutput(processed))
+    .OnFailure(error => LogError(error));
+
+// ✅ DO: Use DomainErrors for multiple validation errors
+var errors = new List<DomainError>();
+if (IsInvalid(name)) errors.Add(DomainError.Validation("INVALID_NAME", "Name invalid"));
+if (IsInvalid(email)) errors.Add(DomainError.Validation("INVALID_EMAIL", "Email invalid"));
+
+return errors.Count > 0 
+    ? DomainErrors.Multiple(errors).FailureMultiple<User>()
+    : CreateUser(name, email);
 ```
 
 ### 🔍 **Validation Utilities**
