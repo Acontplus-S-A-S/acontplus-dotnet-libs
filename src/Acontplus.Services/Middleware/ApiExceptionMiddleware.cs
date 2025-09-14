@@ -1,8 +1,4 @@
-﻿using Acontplus.Services.Extensions.Middleware;
-using System.Diagnostics;
-using System.Text.Json;
-
-namespace Acontplus.Services.Middleware;
+﻿namespace Acontplus.Services.Middleware;
 
 /// <summary>
 /// Middleware for centralized API exception handling, logging, and standardized error responses.

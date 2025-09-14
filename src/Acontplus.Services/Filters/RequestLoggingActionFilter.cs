@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Filters;
-using System.Diagnostics;
-
 namespace Acontplus.Services.Filters;
 
 /// <summary>

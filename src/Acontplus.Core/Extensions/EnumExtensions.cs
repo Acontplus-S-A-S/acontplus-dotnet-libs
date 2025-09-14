@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 public static class EnumExtensions
 {

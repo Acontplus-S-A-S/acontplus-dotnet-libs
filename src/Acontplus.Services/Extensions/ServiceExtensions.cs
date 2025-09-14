@@ -1,7 +1,4 @@
-using Acontplus.Services.Configuration;
 using Acontplus.Services.HealthChecks;
-using Acontplus.Services.Services.Abstractions;
-using Acontplus.Services.Services.Implementations;
 
 namespace Acontplus.Services.Extensions;
 

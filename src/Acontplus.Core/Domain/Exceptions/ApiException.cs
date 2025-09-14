@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Acontplus.Core.Domain.Exceptions;
+﻿namespace Acontplus.Core.Domain.Exceptions;
 
 public abstract class ApiException : Exception
 {

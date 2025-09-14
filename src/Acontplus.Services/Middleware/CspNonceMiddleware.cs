@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace Acontplus.Services.Middleware;
+﻿namespace Acontplus.Services.Middleware;
 
 
 public class CspNonceMiddleware

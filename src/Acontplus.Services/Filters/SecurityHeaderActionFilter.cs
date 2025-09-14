@@ -1,7 +1,3 @@
-using Acontplus.Services.Configuration;
-using Acontplus.Services.Services.Abstractions;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace Acontplus.Services.Filters;
 
 /// <summary>

@@ -1,9 +1,16 @@
 global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Domain.Common.Events;
-global using Acontplus.Core.Domain.Common.Results;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.DTOs.Requests;
 global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.Enums;
+global using System.ComponentModel;
 global using System.Data;
+global using System.Data.Common;
+global using System.Diagnostics;
 global using System.Linq.Expressions;
+global using System.Net;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.RegularExpressions;
+global using System.Xml;

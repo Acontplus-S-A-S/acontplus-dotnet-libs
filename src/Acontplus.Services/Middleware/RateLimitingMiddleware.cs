@@ -1,5 +1,3 @@
-using Acontplus.Services.Configuration;
-
 namespace Acontplus.Services.Middleware;
 
 /// <summary>

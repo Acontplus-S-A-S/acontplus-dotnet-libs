@@ -106,32 +106,96 @@
             <param name="parameter">The parameter information (required by the binding contract)</param>
             <returns>A ValueTask containing the bound PaginationQuery or null</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToBaseResponse``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})" -->
-        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToActionResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
+        <member name="P:Acontplus.Utilities.Extensions.ResultApiExtensions.ConfigureResponse">
+            <summary>
+            Allows configuring the ApiResponse before it's returned in success cases.
+            This is useful for adding global metadata, logging, or other cross-cutting concerns.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ConfigureApiResponses(System.Action{Acontplus.Core.DTOs.Responses.ApiResponse})">
+            <summary>
+            Configures a global action to modify ApiResponse instances before they are returned.
+            </summary>
+            <param name="configureAction">The action to apply to each ApiResponse.</param>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToBaseResponse``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})">
+            <summary>
+            Converts generic ApiResponse&lt;T&gt; to base ApiResponse
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToActionResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})">
+            <summary>
+            Converts ApiResponse&lt;T&gt; to IActionResult
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToMinimalApiResult``1(Acontplus.Core.DTOs.Responses.ApiResponse{``0})">
+            <summary>
+            Converts ApiResponse&lt;T&gt; to IResult (for Minimal APIs)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToActionResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
             <summary>
             Converts base ApiResponse to IActionResult with full status code support
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.ToMinimalApiResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToMinimalApiResult(Acontplus.Core.DTOs.Responses.ApiResponse)">
             <summary>
             Converts ApiResponse to IResult for Minimal APIs
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithPagination(System.Collections.Generic.Dictionary{System.String,System.Object},System.Int32,System.Int32,System.Int64,System.Func{System.Int32,System.String})">
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.WithPagination(System.Collections.Generic.Dictionary{System.String,System.Object},System.Int32,System.Int32,System.Int64,System.Func{System.Int32,System.String})">
             <summary>
             Adds pagination metadata with enhanced details
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithExecutionTime(System.Collections.Generic.Dictionary{System.String,System.Object},System.TimeSpan,System.Int32)">
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.WithExecutionTime(System.Collections.Generic.Dictionary{System.String,System.Object},System.TimeSpan,System.Int32)">
             <summary>
             Adds execution time metadata with precision control
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.Extensions.ApiResponseExtensions.WithCorrelationId(System.Collections.Generic.Dictionary{System.String,System.Object},System.String)">
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.WithCorrelationId(System.Collections.Generic.Dictionary{System.String,System.Object},System.String)">
             <summary>
             Adds correlation ID to metadata if not already present
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedActionResult``1(Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainError},System.String,System.String)">
+            <summary>
+            Converts Result&lt;PagedResult&lt;T&gt;&gt; to IActionResult with automatic pagination metadata
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedActionResult``1(Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainErrors},System.String,System.String)">
+            <summary>
+            Converts Result&lt;PagedResult&lt;T&gt;&gt; to IActionResult with automatic pagination metadata (DomainErrors)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedMinimalApiResult``1(Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainError},System.String,System.String)">
+            <summary>
+            Converts Result&lt;PagedResult&lt;T&gt;&gt; to IResult with automatic pagination metadata (Minimal API)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedMinimalApiResult``1(Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainErrors},System.String,System.String)">
+            <summary>
+            Converts Result&lt;PagedResult&lt;T&gt;&gt; to IResult with automatic pagination metadata (Minimal API, DomainErrors)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedActionResultAsync``1(System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainError}},System.String,System.String)">
+            <summary>
+            Async version for Result&lt;PagedResult&lt;T&gt;&gt; to IActionResult
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedActionResultAsync``1(System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainErrors}},System.String,System.String)">
+            <summary>
+            Async version for Result&lt;PagedResult&lt;T&gt;&gt; to IActionResult (DomainErrors)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedMinimalApiResultAsync``1(System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainError}},System.String,System.String)">
+            <summary>
+            Async version for Result&lt;PagedResult&lt;T&gt;&gt; to IResult (Minimal API)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.ResultApiExtensions.ToPagedMinimalApiResultAsync``1(System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{Acontplus.Core.DTOs.Responses.PagedResult{``0},Acontplus.Core.Domain.Common.Results.DomainErrors}},System.String,System.String)">
+            <summary>
+            Async version for Result&lt;PagedResult&lt;T&gt;&gt; to IResult (Minimal API, DomainErrors)
             </summary>
         </member>
         <member name="T:Acontplus.Utilities.Format.CompressionUtils">

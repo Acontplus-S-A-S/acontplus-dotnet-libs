@@ -1,5 +1,3 @@
-using System.Data.Common;
-
 namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IUnitOfWork : IDisposable, IAsyncDisposable

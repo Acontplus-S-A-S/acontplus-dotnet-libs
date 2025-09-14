@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net;
-using System.Text.Json.Serialization;
-
-namespace Acontplus.Core.DTOs.Responses;
+﻿namespace Acontplus.Core.DTOs.Responses;
 
 public sealed record ApiResponseOptions
 {

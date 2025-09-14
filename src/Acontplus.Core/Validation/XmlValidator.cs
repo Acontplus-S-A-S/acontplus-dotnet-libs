@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Schema;
+﻿using System.Xml.Schema;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Acontplus.Core.Validation;

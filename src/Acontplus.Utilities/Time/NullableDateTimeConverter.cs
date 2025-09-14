@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Acontplus.Utilities.Time;
+﻿namespace Acontplus.Utilities.Time;
 
 /// <summary>
 /// Converter for nullable DateTime values

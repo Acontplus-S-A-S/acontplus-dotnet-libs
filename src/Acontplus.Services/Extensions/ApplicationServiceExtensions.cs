@@ -1,12 +1,6 @@
-using Acontplus.Services.Configuration;
-using Acontplus.Services.Extensions.Middleware;
 using Acontplus.Services.Extensions.Security;
 using Acontplus.Services.Filters;
-using Acontplus.Services.Middleware;
 using Acontplus.Services.Policies;
-using Acontplus.Services.Services.Abstractions;
-using Acontplus.Services.Services.Implementations;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Acontplus.Services.Extensions;
 

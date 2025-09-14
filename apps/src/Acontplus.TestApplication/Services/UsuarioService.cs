@@ -1,6 +1,6 @@
 using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Core.Domain.Extensions;
 using Acontplus.Utilities.Adapters;
+using Acontplus.Utilities.Extensions;
 using Acontplus.Utilities.Mapping;
 using Microsoft.Extensions.Logging;
 using System.Data.Common;
