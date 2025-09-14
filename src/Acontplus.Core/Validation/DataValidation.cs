@@ -1,9 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml;
-
-namespace Acontplus.Core.Validation;
+﻿namespace Acontplus.Core.Validation;
 
 public static class DataValidation
 {

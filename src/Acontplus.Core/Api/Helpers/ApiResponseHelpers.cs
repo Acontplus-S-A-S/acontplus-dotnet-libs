@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Acontplus.Core.Api.Helpers;
+﻿namespace Acontplus.Core.Api.Helpers;
 
 public static class ApiResponseHelpers
 {

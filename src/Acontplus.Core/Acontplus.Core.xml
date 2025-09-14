@@ -32,46 +32,6 @@
             <param name="cancellationToken">Cancellation token</param>
             <returns>A task representing the asynchronous operation</returns>
         </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``1">
-            <summary>
-            Creates a failed Result&lt;TValue&gt; with this domain error.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <returns>A failed Result&lt;TValue&gt; containing this error.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``1(Acontplus.Core.Domain.Enums.ErrorType,System.String,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary>
-            Creates a failed Result&lt;TValue&gt; with a domain error using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <param name="type">The error type.</param>
-            <param name="code">The error code.</param>
-            <param name="message">The error message.</param>
-            <param name="target">The target field or object that caused the error.</param>
-            <param name="details">Additional error details.</param>
-            <returns>A failed Result&lt;TValue&gt; containing the created error.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``2">
-            <summary>
-            Creates a failed Result&lt;TValue, TError&gt; with this domain error.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
-            <returns>A failed Result&lt;TValue, TError&gt; containing this error.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainError.Failure``2(Acontplus.Core.Domain.Enums.ErrorType,System.String,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary>
-            Creates a failed Result&lt;TValue, TError&gt; with a domain error using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <typeparam name="TError">The type of the error (must be assignable from DomainError).</typeparam>
-            <param name="type">The error type.</param>
-            <param name="code">The error code.</param>
-            <param name="message">The error message.</param>
-            <param name="target">The target field or object that caused the error.</param>
-            <param name="details">Additional error details.</param>
-            <returns>A failed Result&lt;TValue, TError&gt; containing the created error.</returns>
-        </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainErrors">
             <summary>
             Represents multiple domain errors that can occur during validation or complex operations.
@@ -86,54 +46,6 @@
         </member>
         <member name="P:Acontplus.Core.Domain.Common.Results.DomainErrors.Errors">
             <summary>Collection of individual domain errors.</summary>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1">
-            <summary>
-            Creates a failed Result&lt;TValue&gt; with these domain errors.
-            Note: Only the first error will be used as Result&lt;TValue&gt; accepts single DomainError.
-            Consider using Result&lt;TValue, DomainErrors&gt; for multiple errors.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <returns>A failed Result&lt;TValue&gt; containing the first error.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1(System.Collections.Generic.IEnumerable{Acontplus.Core.Domain.Common.Results.DomainError})">
-            <summary>
-            Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <param name="errors">Collection of domain errors.</param>
-            <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.Failure``1(Acontplus.Core.Domain.Common.Results.DomainError[])">
-            <summary>
-            Creates a failed Result&lt;TValue&gt; with multiple domain errors using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <param name="errors">Array of domain errors.</param>
-            <returns>A failed Result&lt;TValue&gt; containing the first error from the collection.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1">
-            <summary>
-            Creates a failed Result&lt;TValue, DomainErrors&gt; with these domain errors.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing these errors.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1(System.Collections.Generic.IEnumerable{Acontplus.Core.Domain.Common.Results.DomainError})">
-            <summary>
-            Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <param name="errors">Collection of domain errors.</param>
-            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
-        </member>
-        <member name="M:Acontplus.Core.Domain.Common.Results.DomainErrors.FailureMultiple``1(Acontplus.Core.Domain.Common.Results.DomainError[])">
-            <summary>
-            Creates a failed Result&lt;TValue, DomainErrors&gt; with multiple domain errors using the specified parameters.
-            </summary>
-            <typeparam name="TValue">The type of the success value.</typeparam>
-            <param name="errors">Array of domain errors.</param>
-            <returns>A failed Result&lt;TValue, DomainErrors&gt; containing the errors.</returns>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.DomainWarnings">
             <summary>
@@ -160,6 +72,16 @@
             Asynchronously maps the value of a successful result to a new type.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.MapAsync``1(System.Func{`0,System.Threading.Tasks.ValueTask{``0}})">
+            <summary>
+            Asynchronously maps the value using ValueTask to reduce allocations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.MapAsync``1(System.Func{`0,System.Threading.CancellationToken,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously maps the value with CancellationToken.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.MapError``1(System.Func{`1,``0})">
             <summary>
             Maps the error of a failed result to a new error type.
@@ -179,6 +101,16 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.BindAsync``1(System.Func{`0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{``0,`1}}})">
             <summary>
             Asynchronously binds the result with a function that returns another Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.BindAsync``1(System.Func{`0,System.Threading.Tasks.ValueTask{Acontplus.Core.Domain.Common.Results.Result{``0,`1}}})">
+            <summary>
+            Asynchronously binds using ValueTask to reduce allocations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.BindAsync``1(System.Func{`0,System.Threading.CancellationToken,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{``0,`1}}},System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously binds with CancellationToken.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.Apply``1(Acontplus.Core.Domain.Common.Results.Result{System.Func{`0,``0},`1})">
@@ -231,6 +163,11 @@
             Asynchronously taps into the success value without changing the result.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TapAsync(System.Func{`0,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Asynchronously taps into the success value using ValueTask.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TapError(System.Action{`1})">
             <summary>
             Taps into the error without changing the result (for side effects).
@@ -239,6 +176,11 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TapErrorAsync(System.Func{`1,System.Threading.Tasks.Task})">
             <summary>
             Asynchronously taps into the error without changing the result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TapErrorAsync(System.Func{`1,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Asynchronously taps into the error using ValueTask.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.GetValueOrDefault(`0)">
@@ -251,6 +193,16 @@
             Gets the value if successful, otherwise returns the result of the factory function.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TryGetValue(`0@)">
+            <summary>
+            Tries to get the success value.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.TryGetError(`1@)">
+            <summary>
+            Tries to get the error value.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.ThrowOnFailure">
             <summary>
             Throws an exception if the result is a failure.
@@ -261,6 +213,11 @@
             Throws a custom exception if the result is a failure.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`2.Deconstruct(System.Boolean@,`0@,`1@)">
+            <summary>
+            Deconstructs the result into (isSuccess, value, error).
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.Map``1(System.Func{`0,``0})">
             <summary>
             Maps the value of a successful result to a new type.
@@ -269,6 +226,16 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.MapAsync``1(System.Func{`0,System.Threading.Tasks.Task{``0}})">
             <summary>
             Asynchronously maps the value of a successful result to a new type.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.MapAsync``1(System.Func{`0,System.Threading.Tasks.ValueTask{``0}})">
+            <summary>
+            Asynchronously maps using ValueTask to reduce allocations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.MapAsync``1(System.Func{`0,System.Threading.CancellationToken,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously maps with CancellationToken.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.MapError(System.Func{Acontplus.Core.Domain.Common.Results.DomainError,Acontplus.Core.Domain.Common.Results.DomainError})">
@@ -290,6 +257,16 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.BindAsync``1(System.Func{`0,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{``0}}})">
             <summary>
             Asynchronously binds the result with a function that returns another Result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.BindAsync``1(System.Func{`0,System.Threading.Tasks.ValueTask{Acontplus.Core.Domain.Common.Results.Result{``0}}})">
+            <summary>
+            Asynchronously binds using ValueTask.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.BindAsync``1(System.Func{`0,System.Threading.CancellationToken,System.Threading.Tasks.Task{Acontplus.Core.Domain.Common.Results.Result{``0}}},System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously binds with CancellationToken.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.Apply``1(Acontplus.Core.Domain.Common.Results.Result{System.Func{`0,``0}})">
@@ -342,6 +319,11 @@
             Asynchronously taps into the success value without changing the result.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TapAsync(System.Func{`0,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Asynchronously taps into the success value using ValueTask.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TapError(System.Action{Acontplus.Core.Domain.Common.Results.DomainError})">
             <summary>
             Taps into the error without changing the result (for side effects).
@@ -350,6 +332,11 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TapErrorAsync(System.Func{Acontplus.Core.Domain.Common.Results.DomainError,System.Threading.Tasks.Task})">
             <summary>
             Asynchronously taps into the error without changing the result.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TapErrorAsync(System.Func{Acontplus.Core.Domain.Common.Results.DomainError,System.Threading.Tasks.ValueTask})">
+            <summary>
+            Asynchronously taps into the error using ValueTask.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.GetValueOrDefault(`0)">
@@ -362,6 +349,16 @@
             Gets the value if successful, otherwise returns the result of the factory function.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TryGetValue(`0@)">
+            <summary>
+            Tries to get the success value.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.TryGetError(Acontplus.Core.Domain.Common.Results.DomainError@)">
+            <summary>
+            Tries to get the error value.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.ThrowOnFailure">
             <summary>
             Throws an exception if the result is a failure.
@@ -370,6 +367,11 @@
         <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.ThrowOnFailure``1(System.Func{Acontplus.Core.Domain.Common.Results.DomainError,``0})">
             <summary>
             Throws a custom exception if the result is a failure.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Domain.Common.Results.Result`1.Deconstruct(System.Boolean@,`0@,System.Nullable{Acontplus.Core.Domain.Common.Results.DomainError}@)">
+            <summary>
+            Deconstructs the result into (isSuccess, value, error).
             </summary>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Results.SuccessWithWarnings`1">

@@ -1,6 +1,3 @@
-using Acontplus.Services.Configuration;
-using Microsoft.AspNetCore.Hosting;
-
 namespace Acontplus.Services.Extensions.Security;
 
 public static class SecurityHeaderPolicyExtensions

@@ -1,5 +1,4 @@
 using Acontplus.Services.Extensions.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Acontplus.Services.Extensions;
 

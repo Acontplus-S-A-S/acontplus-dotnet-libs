@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-
-namespace Acontplus.Core.Abstractions.Persistence;
+﻿namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IAdoRepository
 {

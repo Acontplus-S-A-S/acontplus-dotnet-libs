@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Acontplus.Core.Domain.Enums;
+﻿namespace Acontplus.Core.Domain.Enums;
 
 public static class ErrorTypeExtensions
 {

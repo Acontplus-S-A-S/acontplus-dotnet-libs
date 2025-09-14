@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Acontplus.Services.Middleware;
+﻿namespace Acontplus.Services.Middleware;
 
 public class RequestLoggingMiddleware
 {

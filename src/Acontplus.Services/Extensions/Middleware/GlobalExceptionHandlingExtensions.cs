@@ -1,5 +1,3 @@
-using Acontplus.Services.Middleware;
-
 namespace Acontplus.Services.Extensions.Middleware;
 
 /// <summary>

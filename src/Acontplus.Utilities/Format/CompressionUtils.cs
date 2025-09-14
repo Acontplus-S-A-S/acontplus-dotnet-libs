@@ -1,6 +1,4 @@
-﻿using System.IO.Compression;
-
-namespace Acontplus.Utilities.Format;
+﻿namespace Acontplus.Utilities.Format;
 
 /// <summary>
 /// Provides utility methods for compressing and decompressing data using Deflate and GZip algorithms, and for decompressing DataTable columns.

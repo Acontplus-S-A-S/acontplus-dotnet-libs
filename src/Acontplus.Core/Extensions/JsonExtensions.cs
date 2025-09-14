@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Acontplus.Core.Extensions;
+﻿namespace Acontplus.Core.Extensions;
 
 public static class JsonExtensions
 {
