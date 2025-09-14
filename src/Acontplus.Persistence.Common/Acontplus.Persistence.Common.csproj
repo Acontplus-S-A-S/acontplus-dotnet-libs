@@ -4,7 +4,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Persistence.Common</PackageId>
-		<Version>1.1.8</Version>
+		<Version>1.1.9</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
 		<Description>Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.</Description>
