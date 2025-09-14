@@ -272,19 +272,9 @@ public readonly record struct DomainError(
         Details: Details,
         Severity: Type.ToSeverityString(),
         Category: Type.ToCategoryString(),
-        TraceId: Activity.Current?.Id,
-        HelpUrl: GetHelpUrl()
+        TraceId: Activity.Current?.Id
     );
 
     public HttpStatusCode GetHttpStatusCode() => Type.ToHttpStatusCode();
-
-    private string GetHelpUrl() => Type switch
-    {
-        ErrorType.Validation => $"https://errors.acontplus.com/validation/{Code.ToLowerInvariant()}",
-        ErrorType.NotFound => $"https://errors.acontplus.com/not-found/{Code.ToLowerInvariant()}",
-        ErrorType.Conflict => $"https://errors.acontplus.com/conflict/{Code.ToLowerInvariant()}",
-        _ => $"https://errors.acontplus.com/{Type.ToString().ToLowerInvariant()}/{Code.ToLowerInvariant()}"
-    };
-
     #endregion
 }
