@@ -11,14 +11,14 @@ public static class ApiMetadataKeys
     public const string Version = "apiVersion";
     public const string Environment = "env";
 
-    // Pagination (structured for client convenience)
+    // Pagination (aligned with PagedResult properties)
     public const string Pagination = "paging";
-    public const string Page = "page";
-    public const string PageSize = "size";  // Shorter alternative to 'pageSize'
-    public const string TotalItems = "total";
-    public const string TotalPages = "pages";
-    public const string HasNext = "hasNext";
-    public const string HasPrev = "hasPrev";
+    public const string PageIndex = "pageIndex";
+    public const string PageSize = "pageSize";
+    public const string TotalCount = "totalCount";
+    public const string TotalPages = "totalPages";
+    public const string HasNextPage = "hasNextPage";
+    public const string HasPreviousPage = "hasPreviousPage";
     public const string Links = "links";  // For HATEOAS when needed
 
     // Performance

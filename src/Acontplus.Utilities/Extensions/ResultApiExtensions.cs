@@ -949,12 +949,12 @@ public static class ResultApiExtensions
 
         var pagination = new Dictionary<string, object>
         {
-            [ApiMetadataKeys.Page] = page,
+            [ApiMetadataKeys.PageIndex] = page,
             [ApiMetadataKeys.PageSize] = pageSize,
-            [ApiMetadataKeys.TotalItems] = totalItems,
+            [ApiMetadataKeys.TotalCount] = totalItems,
             [ApiMetadataKeys.TotalPages] = totalPages,
-            [ApiMetadataKeys.HasNext] = page < totalPages,
-            [ApiMetadataKeys.HasPrev] = page > 1
+            [ApiMetadataKeys.HasNextPage] = page < totalPages,
+            [ApiMetadataKeys.HasPreviousPage] = page > 1
         };
 
         if (pageUrlGenerator != null)
