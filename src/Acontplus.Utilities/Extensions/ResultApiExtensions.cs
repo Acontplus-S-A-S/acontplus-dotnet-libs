@@ -93,7 +93,7 @@ public static class ResultApiExtensions
         string? correlationId = null)
     {
         return result.Match<IResult>(
-            value => CreateSuccessResult(value, correlationId),
+            value => CreateSuccessResult(value, result.SuccessMessage, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
@@ -104,6 +104,17 @@ public static class ResultApiExtensions
     {
         return result.Match<IResult>(
             value => CreateSuccessResult(value, correlationId),
+            errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+        );
+    }
+
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<TValue, DomainErrors> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IResult>(
+            value => CreateSuccessResult(value, successMessage, correlationId),
             errors => errors.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
@@ -144,6 +155,15 @@ public static class ResultApiExtensions
     {
         var result = await resultTask;
         return result.ToMinimalApiResult(correlationId);
+    }
+
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainErrors>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(successMessage, correlationId);
     }
 
     #endregion
@@ -558,6 +578,46 @@ public static class ResultApiExtensions
                 correlationId: correlationId),
             failure: error => error.ToApiResponse<T>(correlationId));
 
+    // ================ Result<TValue, DomainError> Conversions ================
+    public static ApiResponse<TValue> ToApiResponse<TValue>(
+        this Result<TValue, DomainError> result,
+        string? correlationId = null)
+    {
+        return result.Match(
+            success: data => CreateApiResponse(data: data, correlationId: correlationId),
+            failure: error => error.ToApiResponse<TValue>(correlationId));
+    }
+
+    public static ApiResponse<TValue> ToApiResponse<TValue>(
+        this Result<TValue, DomainError> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match(
+            success: data => CreateApiResponse(data: data, message: successMessage, correlationId: correlationId),
+            failure: error => error.ToApiResponse<TValue>(correlationId));
+    }
+
+    // ================ Result<TValue, DomainErrors> Conversions ================
+    public static ApiResponse<TValue> ToApiResponse<TValue>(
+        this Result<TValue, DomainErrors> result,
+        string? correlationId = null)
+    {
+        return result.Match(
+            success: data => CreateApiResponse(data: data, correlationId: correlationId),
+            failure: errors => errors.ToApiResponse<TValue>(correlationId));
+    }
+
+    public static ApiResponse<TValue> ToApiResponse<TValue>(
+        this Result<TValue, DomainErrors> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match(
+            success: data => CreateApiResponse(data: data, message: successMessage, correlationId: correlationId),
+            failure: errors => errors.ToApiResponse<TValue>(correlationId));
+    }
+
     // ================ SuccessWithWarnings ================
     public static ApiResponse<T> ToApiResponse<T>(
         this SuccessWithWarnings<T> result,
@@ -697,6 +757,21 @@ public static class ResultApiExtensions
             data: value,
             new ApiResponseOptions
             {
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
+        );
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
+        return TypedResults.Ok(response);
+    }
+
+    private static IResult CreateSuccessResult<TValue>(TValue value, string successMessage, string? correlationId)
+    {
+        var response = ApiResponse<TValue>.Success(
+            data: value,
+            new ApiResponseOptions
+            {
+                Message = successMessage,
                 CorrelationId = correlationId,
                 StatusCode = HttpStatusCode.OK
             }

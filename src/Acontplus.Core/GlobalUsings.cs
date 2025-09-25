@@ -6,7 +6,6 @@ global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Core.Enums;
 global using System.ComponentModel;
 global using System.Data;
-global using System.Data.Common;
 global using System.Diagnostics;
 global using System.Linq.Expressions;
 global using System.Net;
