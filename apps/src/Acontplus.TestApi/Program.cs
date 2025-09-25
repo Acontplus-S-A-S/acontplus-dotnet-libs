@@ -133,9 +133,6 @@ try
         app.UseApiVersioningAndDocumentation();
     }
 
-    // Use Acontplus.Services middleware pipeline
-    app.UseAcontplusServices(app.Environment);
-
     // Use application middleware pipeline
     app.UseApplicationMiddleware(app.Environment);
 

@@ -40,7 +40,7 @@ dotnet add package Acontplus.Persistence.SqlServer
 ```csharp
 services.AddDbContext<BaseContext>(options =>
     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-services.AddScoped(typeof(IRepository<,>), typeof(BaseRepository<,>));
+services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 ```
 
 ### 2. Use ADO.NET Repository
@@ -67,11 +67,10 @@ var entities = DbDataReaderMapper.MapToList<MyEntity>(reader);
 
 ## 📚 API Documentation
 
-- `BaseContext` - EF Core base context
-- `DbContextFactory` - Context factory
-- `BaseRepository` / `AdoRepository` - Repository implementations
+- `BaseContext` - EF Core base context for SQL Server
+- `AdoRepository` - ADO.NET repository for SQL Server with retry and error handling
 - `RepositoryException`, `SqlDomainException`, `UnitOfWorkException` - Error handling
-- `DbDataReaderMapper` - Data reader mapping
+- `DbDataReaderMapper` - Data reader mapping utilities
 - `DataTableNameMapper` - Table name helpers
 
 ## 🤝 Contributing

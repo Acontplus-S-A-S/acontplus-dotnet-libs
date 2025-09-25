@@ -88,16 +88,19 @@ public static class ClientIdPolicyExtensions
         List<string>? allowedClientIds = null)
     {
         services.AddScoped<IAuthorizationHandler, RequireClientIdHandler>();
-
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("RequireClientId", policy =>
-                policy.Requirements.Add(new RequireClientIdRequirement(allowedClientIds)));
-
-            options.AddPolicy("RequireClientIdOrAnonymous", policy =>
-                policy.Requirements.Add(new RequireClientIdRequirement(allowedClientIds, allowAnonymous: true)));
-        });
-
         return services;
+    }
+
+    public static AuthorizationOptions AddClientIdPolicies(
+        this AuthorizationOptions options,
+        List<string>? allowedClientIds = null)
+    {
+        options.AddPolicy("RequireClientId", policy =>
+            policy.Requirements.Add(new RequireClientIdRequirement(allowedClientIds)));
+
+        options.AddPolicy("RequireClientIdOrAnonymous", policy =>
+            policy.Requirements.Add(new RequireClientIdRequirement(allowedClientIds, allowAnonymous: true)));
+
+        return options;
     }
 }

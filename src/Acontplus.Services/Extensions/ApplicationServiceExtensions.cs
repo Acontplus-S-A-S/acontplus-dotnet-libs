@@ -26,7 +26,6 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IRequestContextService, RequestContextService>();
         services.AddScoped<ISecurityHeaderService, SecurityHeaderService>();
         services.AddScoped<IDeviceDetectionService, DeviceDetectionService>();
-        services.AddScoped<ICircuitBreakerService, CircuitBreakerService>();
         services.AddScoped<IMetricsService, MetricsService>();
 
         // Register action filters
@@ -37,10 +36,6 @@ public static class ApplicationServiceExtensions
         // Configure request context
         services.Configure<RequestContextConfiguration>(
             configuration.GetSection("RequestContext"));
-
-        // Configure resilience services
-        services.Configure<ResilienceConfiguration>(
-            configuration.GetSection("Resilience"));
 
         return services;
     }
@@ -55,9 +50,18 @@ public static class ApplicationServiceExtensions
         this IServiceCollection services,
         List<string>? allowedClientIds = null)
     {
+        // Register authorization handlers
         services.AddClientIdAuthorization(allowedClientIds);
         services.AddTenantIsolationAuthorization();
         services.AddDeviceTypeAuthorization();
+
+        // Configure authorization policies
+        services.AddAuthorization(options =>
+        {
+            options.AddClientIdPolicies(allowedClientIds);
+            options.AddTenantIsolationPolicies();
+            options.AddDeviceTypePolicies();
+        });
 
         return services;
     }

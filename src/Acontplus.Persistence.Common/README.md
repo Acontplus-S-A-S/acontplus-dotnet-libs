@@ -79,9 +79,9 @@ public class ProductService
         _connectionProvider = connectionProvider;
     }
 
-    public async Task<IEnumerable<Product>> GetProductsAsync(string tenantId = null)
+    public async Task<IEnumerable<Product>> GetProductsAsync(string contextName = null)
     {
-        var context = _contextFactory.GetContext(tenantId);
+        var context = _contextFactory.GetContext(contextName ?? "Default");
         var repository = new BaseRepository<Product>(context);
         
         return await repository.FindAsync(p => p.IsActive);
@@ -103,23 +103,23 @@ public class MultiTenantService
         _contextFactory = contextFactory;
     }
 
-    public async Task<Product> GetProductAsync(int productId, string tenantId)
+    public async Task<Product> GetProductAsync(int productId, string contextName)
     {
-        // Get context for specific tenant
-        var context = _contextFactory.GetContext(tenantId);
+        // Get context for specific context
+        var context = _contextFactory.GetContext(contextName);
         var repository = new BaseRepository<Product>(context);
         
         return await repository.GetByIdAsync(productId);
     }
 
-    public async Task<IEnumerable<Product>> GetProductsForAllTenantsAsync()
+    public async Task<IEnumerable<Product>> GetProductsForAllContextsAsync()
     {
         var allProducts = new List<Product>();
-        var tenants = new[] { "TenantA", "TenantB", "TenantC" };
+        var contexts = new[] { "ContextA", "ContextB", "ContextC" };
 
-        foreach (var tenant in tenants)
+        foreach (var ctx in contexts)
         {
-            var context = _contextFactory.GetContext(tenant);
+            var context = _contextFactory.GetContext(ctx);
             var repository = new BaseRepository<Product>(context);
             var products = await repository.FindAsync(p => p.IsActive);
             allProducts.AddRange(products);
@@ -243,9 +243,9 @@ public class UnitOfWork : IDisposable
     private readonly BaseRepository<Product> _productRepository;
     private readonly BaseRepository<Category> _categoryRepository;
 
-    public UnitOfWork(IDbContextFactory<MyDbContext> contextFactory, string tenantId = null)
+    public UnitOfWork(IDbContextFactory<MyDbContext> contextFactory, string contextName = null)
     {
-        _context = contextFactory.GetContext(tenantId);
+        _context = contextFactory.GetContext(contextName ?? "Default");
         _productRepository = new BaseRepository<Product>(_context);
         _categoryRepository = new BaseRepository<Category>(_context);
     }
@@ -298,33 +298,33 @@ public interface IConnectionStringProvider
 }
 ```
 
-### IDbContextFactory<T>
+### IDbContextFactory<TContext>
 
 ```csharp
-public interface IDbContextFactory<T> where T : DbContext
+public interface IDbContextFactory<TContext> where TContext : DbContext
 {
-    T GetContext(string tenantId = null);
-    T GetContext(IConnectionStringProvider connectionProvider, string connectionName);
+    TContext GetContext(string contextName);
 }
 ```
 
-### BaseRepository<T>
+### BaseRepository<TEntity>
 
 ```csharp
-public class BaseRepository<T> : IRepository<T> where T : class
+public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     public BaseRepository(DbContext context);
     
     // Async operations
-    public Task<T?> GetByIdAsync(int id);
-    public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
-    public Task<T> AddAsync(T entity);
-    public Task UpdateAsync(T entity);
-    public Task DeleteAsync(T entity);
+    public Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    public Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
+    public Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
+    public Task<TEntity> AddAsync(TEntity entity);
+    public Task UpdateAsync(TEntity entity);
+    public Task DeleteAsync(TEntity entity);
     
     // Specification pattern
-    public Task<IEnumerable<T>> FindWithSpecificationAsync(ISpecification<T> spec);
-    public Task<PagedResult<T>> GetPagedAsync(ISpecification<T> spec);
+    public Task<IReadOnlyList<TEntity>> FindWithSpecificationAsync(ISpecification<TEntity> spec);
+    public Task<PagedResult<TEntity>> GetPagedAsync(ISpecification<TEntity> spec);
 }
 ```
 

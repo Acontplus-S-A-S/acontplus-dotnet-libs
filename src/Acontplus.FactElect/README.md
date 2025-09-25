@@ -39,10 +39,14 @@ dotnet add package Acontplus.FactElect
 
 ## 🎯 Quick Start
 
-### 1. Configure Services
+### 1. Register Services
 ```csharp
 // In Startup.cs or Program.cs
-services.AddFactElectServices(Configuration);
+// Services are registered manually or through your DI container
+// Example:
+services.AddSingleton<ICedulaService, CedulaService>();
+services.AddSingleton<IRucService, RucService>();
+// Add other services as needed
 ```
 
 ### 2. Configuration in appsettings.json
@@ -117,9 +121,9 @@ public class DocumentRenderer
 ## 📚 API Documentation
 
 - `ICedulaService`, `IRucService` - Ecuadorian ID and RUC validation
-- `IXmlService` - XML generation and parsing
-- `ISriWebService` - SRI integration and authentication
+- `IWebServiceSri` - SRI web service integration
 - `IDocumentConverter` - XML to HTML/PDF conversion
+- `IXmlDocumentParser`, `IAtsXmlService` - XML parsing services
 - `ComprobanteElectronico` - Electronic document model
 - `ResponseSri` - SRI response model
 

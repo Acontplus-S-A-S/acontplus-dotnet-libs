@@ -89,28 +89,29 @@ public static class DeviceTypePolicyExtensions
     public static IServiceCollection AddDeviceTypeAuthorization(this IServiceCollection services)
     {
         services.AddScoped<IAuthorizationHandler, DeviceTypeHandler>();
-
-        services.AddAuthorization(options =>
-        {
-            // Policy for mobile-only access
-            options.AddPolicy("MobileOnly", policy =>
-                policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType> { DeviceType.Mobile })));
-
-            // Policy for mobile and tablet access
-            options.AddPolicy("MobileAndTablet", policy =>
-                policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType>
-                    { DeviceType.Mobile, DeviceType.Tablet })));
-
-            // Policy for desktop-only access
-            options.AddPolicy("DesktopOnly", policy =>
-                policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType> { DeviceType.Desktop })));
-
-            // Policy for all known device types (excludes Unknown)
-            options.AddPolicy("KnownDevicesOnly", policy =>
-                policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType>
-                    { DeviceType.Mobile, DeviceType.Tablet, DeviceType.Desktop, DeviceType.Web })));
-        });
-
         return services;
+    }
+
+    public static AuthorizationOptions AddDeviceTypePolicies(this AuthorizationOptions options)
+    {
+        // Policy for mobile-only access
+        options.AddPolicy("MobileOnly", policy =>
+            policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType> { DeviceType.Mobile })));
+
+        // Policy for mobile and tablet access
+        options.AddPolicy("MobileAndTablet", policy =>
+            policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType>
+                { DeviceType.Mobile, DeviceType.Tablet })));
+
+        // Policy for desktop-only access
+        options.AddPolicy("DesktopOnly", policy =>
+            policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType> { DeviceType.Desktop })));
+
+        // Policy for all known device types (excludes Unknown)
+        options.AddPolicy("KnownDevicesOnly", policy =>
+            policy.Requirements.Add(new DeviceTypeRequirement(new List<DeviceType>
+                { DeviceType.Mobile, DeviceType.Tablet, DeviceType.Desktop, DeviceType.Web })));
+
+        return options;
     }
 }

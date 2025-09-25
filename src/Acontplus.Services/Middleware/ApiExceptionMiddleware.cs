@@ -1,18 +1,29 @@
-﻿namespace Acontplus.Services.Middleware;
+﻿using System.Text.Json.Serialization;
+
+namespace Acontplus.Services.Middleware;
 
 /// <summary>
 /// Middleware for centralized API exception handling, logging, and standardized error responses.
 /// </summary>
-public class ApiExceptionMiddleware(
-    RequestDelegate next,
-    ILogger<ApiExceptionMiddleware> logger,
-    ExceptionHandlingOptions options)
+public class ApiExceptionMiddleware
 {
-    private readonly JsonSerializerOptions _jsonOptions = new()
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ApiExceptionMiddleware> _logger;
+    private readonly ExceptionHandlingOptions _options;
+    private readonly JsonSerializerOptions _jsonOptions;
+
+    public ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExceptionMiddleware> logger, ExceptionHandlingOptions options)
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = options.IncludeDebugDetailsInResponse
-    };
+        _next = next;
+        _logger = logger;
+        _options = options;
+        _jsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = options.IncludeDebugDetailsInResponse
+        };
+        _jsonOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    }
 
     /// <summary>
     /// Handles the HTTP request and catches exceptions, returning standardized error responses.
@@ -28,7 +39,7 @@ public class ApiExceptionMiddleware(
 
         try
         {
-            await next(context);
+            await _next(context);
 
             if (!context.Response.HasStarted && context.Response.StatusCode >= 400)
             {
@@ -82,7 +93,7 @@ public class ApiExceptionMiddleware(
     private static ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
     {
         var error = new ApiError(
-            Code: ex.ErrorCode,
+            Code: ex.StatusCode.ToString(),
             Message: ex.Message,
             Category: GetErrorCategory(ex.StatusCode));
 
@@ -98,7 +109,7 @@ public class ApiExceptionMiddleware(
 
     private ApiResponse HandleUnhandledException(Exception ex, string correlationId, string tenantId)
     {
-        var debugInfo = options.IncludeDebugDetailsInResponse
+        var debugInfo = _options.IncludeDebugDetailsInResponse
             ? GetSafeDebugInfo(ex)
             : null;
 
@@ -152,18 +163,18 @@ public class ApiExceptionMiddleware(
             .AppendLine($"CorrelationId: {correlationId}")
             .AppendLine($"TenantId: {tenantId}");
 
-        if (options.IncludeRequestDetails)
+        if (_options.IncludeRequestDetails)
         {
             logMessage.AppendLine($"Path: {context.Request.Path}")
                 .AppendLine($"Method: {context.Request.Method}");
         }
 
-        if (options.LogRequestBody && context.Request.Body.CanRead)
+        if (_options.LogRequestBody && context.Request.Body.CanRead)
         {
             logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
         }
 
-        logger.LogError(ex, logMessage.ToString());
+        _logger.LogError(ex, logMessage.ToString());
     }
 
     private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
@@ -189,6 +200,7 @@ public class ApiExceptionMiddleware(
         HttpStatusCode.Forbidden => "Access denied",
         HttpStatusCode.NotFound => "Resource not found",
         HttpStatusCode.Conflict => "Conflict occurred",
+        HttpStatusCode.MethodNotAllowed => "Method not allowed",
         HttpStatusCode.InternalServerError => "Internal server error",
         _ => statusCode.ToString()
     };
@@ -200,7 +212,7 @@ public class ApiExceptionMiddleware(
         HttpStatusCode.Forbidden => "authorization",
         HttpStatusCode.NotFound => "not_found",
         HttpStatusCode.Conflict => "conflict",
-        _ => "system"
+        _ => (int)statusCode >= 500 ? "server" : "client"
     };
 
     private static Dictionary<string, object>? GetSafeDebugInfo(Exception ex)
