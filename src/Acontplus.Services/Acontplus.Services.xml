@@ -40,23 +40,13 @@
             Provides centralized configuration for System.Text.Json across the application
             </summary>
         </member>
-        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetDefaultOptions">
+        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetOptions(System.Boolean,System.Boolean)">
             <summary>
-            Get default JSON serializer options optimized for applications
+            Get JSON serializer options with configurable settings
             </summary>
+            <param name="prettyFormat">Whether to use pretty formatting</param>
+            <param name="strictMode">Whether to use strict validation</param>
             <returns>Configured JsonSerializerOptions</returns>
-        </member>
-        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetPrettyOptions">
-            <summary>
-            Get JSON options with pretty formatting for development/debugging
-            </summary>
-            <returns>Configured JsonSerializerOptions with formatting</returns>
-        </member>
-        <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.GetStrictOptions">
-            <summary>
-            Get strict JSON options for critical APIs
-            </summary>
-            <returns>Configured JsonSerializerOptions with strict validation</returns>
         </member>
         <member name="M:Acontplus.Services.Configuration.JsonConfigurationService.ConfigureAspNetCore(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
@@ -500,29 +490,6 @@
             <param name="configuration">The application configuration.</param>
             <returns>The service collection for chaining.</returns>
         </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceCollectionExtensions.UseAcontplusServices(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
-            <summary>
-            Configures the complete Acontplus.Services middleware pipeline.
-            </summary>
-            <param name="app">The application builder.</param>
-            <param name="environment">The web host environment.</param>
-            <returns>The application builder for chaining.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceCollectionExtensions.AddAcontplusMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
-            <summary>
-            Configures MVC with all Acontplus.Services filters and options.
-            </summary>
-            <param name="services">The service collection.</param>
-            <param name="enableGlobalFilters">Whether to enable global action filters.</param>
-            <returns>The MVC builder for further configuration.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceCollectionExtensions.AddAcontplusApiExplorer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Adds API explorer and documentation support.
-            </summary>
-            <param name="services">The service collection.</param>
-            <returns>The service collection for chaining.</returns>
-        </member>
         <member name="T:Acontplus.Services.Extensions.ServiceExtensions">
             <summary>
             Extension methods for registering core services and patterns.
@@ -579,11 +546,6 @@
             </summary>
         </member>
         <member name="T:Acontplus.Services.Middleware.ApiExceptionMiddleware">
-            <summary>
-            Middleware for centralized API exception handling, logging, and standardized error responses.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Middleware.ApiExceptionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Acontplus.Services.Middleware.ApiExceptionMiddleware},Acontplus.Services.Extensions.Middleware.ExceptionHandlingOptions)">
             <summary>
             Middleware for centralized API exception handling, logging, and standardized error responses.
             </summary>
@@ -1024,6 +986,11 @@
             </summary>
             <param name="isDevelopment">Whether the application is in development mode.</param>
             <returns>Dictionary of recommended headers.</returns>
+        </member>
+        <member name="T:Acontplus.Services.Services.Implementations.PolicyConfig">
+            <summary>
+            Configuration for policy creation.
+            </summary>
         </member>
         <member name="T:Acontplus.Services.Services.Implementations.CircuitBreakerService">
             <summary>

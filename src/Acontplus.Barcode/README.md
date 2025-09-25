@@ -49,42 +49,54 @@ dotnet add package Acontplus.Barcode
 
 ```csharp
 using Acontplus.Barcode.Utils;
+using Acontplus.Barcode.Models;
 
 // Generate a simple QR code
-var qrCode = BarcodeGen.GenerateQRCode("https://example.com", 300, 300);
+var config = new BarcodeConfig
+{
+    Text = "https://example.com",
+    Format = ZXing.BarcodeFormat.QR_CODE,
+    Width = 300,
+    Height = 300
+};
+var qrCode = BarcodeGen.Create(config);
 await File.WriteAllBytesAsync("qr-code.png", qrCode);
 ```
 
 ### 2. Customized Barcode
 
 ```csharp
-// Generate a Code 128 barcode with custom styling
+// Generate a Code 128 barcode with custom settings
 var config = new BarcodeConfig
 {
     Text = "123456789",
+    Format = ZXing.BarcodeFormat.CODE_128,
     Width = 400,
     Height = 100,
-    Format = BarcodeFormat.CODE_128,
-    ForegroundColor = System.Drawing.Color.Black,
-    BackgroundColor = System.Drawing.Color.White,
-    Margin = 10
+    Margin = 10,
+    IncludeLabel = false,
+    OutputFormat = SkiaSharp.SKEncodedImageFormat.Png,
+    Quality = 100
 };
 
-var barcode = BarcodeGen.GenerateBarcode(config);
+var barcode = BarcodeGen.Create(config);
 await File.WriteAllBytesAsync("barcode.png", barcode);
 ```
 
 ### 3. Multiple Barcode Formats
 
 ```csharp
+### 3. Multiple Barcode Formats
+
+```csharp
 // Generate different barcode types
 var formats = new[]
 {
-    BarcodeFormat.QR_CODE,
-    BarcodeFormat.CODE_128,
-    BarcodeFormat.CODE_39,
-    BarcodeFormat.EAN_13,
-    BarcodeFormat.PDF_417
+    ZXing.BarcodeFormat.QR_CODE,
+    ZXing.BarcodeFormat.CODE_128,
+    ZXing.BarcodeFormat.CODE_39,
+    ZXing.BarcodeFormat.EAN_13,
+    ZXing.BarcodeFormat.PDF_417
 };
 
 foreach (var format in formats)
@@ -97,43 +109,31 @@ foreach (var format in formats)
         Height = 100
     };
     
-    var barcode = BarcodeGen.GenerateBarcode(config);
+    var barcode = BarcodeGen.Create(config);
     await File.WriteAllBytesAsync($"{format}.png", barcode);
 }
+```
 ```
 
 ## 🔧 Advanced Usage
 
-### QR Code with Error Correction
+### QR Code with Custom Options
 
 ```csharp
 var config = new BarcodeConfig
 {
     Text = "Important data that needs error correction",
-    Format = BarcodeFormat.QR_CODE,
+    Format = ZXing.BarcodeFormat.QR_CODE,
     Width = 400,
     Height = 400,
-    ErrorCorrection = ErrorCorrectionLevel.H,
-    Margin = 20
+    Margin = 20,
+    AdditionalOptions = new ZXing.Common.EncodingOptions
+    {
+        ErrorCorrection = ZXing.QrCode.Internal.ErrorCorrectionLevel.H
+    }
 };
 
-var qrCode = BarcodeGen.GenerateBarcode(config);
-```
-
-### Custom Color Schemes
-
-```csharp
-var config = new BarcodeConfig
-{
-    Text = "Custom colored barcode",
-    Format = BarcodeFormat.CODE_128,
-    Width = 350,
-    Height = 80,
-    ForegroundColor = System.Drawing.Color.DarkBlue,
-    BackgroundColor = System.Drawing.Color.LightGray
-};
-
-var barcode = BarcodeGen.GenerateBarcode(config);
+var qrCode = BarcodeGen.Create(config);
 ```
 
 ### Batch Generation
@@ -152,12 +152,12 @@ for (int i = 0; i < items.Length; i++)
     var config = new BarcodeConfig
     {
         Text = items[i],
-        Format = BarcodeFormat.CODE_128,
+        Format = ZXing.BarcodeFormat.CODE_128,
         Width = 300,
         Height = 80
     };
     
-    var barcode = BarcodeGen.GenerateBarcode(config);
+    var barcode = BarcodeGen.Create(config);
     await File.WriteAllBytesAsync($"item_{i + 1}.png", barcode);
 }
 ```
@@ -182,13 +182,14 @@ for (int i = 0; i < items.Length; i++)
 public class BarcodeConfig
 {
     public string Text { get; set; } = string.Empty;
-    public BarcodeFormat Format { get; set; } = BarcodeFormat.QR_CODE;
+    public ZXing.BarcodeFormat Format { get; set; } = ZXing.BarcodeFormat.CODE_128;
     public int Width { get; set; } = 300;
-    public int Height { get; set; } = 300;
+    public int Height { get; set; } = 100;
+    public bool IncludeLabel { get; set; } = false;
     public int Margin { get; set; } = 10;
-    public Color ForegroundColor { get; set; } = Color.Black;
-    public Color BackgroundColor { get; set; } = Color.White;
-    public ErrorCorrectionLevel ErrorCorrection { get; set; } = ErrorCorrectionLevel.M;
+    public SkiaSharp.SKEncodedImageFormat OutputFormat { get; set; } = SkiaSharp.SKEncodedImageFormat.Png;
+    public int Quality { get; set; } = 100;
+    public ZXing.Common.EncodingOptions? AdditionalOptions { get; set; }
 }
 ```
 
@@ -237,14 +238,17 @@ var compact = new BarcodeConfig
 
 ### 3. Handle Large Data Sets
 ```csharp
+### Handle Large Data Sets
+```csharp
 // For large amounts of data, use 2D formats
 var largeData = new BarcodeConfig
 {
     Text = "Large amount of data that needs to be encoded...",
-    Format = BarcodeFormat.PDF_417, // or QR_CODE
+    Format = ZXing.BarcodeFormat.PDF_417,
     Width = 400,
     Height = 200
 };
+```
 ```
 
 ## 🚀 Performance Tips
@@ -292,14 +296,8 @@ var barcodes = await Task.WhenAll(tasks);
 ```csharp
 public static class BarcodeGen
 {
-    // Generate QR code with default settings
-    public static byte[] GenerateQRCode(string text, int width, int height);
-    
     // Generate barcode with custom configuration
-    public static byte[] GenerateBarcode(BarcodeConfig config);
-    
-    // Generate barcode with specific format
-    public static byte[] GenerateBarcode(string text, BarcodeFormat format, int width, int height);
+    public static byte[] Create(BarcodeConfig config);
 }
 ```
 
@@ -323,7 +321,9 @@ public class BarcodeConfig
 
 - **.NET 9.0+** - Advanced .NET framework
 - **ZXing.Net** - Barcode generation library
+- **ZXing.Net.Bindings.SkiaSharp** - SkiaSharp bindings for ZXing
 - **SkiaSharp** - Cross-platform graphics library
+- **SkiaSharp.NativeAssets.Linux** - Native assets for Linux
 - **System.Drawing.Common** - Image processing support
 
 ## 🤝 Contributing

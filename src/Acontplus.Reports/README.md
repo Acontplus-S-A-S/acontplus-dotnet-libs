@@ -44,8 +44,13 @@ public class ReportController : Controller
     public ReportController(IRdlcReportService reportService) => _reportService = reportService;
     public IActionResult GenerateReport()
     {
-        var report = _reportService.GenerateReport("ReportPath", reportData);
-        return File(report, "application/pdf");
+        // Prepare parameters and data DataSets
+        var parameters = new DataSet();
+        var data = new DataSet();
+        // ... populate DataSets ...
+        
+        var report = _reportService.GetReport(parameters, data);
+        return File(report.Content, report.ContentType, report.FileName);
     }
 }
 ```
@@ -60,18 +65,22 @@ Ensure your RDLC files are included in your project and set to be copied to the 
 </ItemGroup>
 ```
 
-### 3. Export Reports
-Export the generated reports to different formats such as PDF, Excel, etc.
+### 2. Export Reports
+The report generation automatically handles different formats based on the RDLC report configuration. The response contains the file contents, content type, and download name.
+
 ```csharp
-var pdfReport = _reportService.ExportReportToPdf("ReportPath", reportData);
-var excelReport = _reportService.ExportReportToExcel("ReportPath", reportData);
+var reportResponse = _reportService.GetReport(parameters, data);
+if (reportResponse != null)
+{
+    return File(reportResponse.FileContents, reportResponse.ContentType, reportResponse.FileDownloadName);
+}
 ```
 
 ## 📚 API Documentation
 
-- `IRdlcReportService` - Main report service interface
+- `IRdlcReportService` - Main report service interface with GetReport method
 - `RdlcPrinterService` - Print/export helpers
-- `RdlcPrintRequest` - Report request model
+- `ReportResponse` - Report response model with file contents and metadata
 - `FileFormats` - Supported export formats
 
 ## 🤝 Contributing

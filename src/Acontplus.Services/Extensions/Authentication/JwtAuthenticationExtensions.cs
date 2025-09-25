@@ -67,8 +67,7 @@ public static class JwtAuthenticationExtensions
                 options.IncludeErrorDetails = false;
             });
 
-        services.AddAuthorization();
-        services.AddAuthorizationBuilder();
+        // Authorization will be configured by AddAuthorizationPolicies() in ApplicationServiceExtensions
 
         return services;
     }

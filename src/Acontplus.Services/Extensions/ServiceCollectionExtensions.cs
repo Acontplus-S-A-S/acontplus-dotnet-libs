@@ -26,53 +26,16 @@ public static class ServiceCollectionExtensions
         services.AddResilienceServices(configuration);
         services.AddResilientHttpClients(configuration);
         services.AddMonitoringServices(configuration);
+        services.AddServiceHealthChecks(configuration);
 
         // Add application services
         services.AddApplicationServices(configuration);
         services.AddAuthorizationPolicies();
-        services.AddServiceHealthChecks(configuration);
         services.AddApplicationHealthChecks(configuration);
 
         return services;
     }
 
-    /// <summary>
-    /// Configures the complete Acontplus.Services middleware pipeline.
-    /// </summary>
-    /// <param name="app">The application builder.</param>
-    /// <param name="environment">The web host environment.</param>
-    /// <returns>The application builder for chaining.</returns>
-    public static IApplicationBuilder UseAcontplusServices(
-        this IApplicationBuilder app,
-        IWebHostEnvironment environment)
-    {
-        // Use application middleware (includes security, rate limiting, context)
-        app.UseApplicationMiddleware(environment);
 
-        return app;
-    }
 
-    /// <summary>
-    /// Configures MVC with all Acontplus.Services filters and options.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="enableGlobalFilters">Whether to enable global action filters.</param>
-    /// <returns>The MVC builder for further configuration.</returns>
-    public static IMvcBuilder AddAcontplusMvc(
-        this IServiceCollection services,
-        bool enableGlobalFilters = true)
-    {
-        return services.AddApplicationMvc(enableGlobalFilters);
-    }
-
-    /// <summary>
-    /// Adds API explorer and documentation support.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddAcontplusApiExplorer(
-        this IServiceCollection services)
-    {
-        return services.AddApiExplorer();
-    }
 }

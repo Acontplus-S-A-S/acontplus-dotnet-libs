@@ -95,7 +95,7 @@ builder.Services.AddAcontplusServices(builder.Configuration);
 var app = builder.Build();
 
 // Use all middleware with one line
-app.UseAcontplusServices(builder.Environment);
+app.UseApplicationMiddleware(builder.Environment);
 
 app.MapControllers();
 app.Run();
@@ -114,7 +114,7 @@ builder.Services.AddAcontplusServices(builder.Configuration);
 var app = builder.Build();
 
 // Configure complete middleware pipeline
-app.UseAcontplusServices(builder.Environment);
+app.UseApplicationMiddleware(builder.Environment);
 
 app.MapControllers();
 app.Run();
@@ -185,7 +185,7 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // Use complete middleware pipeline
-app.UseAcontplusServices(builder.Environment);
+app.UseApplicationMiddleware(builder.Environment);
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -287,12 +287,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAcontplusServices(builder.Configuration);
 
 // Add MVC with built-in filters
-builder.Services.AddAcontplusMvc();
+builder.Services.AddApplicationMvc();
 
 var app = builder.Build();
 
 // Complete middleware pipeline in one call
-app.UseAcontplusServices(builder.Environment);
+app.UseApplicationMiddleware(builder.Environment);
 
 app.UseRouting();
 app.UseAuthentication();
@@ -539,7 +539,7 @@ builder.Services.AddAuthorizationPolicies(new List<string>
 });
 
 // Add API documentation
-builder.Services.AddAcontplusApiExplorer();
+builder.Services.AddApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add MVC with all features

@@ -11,56 +11,20 @@ namespace Acontplus.Services.Configuration;
 public static class JsonConfigurationService
 {
     /// <summary>
-    /// Get default JSON serializer options optimized for applications
+    /// Get JSON serializer options with configurable settings
     /// </summary>
+    /// <param name="prettyFormat">Whether to use pretty formatting</param>
+    /// <param name="strictMode">Whether to use strict validation</param>
     /// <returns>Configured JsonSerializerOptions</returns>
-    public static JsonSerializerOptions GetDefaultOptions() => new()
+    public static JsonSerializerOptions GetOptions(bool prettyFormat = false, bool strictMode = false) => new()
     {
-        PropertyNameCaseInsensitive = true,
+        PropertyNameCaseInsensitive = !strictMode,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        WriteIndented = false, // Optimized for production
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        Converters =
-        {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-        }
-    };
-
-    /// <summary>
-    /// Get JSON options with pretty formatting for development/debugging
-    /// </summary>
-    /// <returns>Configured JsonSerializerOptions with formatting</returns>
-    public static JsonSerializerOptions GetPrettyOptions() => new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        WriteIndented = true, // Pretty formatting
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        Converters =
-        {
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-        }
-    };
-
-    /// <summary>
-    /// Get strict JSON options for critical APIs
-    /// </summary>
-    /// <returns>Configured JsonSerializerOptions with strict validation</returns>
-    public static JsonSerializerOptions GetStrictOptions() => new()
-    {
-        PropertyNameCaseInsensitive = false,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        AllowTrailingCommas = false,
-        ReadCommentHandling = JsonCommentHandling.Disallow,
-        WriteIndented = false,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        NumberHandling = JsonNumberHandling.Strict,
+        AllowTrailingCommas = !strictMode,
+        ReadCommentHandling = strictMode ? JsonCommentHandling.Disallow : JsonCommentHandling.Skip,
+        WriteIndented = prettyFormat,
+        DefaultIgnoreCondition = strictMode ? JsonIgnoreCondition.Never : JsonIgnoreCondition.WhenWritingNull,
+        NumberHandling = strictMode ? JsonNumberHandling.Strict : JsonNumberHandling.AllowReadingFromString,
         Converters =
         {
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
@@ -74,7 +38,7 @@ public static class JsonConfigurationService
     /// <param name="useStrictMode">Whether to use strict JSON validation</param>
     public static void ConfigureAspNetCore(IServiceCollection services, bool useStrictMode = false)
     {
-        var jsonOptions = useStrictMode ? GetStrictOptions() : GetDefaultOptions();
+        var jsonOptions = useStrictMode ? GetOptions(strictMode: true) : GetOptions();
 
         // Configure HTTP JSON options (for minimal APIs)
         services.ConfigureHttpJsonOptions(options =>
@@ -98,8 +62,8 @@ public static class JsonConfigurationService
     /// <param name="useStrictMode">Whether to use strict JSON validation</param>
     public static void ConfigureAspNetCore(IServiceCollection services, bool isDevelopment, bool useStrictMode = false)
     {
-        var jsonOptions = useStrictMode ? GetStrictOptions() :
-                         isDevelopment ? GetPrettyOptions() : GetDefaultOptions();
+        var jsonOptions = useStrictMode ? GetOptions(strictMode: true) :
+                         isDevelopment ? GetOptions(prettyFormat: true) : GetOptions();
 
         services.ConfigureHttpJsonOptions(options =>
         {
@@ -141,7 +105,7 @@ public static class JsonConfigurationService
     /// <param name="services">Service collection</param>
     public static void RegisterJsonConfiguration(IServiceCollection services)
     {
-        services.AddSingleton(provider => GetDefaultOptions());
+        services.AddSingleton(provider => GetOptions());
         services.AddSingleton<IJsonConfigurationProvider, JsonConfigurationProvider>();
     }
 }
@@ -151,9 +115,7 @@ public static class JsonConfigurationService
 /// </summary>
 public interface IJsonConfigurationProvider
 {
-    JsonSerializerOptions GetDefaultOptions();
-    JsonSerializerOptions GetPrettyOptions();
-    JsonSerializerOptions GetStrictOptions();
+    JsonSerializerOptions GetOptions(bool prettyFormat = false, bool strictMode = false);
 }
 
 /// <summary>
@@ -161,7 +123,6 @@ public interface IJsonConfigurationProvider
 /// </summary>
 public class JsonConfigurationProvider : IJsonConfigurationProvider
 {
-    public JsonSerializerOptions GetDefaultOptions() => JsonConfigurationService.GetDefaultOptions();
-    public JsonSerializerOptions GetPrettyOptions() => JsonConfigurationService.GetPrettyOptions();
-    public JsonSerializerOptions GetStrictOptions() => JsonConfigurationService.GetStrictOptions();
+    public JsonSerializerOptions GetOptions(bool prettyFormat = false, bool strictMode = false) =>
+        JsonConfigurationService.GetOptions(prettyFormat, strictMode);
 }

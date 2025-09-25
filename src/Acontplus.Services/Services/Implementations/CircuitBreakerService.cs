@@ -1,6 +1,21 @@
 namespace Acontplus.Services.Services.Implementations;
 
 /// <summary>
+/// Configuration for policy creation.
+/// </summary>
+internal record PolicyConfig
+{
+    public int CircuitBreakerExceptions { get; init; }
+    public int CircuitBreakerDuration { get; init; }
+    public int RetryCount { get; init; }
+    public int RetryBaseDelay { get; init; }
+    public int RetryMaxDelay { get; init; }
+    public bool RetryExponentialBackoff { get; init; }
+    public double RetryBackoffMultiplier { get; init; } = 2.0;
+    public int TimeoutSeconds { get; init; }
+}
+
+/// <summary>
 /// Circuit breaker service implementation using Polly policies.
 /// </summary>
 public class CircuitBreakerService : ICircuitBreakerService
@@ -77,255 +92,114 @@ public class CircuitBreakerService : ICircuitBreakerService
             return;
 
         // Default policy
-        _policies["default"] = CreateDefaultPolicy();
+        _policies["default"] = CreatePolicy("default", new PolicyConfig
+        {
+            CircuitBreakerExceptions = _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking,
+            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds,
+            RetryCount = _config.RetryPolicy.MaxRetries,
+            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
+            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
+            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds
+        });
 
         // API policy - more lenient
-        _policies["api"] = CreateApiPolicy();
+        _policies["api"] = CreatePolicy("api", new PolicyConfig
+        {
+            CircuitBreakerExceptions = _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking + 2,
+            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds - 30,
+            RetryCount = _config.RetryPolicy.MaxRetries + 1,
+            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
+            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
+            RetryBackoffMultiplier = 1.5,
+            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds + 30
+        });
 
         // Database policy - strict
-        _policies["database"] = CreateDatabasePolicy();
+        _policies["database"] = CreatePolicy("database", new PolicyConfig
+        {
+            CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1),
+            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds + 60,
+            RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries - 1),
+            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
+            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
+            RetryBackoffMultiplier = 3.0,
+            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds - 15
+        });
 
         // External service policy - very strict
-        _policies["external"] = CreateExternalServicePolicy();
+        _policies["external"] = CreatePolicy("external", new PolicyConfig
+        {
+            CircuitBreakerExceptions = 1,
+            CircuitBreakerDuration = 300, // 5 minutes
+            RetryCount = 2,
+            RetryBaseDelay = 5,
+            RetryMaxDelay = 10,
+            RetryExponentialBackoff = false,
+            TimeoutSeconds = 30
+        });
 
         // Authentication policy - strict
-        _policies["auth"] = CreateAuthPolicy();
+        _policies["auth"] = CreatePolicy("auth", new PolicyConfig
+        {
+            CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1),
+            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds + 30,
+            RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries - 1),
+            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
+            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
+            RetryBackoffMultiplier = 2.5,
+            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds - 10
+        });
     }
 
-    private IAsyncPolicy CreateDefaultPolicy()
+    private IAsyncPolicy CreatePolicy(string policyName, PolicyConfig config)
     {
         var circuitBreakerPolicy = Policy
             .Handle<Exception>()
             .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                durationOfBreak: TimeSpan.FromSeconds(_config.CircuitBreaker.DurationOfBreakSeconds),
+                exceptionsAllowedBeforeBreaking: config.CircuitBreakerExceptions,
+                durationOfBreak: TimeSpan.FromSeconds(config.CircuitBreakerDuration),
                 onBreak: (exception, duration) =>
                 {
-                    _circuitStates["default"] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for default policy. Duration: {Duration}", duration);
+                    _circuitStates[policyName] = CircuitBreakerState.Open;
+                    _logger.LogWarning(exception, "Circuit breaker opened for {PolicyName} policy. Duration: {Duration}", policyName, duration);
                 },
                 onReset: () =>
                 {
-                    _circuitStates["default"] = CircuitBreakerState.Closed;
-                    _logger.LogInformation("Circuit breaker reset for default policy");
+                    _circuitStates[policyName] = CircuitBreakerState.Closed;
+                    _logger.LogInformation("Circuit breaker reset for {PolicyName} policy", policyName);
                 },
                 onHalfOpen: () =>
                 {
-                    _circuitStates["default"] = CircuitBreakerState.HalfOpen;
-                    _logger.LogInformation("Circuit breaker half-open for default policy");
+                    _circuitStates[policyName] = CircuitBreakerState.HalfOpen;
+                    _logger.LogInformation("Circuit breaker half-open for {PolicyName} policy", policyName);
                 });
 
         var retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
-                retryCount: _config.RetryPolicy.MaxRetries,
+                retryCount: config.RetryCount,
                 sleepDurationProvider: retryAttempt =>
                 {
-                    if (_config.RetryPolicy.ExponentialBackoff)
+                    if (config.RetryExponentialBackoff)
                     {
-                        var delay = TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds * Math.Pow(2, retryAttempt - 1));
-                        return delay > TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
+                        var delay = TimeSpan.FromSeconds(config.RetryBaseDelay * Math.Pow(config.RetryBackoffMultiplier, retryAttempt - 1));
+                        return delay > TimeSpan.FromSeconds(config.RetryMaxDelay)
+                            ? TimeSpan.FromSeconds(config.RetryMaxDelay)
                             : delay;
                     }
-                    return TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds);
+                    return TimeSpan.FromSeconds(config.RetryBaseDelay * retryAttempt);
                 },
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for default policy", retryCount, timeSpan.TotalMilliseconds);
+                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for {PolicyName} policy", retryCount, timeSpan.TotalMilliseconds, policyName);
                 });
 
         var timeoutPolicy = Policy
-            .TimeoutAsync(TimeSpan.FromSeconds(_config.Timeout.DefaultTimeoutSeconds));
-
-        return Policy.WrapAsync(circuitBreakerPolicy, retryPolicy, timeoutPolicy);
-    }
-
-    private IAsyncPolicy CreateApiPolicy()
-    {
-        var circuitBreakerPolicy = Policy
-            .Handle<Exception>()
-            .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking + 2, // More lenient
-                durationOfBreak: TimeSpan.FromSeconds(_config.CircuitBreaker.DurationOfBreakSeconds - 30), // Shorter break
-                onBreak: (exception, duration) =>
-                {
-                    _circuitStates["api"] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for API policy. Duration: {Duration}", duration);
-                },
-                onReset: () =>
-                {
-                    _circuitStates["api"] = CircuitBreakerState.Closed;
-                    _logger.LogInformation("Circuit breaker reset for API policy");
-                },
-                onHalfOpen: () =>
-                {
-                    _circuitStates["api"] = CircuitBreakerState.HalfOpen;
-                    _logger.LogInformation("Circuit breaker half-open for API policy");
-                });
-
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                retryCount: _config.RetryPolicy.MaxRetries + 1, // More retries
-                sleepDurationProvider: retryAttempt =>
-                {
-                    if (_config.RetryPolicy.ExponentialBackoff)
-                    {
-                        var delay = TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds * Math.Pow(1.5, retryAttempt - 1)); // Less aggressive backoff
-                        return delay > TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            : delay;
-                    }
-                    return TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds);
-                },
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for API policy", retryCount, timeSpan.TotalMilliseconds);
-                });
-
-        var timeoutPolicy = Policy
-            .TimeoutAsync(TimeSpan.FromSeconds(_config.Timeout.DefaultTimeoutSeconds + 30)); // More lenient timeout
-
-        return Policy.WrapAsync(circuitBreakerPolicy, retryPolicy, timeoutPolicy);
-    }
-
-    private IAsyncPolicy CreateDatabasePolicy()
-    {
-        var circuitBreakerPolicy = Policy
-            .Handle<Exception>()
-            .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1), // Stricter
-                durationOfBreak: TimeSpan.FromSeconds(_config.CircuitBreaker.DurationOfBreakSeconds + 60), // Longer break
-                onBreak: (exception, duration) =>
-                {
-                    _circuitStates["database"] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for database policy. Duration: {Duration}", duration);
-                },
-                onReset: () =>
-                {
-                    _circuitStates["database"] = CircuitBreakerState.Closed;
-                    _logger.LogInformation("Circuit breaker reset for database policy");
-                },
-                onHalfOpen: () =>
-                {
-                    _circuitStates["database"] = CircuitBreakerState.HalfOpen;
-                    _logger.LogInformation("Circuit breaker half-open for database policy");
-                });
-
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                retryCount: Math.Max(1, _config.RetryPolicy.MaxRetries - 1), // Fewer retries
-                sleepDurationProvider: retryAttempt =>
-                {
-                    if (_config.RetryPolicy.ExponentialBackoff)
-                    {
-                        var delay = TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds * Math.Pow(3, retryAttempt - 1)); // More aggressive backoff
-                        return delay > TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            : delay;
-                    }
-                    return TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds);
-                },
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for database policy", retryCount, timeSpan.TotalMilliseconds);
-                });
-
-        var timeoutPolicy = Policy
-            .TimeoutAsync(TimeSpan.FromSeconds(_config.Timeout.DefaultTimeoutSeconds - 15)); // Stricter timeout
-
-        return Policy.WrapAsync(circuitBreakerPolicy, retryPolicy, timeoutPolicy);
-    }
-
-    private IAsyncPolicy CreateExternalServicePolicy()
-    {
-        var circuitBreakerPolicy = Policy
-            .Handle<Exception>()
-            .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: 1, // Very strict
-                durationOfBreak: TimeSpan.FromMinutes(5), // Long break
-                onBreak: (exception, duration) =>
-                {
-                    _circuitStates["external"] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for external service policy. Duration: {Duration}", duration);
-                },
-                onReset: () =>
-                {
-                    _circuitStates["external"] = CircuitBreakerState.Closed;
-                    _logger.LogInformation("Circuit breaker reset for external service policy");
-                },
-                onHalfOpen: () =>
-                {
-                    _circuitStates["external"] = CircuitBreakerState.HalfOpen;
-                    _logger.LogInformation("Circuit breaker half-open for external service policy");
-                });
-
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                retryCount: 2, // Very few retries
-                sleepDurationProvider: retryAttempt =>
-                {
-                    return TimeSpan.FromSeconds(5 * retryAttempt); // Simple linear backoff
-                },
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for external service policy", retryCount, timeSpan.TotalMilliseconds);
-                });
-
-        var timeoutPolicy = Policy
-            .TimeoutAsync(TimeSpan.FromSeconds(30)); // Very strict timeout
-
-        return Policy.WrapAsync(circuitBreakerPolicy, retryPolicy, timeoutPolicy);
-    }
-
-    private IAsyncPolicy CreateAuthPolicy()
-    {
-        var circuitBreakerPolicy = Policy
-            .Handle<Exception>()
-            .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1), // Stricter
-                durationOfBreak: TimeSpan.FromSeconds(_config.CircuitBreaker.DurationOfBreakSeconds + 30), // Longer break
-                onBreak: (exception, duration) =>
-                {
-                    _circuitStates["auth"] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for auth policy. Duration: {Duration}", duration);
-                },
-                onReset: () =>
-                {
-                    _circuitStates["auth"] = CircuitBreakerState.Closed;
-                    _logger.LogInformation("Circuit breaker reset for auth policy");
-                },
-                onHalfOpen: () =>
-                {
-                    _circuitStates["auth"] = CircuitBreakerState.HalfOpen;
-                    _logger.LogInformation("Circuit breaker half-open for auth policy");
-                });
-
-        var retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                retryCount: Math.Max(1, _config.RetryPolicy.MaxRetries - 1), // Fewer retries
-                sleepDurationProvider: retryAttempt =>
-                {
-                    if (_config.RetryPolicy.ExponentialBackoff)
-                    {
-                        var delay = TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds * Math.Pow(2.5, retryAttempt - 1)); // Aggressive backoff
-                        return delay > TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
-                            : delay;
-                    }
-                    return TimeSpan.FromSeconds(_config.RetryPolicy.BaseDelaySeconds);
-                },
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for auth policy", retryCount, timeSpan.TotalMilliseconds);
-                });
-
-        var timeoutPolicy = Policy
-            .TimeoutAsync(TimeSpan.FromSeconds(_config.Timeout.DefaultTimeoutSeconds - 10)); // Stricter timeout
+            .TimeoutAsync(TimeSpan.FromSeconds(config.TimeoutSeconds));
 
         return Policy.WrapAsync(circuitBreakerPolicy, retryPolicy, timeoutPolicy);
     }

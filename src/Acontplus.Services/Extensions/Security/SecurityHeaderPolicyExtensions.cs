@@ -38,147 +38,101 @@ public static class SecurityHeaderPolicyExtensions
 
     private static void ConfigurePermissiveCSP(HeaderPolicyCollection policyCollection, IWebHostEnvironment environment, CspConfiguration cspConfig)
     {
-        // Permissive CSP for Angular applications with Google Fonts support
         policyCollection.AddContentSecurityPolicy(builder =>
         {
             builder.AddDefaultSrc().Self();
             builder.AddObjectSrc().None();
 
-            // Allow configured script sources and inline scripts
-            var scriptSrc = builder.AddScriptSrc().Self().UnsafeInline().UnsafeEval(); // Required for Angular
-            foreach (var source in cspConfig.AllowedScriptSources)
-            {
-                scriptSrc.From(source);
-            }
+            // Configure script sources with unsafe-inline and unsafe-eval for Angular
+            var scriptSrc = builder.AddScriptSrc().Self().UnsafeInline().UnsafeEval();
+            AddConfiguredSources(scriptSrc, cspConfig.AllowedScriptSources);
 
-            // Allow configured style sources and inline styles
-            var styleSrc = builder.AddStyleSrc().Self().UnsafeInline(); // Required for Angular inline styles
-            foreach (var source in cspConfig.AllowedStyleSources)
-            {
-                styleSrc.From(source);
-            }
+            // Configure style sources with unsafe-inline for Angular inline styles
+            var styleSrc = builder.AddStyleSrc().Self().UnsafeInline();
+            AddConfiguredSources(styleSrc, cspConfig.AllowedStyleSources);
 
-            // Allow configured image sources and data URLs
+            // Configure image sources with data URLs
             var imgSrc = builder.AddImgSrc().Self().Data();
-            foreach (var source in cspConfig.AllowedImageSources)
-            {
-                imgSrc.From(source);
-            }
+            AddConfiguredSources(imgSrc, cspConfig.AllowedImageSources);
 
-            // Allow configured font sources and data URLs
+            // Configure font sources with data URLs
             var fontSrc = builder.AddFontSrc().Self().Data();
-            foreach (var source in cspConfig.AllowedFontSources)
-            {
-                fontSrc.From(source);
-            }
+            AddConfiguredSources(fontSrc, cspConfig.AllowedFontSources);
 
-            // Allow configured connect sources
+            // Configure connect sources
             var connectSrc = builder.AddConnectSrc().Self();
-            foreach (var source in cspConfig.AllowedConnectSources)
-            {
-                connectSrc.From(source);
-            }
+            AddConfiguredSources(connectSrc, cspConfig.AllowedConnectSources);
 
-            // Allow configured media sources
+            // Configure media sources
             var mediaSrc = builder.AddMediaSrc().Self();
-            foreach (var source in cspConfig.AllowedMediaSources)
-            {
-                mediaSrc.From(source);
-            }
+            AddConfiguredSources(mediaSrc, cspConfig.AllowedMediaSources);
 
-            // Allow configured frame sources instead of blocking all
+            // Configure frame sources
             var frameSrc = builder.AddFrameSrc().Self();
-            foreach (var source in cspConfig.AllowedFrameSources)
-            {
-                frameSrc.From(source);
-            }
+            AddConfiguredSources(frameSrc, cspConfig.AllowedFrameSources);
 
-            // Allow configured base URI sources
+            // Configure base URI sources
             var baseUri = builder.AddBaseUri().Self();
-            foreach (var source in cspConfig.AllowedBaseUriSources)
-            {
-                baseUri.From(source);
-            }
+            AddConfiguredSources(baseUri, cspConfig.AllowedBaseUriSources);
 
-            // Allow configured form action sources
+            // Configure form action sources
             var formAction = builder.AddFormAction().Self();
-            foreach (var source in cspConfig.AllowedFormActionSources)
-            {
-                formAction.From(source);
-            }
+            AddConfiguredSources(formAction, cspConfig.AllowedFormActionSources);
         });
     }
 
     private static void ConfigureStrictCSP(HeaderPolicyCollection policyCollection, IWebHostEnvironment environment, CspConfiguration cspConfig)
     {
-        // Strict CSP using nonces with Google Fonts support (future implementation)
         policyCollection.AddContentSecurityPolicy(builder =>
         {
             builder.AddDefaultSrc().Self();
             builder.AddObjectSrc().None();
 
-            // Allow configured script sources with nonces
-            var scriptSrc = builder.AddScriptSrc().Self().WithNonce(); // Use nonces instead of unsafe-inline
-            foreach (var source in cspConfig.AllowedScriptSources)
-            {
-                scriptSrc.From(source);
-            }
+            // Configure script sources with nonces instead of unsafe-inline
+            var scriptSrc = builder.AddScriptSrc().Self().WithNonce();
+            AddConfiguredSources(scriptSrc, cspConfig.AllowedScriptSources);
 
-            // Allow configured style sources with nonces
-            var styleSrc = builder.AddStyleSrc().Self().WithNonce(); // Use nonces for styles
-            foreach (var source in cspConfig.AllowedStyleSources)
-            {
-                styleSrc.From(source);
-            }
+            // Configure style sources with nonces
+            var styleSrc = builder.AddStyleSrc().Self().WithNonce();
+            AddConfiguredSources(styleSrc, cspConfig.AllowedStyleSources);
 
-            // Allow configured image sources and data URLs
+            // Configure image sources with data URLs
             var imgSrc = builder.AddImgSrc().Self().Data();
-            foreach (var source in cspConfig.AllowedImageSources)
-            {
-                imgSrc.From(source);
-            }
+            AddConfiguredSources(imgSrc, cspConfig.AllowedImageSources);
 
-            // Allow configured font sources and data URLs
+            // Configure font sources with data URLs
             var fontSrc = builder.AddFontSrc().Self().Data();
-            foreach (var source in cspConfig.AllowedFontSources)
-            {
-                fontSrc.From(source);
-            }
+            AddConfiguredSources(fontSrc, cspConfig.AllowedFontSources);
 
-            // Allow configured connect sources
+            // Configure connect sources
             var connectSrc = builder.AddConnectSrc().Self();
-            foreach (var source in cspConfig.AllowedConnectSources)
-            {
-                connectSrc.From(source);
-            }
+            AddConfiguredSources(connectSrc, cspConfig.AllowedConnectSources);
 
-            // Allow configured media sources
+            // Configure media sources
             var mediaSrc = builder.AddMediaSrc().Self();
-            foreach (var source in cspConfig.AllowedMediaSources)
-            {
-                mediaSrc.From(source);
-            }
+            AddConfiguredSources(mediaSrc, cspConfig.AllowedMediaSources);
 
-            // Allow configured frame sources instead of blocking all
+            // Configure frame sources
             var frameSrc = builder.AddFrameSrc().Self();
-            foreach (var source in cspConfig.AllowedFrameSources)
-            {
-                frameSrc.From(source);
-            }
+            AddConfiguredSources(frameSrc, cspConfig.AllowedFrameSources);
 
-            // Allow configured base URI sources
+            // Configure base URI sources
             var baseUri = builder.AddBaseUri().Self();
-            foreach (var source in cspConfig.AllowedBaseUriSources)
-            {
-                baseUri.From(source);
-            }
+            AddConfiguredSources(baseUri, cspConfig.AllowedBaseUriSources);
 
-            // Allow configured form action sources
+            // Configure form action sources
             var formAction = builder.AddFormAction().Self();
-            foreach (var source in cspConfig.AllowedFormActionSources)
-            {
-                formAction.From(source);
-            }
+            AddConfiguredSources(formAction, cspConfig.AllowedFormActionSources);
         });
+    }
+
+    private static void AddConfiguredSources<T>(T builder, IEnumerable<string> sources) where T : class
+    {
+        foreach (var source in sources)
+        {
+            // Use reflection to call the From method on the builder
+            var fromMethod = builder.GetType().GetMethod("From", new[] { typeof(string) });
+            fromMethod?.Invoke(builder, new object[] { source });
+        }
     }
 }

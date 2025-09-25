@@ -34,17 +34,6 @@ GET {{Acontplus.TestApi_HostAddress}}/api/report
 
 ###
 
-@ruc=1105246605001
-@sriOnly=false
-GET {{Acontplus.TestApi_HostAddress}}/api/customer/GetRucSri?ruc={{ruc}}&sriOnly={{sriOnly}}
-
-###
-
-@ci=1105246605
-GET {{Acontplus.TestApi_HostAddress}}/api/customer/GetCedulaSri?ruc={{ci}}&sriOnly={{sriOnly}}
-
-###
-
 GET {{Acontplus.TestApi_HostAddress}}/api/simplemodel/map-data-list
 
 ###
@@ -154,3 +143,10 @@ GET {{Acontplus.TestApi_HostAddress}}/api/ConfigurationTest/context
 Content-Type: application/json
 X-Client-ID: test-client
 X-Tenant-ID: test-tenant
+
+###
+@idCard=1105246605001
+@sriOnly=true
+GET {{Acontplus.TestApi_HostAddress}}/api/customer/by-id-card?idCard={{idCard}}&sriOnly={{sriOnly}}
+
+###

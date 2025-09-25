@@ -90,19 +90,20 @@ public static class TenantIsolationPolicyExtensions
     public static IServiceCollection AddTenantIsolationAuthorization(this IServiceCollection services)
     {
         services.AddScoped<IAuthorizationHandler, TenantIsolationHandler>();
-
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("RequireTenant", policy =>
-                policy.Requirements.Add(new TenantIsolationRequirement()));
-
-            options.AddPolicy("ValidateTenantAccess", policy =>
-                policy.Requirements.Add(new TenantIsolationRequirement(validateUserTenantAccess: true)));
-
-            options.AddPolicy("OptionalTenant", policy =>
-                policy.Requirements.Add(new TenantIsolationRequirement(requireTenantHeader: false)));
-        });
-
         return services;
+    }
+
+    public static AuthorizationOptions AddTenantIsolationPolicies(this AuthorizationOptions options)
+    {
+        options.AddPolicy("RequireTenant", policy =>
+            policy.Requirements.Add(new TenantIsolationRequirement()));
+
+        options.AddPolicy("ValidateTenantAccess", policy =>
+            policy.Requirements.Add(new TenantIsolationRequirement(validateUserTenantAccess: true)));
+
+        options.AddPolicy("OptionalTenant", policy =>
+            policy.Requirements.Add(new TenantIsolationRequirement(requireTenantHeader: false)));
+
+        return options;
     }
 }

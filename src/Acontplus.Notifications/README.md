@@ -36,9 +36,11 @@ dotnet add package Acontplus.Notifications
 
 ## 🎯 Quick Start
 
-### 1. Configure Notification Services
+### 1. Configure Services
 ```csharp
-services.AddAcontplusNotifications(Configuration);
+// Register services in DI container
+services.AddSingleton<IMailKitService, MailKitService>();
+services.AddSingleton<IAmazonSesService, AmazonSesService>(); // Note: AmazonSesService implements IMailKitService
 ```
 
 ### 2. Send an Email
@@ -69,10 +71,10 @@ public class SesSender
 
 ## 📚 API Documentation
 
-- `IMailKitService`, `IAmazonSesService` - Email sending interfaces
+- `IMailKitService` - Email sending interface (implemented by both MailKit and Amazon SES services)
+- `AmazonSesService` - Amazon SES email service
+- `MailKitService` - MailKit email service
 - `EmailModel` - Email message model
-- `EmailQueue` - Email queueing
-- `AwsSesSmtpCredentialConverter` - AWS SES credential helper
 - `Notification` - Notification entity
 
 ## 🤝 Contributing

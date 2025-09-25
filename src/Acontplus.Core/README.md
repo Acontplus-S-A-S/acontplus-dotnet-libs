@@ -127,17 +127,19 @@ SuccessWithWarnings<TValue>
 #### **✨ Current API - Create Results Properly**
 
 ```csharp
+```csharp
 // ✅ CURRENT: Single error using Result factory
 public static Result<User> GetUser(int id) =>
     id <= 0 
         ? Result<User>.Failure(DomainError.Validation("INVALID_ID", "ID must be positive"))
         : Result<User>.Success(new User { Id = id });
 
-// ✅ CURRENT: Single error using extension helper
+// ✅ CURRENT: Single error using Result factory (alternative)
 public static Result<User> GetUserAlt(int id) =>
     id <= 0 
-        ? DomainError.Validation("INVALID_ID", "ID must be positive").ToResult<User>()
-        : new User { Id = id }.ToResult();
+        ? Result<User>.Failure(DomainError.Validation("INVALID_ID", "ID must be positive"))
+        : Result<User>.Success(new User { Id = id });
+```
 
 // ✅ CURRENT: Multiple errors using Result factory
 public static Result<User, DomainErrors> ValidateUser(CreateUserRequest request)
@@ -154,22 +156,6 @@ public static Result<User, DomainErrors> ValidateUser(CreateUserRequest request)
         ? Result<User, DomainErrors>.Failure(new DomainErrors(errors))
         : Result<User, DomainErrors>.Success(new User { Name = request.Name, Email = request.Email });
 }
-
-// ✅ CURRENT: Multiple errors using extension helper
-public static Result<User, DomainErrors> ValidateUserAlt(CreateUserRequest request)
-{
-    var errors = new List<DomainError>();
-    
-    if (string.IsNullOrEmpty(request.Name))
-        errors.Add(DomainError.Validation("NAME_REQUIRED", "Name required"));
-        
-    if (string.IsNullOrEmpty(request.Email))
-        errors.Add(DomainError.Validation("EMAIL_REQUIRED", "Email required"));
-        
-    return errors.Count > 0 
-        ? errors.ToFailureResult<User>()
-        : Result<User, DomainErrors>.Success(new User { Name = request.Name, Email = request.Email });
-}
 ```
 
 #### **🔧 Result Factory Methods**
@@ -182,11 +168,6 @@ Result<Product>.Failure(domainError);
 // Multiple error results
 Result<Product, DomainErrors>.Success(product);
 Result<Product, DomainErrors>.Failure(domainErrors);
-
-// Extension helpers for convenience
-var successResult = product.ToResult();
-var failureResult = error.ToResult<Product>();
-var multiFailureResult = errors.ToFailureResult<Product>();
 ```
 
 #### **⚡ Enhanced Functional Composition**
@@ -479,7 +460,7 @@ try
 catch (JsonException ex)
 {
     var error = DomainError.Validation("JSON_DESERIALIZE_ERROR", ex.Message);
-    return error.ToResult<MyType>();
+    return Result<MyType>.Failure(error);
 }
 
 // Safe Deserialization with Fallback
@@ -495,12 +476,6 @@ var clone = myObject.CloneDeep(); // Creates deep copy via JSON serialization
 ```csharp
 public static class ResultExtensions
 {
-    // Create Results from values and errors
-    public static Result<T> ToResult<T>(this T value);
-    public static Result<T> ToResult<T>(this DomainError error);
-    public static Result<T, DomainErrors> ToFailureResult<T>(this DomainErrors errors);
-    public static Result<T, DomainErrors> ToFailureResult<T>(this IEnumerable<DomainError> errors);
-    
     // Success with warnings helpers
     public static Result<SuccessWithWarnings<T>> ToSuccessWithWarningsResult<T>(this T value, DomainWarnings warnings);
     public static Result<SuccessWithWarnings<T>> ToSuccessWithWarningsResult<T>(this T value, params DomainError[] warnings);
