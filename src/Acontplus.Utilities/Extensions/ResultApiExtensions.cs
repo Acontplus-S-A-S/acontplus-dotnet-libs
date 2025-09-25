@@ -36,6 +36,18 @@ public static class ResultApiExtensions
         );
     }
 
+    // New overload allowing explicit success message
+    public static IActionResult ToActionResult<TValue>(
+        this Result<TValue, DomainError> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IActionResult>(
+            value => CreateSuccessResponse(value, successMessage, correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
+        );
+    }
+
     public static IActionResult ToActionResult<TValue>(
         this Result<TValue, DomainErrors> result,
         string? correlationId = null)
@@ -46,12 +58,36 @@ public static class ResultApiExtensions
         );
     }
 
+    // New overload allowing explicit success message for DomainErrors
+    public static IActionResult ToActionResult<TValue>(
+        this Result<TValue, DomainErrors> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IActionResult>(
+            value => CreateSuccessResponse(value, successMessage, correlationId),
+            errors => errors.ToApiResponse<TValue>(correlationId).ToActionResult()
+        );
+    }
+
     public static IActionResult ToActionResult<TValue>(
         this Result<SuccessWithWarnings<TValue>, DomainError> result,
         string? correlationId = null)
     {
         return result.Match<IActionResult>(
             successWithWarnings => successWithWarnings.ToActionResult(correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
+        );
+    }
+
+    // New overload to pass explicit success message for SuccessWithWarnings
+    public static IActionResult ToActionResult<TValue>(
+        this Result<SuccessWithWarnings<TValue>, DomainError> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IActionResult>(
+            successWithWarnings => successWithWarnings.ToActionResult(successMessage, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToActionResult()
         );
     }
@@ -68,6 +104,16 @@ public static class ResultApiExtensions
         return result.ToActionResult(correlationId);
     }
 
+    // Async overload with successMessage
+    public static async Task<IActionResult> ToActionResultAsync<TValue>(
+        this Task<Result<TValue, DomainError>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToActionResult(successMessage, correlationId);
+    }
+
     public static async Task<IActionResult> ToActionResultAsync<TValue>(
         this Task<Result<TValue, DomainErrors>> resultTask,
         string? correlationId = null)
@@ -76,12 +122,32 @@ public static class ResultApiExtensions
         return result.ToActionResult(correlationId);
     }
 
+    // Async overload with successMessage for DomainErrors
+    public static async Task<IActionResult> ToActionResultAsync<TValue>(
+        this Task<Result<TValue, DomainErrors>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToActionResult(successMessage, correlationId);
+    }
+
     public static async Task<IActionResult> ToActionResultAsync<TValue>(
         this Task<Result<SuccessWithWarnings<TValue>, DomainError>> resultTask,
         string? correlationId = null)
     {
         var result = await resultTask;
         return result.ToActionResult(correlationId);
+    }
+
+    // Async overload with successMessage for SuccessWithWarnings
+    public static async Task<IActionResult> ToActionResultAsync<TValue>(
+        this Task<Result<SuccessWithWarnings<TValue>, DomainError>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToActionResult(successMessage, correlationId);
     }
 
     #endregion
@@ -94,6 +160,18 @@ public static class ResultApiExtensions
     {
         return result.Match<IResult>(
             value => CreateSuccessResult(value, result.SuccessMessage, correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+        );
+    }
+
+    // New overload allowing explicit success message
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<TValue, DomainError> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IResult>(
+            value => CreateSuccessResult(value, successMessage, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }
@@ -129,6 +207,18 @@ public static class ResultApiExtensions
         );
     }
 
+    // New overload to pass explicit success message for SuccessWithWarnings
+    public static IResult ToMinimalApiResult<TValue>(
+        this Result<SuccessWithWarnings<TValue>, DomainError> result,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return result.Match<IResult>(
+            successWithWarnings => successWithWarnings.ToMinimalApiResult(successMessage, correlationId),
+            error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
+        );
+    }
+
     #endregion
 
     #region Async Minimal API Results
@@ -139,6 +229,16 @@ public static class ResultApiExtensions
     {
         var result = await resultTask;
         return result.ToMinimalApiResult(correlationId);
+    }
+
+    // Async overload with explicit success message
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<TValue, DomainError>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(successMessage, correlationId);
     }
 
     public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
@@ -166,6 +266,16 @@ public static class ResultApiExtensions
         return result.ToMinimalApiResult(successMessage, correlationId);
     }
 
+    // Async overload for SuccessWithWarnings with explicit message
+    public static async Task<IResult> ToMinimalApiResultAsync<TValue>(
+        this Task<Result<SuccessWithWarnings<TValue>, DomainError>> resultTask,
+        string successMessage,
+        string? correlationId = null)
+    {
+        var result = await resultTask;
+        return result.ToMinimalApiResult(successMessage, correlationId);
+    }
+
     #endregion
 
     #region SuccessWithWarnings Extensions
@@ -182,6 +292,20 @@ public static class ResultApiExtensions
             : CreateSuccessResponse(successWithWarnings.Value, correlationId);
     }
 
+    // New overload to accept success message
+    public static IActionResult ToActionResult<TValue>(
+        this SuccessWithWarnings<TValue> successWithWarnings,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return successWithWarnings.Warnings.HasWarnings
+            ? CreateWarningResponse(
+                successWithWarnings.Value,
+                successWithWarnings.Warnings,
+                correlationId) // warnings don't carry message currently
+            : CreateSuccessResponse(successWithWarnings.Value, successMessage, correlationId);
+    }
+
     public static IResult ToMinimalApiResult<TValue>(
         this SuccessWithWarnings<TValue> successWithWarnings,
         string? correlationId = null)
@@ -192,6 +316,20 @@ public static class ResultApiExtensions
                 successWithWarnings.Warnings,
                 correlationId)
             : CreateSuccessResult(successWithWarnings.Value, correlationId);
+    }
+
+    // New overload to accept success message for minimal API
+    public static IResult ToMinimalApiResult<TValue>(
+        this SuccessWithWarnings<TValue> successWithWarnings,
+        string successMessage,
+        string? correlationId = null)
+    {
+        return successWithWarnings.Warnings.HasWarnings
+            ? CreateWarningResult(
+                successWithWarnings.Value,
+                successWithWarnings.Warnings,
+                correlationId) // warnings don't carry message currently
+            : CreateSuccessResult(successWithWarnings.Value, successMessage, correlationId);
     }
 
     #endregion
@@ -717,6 +855,22 @@ public static class ResultApiExtensions
     private static IResult CreateDeleteMinimalApiResult(bool deleted)
     {
         return deleted ? TypedResults.NoContent() : TypedResults.NotFound();
+    }
+
+    // New CreateSuccessResponse overload that accepts an explicit message
+    private static IActionResult CreateSuccessResponse<TValue>(TValue value, string successMessage, string? correlationId)
+    {
+        var response = ApiResponse<TValue>.Success(
+            data: value,
+            new ApiResponseOptions
+            {
+                Message = successMessage,
+                CorrelationId = correlationId,
+                StatusCode = HttpStatusCode.OK
+            }
+        );
+        ConfigureResponse?.Invoke(response.ToBaseResponse());
+        return new OkObjectResult(response);
     }
 
     private static IActionResult CreateSuccessResponse<TValue>(TValue value, string? correlationId)
