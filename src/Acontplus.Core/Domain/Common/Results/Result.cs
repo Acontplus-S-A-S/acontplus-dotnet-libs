@@ -6,14 +6,16 @@ public readonly record struct Result<TValue, TError>
 {
     private readonly TValue? _value;
     private readonly TError? _error;
+    private readonly string? _successMessage;
     private readonly bool _isSuccess;
     private readonly bool _initialized;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Result(TValue value)
+    private Result(TValue value, string? successMessage = null)
     {
         _value = value;
         _error = default;
+        _successMessage = successMessage;
         _isSuccess = true;
         _initialized = true;
     }
@@ -23,6 +25,7 @@ public readonly record struct Result<TValue, TError>
     {
         _value = default;
         _error = error;
+        _successMessage = default;
         _isSuccess = false;
         _initialized = true;
     }
@@ -52,8 +55,22 @@ public readonly record struct Result<TValue, TError>
         }
     }
 
+    public string? SuccessMessage
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            if (!_initialized)
+                throw new InvalidOperationException("Uninitialized Result (default struct).");
+            return _isSuccess ? _successMessage : null;
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TValue, TError> Success(TValue value) => new(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TValue, TError> Success(TValue value, string? successMessage) => new(value, successMessage);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TValue, TError> Failure(TError error) => new(error);
@@ -66,7 +83,7 @@ public readonly record struct Result<TValue, TError>
     public Result<TNewValue, TError> Map<TNewValue>(Func<TValue, TNewValue> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess ? Result<TNewValue, TError>.Success(mapper(_value!)) : Result<TNewValue, TError>.Failure(_error!);
+        return _isSuccess ? Result<TNewValue, TError>.Success(mapper(_value!), _successMessage) : Result<TNewValue, TError>.Failure(_error!);
     }
 
     /// <summary>
@@ -75,7 +92,7 @@ public readonly record struct Result<TValue, TError>
     public async Task<Result<TNewValue, TError>> MapAsync<TNewValue>(Func<TValue, Task<TNewValue>> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!)) : Result<TNewValue, TError>.Failure(_error!);
+        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!), _successMessage) : Result<TNewValue, TError>.Failure(_error!);
     }
 
     /// <summary>
@@ -84,7 +101,7 @@ public readonly record struct Result<TValue, TError>
     public async ValueTask<Result<TNewValue, TError>> MapAsync<TNewValue>(Func<TValue, ValueTask<TNewValue>> mapper)
         where TNewValue : notnull
     {
-        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!)) : Result<TNewValue, TError>.Failure(_error!);
+        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!), _successMessage) : Result<TNewValue, TError>.Failure(_error!);
     }
 
     /// <summary>
@@ -93,7 +110,7 @@ public readonly record struct Result<TValue, TError>
     public async Task<Result<TNewValue, TError>> MapAsync<TNewValue>(Func<TValue, CancellationToken, Task<TNewValue>> mapper, CancellationToken cancellationToken)
         where TNewValue : notnull
     {
-        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!, cancellationToken)) : Result<TNewValue, TError>.Failure(_error!);
+        return _isSuccess ? Result<TNewValue, TError>.Success(await mapper(_value!, cancellationToken), _successMessage) : Result<TNewValue, TError>.Failure(_error!);
     }
 
     /// <summary>
