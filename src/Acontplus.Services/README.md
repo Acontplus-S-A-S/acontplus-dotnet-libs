@@ -6,28 +6,7 @@
 
 A comprehensive .NET 9+ service library providing business-grade patterns, security, caching, resilience, and monitoring for ASP.NET Core applications. Built with .NET features and best practices.
 
-## 🚀 .NET 9 Features
-
-### 🎯 Latest C# Language Features
-
-- **Collection Expressions** - `[]` syntax for efficient collection initialization
-- **Primary Constructors** - Concise record and class definitions
-- **Required Properties** - Compile-time null safety with `required` keyword
-- **Pattern Matching** - Advanced `switch` expressions and `is` patterns
-- **Record Structs** - High-performance value types for DTOs and results
-- **Nullable Reference Types** - Full compile-time null safety
-- **Source Generators** - JSON serialization with AOT compilation support
-- **Global Usings** - Clean namespace management with global using directives
-
-### 🏗️ Architecture Patterns
-
-- **Domain-Driven Design (DDD)** - Complete DDD implementation with C# features
-- **Functional Result Pattern** - Railway-oriented programming with record structs
-- **Repository Pattern** - Comprehensive data access with bulk operations
-- **Specification Pattern** - Type-safe query composition with expressions
-- **Event Sourcing Ready** - Domain events with event patterns
-
-## 🎯 Core Features
+## 🚀 Features
 
 ### 🏗️ Service Architecture Patterns
 
