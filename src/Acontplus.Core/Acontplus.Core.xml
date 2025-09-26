@@ -4,6 +4,46 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetQueryable(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
+            <summary>
+            Gets a queryable for building complex queries with joins, custom projections, and advanced filtering.
+            Use this for scenarios that can't be handled by the standard repository methods.
+            </summary>
+            <param name="tracking">Whether to enable change tracking</param>
+            <param name="includeProperties">Navigation properties to include</param>
+            <returns>A queryable for building complex queries</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExecuteQueryAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},``0}},System.Threading.CancellationToken)">
+            <summary>
+            Executes a custom query expression and returns the results.
+            Use this for complex queries that require custom logic.
+            </summary>
+            <typeparam name="TResult">The result type</typeparam>
+            <param name="queryExpression">The custom query expression</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>The query results</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExecuteQueryToListAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}}},System.Threading.CancellationToken)">
+            <summary>
+            Executes a custom query expression and returns the results as a list.
+            Use this for complex queries that return collections.
+            </summary>
+            <typeparam name="TResult">The result type</typeparam>
+            <param name="queryExpression">The custom query expression</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>The query results as a list</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExecutePagedQueryAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}}},Acontplus.Core.DTOs.Requests.PaginationDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a custom query with pagination and returns paged results.
+            Use this for complex queries that need pagination.
+            </summary>
+            <typeparam name="TResult">The result type</typeparam>
+            <param name="queryExpression">The custom query expression</param>
+            <param name="pagination">Pagination parameters</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>Paged query results</returns>
+        </member>
         <member name="T:Acontplus.Core.Domain.Common.Events.IDomainEventHandler`1">
             <summary>
             Interface for handling domain events
@@ -1686,6 +1726,49 @@
             Service account for automated processes
             </summary>
         </member>
+        <member name="T:Acontplus.Core.Extensions.FilterPredicateExtensions">
+            <summary>
+            Extension methods for converting filters to LINQ expressions.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterPredicateExtensions.ToPredicate``1(System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            Converts a dictionary of filters to a LINQ expression predicate.
+            This is a basic implementation that handles common filter types.
+            For complex scenarios, consider using the Specification pattern.
+            </summary>
+            <typeparam name="T">The entity type</typeparam>
+            <param name="filters">The filters dictionary</param>
+            <returns>A LINQ expression predicate</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterPredicateExtensions.CreatePredicate``1(System.String,System.Object)">
+            <summary>
+            Creates a predicate for a specific property and value.
+            </summary>
+            <typeparam name="T">The entity type</typeparam>
+            <param name="propertyName">The property name</param>
+            <param name="value">The filter value</param>
+            <returns>A LINQ expression predicate</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterPredicateExtensions.CreateContainsPredicate``1(System.String,System.String)">
+            <summary>
+            Creates a predicate for string contains operation.
+            </summary>
+            <typeparam name="T">The entity type</typeparam>
+            <param name="propertyName">The property name</param>
+            <param name="searchTerm">The search term</param>
+            <returns>A LINQ expression predicate</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterPredicateExtensions.CreateRangePredicate``1(System.String,System.Object,System.Object)">
+            <summary>
+            Creates a predicate for range operations (between two values).
+            </summary>
+            <typeparam name="T">The entity type</typeparam>
+            <param name="propertyName">The property name</param>
+            <param name="minValue">The minimum value</param>
+            <param name="maxValue">The maximum value</param>
+            <returns>A LINQ expression predicate</returns>
+        </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeOptimized``1(System.String)">
             <summary>
             Deserializes JSON string to the specified type using optimized options.
@@ -1721,6 +1804,110 @@
             <typeparam name="T">The type of object to clone.</typeparam>
             <param name="obj">The object to clone.</param>
             <returns>A deep clone of the object.</returns>
+        </member>
+        <member name="T:Acontplus.Core.Extensions.PaginationExtensions">
+            <summary>
+            Extension methods for PaginationDto to provide fluent API and helper functionality.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSearch(Acontplus.Core.DTOs.Requests.PaginationDto,System.String)">
+            <summary>
+            Adds a search term to the pagination request.
+            </summary>
+            <param name="pagination">The pagination object</param>
+            <param name="searchTerm">The search term to add</param>
+            <returns>A new PaginationDto with the search term</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSort(Acontplus.Core.DTOs.Requests.PaginationDto,System.String,Acontplus.Core.Enums.SortDirection)">
+            <summary>
+            Adds sorting criteria to the pagination request.
+            </summary>
+            <param name="pagination">The pagination object</param>
+            <param name="sortBy">The field to sort by</param>
+            <param name="direction">The sort direction</param>
+            <returns>A new PaginationDto with sorting criteria</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilters(Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            Adds filters to the pagination request.
+            </summary>
+            <param name="pagination">The pagination object</param>
+            <param name="filters">The filters to add</param>
+            <returns>A new PaginationDto with filters</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilter(Acontplus.Core.DTOs.Requests.PaginationDto,System.String,System.Object)">
+            <summary>
+            Adds a single filter to the pagination request.
+            </summary>
+            <param name="pagination">The pagination object</param>
+            <param name="key">The filter key</param>
+            <param name="value">The filter value</param>
+            <returns>A new PaginationDto with the additional filter</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.Create(System.Int32,System.Int32)">
+            <summary>
+            Creates a new PaginationDto with the specified page and size.
+            </summary>
+            <param name="pageIndex">The page index (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A new PaginationDto</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithSearch(System.String,System.Int32,System.Int32)">
+            <summary>
+            Creates a new PaginationDto with search term.
+            </summary>
+            <param name="searchTerm">The search term</param>
+            <param name="pageIndex">The page index (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A new PaginationDto with search</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithSort(System.String,Acontplus.Core.Enums.SortDirection,System.Int32,System.Int32)">
+            <summary>
+            Creates a new PaginationDto with sorting.
+            </summary>
+            <param name="sortBy">The field to sort by</param>
+            <param name="direction">The sort direction</param>
+            <param name="pageIndex">The page index (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A new PaginationDto with sorting</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithFilters(System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object},System.Int32,System.Int32)">
+            <summary>
+            Creates a new PaginationDto with filters.
+            </summary>
+            <param name="filters">The filters</param>
+            <param name="pageIndex">The page index (1-based)</param>
+            <param name="pageSize">The page size</param>
+            <returns>A new PaginationDto with filters</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.Validate(Acontplus.Core.DTOs.Requests.PaginationDto)">
+            <summary>
+            Validates the pagination parameters and returns a corrected version if needed.
+            </summary>
+            <param name="pagination">The pagination object to validate</param>
+            <returns>A validated and corrected PaginationDto</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.NextPage(Acontplus.Core.DTOs.Requests.PaginationDto)">
+            <summary>
+            Gets the next page pagination object.
+            </summary>
+            <param name="pagination">The current pagination object</param>
+            <returns>A new PaginationDto for the next page</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.PreviousPage(Acontplus.Core.DTOs.Requests.PaginationDto)">
+            <summary>
+            Gets the previous page pagination object.
+            </summary>
+            <param name="pagination">The current pagination object</param>
+            <returns>A new PaginationDto for the previous page</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.ToPage(Acontplus.Core.DTOs.Requests.PaginationDto,System.Int32)">
+            <summary>
+            Gets a pagination object for a specific page.
+            </summary>
+            <param name="pagination">The current pagination object</param>
+            <param name="pageIndex">The target page index</param>
+            <returns>A new PaginationDto for the specified page</returns>
         </member>
         <member name="T:Acontplus.Core.Extensions.RepositoryAuditExtensions">
             <summary>

@@ -8,6 +8,25 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 
 ## 🚀 What's New (Latest Version)
 
+- **📢 Success Message Support** - Enhanced Result type with optional success messages
+  - New `SuccessMessage` property on `Result<T, TError>`
+  - `Result<T, TError>.Success(value, successMessage)` overload
+  - Success messages preserved through functional composition (Map, Bind, etc.)
+- **🔍 Advanced Query Operations** - Enhanced IRepository with complex query capabilities
+  - `GetQueryable()` for building custom queries with joins and projections
+  - `ExecuteQueryAsync<T>()` for executing custom query expressions
+  - `ExecuteQueryToListAsync<T>()` and `ExecutePagedQueryAsync<T>()` for complex result handling
+  - *See [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) for implementation details and examples*
+- **🔧 Filter Predicate Extensions** - New utilities for dynamic filtering
+  - `ToPredicate<T>()` converts filter dictionaries to LINQ expressions
+  - `CreatePredicate<T>()`, `CreateContainsPredicate<T>()`, `CreateRangePredicate<T>()` for specific filter types
+  - Support for string, enum, and boolean comparisons
+  - *See [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) for implementation details and examples*
+- **📄 Enhanced Pagination Extensions** - Fluent API for pagination management
+  - `WithSearch()`, `WithSort()`, `WithFilters()` for building pagination requests
+  - `Create()`, `CreateWithSearch()`, `CreateWithSort()`, `CreateWithFilters()` factory methods
+  - `Validate()`, `NextPage()`, `PreviousPage()`, `ToPage()` for pagination navigation
+  - *See [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) for implementation details and examples*
 - **✨ Improved Separation of Concerns** - `DomainError`/`DomainErrors` no longer create `Result` instances directly
   - Use `Result<T>.Failure(error)`, `Result<T, DomainErrors>.Failure(errors)` or extension helpers
   - New helpers: `error.ToResult<T>()`, `errors.ToFailureResult<T>()`
@@ -168,6 +187,9 @@ Result<Product>.Failure(domainError);
 // Multiple error results
 Result<Product, DomainErrors>.Success(product);
 Result<Product, DomainErrors>.Failure(domainErrors);
+
+// Success with message
+Result<Product, DomainErrors>.Success(product, "Product created successfully");
 ```
 
 #### **⚡ Enhanced Functional Composition**
@@ -205,6 +227,18 @@ public string GetOrderStatus(Result<Order> result)
         return $"Error: {error.Message}";
         
     return "Unknown";
+}
+
+// Access success message
+public IActionResult HandleOrderResultWithMessage(Result<Order, DomainErrors> result)
+{
+    if (result.IsSuccess)
+    {
+        var message = result.SuccessMessage ?? "Order processed successfully";
+        return Ok(new { order = result.Value, message });
+    }
+    
+    return BadRequest(result.Error);
 }
 ```
 
@@ -367,6 +401,19 @@ public async Task<Result<InvoiceDto>> GenerateInvoiceAsync(int orderId, Cancella
         .OnSuccess(invoice => _logger.LogInformation("Invoice generated: {InvoiceId}", invoice.Id))
         .OnFailure(error => _logger.LogError("Invoice generation failed: {Error}", error));
 }
+```
+
+#### **🔍 Advanced Repository Queries**
+
+*For detailed examples of advanced repository queries, complex joins, and custom projections, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
+
+#### **🔧 Dynamic Filtering with Predicates**
+
+*For comprehensive examples of dynamic filtering, predicate creation, and filter utilities, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
+
+#### **📄 Enhanced Pagination with Fluent API**
+
+*For detailed examples of fluent pagination building, navigation helpers, and advanced pagination features, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
 ```
 
 #### **🎯 Current Best Practices**

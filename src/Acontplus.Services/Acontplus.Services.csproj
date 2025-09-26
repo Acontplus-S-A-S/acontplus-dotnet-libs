@@ -4,7 +4,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PackageId>Acontplus.Services</PackageId>
-		<Version>1.5.15</Version>
+		<Version>1.5.16</Version>
 		<Authors>Ivan Paz</Authors>
 		<Company>Acontplus S.A.S.</Company>
 		<Description>Comprehensive library for API services, authentication, claims, middleware, and configuration. Includes JWT authentication, user context management, exception handling, security headers, and enterprise-ready service patterns for ASP.NET Core applications.</Description>

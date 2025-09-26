@@ -881,6 +881,87 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 
     #region Advanced Query Operations
 
+    public virtual IQueryable<TEntity> GetQueryable(
+        bool tracking = false,
+        params Expression<Func<TEntity, object>>[] includeProperties)
+    {
+        return BuildQuery(tracking, includeProperties);
+    }
+
+    public virtual Task<TResult> ExecuteQueryAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, TResult>> queryExpression,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(ExecuteQueryAsync)}");
+        try
+        {
+            ArgumentNullException.ThrowIfNull(queryExpression);
+            var query = _dbSet.AsNoTracking();
+            var compiledExpression = queryExpression.Compile();
+            var result = compiledExpression(query);
+            return Task.FromResult(result);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error executing custom query for entity {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error executing custom query", ex);
+        }
+    }
+
+    public virtual async Task<IReadOnlyList<TResult>> ExecuteQueryToListAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(ExecuteQueryToListAsync)}");
+        try
+        {
+            ArgumentNullException.ThrowIfNull(queryExpression);
+            var query = _dbSet.AsNoTracking();
+            var compiledExpression = queryExpression.Compile();
+            var resultQuery = compiledExpression(query);
+            return await resultQuery.ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error executing custom query to list for entity {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error executing custom query to list", ex);
+        }
+    }
+
+    public virtual async Task<PagedResult<TResult>> ExecutePagedQueryAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
+        PaginationDto pagination,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(ExecutePagedQueryAsync)}");
+        try
+        {
+            ArgumentNullException.ThrowIfNull(queryExpression);
+            ValidatePagination(pagination);
+
+            var query = _dbSet.AsNoTracking();
+            var compiledExpression = queryExpression.Compile();
+            var resultQuery = compiledExpression(query);
+
+            // Get total count
+            var totalCount = await resultQuery.CountAsync(cancellationToken).ConfigureAwait(false);
+
+            // Apply pagination
+            var items = await resultQuery
+                .Skip((pagination.PageIndex - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return new PagedResult<TResult>(items, pagination.PageIndex, pagination.PageSize, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error executing paged custom query for entity {EntityType}", typeof(TEntity).Name);
+            throw new RepositoryException("Error executing paged custom query", ex);
+        }
+    }
+
     public virtual async Task<IReadOnlyList<TEntity>> GetOrderedAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default,
@@ -907,7 +988,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    public virtual async Task<TResult> AggregateAsync<TResult>(
+    public virtual Task<TResult> AggregateAsync<TResult>(
         Expression<Func<IQueryable<TEntity>, TResult>> aggregateExpression,
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default)
@@ -927,7 +1008,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             // EF Core can often translate this if the expression is simple enough (e.g., q => q.Sum(e => e.Property))
             // This approach provides maximum flexibility.
             var compiledAggregate = aggregateExpression.Compile();
-            return compiledAggregate(query);
+            var result = compiledAggregate(query);
+            return Task.FromResult(result);
         }
         catch (Exception ex)
         {
