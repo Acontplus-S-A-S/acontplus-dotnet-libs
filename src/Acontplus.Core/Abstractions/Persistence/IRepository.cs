@@ -169,6 +169,55 @@ public interface IRepository<TEntity>
 
     #region Advanced Query Operations
 
+    /// <summary>
+    /// Gets a queryable for building complex queries with joins, custom projections, and advanced filtering.
+    /// Use this for scenarios that can't be handled by the standard repository methods.
+    /// </summary>
+    /// <param name="tracking">Whether to enable change tracking</param>
+    /// <param name="includeProperties">Navigation properties to include</param>
+    /// <returns>A queryable for building complex queries</returns>
+    IQueryable<TEntity> GetQueryable(
+        bool tracking = false,
+        params Expression<Func<TEntity, object>>[] includeProperties);
+
+    /// <summary>
+    /// Executes a custom query expression and returns the results.
+    /// Use this for complex queries that require custom logic.
+    /// </summary>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="queryExpression">The custom query expression</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The query results</returns>
+    Task<TResult> ExecuteQueryAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, TResult>> queryExpression,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a custom query expression and returns the results as a list.
+    /// Use this for complex queries that return collections.
+    /// </summary>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="queryExpression">The custom query expression</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The query results as a list</returns>
+    Task<IReadOnlyList<TResult>> ExecuteQueryToListAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a custom query with pagination and returns paged results.
+    /// Use this for complex queries that need pagination.
+    /// </summary>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="queryExpression">The custom query expression</param>
+    /// <param name="pagination">Pagination parameters</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Paged query results</returns>
+    Task<PagedResult<TResult>> ExecutePagedQueryAsync<TResult>(
+        Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
+        PaginationDto pagination,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<TEntity>> GetOrderedAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         CancellationToken cancellationToken = default,
