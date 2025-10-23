@@ -3003,8 +3003,8 @@ public async Task<IActionResult> SecureEndpoint()
 ## 🆘 Support
 
 - 📧 Email: proyectos@acontplus.com
-- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
-- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/acontplus/acontplus-dotnet-libs/issues)
+- 📖 Documentation: [Wiki](https://github.com/acontplus/acontplus-dotnet-libs/wiki)
 
 ## 👨‍💻 Author
 

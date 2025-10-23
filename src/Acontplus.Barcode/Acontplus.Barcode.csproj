@@ -11,7 +11,7 @@
     <Company>Acontplus</Company>
     <Description>Advanced barcode generation library with ZXing.Net integration. Supports QR codes, 1D/2D barcodes, custom styling, and high-performance image generation using SkiaSharp for cross-platform applications.</Description>
     <PackageTags>dotnet9;barcode;qr-code;zxing;skia;image-generation;cross-platform;1d-barcode;2d-barcode;qr;code128;code39;ean;upc;pdf417;datamatrix</PackageTags>
-    <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

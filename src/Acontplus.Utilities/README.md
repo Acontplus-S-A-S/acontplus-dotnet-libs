@@ -521,7 +521,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ### Development Setup
 ```bash
-git clone https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs.git
+git clone https://github.com/acontplus/acontplus-dotnet-libs.git
 cd acontplus-dotnet-libs
 dotnet restore
 dotnet build
@@ -534,8 +534,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 - 📧 Email: proyectos@acontplus.com
-- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
-- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/acontplus/acontplus-dotnet-libs/issues)
+- 📖 Documentation: [Wiki](https://github.com/acontplus/acontplus-dotnet-libs/wiki)
 
 ## 👨‍💻 Author
 

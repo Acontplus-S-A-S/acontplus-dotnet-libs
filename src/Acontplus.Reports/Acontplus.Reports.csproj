@@ -10,7 +10,7 @@
     <Company>Acontplus</Company>
     <Description>Advanced library for comprehensive report generation and management. Includes RDLC report processing, PDF/Excel export capabilities, ReportViewer integration, template support, and enterprise-ready reporting patterns for business applications.</Description>
     <PackageTags>dotnet9;reports;rdl;rdlc;reporting;reportviewer;pdf;excel;templates;business-intelligence;export;enterprise</PackageTags>
-    <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

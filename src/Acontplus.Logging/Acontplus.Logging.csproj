@@ -11,7 +11,7 @@
     <Company>Acontplus</Company>
     <Description>Advanced logging library with Serilog integration. Provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Features official ELK stack integration with Elastic.Serilog.Sinks, ECS compliance, and high-performance logging for .NET 9 applications.</Description>
     <PackageTags>dotnet9;logging;serilog;structured-logging;elasticsearch;elk-stack;ecs-compliance;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing;elastic-sinks;data-streams;ilm</PackageTags>
-    <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
