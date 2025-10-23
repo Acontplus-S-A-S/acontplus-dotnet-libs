@@ -1,4 +1,4 @@
-﻿# Acontplus.FactElect
+# Acontplus.FactElect
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.FactElect.svg)](https://www.nuget.org/packages/Acontplus.FactElect)
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
@@ -155,7 +155,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions
+**[Acontplus](https://www.acontplus.com)** - Software solutions
 
 ---
 

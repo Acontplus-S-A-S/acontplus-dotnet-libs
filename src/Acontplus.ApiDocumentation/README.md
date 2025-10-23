@@ -40,7 +40,7 @@ dotnet add package Acontplus.ApiDocumentation
    "SwaggerInfo": {
      "ContactName": "Acontplus Development Team",
      "ContactEmail": "proyectos@acontplus.com",
-     "ContactUrl": "https://acontplus.com.ec",
+     "ContactUrl": "https://www.acontplus.com",
      "LicenseName": "MIT License",
      "LicenseUrl": "https://opensource.org/licenses/MIT"
    }
@@ -139,10 +139,10 @@ public class DataController : ControllerBase
 
 - **License:** [MIT](../LICENSE)
 - **Authors:** Ivan Paz
-- **Company:** [Acontplus S.A.S.](https://acontplus.com.ec)
+- **Company:** [Acontplus](https://www.acontplus.com)
 - **Repository:** [github.com/Acontplus-S-A-S/acontplus-dotnet-libs](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs)
 - **Contact:** [proyectos@acontplus.com](mailto:proyectos@acontplus.com)
 
 ---
 
-© 2024 Acontplus S.A.S. All rights reserved.
+© 2024 Acontplus All rights reserved.

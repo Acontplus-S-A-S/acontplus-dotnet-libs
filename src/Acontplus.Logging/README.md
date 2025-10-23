@@ -235,5 +235,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 [Ivan Paz](https://linktr.ee/iferpaz7)
 
 ## Company
-[Acontplus S.A.S.](https://acontplus.com.ec)
+[Acontplus](https://www.acontplus.com)
 ```

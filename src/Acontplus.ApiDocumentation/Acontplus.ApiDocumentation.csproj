@@ -7,7 +7,7 @@
     <PackageId>Acontplus.ApiDocumentation</PackageId>
     <Version>1.0.5</Version>
     <Authors>Ivan Paz</Authors>
-    <Company>Acontplus S.A.S.</Company>
+    <Company>Acontplus</Company>
     <Description>Advanced library for comprehensive API documentation and versioning. Includes OpenAPI/Swagger integration, API versioning support for both controller-based and minimal APIs, advanced customization options, and enterprise-ready documentation patterns for ASP.NET Core applications.</Description>
     <PackageTags>dotnet9;openapi;swagger;api-versioning;documentation;minimal-api;aspnetcore;enterprise;api-docs;versioning</PackageTags>
     <RepositoryUrl>https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs</RepositoryUrl>
