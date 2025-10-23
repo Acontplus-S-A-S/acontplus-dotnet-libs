@@ -169,4 +169,4 @@ MIT License. See [LICENSE](../LICENSE) for details.
 ---
 
 ## 🏢 Company
-[Acontplus S.A.S.](https://acontplus.com.ec)
+[Acontplus](https://www.acontplus.com)

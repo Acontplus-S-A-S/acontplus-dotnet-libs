@@ -3012,7 +3012,7 @@ public async Task<IActionResult> SecureEndpoint()
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://acontplus.com.ec)** - Software solutions, Ecuador
+**[Acontplus](https://www.acontplus.com)** - Software solutions, Ecuador
 
 ---
 
