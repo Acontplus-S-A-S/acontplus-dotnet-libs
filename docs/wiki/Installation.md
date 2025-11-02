@@ -30,7 +30,7 @@ dotnet add package <PackageName>
 | Library                        | NuGet Package Name                |
 |--------------------------------|-----------------------------------|
 | Acontplus.Core                 | Acontplus.Core                    |
-| Acontplus.FactElect            | Acontplus.FactElect               |
+| Acontplus.Billing            | Acontplus.Billing               |
 | Acontplus.Notifications        | Acontplus.Notifications           |
 | Acontplus.Reports              | Acontplus.Reports                 |
 | Acontplus.Persistence.SqlServer| Acontplus.Persistence.SqlServer   |
