@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Logging</PackageId>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced logging library with Serilog integration. Provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Features official ELK stack integration with Elastic.Serilog.Sinks, ECS compliance, and high-performance logging for .NET 9 applications.</Description>
