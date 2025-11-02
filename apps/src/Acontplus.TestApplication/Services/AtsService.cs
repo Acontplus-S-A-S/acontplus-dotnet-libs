@@ -3,7 +3,7 @@ namespace Acontplus.TestApplication.Services;
 public class AtsService(IUnitOfWork uow) : IAtsService
 {
     private readonly IAdoRepository _adoRepository = uow.AdoRepository;
-    private const string ModuleName = "FactElect.Ats_";
+    private const string ModuleName = "Billing.Ats_";
 
     public async Task<SpResponse> CheckValidationAsync(Dictionary<string, object> parameters)
     {

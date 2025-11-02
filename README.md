@@ -19,7 +19,7 @@ This repository contains multiple libraries and sample applications, each in its
 ### Main Libraries (src/)
 
 - **Acontplus.Core**: Foundational DDD components, error handling, specification pattern, DTOs, and C# features for business apps.
-- **Acontplus.FactElect**: Electronic invoicing and SRI (Ecuadorian Tax Authority) integration. Models, XML, validation, and web service support for Ecuadorian digital documents.
+- **Acontplus.Billing**: Electronic invoicing and SRI (Ecuadorian Tax Authority) integration. Models, XML, validation, and web service support for Ecuadorian digital documents.
 - **Acontplus.Notifications**: Advanced notification system supporting email (MailKit, Amazon SES), WhatsApp, push, templates, and queueing.
 - **Acontplus.Reports**: RDLC report generation, export (PDF/Excel), and template management for .NET apps.
 - **Acontplus.Persistence.SqlServer**: SQL Server persistence with ADO.NET and EF Core, repository/unit-of-work patterns, and advanced error handling.
@@ -63,7 +63,7 @@ This repository contains multiple libraries and sample applications, each in its
 
 - Each library includes a detailed README and XML API docs.
 - Centralized documentation and guides: [Documentation Home](docs/wiki/Home.md)
-- For Ecuadorian electronic invoicing, see `Acontplus.FactElect` and its [README](src/Acontplus.FactElect/README.md).
+- For Ecuadorian electronic invoicing, see `Acontplus.Billing` and its [README](src/Acontplus.Billing/README.md).
 
 ---
 

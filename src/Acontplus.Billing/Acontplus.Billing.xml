@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Acontplus.Billing</name>
+    </assembly>
+    <members>
+        <member name="M:Acontplus.Billing.Interfaces.Services.IAtsXmlService.CreateAtsXmlAsync(Acontplus.Billing.Models.Documents.AtsData)">
+            <summary>
+            Creates the ATS XML document.
+            </summary>
+            <param name="atsData">The data required to generate the ATS XML.</param>
+            <returns>A byte array representing the generated XML.</returns>
+        </member>
+    </members>
+</doc>

@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApi.Controllers;
+using Acontplus.Billing.Helpers;
+
+namespace Acontplus.TestApi.Controllers;
 
 public class DocumentoElectronicoController(IXmlSriFileService xmlSriFileService) : BaseApiController
 {

@@ -7,7 +7,7 @@ Welcome to the documentation wiki for the Acontplus S.A.S. .NET Libraries soluti
 - [Installation Guide](Installation.md)
 - Usage Guides:
   - [Acontplus.Core](Usage/Core.md)
-  - [Acontplus.FactElect](Usage/FactElect.md)
+  - [Acontplus.Billing](Usage/Billing.md)
   - [Acontplus.Notifications](Usage/Notifications.md)
   - [Acontplus.Reports](Usage/Reports.md)
   - [Acontplus.Persistence.SqlServer](Usage/PersistenceSqlServer.md)

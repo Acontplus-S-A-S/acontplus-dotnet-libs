@@ -1,11 +1,9 @@
 using Acontplus.ApiDocumentation;
+using Acontplus.Billing.Models.Documents;
+using Acontplus.Billing.Services.Documents;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
 using Acontplus.Core.Extensions;
-using Acontplus.FactElect.Models.Documents;
-using Acontplus.FactElect.Services.Authentication;
-using Acontplus.FactElect.Services.External;
-using Acontplus.FactElect.Services.Validation;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
