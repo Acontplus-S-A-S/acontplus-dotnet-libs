@@ -1,11 +1,239 @@
 ﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+# Acontplus .NET Libraries - Git Ignore Configuration
+# Updated: November 2025
 ################################################################################
-node_modules
+
+###################
+# Build Outputs
+###################
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild[Ll]og.*
+*.binlog
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/nupkg/
+packages/
+!packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+*.VisualState.xml
+TestResult.xml
+[Dd]ebugPS/
+[Rr]eleasePS/
+
+# Build temp files
 bin-debug/
 bin-release/
-[Oo]bj/
-[Bb]in/
-/.vs
+_build/
+_site/
+
+###################
+# IDE & Editors
+###################
+
+# Visual Studio
+.vs/
+*.suo
 *.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio Code
+.vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# JetBrains Rider / IntelliJ IDEA
+.idea/
+*.sln.iml
+*.DotSettings.user
+
+# Visual Studio Code Workspaces
+*.code-workspace
+
+###################
+# Application Files
+###################
+
+# Environment & Configuration Files
+.env
+.env.local
+.env.*.local
+*.Development.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+
+# Logs
+*.log
+logs/
+*.log.*
+*.txt
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+###################
+# .NET Specific
+###################
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop
+StyleCopReport.xml
+
+# Publish Profiles (sensitive)
+**/Properties/PublishProfiles/*.pubxml
+**/Properties/PublishProfiles/*.pubxml.user
+
+# NuGet Symbol Packages
+*.snupkg
+
+# Entity Framework Migrations (optional - comment out if you want to track)
+# **/Migrations/
+
+# Click-Once directory
+publish/
+
+# Publish Web Output
+*.[Pp]ublish.xml
+*.azurePubxml
+
+# Web workbench (sass)
+.sass-cache/
+
+###################
+# Node / Frontend
+###################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+.cache/
+
+###################
+# Database
+###################
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.sql.bak
+
+###################
+# OS Generated
+###################
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+.Trash-*
+
+###################
+# Security & Secrets
+###################
+*.pfx
+*.p12
+*.key
+*.pem
+secrets.json
+appsecrets.json
+*.secret
+
+###################
+# AWS & Cloud
+###################
+.aws/
+*.aws
+
+###################
+# Reports & Documentation
+###################
+# Keep intentional documentation but ignore generated reports
+**/bin/Reports/
+**/obj/Reports/
+
+###################
+# Rider/Resharper
+###################
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.idea/
+*.sln.iml
+
+###################
+# Backup & Temporary
+###################
+*.bak
+*.backup
+*.orig
+*.rej
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+ServiceFabricBackup/
+*.rptproj.bak
+
+###################
+# Specific Exclusions
+###################
+# Test API Development Settings (already specified)
 apps/src/Acontplus.TestApi/appsettings.Development.json
+
+# Include important config templates (negative patterns)
+!**/appsettings.json
+!**/appsettings.*.json.template
