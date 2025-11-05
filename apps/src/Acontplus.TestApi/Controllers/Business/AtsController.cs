@@ -1,4 +1,6 @@
-namespace Acontplus.TestApi.Controllers;
+namespace Acontplus.TestApi.Controllers.Business;
+
+using Acontplus.TestApi.Controllers.Core;
 
 public class AtsController(IAtsService atsService, IAtsXmlService atsXmlService) : BaseApiController
 {

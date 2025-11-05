@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers;
+﻿namespace Acontplus.TestApi.Controllers.Core;
 
 public class EncryptionController(
     IDataEncryptionService dataEncryptionService,
@@ -9,7 +9,7 @@ public class EncryptionController(
     public async Task<IActionResult> EncryptData([FromBody] EncryptRequest request)
     {
         // var encryptedBytes = dataEncryptionService.EncryptToBytes(request.PlainText);
-        // var encrypted = 
+        // var encrypted =
         var encryptedBytes = await sensitiveDataEncryptionService.EncryptToBytesAsync("ivan", request.PlainText);
 
         // Store encryptedData and extracted salt in DB

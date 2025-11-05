@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers
+﻿namespace Acontplus.TestApi.Controllers.Core
 {
     [Route("api/[controller]")]
     [ApiController]

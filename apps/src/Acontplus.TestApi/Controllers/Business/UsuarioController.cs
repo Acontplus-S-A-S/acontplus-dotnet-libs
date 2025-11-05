@@ -1,6 +1,6 @@
 using Acontplus.Utilities.Mapping;
 
-namespace Acontplus.TestApi.Controllers
+namespace Acontplus.TestApi.Controllers.Business
 {
     [Route("api/[controller]")]
     [ApiController]

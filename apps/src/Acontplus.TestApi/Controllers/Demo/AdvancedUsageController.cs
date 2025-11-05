@@ -2,7 +2,7 @@ using Acontplus.Core.Domain.Enums;
 using Acontplus.Services.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Acontplus.TestApi.Controllers;
+namespace Acontplus.TestApi.Controllers.Demo;
 
 /// <summary>
 /// Controller demonstrating advanced usage patterns from Acontplus.Services README.

@@ -1,4 +1,6 @@
-﻿namespace Acontplus.TestApi.Controllers;
+﻿namespace Acontplus.TestApi.Controllers.Infrastructure;
+
+using Acontplus.TestApi.Controllers.Core;
 
 public class BarcodeController(IUsuarioService usuarioService) : BaseApiController
 {

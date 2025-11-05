@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers
+﻿namespace Acontplus.TestApi.Controllers.Core
 {
     public class SecurityController : BaseApiController
     {
@@ -11,7 +11,7 @@
 
         // Endpoint to set password (encrypts and hashes the password)
         [HttpPost("setpassword")]
-        public IActionResult SetPassword([FromBody] PasswordRequest request)
+        public IActionResult SetPassword([FromBody] SetPasswordRequest request)
         {
             var result = _dataSecurityService.SetPassword(request.Password);
             return Ok(new { EncryptedPassword = Convert.ToBase64String(result.EncryptedPassword), result.PasswordHash });
@@ -35,19 +35,19 @@
         }
     }
 
-    public class PasswordRequest
+    public class SetPasswordRequest
     {
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 
     public class EncryptedPasswordRequest
     {
-        public string EncryptedPassword { get; set; }
+        public string EncryptedPassword { get; set; } = string.Empty;
     }
 
     public class VerifyPasswordRequest
     {
-        public string Password { get; set; }
-        public string PasswordHash { get; set; }
+        public string Password { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
     }
 }

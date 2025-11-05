@@ -1,6 +1,6 @@
 using Acontplus.Services.Services.Abstractions;
 
-namespace Acontplus.TestApi.Controllers;
+namespace Acontplus.TestApi.Controllers.Infrastructure;
 
 /// <summary>
 /// Controller to test Acontplus.Services configuration and injection.

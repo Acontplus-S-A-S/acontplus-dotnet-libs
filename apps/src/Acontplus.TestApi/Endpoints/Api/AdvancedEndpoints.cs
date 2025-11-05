@@ -1,7 +1,7 @@
 using Acontplus.Services.Services.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
-namespace Acontplus.TestApi.Endpoints;
+namespace Acontplus.TestApi.Endpoints.Api;
 
 /// <summary>
 /// Extension methods for mapping advanced service demonstration endpoints.

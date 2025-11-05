@@ -15,10 +15,9 @@ public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Entity<TId> other)
-            return false;
-
-        return ReferenceEquals(this, other) || GetType() == other.GetType() && !Id.Equals(default) && !other.Id.Equals(default) && Id.Equals(other.Id);
+        return obj is not Entity<TId> other
+            ? false
+            : ReferenceEquals(this, other) || GetType() == other.GetType() && !Id.Equals(default) && !other.Id.Equals(default) && Id.Equals(other.Id);
     }
 
     public static bool operator ==(Entity<TId>? a, Entity<TId>? b)

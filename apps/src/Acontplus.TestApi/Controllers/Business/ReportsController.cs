@@ -1,6 +1,6 @@
 using Acontplus.Reports.DTOs;
 
-namespace Acontplus.TestApi.Controllers;
+namespace Acontplus.TestApi.Controllers.Business;
 
 [ApiController]
 [Route("api/[controller]")]

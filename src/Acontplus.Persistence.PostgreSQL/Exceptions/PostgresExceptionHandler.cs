@@ -20,31 +20,25 @@ public static class PostgresExceptionHandler
                 "Duplicate key violation",
                 ex);
         }
-        if (ex.SqlState == "23503")
-        {
-            return new SqlErrorInfo(
+        return ex.SqlState == "23503"
+            ? new SqlErrorInfo(
                 ErrorType.Conflict,
                 "PG_FOREIGN_KEY_VIOLATION",
                 "Foreign key constraint violation",
-                ex);
-        }
-        if (ex.SqlState == "23502")
-        {
-            return new SqlErrorInfo(
+                ex)
+            : ex.SqlState == "23502"
+            ? new SqlErrorInfo(
                 ErrorType.Validation,
                 "PG_NOT_NULL_VIOLATION",
                 "Null value in column violates not-null constraint",
-                ex);
-        }
-        if (ex.SqlState == "22001")
-        {
-            return new SqlErrorInfo(
+                ex)
+            : ex.SqlState == "22001"
+            ? new SqlErrorInfo(
                 ErrorType.Validation,
                 "PG_STRING_TOO_LONG",
                 "String data, right truncated",
-                ex);
-        }
-        return ex.SqlState == "40001"
+                ex)
+            : ex.SqlState == "40001"
             ? new SqlErrorInfo(
                 ErrorType.Conflict,
                 "PG_SERIALIZATION_FAILURE",
