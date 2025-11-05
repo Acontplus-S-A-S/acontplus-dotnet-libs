@@ -199,6 +199,84 @@
             Executes a SQL query designed to return a single row.
             </summary>
         </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a SQL query and returns the first row or null.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a query and returns a single scalar value.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Checks if any rows exist for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Gets the count of rows for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Gets the long count of rows for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated SQL query with automatic count query.
+            Uses SQL Server OFFSET-FETCH with optimized query plans.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated SQL query with custom count query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated stored procedure.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes multiple queries in a single batch.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes multiple non-query commands in a batch.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Bulk insert using SqlBulkCopy for optimal performance.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync(System.Data.DataTable,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Bulk insert from DataTable using SqlBulkCopy.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Streams query results as an async enumerable for memory-efficient processing.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ValidateAndSanitizeSortColumn(System.String)">
+            <summary>
+            Validates and sanitizes sort column names to prevent SQL injection.
+            Only allows alphanumeric characters, underscores, and dots for qualified names.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ApplyPaginationFilters(System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.PaginationDto)">
+            <summary>
+            Applies pagination filters to parameters dictionary.
+            Merges pagination filters with existing parameters.
+            </summary>
+        </member>
         <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
             <summary>
             OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
