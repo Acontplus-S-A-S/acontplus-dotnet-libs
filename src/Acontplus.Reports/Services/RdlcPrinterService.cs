@@ -1,13 +1,8 @@
-﻿using Acontplus.Utilities.Data;
+using Acontplus.Utilities.Data;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
 
 namespace Acontplus.Reports.Services;
-
-public interface IRdlcPrinterService
-{
-    public bool Print(RdlcPrinter rdlcPrinter, RdlcPrintRequest printRequest);
-}
 
 public class RdlcPrinterService : IRdlcPrinterService
 {
