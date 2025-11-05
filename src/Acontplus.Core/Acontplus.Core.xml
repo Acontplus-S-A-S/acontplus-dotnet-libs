@@ -4,6 +4,128 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Core.Abstractions.Persistence.IAdoRepository">
+            <summary>
+            ADO.NET repository interface for high-performance, raw SQL operations.
+            Optimized for scalable, high-workload scenarios with SQL Server 2022 and PostgreSQL.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a SQL query and maps results to a list of objects.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a SQL query and returns a DataSet with multiple tables.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a non-query SQL command (INSERT, UPDATE, DELETE).
+            Returns the number of affected rows.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a SQL query designed to return a single row or null.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a SQL query and returns the first row or null.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a query and returns a single scalar value (e.g., COUNT, MAX, SUM).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Checks if any rows exist for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Gets the count of rows for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Gets the long count of rows for the given query (for tables with billions of rows).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated SQL query with automatic count query.
+            For SQL Server 2022: Uses OFFSET-FETCH with optimized query plans.
+            For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
+            </summary>
+            <param name="sql">Main SELECT query (without OFFSET/LIMIT)</param>
+            <param name="pagination">Pagination parameters including sort, filters</param>
+            <param name="parameters">Query parameters</param>
+            <param name="options">Command options</param>
+            <param name="cancellationToken">Cancellation token</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated SQL query with a custom count query for complex scenarios.
+            Use this when the count query needs to be different from the main query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a paginated stored procedure that returns results and total count.
+            Expects the stored procedure to have @PageIndex, @PageSize parameters
+            and return both results and total count (via output parameter or second result set).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes multiple queries in a single batch for better performance.
+            Returns multiple result sets.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes multiple non-query commands in a batch.
+            Returns total affected rows.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.BulkInsertAsync``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Bulk insert data using optimized bulk copy operations.
+            For SQL Server: Uses SqlBulkCopy.
+            For PostgreSQL: Uses COPY command.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.BulkInsertAsync(System.Data.DataTable,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Bulk insert data from a DataTable using optimized bulk copy operations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Streams query results as an async enumerable for memory-efficient processing.
+            Ideal for processing large datasets without loading all into memory.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.SetTransaction(System.Data.Common.DbTransaction)">
+            <summary>
+            Sets the current database transaction from the Unit of Work.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.SetConnection(System.Data.Common.DbConnection)">
+            <summary>
+            Sets the current database connection from the Unit of Work.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ClearTransaction">
+            <summary>
+            Clears the current transaction and connection.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.GetQueryable(System.Boolean,System.Linq.Expressions.Expression{System.Func{`0,System.Object}}[])">
             <summary>
             Gets a queryable for building complex queries with joins, custom projections, and advanced filtering.
@@ -43,6 +165,77 @@
             <param name="pagination">Pagination parameters</param>
             <param name="cancellationToken">Cancellation token</param>
             <returns>Paged query results</returns>
+        </member>
+        <member name="T:Acontplus.Core.Configuration.PaginationMetadataOptions">
+            <summary>
+            Configuration options for controlling pagination metadata exposure.
+            Allows fine-grained control over what metadata is returned in PagedResult.
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Configuration.PaginationMetadataOptions.SectionName">
+            <summary>
+            Section name for configuration binding.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludeQuerySource">
+            <summary>
+            Include query source information (e.g., stored procedure name, raw query indicator).
+            ⚠️ Security: Set to false in production to avoid exposing implementation details.
+            Default: false (secure by default)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludeStoredProcedureName">
+            <summary>
+            Include stored procedure names in metadata.
+            ⚠️ Security: Only enable in development/staging environments.
+            Default: false (secure by default)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludePerformanceMetrics">
+            <summary>
+            Include performance metrics (query duration, count duration).
+            Generally safe to expose, useful for monitoring.
+            Default: true
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludeFilterInfo">
+            <summary>
+            Include filter and search information.
+            Generally safe, helps clients understand the results.
+            Default: true
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludeSortInfo">
+            <summary>
+            Include sorting information.
+            Generally safe, helps clients understand the results.
+            Default: true
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Configuration.PaginationMetadataOptions.IncludeAppliedFilters">
+            <summary>
+            Include applied filters details (for debugging).
+            ⚠️ Security: May expose sensitive filter values.
+            Default: false (secure by default)
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Configuration.PaginationMetadataOptions.Validate(System.String)">
+            <summary>
+            Validate configuration on startup.
+            Logs warnings if insecure settings are detected in production.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Constants.ApiMetadataKeys">
+            <summary>
+            Metadata keys for API-level response metadata (tracing, correlation, versioning, etc.).
+            For pagination-specific metadata, see <see cref="T:Acontplus.Core.Constants.PaginationMetadataKeys"/>.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Constants.PaginationMetadataKeys">
+            <summary>
+            Metadata keys specifically for pagination-related information in PagedResult.
+            Use these constants to ensure consistency across all paged query implementations.
+            </summary>
         </member>
         <member name="T:Acontplus.Core.Domain.Common.Events.IDomainEventHandler`1">
             <summary>
