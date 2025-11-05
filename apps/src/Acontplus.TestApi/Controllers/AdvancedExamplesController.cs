@@ -201,7 +201,7 @@ public class AdvancedExamplesController : ControllerBase
     /// Demonstrates comprehensive data validation with multiple validators.
     /// </summary>
     [HttpPost("validate")]
-    public IActionResult ValidateData([FromBody] ValidationRequest request)
+    public IActionResult ValidateData([FromBody] ControllerValidationRequest request)
     {
         var correlationId = _requestContext.GetCorrelationId();
         var validationResults = new List<ValidationResult>();
@@ -413,7 +413,7 @@ public class AdvancedExamplesController : ControllerBase
     #endregion
 }
 
-public class ValidationRequest
+public class ControllerValidationRequest
 {
     [Required]
     public string Name { get; set; } = string.Empty;

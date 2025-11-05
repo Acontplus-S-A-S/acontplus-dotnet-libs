@@ -3,7 +3,9 @@
 global using Acontplus.Barcode.Models;
 global using Acontplus.Barcode.Utils;
 global using Acontplus.Core.Extensions;
+global using Acontplus.Reports.Configuration;
 global using Acontplus.Reports.Enums;
+global using Acontplus.Reports.Exceptions;
 global using Acontplus.Reports.Interfaces;
 global using Acontplus.Reports.Models;
 global using Acontplus.Utilities.Format;

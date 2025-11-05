@@ -237,7 +237,7 @@ public static class AdvancedEndpoints
     }
 
     private static IResult ValidateDataMinimal(
-        [FromBody] ValidationRequest request,
+        [FromBody] EndpointValidationRequest request,
         IRequestContextService requestContext,
         ILogger<Program> logger)
     {
@@ -294,7 +294,7 @@ public static class AdvancedEndpoints
     }
 }
 
-public class ValidationRequest
+public class EndpointValidationRequest
 {
     public string Name { get; set; } = string.Empty;
     public int Age { get; set; }

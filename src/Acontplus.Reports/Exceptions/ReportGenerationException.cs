@@ -1,0 +1,85 @@
+namespace Acontplus.Reports.Exceptions;
+
+/// <summary>
+/// Exception thrown when report generation fails
+/// </summary>
+public class ReportGenerationException : Exception
+{
+    public string? ReportPath { get; }
+    public string? ReportFormat { get; }
+
+    public ReportGenerationException(string message) : base(message)
+    {
+    }
+
+    public ReportGenerationException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+
+    public ReportGenerationException(string message, string reportPath, string reportFormat)
+        : base(message)
+    {
+        ReportPath = reportPath;
+        ReportFormat = reportFormat;
+    }
+
+    public ReportGenerationException(string message, string reportPath, string reportFormat, Exception innerException)
+        : base(message, innerException)
+    {
+        ReportPath = reportPath;
+        ReportFormat = reportFormat;
+    }
+}
+
+/// <summary>
+/// Exception thrown when report size exceeds maximum allowed
+/// </summary>
+public class ReportSizeExceededException : ReportGenerationException
+{
+    public long ReportSize { get; }
+    public long MaxSize { get; }
+
+    public ReportSizeExceededException(long reportSize, long maxSize)
+        : base($"Report size ({reportSize} bytes) exceeds maximum allowed size ({maxSize} bytes)")
+    {
+        ReportSize = reportSize;
+        MaxSize = maxSize;
+    }
+}
+
+/// <summary>
+/// Exception thrown when report generation times out
+/// </summary>
+public class ReportTimeoutException : ReportGenerationException
+{
+    public int TimeoutSeconds { get; }
+
+    public ReportTimeoutException(int timeoutSeconds)
+        : base($"Report generation timed out after {timeoutSeconds} seconds")
+    {
+        TimeoutSeconds = timeoutSeconds;
+    }
+
+    public ReportTimeoutException(string reportPath, int timeoutSeconds)
+        : base($"Report generation for '{reportPath}' timed out after {timeoutSeconds} seconds")
+    {
+        TimeoutSeconds = timeoutSeconds;
+    }
+}
+
+/// <summary>
+/// Exception thrown when report file is not found
+/// </summary>
+public class ReportNotFoundException : ReportGenerationException
+{
+    public ReportNotFoundException(string reportPath)
+        : base($"Report file not found at path: {reportPath}")
+    {
+    }
+
+    public ReportNotFoundException(string reportPath, Exception innerException)
+        : base($"Report file not found at path: {reportPath}", innerException)
+    {
+    }
+}

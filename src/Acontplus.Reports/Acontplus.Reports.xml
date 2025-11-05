@@ -4,5 +4,163 @@
         <name>Acontplus.Reports</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Reports.Configuration.ReportOptions">
+            <summary>
+            Configuration options for report generation services
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.MainDirectory">
+            <summary>
+            Main directory where RDLC report files are stored
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.ExternalDirectory">
+            <summary>
+            External directory for offline or external reports
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.MaxReportSizeBytes">
+            <summary>
+            Maximum size in bytes for a single report output (default 100MB)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.ReportGenerationTimeoutSeconds">
+            <summary>
+            Timeout for report generation in seconds (default 300 seconds / 5 minutes)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.EnableReportDefinitionCache">
+            <summary>
+            Enable caching of report definitions (default true)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.MaxCachedReportDefinitions">
+            <summary>
+            Maximum number of cached report definitions (default 100)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.CacheTtlMinutes">
+            <summary>
+            Time-to-live for cached report definitions in minutes (default 60 minutes)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.EnableMemoryPooling">
+            <summary>
+            Enable memory pooling for better performance (default true)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.MaxConcurrentReports">
+            <summary>
+            Maximum concurrent report generations (default 10)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.EnableDetailedLogging">
+            <summary>
+            Enable detailed logging for report operations (default false)
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Exceptions.ReportGenerationException">
+            <summary>
+            Exception thrown when report generation fails
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Exceptions.ReportSizeExceededException">
+            <summary>
+            Exception thrown when report size exceeds maximum allowed
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Exceptions.ReportTimeoutException">
+            <summary>
+            Exception thrown when report generation times out
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Exceptions.ReportNotFoundException">
+            <summary>
+            Exception thrown when report file is not found
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Extensions.ServiceCollectionExtensions">
+            <summary>
+            Extension methods for registering report services in the dependency injection container
+            </summary>
+        </member>
+        <member name="M:Acontplus.Reports.Extensions.ServiceCollectionExtensions.AddReportServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds report generation services to the service collection
+            </summary>
+            <param name="services">The service collection</param>
+            <param name="configuration">The configuration instance</param>
+            <returns>The service collection for chaining</returns>
+        </member>
+        <member name="M:Acontplus.Reports.Extensions.ServiceCollectionExtensions.AddReportServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Acontplus.Reports.Configuration.ReportOptions})">
+            <summary>
+            Adds report generation services with custom configuration
+            </summary>
+            <param name="services">The service collection</param>
+            <param name="configureOptions">Action to configure report options</param>
+            <returns>The service collection for chaining</returns>
+        </member>
+        <member name="T:Acontplus.Reports.Interfaces.IRdlcReportService">
+            <summary>
+            Service for generating RDLC reports with support for multiple formats and data sources
+            </summary>
+        </member>
+        <member name="M:Acontplus.Reports.Interfaces.IRdlcReportService.GetReportAsync(System.Data.DataSet,System.Data.DataSet,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Generates a report asynchronously from the provided parameters and data
+            </summary>
+            <param name="parameters">DataSet containing report parameters, data sources configuration, and report properties</param>
+            <param name="data">DataSet containing the actual data for the report</param>
+            <param name="externalDirectory">Whether to use external directory for report files</param>
+            <param name="cancellationToken">Cancellation token to cancel the operation</param>
+            <returns>ReportResponse containing the generated report content</returns>
+        </member>
+        <member name="M:Acontplus.Reports.Interfaces.IRdlcReportService.GetErrorAsync">
+            <summary>
+            Gets a default error report (typically a "Not Found" PDF)
+            </summary>
+            <returns>ReportResponse containing the error report</returns>
+        </member>
+        <member name="M:Acontplus.Reports.Interfaces.IRdlcReportService.GetReport(System.Data.DataSet,System.Data.DataSet,System.Boolean)">
+            <summary>
+            Legacy synchronous method - prefer using GetReportAsync for better performance
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Services.MemoryStreamPool">
+            <summary>
+            Thread-safe object pool for MemoryStream instances to reduce GC pressure
+            </summary>
+        </member>
+        <member name="M:Acontplus.Reports.Services.MemoryStreamPool.GetStream">
+            <summary>
+            Gets a pooled MemoryStream
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Services.PooledMemoryStream">
+            <summary>
+            MemoryStream wrapper that returns rented arrays to the pool when disposed
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Services.RdlcReportService">
+            <summary>
+            High-performance RDLC report generation service with async support, caching, and concurrency control
+            </summary>
+        </member>
+        <member name="M:Acontplus.Reports.Services.RdlcReportService.GetReportAsync(System.Data.DataSet,System.Data.DataSet,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Acontplus.Reports.Services.RdlcReportService.GetReport(System.Data.DataSet,System.Data.DataSet,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:Acontplus.Reports.Services.CachedReportDefinition">
+            <summary>
+            Cache entry for report definitions with expiration
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Services.ReportDefinitionCache">
+            <summary>
+            Thread-safe cache for report definitions with size limits and TTL
+            </summary>
+        </member>
     </members>
 </doc>

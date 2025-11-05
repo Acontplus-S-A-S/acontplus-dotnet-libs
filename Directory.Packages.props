@@ -48,6 +48,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="9.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.10" />
     <PackageVersion Include="ReportViewerCore.NETCore" Version="15.1.26" />
     <PackageVersion Include="Scriban" Version="6.5.0" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />

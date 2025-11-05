@@ -8,6 +8,7 @@ using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
 using Acontplus.Persistence.SqlServer.Repositories;
+using Acontplus.Reports.Extensions;
 using Acontplus.Services.Extensions;
 using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Extensions;
@@ -46,6 +47,9 @@ try
 
     // Configure Acontplus.Services - Core infrastructure
     builder.Services.AddAcontplusServices(builder.Configuration);
+
+    // Configure Report Services
+    builder.Services.AddReportServices(builder.Configuration);
 
     // Configure application services
     builder.Services.AddTestServices(builder.Configuration);

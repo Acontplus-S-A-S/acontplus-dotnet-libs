@@ -1,71 +1,146 @@
 ﻿using Acontplus.Utilities.Data;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Web;
 using static System.Enum;
 
 namespace Acontplus.Reports.Services
 {
-    public class RdlcReportService(IConfiguration configuration) : IRdlcReportService, IDisposable
+    /// <summary>
+    /// High-performance RDLC report generation service with async support, caching, and concurrency control
+    /// </summary>
+    public class RdlcReportService : IRdlcReportService, IDisposable
     {
+        private readonly ILogger<RdlcReportService> _logger;
+        private readonly ReportOptions _options;
         private readonly ConcurrentDictionary<string, Lazy<MemoryStream>> _reportCache = new();
+        private readonly SemaphoreSlim _concurrencyLimiter;
         private bool _disposed;
-        private readonly string _mainDirectory = configuration["Reports:MainDirectory"]!;
 
-        public ReportResponse GetReport(DataSet parameters, DataSet data, bool externalDirectory)
+        public RdlcReportService(ILogger<RdlcReportService> logger, IOptions<ReportOptions> options)
         {
-            var reportProps = DataTableMapper.MapDataRowToModel<ReportProps>(parameters.Tables["ReportProps"].Rows[0]);
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options?.Value ?? new ReportOptions();
+            _concurrencyLimiter = new SemaphoreSlim(_options.MaxConcurrentReports, _options.MaxConcurrentReports);
+        }
 
-            using var lr = new LocalReport();
-            var reportPath = GetReportPath(reportProps, externalDirectory);
+        /// <inheritdoc />
+        public async Task<ReportResponse> GetReportAsync(DataSet parameters, DataSet data, bool externalDirectory = false, CancellationToken cancellationToken = default)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            ReportProps? reportProps = null;
 
-            var reportDefinitionStream = _reportCache.GetOrAdd(reportPath, path =>
+            try
             {
-                return new Lazy<MemoryStream>(() =>
+                // Enforce concurrency limit
+                await _concurrencyLimiter.WaitAsync(cancellationToken);
+
+                try
                 {
-                    var stream = RdlcHelpers.LoadReportDefinition(path);
-                    return stream;
-                });
-            }).Value;
+                    reportProps = DataTableMapper.MapDataRowToModel<ReportProps>(
+                        parameters.Tables["ReportProps"]?.Rows[0]
+                        ?? throw new ArgumentException("ReportProps table is required in parameters DataSet"));
 
-            reportDefinitionStream.Seek(0, SeekOrigin.Begin); // Ensure the stream position is reset before reading
-            lr.LoadReportDefinition(reportDefinitionStream);
+                    if (_options.EnableDetailedLogging)
+                    {
+                        _logger.LogInformation("Starting report: {Path}, Format: {Format}",
+                            reportProps.ReportPath, reportProps.ReportFormat);
+                    }
 
-            AddDataSources(lr, parameters, data);
-            AddReportParameters(lr, parameters, data);
+                    using var lr = new LocalReport();
+                    var reportPath = GetReportPath(reportProps, externalDirectory);
 
-            var fileReport = lr.Render(reportProps.ReportFormat, null, out _, out _, out _, out _, out _);
-            var response = BuildReportResponse(reportProps, fileReport);
+                    var reportDefinitionStream = _reportCache.GetOrAdd(reportPath, path =>
+                    {
+                        return new Lazy<MemoryStream>(() => RdlcHelpers.LoadReportDefinition(path));
+                    }).Value;
 
-            return response;
+                    reportDefinitionStream.Seek(0, SeekOrigin.Begin);
+                    lr.LoadReportDefinition(reportDefinitionStream);
+
+                    await Task.Run(() => AddDataSources(lr, parameters, data), cancellationToken);
+                    await Task.Run(() => AddReportParameters(lr, parameters, data), cancellationToken);
+
+                    // Generate with timeout
+                    var reportTask = Task.Run(() =>
+                        lr.Render(reportProps.ReportFormat, null, out _, out _, out _, out _, out _),
+                        cancellationToken);
+
+                    var timeoutTask = Task.Delay(
+                        TimeSpan.FromSeconds(_options.ReportGenerationTimeoutSeconds),
+                        cancellationToken);
+
+                    if (await Task.WhenAny(reportTask, timeoutTask) == timeoutTask)
+                    {
+                        throw new ReportTimeoutException(reportPath, _options.ReportGenerationTimeoutSeconds);
+                    }
+
+                    var fileReport = await reportTask;
+
+                    if (fileReport.Length > _options.MaxReportSizeBytes)
+                    {
+                        throw new ReportSizeExceededException(fileReport.Length, _options.MaxReportSizeBytes);
+                    }
+
+                    var response = BuildReportResponse(reportProps, fileReport);
+
+                    stopwatch.Stop();
+                    _logger.LogInformation("Report generated: {Path}, {Size} bytes, {Duration}ms",
+                        reportProps.ReportPath, fileReport.Length, stopwatch.ElapsedMilliseconds);
+
+                    return response;
+                }
+                finally
+                {
+                    _concurrencyLimiter.Release();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Report cancelled: {Path}", reportProps?.ReportPath ?? "Unknown");
+                throw;
+            }
+            catch (ReportGenerationException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating report: {Path}", reportProps?.ReportPath ?? "Unknown");
+                throw new ReportGenerationException("Report generation failed",
+                    reportProps?.ReportPath ?? "Unknown",
+                    reportProps?.ReportFormat ?? "Unknown", ex);
+            }
+        }
+
+        /// <inheritdoc />
+        [Obsolete("Use GetReportAsync for better performance and scalability")]
+        public ReportResponse GetReport(DataSet parameters, DataSet data, bool externalDirectory = false)
+        {
+            return GetReportAsync(parameters, data, externalDirectory).GetAwaiter().GetResult();
         }
 
         private string GetReportPath(ReportProps reportProps, bool offline)
         {
-            if (offline)
+            if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
             {
-                var value = configuration["Reports:ExternalDirectory"];
-                if (value != null)
-                {
-                    var reportPath = reportProps.ReportPath.TrimStart('/', '\\');
-                    return Path.Combine(value, reportPath);
-                }
-            }
-            else
-            {
-                var mainPath = Path.Combine(Directory.GetCurrentDirectory(), _mainDirectory);
-                var paths = reportProps.ReportPath.Split("/");
-                paths = paths.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-
-                return paths.Length switch
-                {
-                    1 => Path.Combine(mainPath, paths[0]),
-                    2 => Path.Combine(mainPath, paths[0], paths[1]),
-                    _ => Path.Combine(mainPath, reportProps.ReportPath),
-                };
+                var reportPath = reportProps.ReportPath.TrimStart('/', '\\');
+                return Path.Combine(_options.ExternalDirectory, reportPath);
             }
 
-            return string.Empty;
+            var mainPath = Path.Combine(Directory.GetCurrentDirectory(), _options.MainDirectory);
+            var paths = reportProps.ReportPath.Split("/");
+            paths = paths.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+            return paths.Length switch
+            {
+                1 => Path.Combine(mainPath, paths[0]),
+                2 => Path.Combine(mainPath, paths[0], paths[1]),
+                _ => Path.Combine(mainPath, reportProps.ReportPath),
+            };
         }
 
         private void AddDataSources(LocalReport lr, DataSet parameters, DataSet data)
@@ -186,6 +261,7 @@ namespace Acontplus.Reports.Services
             if (disposing)
             {
                 CleanupCache();
+                _concurrencyLimiter?.Dispose();
             }
 
             _disposed = true;
