@@ -24,12 +24,12 @@ public class CircuitBreakerHealthCheck : IHealthCheck
 
             var data = new Dictionary<string, object>
             {
-                ["default"] = defaultState.ToString(),
-                ["api"] = apiState.ToString(),
-                ["database"] = databaseState.ToString(),
-                ["external"] = externalState.ToString(),
-                ["auth"] = authState.ToString(),
-                ["lastCheckTime"] = DateTime.UtcNow
+                [HealthCheckMetadataKeys.DefaultCircuit] = defaultState.ToString(),
+                [HealthCheckMetadataKeys.ApiCircuit] = apiState.ToString(),
+                [HealthCheckMetadataKeys.DatabaseCircuit] = databaseState.ToString(),
+                [HealthCheckMetadataKeys.ExternalCircuit] = externalState.ToString(),
+                [HealthCheckMetadataKeys.AuthCircuit] = authState.ToString(),
+                [HealthCheckMetadataKeys.LastCheckTime] = DateTime.UtcNow
             };
 
             // Check if any critical circuits are open

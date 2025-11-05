@@ -11,6 +11,7 @@ global using Acontplus.Reports.Helpers;
 global using Acontplus.Reports.Interfaces;
 global using Acontplus.Utilities.Format;
 global using Acontplus.Utilities.IO;
+global using Acontplus.Utilities.Security.Helpers;
 global using Microsoft.Reporting.NETCore;
 global using System.Data;
 global using System.Text;

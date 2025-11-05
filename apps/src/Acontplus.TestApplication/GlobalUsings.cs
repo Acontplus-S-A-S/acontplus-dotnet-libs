@@ -1,6 +1,7 @@
 // Global using directives
 
 global using Acontplus.Core.Abstractions.Persistence;
+global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;

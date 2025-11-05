@@ -1,9 +1,11 @@
 ﻿global using Acontplus.Core.Abstractions.Persistence;
+global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Common.Entities;
 global using Acontplus.Core.Domain.Common.Events;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Requests;
+global using Acontplus.Core.DTOs.Responses;
 global using Acontplus.Persistence.Common.Exceptions;
 global using Acontplus.Persistence.SqlServer.Ado.Parameters;
 global using Acontplus.Persistence.SqlServer.Exceptions;

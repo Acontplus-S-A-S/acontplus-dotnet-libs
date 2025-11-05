@@ -30,7 +30,7 @@ public static class IdentificationEndpoints
 
             // Use the extension method directly
             return await customerService.GetByIdCardAsync(idCard, sriOnly)
-                .ToMinimalApiResultAsync(correlationId);
+                .ToGetMinimalApiResultAsync(correlationId);
         }
         catch (Exception ex)
         {

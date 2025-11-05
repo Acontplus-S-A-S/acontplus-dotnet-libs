@@ -441,6 +441,95 @@
             Ignores all unmapped properties.
             </summary>
         </member>
+        <member name="T:Acontplus.Utilities.Security.Helpers.PathSecurityValidator">
+            <summary>
+            Provides secure path validation to prevent directory traversal attacks and other path-based security vulnerabilities.
+            This utility should be used whenever user input or external data is used to construct file paths.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.ValidateAndResolvePath(System.String,System.String)">
+            <summary>
+            Validates that the requested path is within the allowed base directory and doesn't contain path traversal attempts.
+            </summary>
+            <param name="baseDirectory">The base directory that contains allowed files</param>
+            <param name="requestedPath">The requested path to validate (can be relative)</param>
+            <returns>The fully resolved and validated absolute path</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when baseDirectory or requestedPath is null</exception>
+            <exception cref="T:System.Security.SecurityException">Thrown when the path contains invalid characters, attempts directory traversal, or resolves outside the base directory</exception>
+            <remarks>
+            This method performs comprehensive validation including:
+            - Null byte detection
+            - Invalid path character detection
+            - Relative path component detection (../)
+            - Absolute path detection (C:\, /etc/)
+            - UNC path detection (\\server\share)
+            - Path traversal prevention (ensures resolved path stays within base directory)
+            </remarks>
+            <example>
+            <code>
+            var basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+            var userInput = "invoices/2024/invoice.rdlc";
+            var safePath = PathSecurityValidator.ValidateAndResolvePath(basePath, userInput);
+            </code>
+            </example>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.ValidateFileExtension(System.String,System.String[])">
+            <summary>
+            Validates that the file extension is in the allowed list.
+            </summary>
+            <param name="filePath">The file path to validate</param>
+            <param name="allowedExtensions">Array of allowed extensions (e.g., ".rdlc", ".rdl", ".pdf"). Case-insensitive.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when filePath or allowedExtensions is null</exception>
+            <exception cref="T:System.Security.SecurityException">Thrown when the extension is not allowed or missing</exception>
+            <example>
+            <code>
+            PathSecurityValidator.ValidateFileExtension("report.rdlc", ".rdlc", ".rdl");
+            PathSecurityValidator.ValidateFileExtension("document.RDLC", ".rdlc"); // Case-insensitive
+            </code>
+            </example>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.ValidateFileExists(System.String)">
+            <summary>
+            Validates that a file exists at the specified path and is accessible.
+            </summary>
+            <param name="filePath">The file path to check</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when filePath is null</exception>
+            <exception cref="T:System.IO.FileNotFoundException">Thrown when the file doesn't exist</exception>
+            <exception cref="T:System.Security.SecurityException">Thrown when the file is not accessible</exception>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.IsPathWithinDirectory(System.String,System.String)">
+            <summary>
+            Checks if a path is within a specified directory (prevents path traversal).
+            </summary>
+            <param name="path">The path to check (should be absolute)</param>
+            <param name="directory">The directory that should contain the path (should be absolute)</param>
+            <returns>True if path is within directory, false otherwise</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.SanitizeFileName(System.String,System.Char)">
+            <summary>
+            Sanitizes a file name by removing potentially dangerous characters while preserving the extension.
+            Use this for user-provided file names that will be saved to disk.
+            </summary>
+            <param name="fileName">The file name to sanitize</param>
+            <param name="replacement">Character to replace invalid characters with (default: underscore)</param>
+            <returns>A sanitized file name safe for use in file systems</returns>
+            <example>
+            <code>
+            var safe = PathSecurityValidator.SanitizeFileName("my../../../report.pdf");
+            // Result: "my_______report.pdf"
+            </code>
+            </example>
+        </member>
+        <member name="M:Acontplus.Utilities.Security.Helpers.PathSecurityValidator.CombinePathSecurely(System.String,System.String[])">
+            <summary>
+            Validates and combines multiple path segments safely.
+            Throws if any segment attempts path traversal.
+            </summary>
+            <param name="baseDirectory">The base directory</param>
+            <param name="pathSegments">Path segments to combine</param>
+            <returns>The validated combined path</returns>
+            <exception cref="T:System.Security.SecurityException">Thrown if path traversal is detected in any segment</exception>
+        </member>
         <member name="T:Acontplus.Utilities.Security.Interfaces.ISensitiveDataEncryptionService">
             <summary>
             Defines asynchronous methods for encrypting and decrypting sensitive data.

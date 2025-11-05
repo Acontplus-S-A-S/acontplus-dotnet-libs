@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using Acontplus.Core.Extensions;
 using Acontplus.Persistence.PostgreSQL.Mapping;
 
 namespace Acontplus.Persistence.PostgreSQL.Repositories;
@@ -5,6 +7,7 @@ namespace Acontplus.Persistence.PostgreSQL.Repositories;
 /// <summary>
 /// Provides ADO.NET data access operations with retry policy and optional transaction sharing.
 /// Enhanced with PostgreSQL error handling and domain error mapping.
+/// Optimized for PostgreSQL with high-performance, scalable operations.
 /// </summary>
 public class AdoRepository : IAdoRepository
 {
@@ -24,8 +27,8 @@ public class AdoRepository : IAdoRepository
             });
 
     // Fields for sharing connection/transaction with UnitOfWork
-    private DbTransaction _currentTransaction;
-    private DbConnection _currentConnection;
+    private DbTransaction? _currentTransaction;
+    private DbConnection? _currentConnection;
 
     /// <summary>
     /// Constructor for AdoRepository.
@@ -80,7 +83,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Creates and opens a new NpgsqlConnection.
     /// </summary>
-    private async Task<DbConnection> GetOpenConnectionAsync(string connectionStringName,
+    private async Task<DbConnection> GetOpenConnectionAsync(string? connectionStringName,
         CancellationToken cancellationToken)
     {
         if (_currentConnection != null && _currentConnection.State == ConnectionState.Open)
@@ -96,7 +99,7 @@ public class AdoRepository : IAdoRepository
 
         try
         {
-            var connection = new NpgsqlConnection(GetConnectionString(connectionStringName));
+            var connection = new NpgsqlConnection(GetConnectionString(connectionStringName ?? string.Empty));
             await connection.OpenAsync(cancellationToken);
             return connection;
         }
@@ -273,9 +276,9 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a SQL query designed to return a single row.
+    /// Executes a SQL query designed to return a single row or null.
     /// </summary>
-    public async Task<T> QuerySingleOrDefaultAsync<T>(
+    public async Task<T?> QuerySingleOrDefaultAsync<T>(
         string sql,
         Dictionary<string, object>? parameters = null,
         CommandOptionsDto? options = null,
@@ -315,4 +318,761 @@ public class AdoRepository : IAdoRepository
             }
         });
     }
+
+    /// <summary>
+    /// Executes a SQL query and returns the first row or null.
+    /// </summary>
+    public async Task<T?> QueryFirstOrDefaultAsync<T>(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default) where T : class
+    {
+        parameters ??= new Dictionary<string, object>();
+        options ??= new CommandOptionsDto();
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                await using var cmd = CreateCommand(connection, sql, parameters, options);
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+                return await reader.ReadAsync(cancellationToken)
+                    ? await DbDataReaderMapper.MapToObject<T>(reader)
+                    : null;
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(QueryFirstOrDefaultAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing QueryFirstOrDefaultAsync for '{Sql}'.", sql);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    #region Scalar Query Methods
+
+    /// <summary>
+    /// Executes a query and returns a single scalar value.
+    /// </summary>
+    public async Task<TScalar?> ExecuteScalarAsync<TScalar>(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        parameters ??= new Dictionary<string, object>();
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                await using var cmd = CreateCommand(connection, sql, parameters, options);
+                var result = await cmd.ExecuteScalarAsync(cancellationToken);
+
+                if (result == null || result == DBNull.Value)
+                    return default;
+
+                return (TScalar)Convert.ChangeType(result, typeof(TScalar));
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(ExecuteScalarAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing ExecuteScalarAsync for '{Sql}'.", sql);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Checks if any rows exist for the given query.
+    /// </summary>
+    public async Task<bool> ExistsAsync(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        var count = await ExecuteScalarAsync<int>(sql, parameters, options, cancellationToken);
+        return count > 0;
+    }
+
+    /// <summary>
+    /// Gets the count of rows for the given query.
+    /// </summary>
+    public async Task<int> CountAsync(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await ExecuteScalarAsync<int?>(sql, parameters, options, cancellationToken);
+        return result ?? 0;
+    }
+
+    /// <summary>
+    /// Gets the long count of rows for the given query.
+    /// </summary>
+    public async Task<long> LongCountAsync(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await ExecuteScalarAsync<long?>(sql, parameters, options, cancellationToken);
+        return result ?? 0L;
+    }
+
+    #endregion
+
+    #region Paged Query Methods
+
+    /// <summary>
+    /// Executes a paginated SQL query with automatic count query.
+    /// Uses PostgreSQL LIMIT-OFFSET with parallel query support.
+    /// </summary>
+    public async Task<PagedResult<T>> GetPagedAsync<T>(
+        string sql,
+        PaginationDto pagination,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Generate count SQL from the main SQL
+        var countSql = GenerateCountSql(sql);
+        return await GetPagedAsync<T>(sql, countSql, pagination, options, cancellationToken);
+    }
+
+    /// <summary>
+    /// Executes a paginated SQL query with custom count query.
+    /// </summary>
+    public async Task<PagedResult<T>> GetPagedAsync<T>(
+        string sql,
+        string countSql,
+        PaginationDto pagination,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ValidatePagination(pagination);
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Build parameters from pagination filters
+                var parameters = BuildPaginationParameters(pagination);
+
+                // Get total count
+                var totalCount = await CountAsync(countSql, parameters, options, cancellationToken);
+
+                // Build paginated query with ORDER BY and LIMIT-OFFSET
+                var pagedSql = BuildPagedSql(sql, pagination);
+
+                // Add pagination offset/limit parameters
+                parameters["@__Limit"] = pagination.PageSize;
+                parameters["@__Offset"] = (pagination.PageIndex - 1) * pagination.PageSize;
+
+                // Execute paged query
+                await using var cmd = CreateCommand(connection, pagedSql, parameters, options);
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                var items = await reader.ToListAsync<T>(cancellationToken);
+
+                // Build result with metadata using standardized keys
+                var metadata = new Dictionary<string, object>
+                {
+                    [PaginationMetadataKeys.HasFilters] = pagination.Filters?.Any() ?? false,
+                    [PaginationMetadataKeys.HasSearch] = !string.IsNullOrWhiteSpace(pagination.SearchTerm),
+                    [PaginationMetadataKeys.SortBy] = pagination.SortBy ?? string.Empty,
+                    [PaginationMetadataKeys.SortDirection] = pagination.SortDirection.ToString()
+                };
+
+                // Optional: Only add in non-production environments
+                // metadata[PaginationMetadataKeys.QuerySource] = PaginationMetadataKeys.QuerySourceRawQuery;
+
+                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+                {
+                    metadata[PaginationMetadataKeys.SearchTerm] = pagination.SearchTerm;
+                }
+
+                if (pagination.Filters?.Any() == true)
+                {
+                    metadata[PaginationMetadataKeys.FilterCount] = pagination.Filters.Count;
+                }
+
+                return new PagedResult<T>(items, pagination.PageIndex, pagination.PageSize, totalCount, metadata);
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(GetPagedAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing GetPagedAsync for '{Sql}'.", sql);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Executes a paginated stored procedure/function.
+    /// </summary>
+    public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
+        string storedProcedureName,
+        PaginationDto pagination,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ValidatePagination(pagination);
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Build stored procedure parameters from pagination (PostgreSQL convention uses lowercase with underscores)
+                var spParameters = new Dictionary<string, object>
+                {
+                    ["page_index"] = pagination.PageIndex,
+                    ["page_size"] = pagination.PageSize
+                };
+
+                // Add sort parameters if provided
+                if (!string.IsNullOrWhiteSpace(pagination.SortBy))
+                {
+                    spParameters["sort_by"] = ValidateAndSanitizeSortColumn(pagination.SortBy);
+                    spParameters["sort_direction"] = pagination.SortDirection.ToString();
+                }
+
+                // Add search term if provided
+                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+                {
+                    spParameters["search_term"] = pagination.SearchTerm;
+                }
+
+                // Serialize filters to JSON for PostgreSQL JSONB using optimized serialization
+                if (pagination.Filters != null && pagination.Filters.Any())
+                {
+                    var filtersJson = pagination.Filters.SerializeOptimized();
+                    spParameters["filters"] = filtersJson;
+                }
+                else
+                {
+                    spParameters["filters"] = DBNull.Value;
+                }
+
+                var spOptions = options ?? new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
+
+                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, spOptions);
+
+                // Add output parameter for total count
+                CommandParameterBuilder.AddOutputParameter(cmd, "total_count", NpgsqlDbType.Integer, 0);
+
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                var items = await reader.ToListAsync<T>(cancellationToken);
+
+                // Close reader to get output parameters
+                await reader.CloseAsync();
+
+                var totalCount = cmd.Parameters["total_count"].Value != DBNull.Value
+                    ? Convert.ToInt32(cmd.Parameters["total_count"].Value)
+                    : 0;
+
+                // Build result with metadata using standardized keys
+                var metadata = new Dictionary<string, object>
+                {
+                    [PaginationMetadataKeys.HasFilters] = pagination.Filters?.Any() ?? false,
+                    [PaginationMetadataKeys.HasSearch] = !string.IsNullOrWhiteSpace(pagination.SearchTerm),
+                    [PaginationMetadataKeys.SortBy] = pagination.SortBy ?? string.Empty,
+                    [PaginationMetadataKeys.SortDirection] = pagination.SortDirection.ToString()
+                };
+
+                // ⚠️ Security: Only add stored procedure name in development/staging
+                // Uncomment if PaginationMetadataOptions.IncludeStoredProcedureName is enabled:
+                // metadata[PaginationMetadataKeys.QuerySource] = PaginationMetadataKeys.QuerySourceStoredProcedure;
+                // metadata["storedProcedureName"] = storedProcedureName;
+
+                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+                {
+                    metadata[PaginationMetadataKeys.SearchTerm] = pagination.SearchTerm;
+                }
+
+                if (pagination.Filters?.Any() == true)
+                {
+                    metadata[PaginationMetadataKeys.FilterCount] = pagination.Filters.Count;
+                }
+
+                return new PagedResult<T>(items, pagination.PageIndex, pagination.PageSize, totalCount, metadata);
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(GetPagedFromStoredProcedureAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing GetPagedFromStoredProcedureAsync for '{storedProcedureName}'.", storedProcedureName);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    #endregion
+
+    #region Batch Operations
+
+    /// <summary>
+    /// Executes multiple queries in a single batch.
+    /// </summary>
+    public async Task<List<List<T>>> QueryMultipleAsync<T>(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        parameters ??= new Dictionary<string, object>();
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                await using var cmd = CreateCommand(connection, sql, parameters, options);
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+                var results = new List<List<T>>();
+
+                do
+                {
+                    var resultSet = await reader.ToListAsync<T>(cancellationToken);
+                    results.Add(resultSet);
+                } while (await reader.NextResultAsync(cancellationToken));
+
+                return results;
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(QueryMultipleAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing QueryMultipleAsync for '{Sql}'.", sql);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Executes multiple non-query commands in a batch.
+    /// </summary>
+    public async Task<int> ExecuteBatchNonQueryAsync(
+        IEnumerable<(string Sql, Dictionary<string, object>? Parameters)> commands,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        var commandList = commands.ToList();
+        if (!commandList.Any())
+            return 0;
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            DbTransaction? transaction = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Start transaction if not already in one
+                if (_currentTransaction == null)
+                    transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+                var totalAffected = 0;
+
+                foreach (var (sql, parameters) in commandList)
+                {
+                    var cmdParams = parameters ?? new Dictionary<string, object>();
+                    await using var cmd = CreateCommand(connection, sql, cmdParams, options);
+                    if (transaction != null)
+                        cmd.Transaction = (NpgsqlTransaction)transaction;
+
+                    totalAffected += await cmd.ExecuteNonQueryAsync(cancellationToken);
+                }
+
+                if (transaction != null)
+                    await transaction.CommitAsync(cancellationToken);
+
+                return totalAffected;
+            }
+            catch (NpgsqlException ex)
+            {
+                if (transaction != null)
+                    await transaction.RollbackAsync(cancellationToken);
+
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(ExecuteBatchNonQueryAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (transaction != null)
+                    await transaction.RollbackAsync(cancellationToken);
+
+                _logger.LogError(ex, "Unexpected error executing ExecuteBatchNonQueryAsync.");
+                throw;
+            }
+            finally
+            {
+                transaction?.Dispose();
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Bulk insert using PostgreSQL COPY command for optimal performance.
+    /// </summary>
+    public async Task<int> BulkInsertAsync<T>(
+        IEnumerable<T> data,
+        string tableName,
+        Dictionary<string, string>? columnMappings = null,
+        int batchSize = 10000,
+        CancellationToken cancellationToken = default)
+    {
+        var dataTable = ConvertToDataTable(data, columnMappings);
+        return await BulkInsertAsync(dataTable, tableName, columnMappings, batchSize, cancellationToken);
+    }
+
+    /// <summary>
+    /// Bulk insert from DataTable using PostgreSQL COPY command.
+    /// </summary>
+    public async Task<int> BulkInsertAsync(
+        DataTable dataTable,
+        string tableName,
+        Dictionary<string, string>? columnMappings = null,
+        int batchSize = 10000,
+        CancellationToken cancellationToken = default)
+    {
+        if (dataTable == null || dataTable.Rows.Count == 0)
+            return 0;
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                var npgsqlConnection = (NpgsqlConnection)connection;
+                var columns = columnMappings != null
+                    ? string.Join(", ", columnMappings.Values.Select(c => $"\"{c}\""))
+                    : string.Join(", ", dataTable.Columns.Cast<DataColumn>().Select(c => $"\"{c.ColumnName}\""));
+
+                var copyCommand = $"COPY {tableName} ({columns}) FROM STDIN (FORMAT BINARY)";
+
+                await using var writer = await npgsqlConnection.BeginBinaryImportAsync(copyCommand, cancellationToken);
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    await writer.StartRowAsync(cancellationToken);
+                    foreach (DataColumn column in dataTable.Columns)
+                    {
+                        var value = row[column];
+                        await writer.WriteAsync(value == DBNull.Value ? null : value, cancellationToken);
+                    }
+                }
+
+                await writer.CompleteAsync(cancellationToken);
+                return dataTable.Rows.Count;
+            }
+            catch (NpgsqlException ex)
+            {
+                PostgresExceptionHandler.HandleSqlException(ex, _logger, nameof(BulkInsertAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing BulkInsertAsync for table '{TableName}'.", tableName);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    #endregion
+
+    #region Streaming Methods
+
+    /// <summary>
+    /// Streams query results as an async enumerable for memory-efficient processing.
+    /// </summary>
+    public async IAsyncEnumerable<T> QueryAsyncEnumerable<T>(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        parameters ??= new Dictionary<string, object>();
+        DbConnection? connectionToClose = null;
+        NpgsqlCommand? cmd = null;
+        DbDataReader? reader = null;
+
+        try
+        {
+            var connection = await GetOpenConnectionAsync(null, cancellationToken);
+            if (_currentConnection == null) connectionToClose = connection;
+
+            cmd = CreateCommand(connection, sql, parameters, options);
+            reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken);
+
+            var type = typeof(T);
+            var isRecord = type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Any()
+                           && type.BaseType == typeof(object);
+
+            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                               .Where(p => p.CanWrite || (isRecord && p.CanRead))
+                               .ToArray();
+
+            var columnMap = new Dictionary<string, System.Reflection.PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                var columnName = reader.GetName(i);
+                if (string.IsNullOrEmpty(columnName)) continue;
+                var property = properties.FirstOrDefault(p => string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
+                if (property != null) columnMap[columnName] = property;
+            }
+
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var instance = Activator.CreateInstance<T>();
+
+                foreach (var kvp in columnMap)
+                {
+                    var ordinal = reader.GetOrdinal(kvp.Key);
+                    if (await reader.IsDBNullAsync(ordinal, cancellationToken)) continue;
+
+                    var value = reader.GetValue(ordinal);
+                    var property = kvp.Value;
+                    var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                    try
+                    {
+                        var convertedValue = propertyType.IsEnum ? Enum.ToObject(propertyType, value) :
+                                           propertyType == typeof(Guid) ? (value is string strGuid ? Guid.Parse(strGuid) : (Guid)value) :
+                                           Convert.ChangeType(value, propertyType);
+                        property.SetValue(instance, convertedValue);
+                    }
+                    catch { /* Skip properties that fail to map */ }
+                }
+
+                yield return instance;
+            }
+        }
+        finally
+        {
+            if (reader != null)
+                await reader.DisposeAsync();
+            if (cmd != null)
+                await cmd.DisposeAsync();
+            connectionToClose?.Close();
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private static string GenerateCountSql(string sql)
+    {
+        // Simple count SQL generation - removes ORDER BY and wraps in COUNT
+        var cleanSql = System.Text.RegularExpressions.Regex.Replace(
+            sql,
+            @"\s+ORDER\s+BY\s+[^)]*$",
+            string.Empty,
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        return $"SELECT COUNT(*) FROM ({cleanSql}) AS CountQuery";
+    }
+
+    private string BuildPagedSql(string sql, PaginationDto pagination)
+    {
+        var builder = new System.Text.StringBuilder(sql);
+
+        // Add ORDER BY if not present and if SortBy is provided
+        if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrEmpty(pagination.SortBy))
+            {
+                // Validate SortBy to prevent SQL injection
+                var safeSortBy = ValidateAndSanitizeSortColumn(pagination.SortBy);
+                var direction = pagination.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+                builder.Append($" ORDER BY \"{safeSortBy}\" {direction}");
+            }
+            else
+            {
+                // Default to first column if no sort specified
+                builder.Append(" ORDER BY 1 ASC");
+            }
+        }
+
+        // Add LIMIT-OFFSET (PostgreSQL syntax)
+        builder.Append(" LIMIT @__Limit OFFSET @__Offset");
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// Validates and sanitizes sort column names to prevent SQL injection.
+    /// Only allows alphanumeric characters, underscores, and dots for qualified names.
+    /// </summary>
+    private string ValidateAndSanitizeSortColumn(string columnName)
+    {
+        if (string.IsNullOrWhiteSpace(columnName))
+            throw new ArgumentException("Column name cannot be empty", nameof(columnName));
+
+        // Remove any potential SQL injection attempts
+        // Only allow: letters, numbers, underscores, dots (for table.column notation)
+        var pattern = @"^[a-zA-Z0-9_\.]+$";
+        if (!System.Text.RegularExpressions.Regex.IsMatch(columnName, pattern))
+        {
+            _logger.LogWarning("Potential SQL injection attempt detected in sort column: {ColumnName}", columnName);
+            throw new ArgumentException($"Invalid column name: {columnName}. Only alphanumeric characters, underscores, and dots are allowed.", nameof(columnName));
+        }
+
+        // Additional check: prevent common SQL keywords
+        var upperColumn = columnName.ToUpperInvariant();
+        var dangerousKeywords = new[] { "DROP", "DELETE", "INSERT", "UPDATE", "EXEC", "EXECUTE", "SELECT", "UNION", "DECLARE", "CAST", "CONVERT" };
+
+        if (dangerousKeywords.Any(keyword => upperColumn.Contains(keyword)))
+        {
+            _logger.LogWarning("SQL keyword detected in sort column: {ColumnName}", columnName);
+            throw new ArgumentException($"Column name contains restricted SQL keywords: {columnName}", nameof(columnName));
+        }
+
+        return columnName;
+    }
+
+    /// <summary>
+    /// Builds query parameters from pagination filters and search term.
+    /// </summary>
+    private Dictionary<string, object> BuildPaginationParameters(PaginationDto pagination)
+    {
+        var result = new Dictionary<string, object>();
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+        {
+            result["@__SearchTerm"] = $"%{pagination.SearchTerm}%"; // For LIKE queries
+        }
+
+        // Add individual filters from pagination
+        if (pagination.Filters != null && pagination.Filters.Any())
+        {
+            foreach (var filter in pagination.Filters)
+            {
+                // Use a prefix to avoid parameter name conflicts
+                var paramName = filter.Key.StartsWith("@") ? filter.Key : $"@{filter.Key}";
+                result[paramName] = filter.Value;
+            }
+        }
+
+        return result;
+    }
+
+    private void ValidatePagination(PaginationDto pagination)
+    {
+        ArgumentNullException.ThrowIfNull(pagination);
+        if (pagination.PageIndex < 1)
+            throw new ArgumentException("PageIndex must be greater than 0", nameof(pagination));
+        if (pagination.PageSize < 1 || pagination.PageSize > 10000)
+            throw new ArgumentException("PageSize must be between 1 and 10000", nameof(pagination));
+    }
+
+    private DataTable ConvertToDataTable<T>(IEnumerable<T> data, Dictionary<string, string>? columnMappings)
+    {
+        var dataTable = new DataTable();
+        var properties = typeof(T).GetProperties();
+
+        // Add columns
+        foreach (var prop in properties)
+        {
+            var columnName = columnMappings?.ContainsKey(prop.Name) == true
+                ? columnMappings[prop.Name]
+                : prop.Name;
+
+            var columnType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            dataTable.Columns.Add(columnName, columnType);
+        }
+
+        // Add rows
+        foreach (var item in data)
+        {
+            var row = dataTable.NewRow();
+            foreach (var prop in properties)
+            {
+                var columnName = columnMappings?.ContainsKey(prop.Name) == true
+                    ? columnMappings[prop.Name]
+                    : prop.Name;
+
+                var value = prop.GetValue(item);
+                row[columnName] = value ?? DBNull.Value;
+            }
+            dataTable.Rows.Add(row);
+        }
+
+        return dataTable;
+    }
+
+    #endregion
 }

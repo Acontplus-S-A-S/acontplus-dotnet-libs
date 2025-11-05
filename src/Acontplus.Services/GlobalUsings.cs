@@ -1,4 +1,5 @@
 global using Acontplus.Core.Abstractions.Context;
+global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
 global using Acontplus.Core.DTOs.Responses;

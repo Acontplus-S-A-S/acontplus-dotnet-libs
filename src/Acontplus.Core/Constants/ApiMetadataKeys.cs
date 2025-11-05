@@ -1,5 +1,9 @@
 ﻿namespace Acontplus.Core.Constants;
 
+/// <summary>
+/// Metadata keys for API-level response metadata (tracing, correlation, versioning, etc.).
+/// For pagination-specific metadata, see <see cref="PaginationMetadataKeys"/>.
+/// </summary>
 public static class ApiMetadataKeys
 {
     // Core Response Metadata
@@ -8,10 +12,14 @@ public static class ApiMetadataKeys
     public const string CorrelationId = "correlationId";
     public const string ClientId = "clientId";
     public const string Issuer = "issuer";
+    public const string TenantId = "tenantId";
+    public const string TimestampUtc = "timestampUtc";
     public const string Version = "apiVersion";
     public const string Environment = "env";
 
-    // Pagination (aligned with PagedResult properties)
+    // Pagination Container (wraps PagedResult data for API responses)
+    // Note: Individual pagination fields (pageIndex, pageSize, etc.) are part of PagedResult itself
+    // This key is used when you need to nest pagination info in API metadata
     public const string Pagination = "paging";
     public const string PageIndex = "pageIndex";
     public const string PageSize = "pageSize";

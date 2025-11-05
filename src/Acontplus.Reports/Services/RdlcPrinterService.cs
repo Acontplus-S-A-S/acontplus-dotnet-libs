@@ -1,8 +1,10 @@
 using Acontplus.Utilities.Data;
+using Acontplus.Utilities.Security.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Security;
 
 namespace Acontplus.Reports.Services;
 
@@ -101,11 +103,44 @@ public class RdlcPrinterService : IRdlcPrinterService
             streams = new List<Stream>();
             using var lr = new LocalReport();
 
-            // Load report definition (with caching)
-            var reportPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                rdlcPrinter.ReportsDirectory,
-                rdlcPrinter.FileName);
+            // Validate and construct secure report path
+            string reportPath;
+            if (_options.EnableStrictPathValidation)
+            {
+                // Ensure ReportsDirectory and FileName are provided
+                if (string.IsNullOrWhiteSpace(rdlcPrinter.ReportsDirectory))
+                {
+                    throw new InvalidReportPathException("ReportsDirectory cannot be null or empty");
+                }
+                if (string.IsNullOrWhiteSpace(rdlcPrinter.FileName))
+                {
+                    throw new InvalidReportPathException("FileName cannot be null or empty");
+                }
+
+                try
+                {
+                    var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, rdlcPrinter.ReportsDirectory);
+                    reportPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, rdlcPrinter.FileName);
+
+                    // Validate file extension
+                    if (_options.AllowedReportExtensions.Length > 0)
+                    {
+                        PathSecurityValidator.ValidateFileExtension(reportPath, _options.AllowedReportExtensions);
+                    }
+                }
+                catch (SecurityException ex)
+                {
+                    throw InvalidReportPathException.FromSecurityException(ex, rdlcPrinter.FileName);
+                }
+            }
+            else
+            {
+                // Legacy behavior (not recommended)
+                reportPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    rdlcPrinter.ReportsDirectory ?? string.Empty,
+                    rdlcPrinter.FileName ?? string.Empty);
+            }
 
             await LoadReportDefinitionAsync(lr, reportPath, cancellationToken);
 
