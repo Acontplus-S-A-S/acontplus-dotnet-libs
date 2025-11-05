@@ -231,6 +231,17 @@
             For pagination-specific metadata, see <see cref="T:Acontplus.Core.Constants.PaginationMetadataKeys"/>.
             </summary>
         </member>
+        <member name="T:Acontplus.Core.Constants.DebugMetadataKeys">
+            <summary>
+            Metadata keys for debug/diagnostic information in error responses.
+            These should only be included in Development environment or when explicitly enabled.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Constants.HealthCheckMetadataKeys">
+            <summary>
+            Metadata keys for health check responses and diagnostics.
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Constants.PaginationMetadataKeys">
             <summary>
             Metadata keys specifically for pagination-related information in PagedResult.

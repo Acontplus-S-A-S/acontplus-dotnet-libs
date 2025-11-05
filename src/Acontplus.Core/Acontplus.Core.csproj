@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Core</PackageId>
-    <Version>1.5.9</Version>
+    <Version>1.5.10</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced foundational library with cutting-edge C# features and 17 global business enums for multi-application standardization. Includes domain-driven design patterns, comprehensive error handling with HTTP mapping, specification pattern interfaces, functional result types, JSON utilities, validation helpers, and enterprise-ready abstractions. Features ready-to-use enums for business status, priorities, document types, demographics, currencies, payment methods, user roles, industries, company sizes, event types, and internationalization. Built with collection expressions, required properties, record structs, and source generation for optimal performance. Clean architecture with no persistence dependencies.</Description>

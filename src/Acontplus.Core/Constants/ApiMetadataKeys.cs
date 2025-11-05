@@ -12,6 +12,8 @@ public static class ApiMetadataKeys
     public const string CorrelationId = "correlationId";
     public const string ClientId = "clientId";
     public const string Issuer = "issuer";
+    public const string TenantId = "tenantId";
+    public const string TimestampUtc = "timestampUtc";
     public const string Version = "apiVersion";
     public const string Environment = "env";
 
