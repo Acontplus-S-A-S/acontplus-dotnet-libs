@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Acontplus.Services.Middleware;
 
@@ -217,23 +217,22 @@ public class ApiExceptionMiddleware
 
     private static Dictionary<string, object>? GetSafeDebugInfo(Exception ex)
     {
-        if (!ShouldIncludeDebugInfo())
-            return null;
-
-        return new Dictionary<string, object>
-        {
-            ["type"] = ex.GetType().Name,
-            ["message"] = ex.Message,
-            ["stackTrace"] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
-            ["innerException"] = ex.InnerException != null
+        return !ShouldIncludeDebugInfo()
+            ? null
+            : new Dictionary<string, object>
+            {
+                ["type"] = ex.GetType().Name,
+                ["message"] = ex.Message,
+                ["stackTrace"] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
+                ["innerException"] = ex.InnerException != null
                 ? new
                 {
                     type = ex.InnerException.GetType().Name,
                     message = ex.InnerException.Message
                 }
                 : (object?)null,
-            ["activityId"] = Activity.Current?.Id ?? "none"
-        };
+                ["activityId"] = Activity.Current?.Id ?? "none"
+            };
     }
 
     private static bool ShouldIncludeDebugInfo()

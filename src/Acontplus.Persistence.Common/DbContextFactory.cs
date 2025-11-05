@@ -7,8 +7,8 @@ public class DbContextFactory<TContext>(IDictionary<string, TContext> contexts) 
 
     public TContext GetContext(string contextName)
     {
-        if (_contexts.TryGetValue(contextName, out var context))
-            return context;
-        throw new KeyNotFoundException($"DbContext with name '{contextName}' not found.");
+        return _contexts.TryGetValue(contextName, out var context)
+            ? context
+            : throw new KeyNotFoundException($"DbContext with name '{contextName}' not found.");
     }
 }

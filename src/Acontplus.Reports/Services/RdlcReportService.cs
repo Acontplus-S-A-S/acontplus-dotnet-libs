@@ -1,7 +1,4 @@
-﻿using Acontplus.Reports.DTOs;
-using Acontplus.Reports.Helpers;
 using Acontplus.Utilities.Data;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;

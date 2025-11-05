@@ -14,12 +14,7 @@ public class SqlExceptionTranslator : ISqlExceptionTranslator
 
         // Check if it's wrapped in another exception
         var innerSqlException = FindSqlException(ex);
-        if (innerSqlException != null)
-        {
-            return SqlServerExceptionHandler.IsTransientException(innerSqlException);
-        }
-
-        return false;
+        return innerSqlException != null && SqlServerExceptionHandler.IsTransientException(innerSqlException);
     }
 
     public DomainException Translate(Exception ex)

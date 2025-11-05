@@ -1,6 +1,3 @@
-using Acontplus.Reports.Configuration;
-using Acontplus.Reports.DTOs;
-using Acontplus.Reports.Exceptions;
 using Acontplus.Utilities.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

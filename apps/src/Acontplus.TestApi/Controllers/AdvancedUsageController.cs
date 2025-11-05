@@ -467,12 +467,9 @@ public class AdvancedUsageController : ControllerBase
         await Task.Delay(100);
 
         // Simulate occasional failures
-        if (Random.Shared.Next(1, 10) == 1)
-        {
-            throw new InvalidOperationException($"Simulated failure for {operation}");
-        }
-
-        return $"Successfully completed {operation}";
+        return Random.Shared.Next(1, 10) == 1
+            ? throw new InvalidOperationException($"Simulated failure for {operation}")
+            : $"Successfully completed {operation}";
     }
 
     private async Task<T> ExecuteWithResilienceAsync<T>(

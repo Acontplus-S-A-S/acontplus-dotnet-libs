@@ -1,7 +1,4 @@
 using Acontplus.Reports.DTOs;
-using Acontplus.Reports.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace Acontplus.TestApi.Controllers;
 

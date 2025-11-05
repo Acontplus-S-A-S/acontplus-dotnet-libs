@@ -45,16 +45,11 @@ public static class ClaimsPrincipalExtensions
             if (typeof(T) == typeof(int))
                 return (T)(object)Convert.ToInt32(claim);
 
-            if (typeof(T) == typeof(long))
-                return (T)(object)Convert.ToInt64(claim);
-
-            if (typeof(T) == typeof(bool))
-                return (T)(object)Convert.ToBoolean(claim);
-
-            if (typeof(T) == typeof(Guid))
-                return (T)(object)Guid.Parse(claim);
-
-            return (T)Convert.ChangeType(claim, typeof(T));
+            return typeof(T) == typeof(long)
+                ? (T)(object)Convert.ToInt64(claim)
+                : typeof(T) == typeof(bool)
+                ? (T)(object)Convert.ToBoolean(claim)
+                : typeof(T) == typeof(Guid) ? (T)(object)Guid.Parse(claim) : (T)Convert.ChangeType(claim, typeof(T));
         }
         catch
         {

@@ -35,12 +35,7 @@ public class CustomerService(
             var customer =
                 await adoRepository.QuerySingleOrDefaultAsync<CustomerDto>("dbo.GetCustomerByIdCard", parameters);
 
-            if (customer == null)
-            {
-                return await GetCustomerSriByIdCardAsync(idCard);
-            }
-
-            return Result<CustomerDto, DomainErrors>.Success(customer);
+            return customer == null ? await GetCustomerSriByIdCardAsync(idCard) : Result<CustomerDto, DomainErrors>.Success(customer);
         }
         catch (Exception ex)
         {
@@ -99,12 +94,7 @@ public class CustomerService(
 
     private async Task<Result<CustomerDto, DomainErrors>> GetCustomerSriByIdCardAsync(string idCard)
     {
-        if (idCard.Length == 13)
-        {
-            return await GetRucSriAsync(idCard);
-        }
-
-        return await GetCedulaSriAsync(idCard);
+        return idCard.Length == 13 ? await GetRucSriAsync(idCard) : await GetCedulaSriAsync(idCard);
     }
 
     private async Task<Result<CustomerDto, DomainErrors>> GetRucSriAsync(string idCard)

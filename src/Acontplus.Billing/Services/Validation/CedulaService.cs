@@ -82,16 +82,13 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
         var stream = await response.Content.ReadAsStreamAsync();
         using var sr = new StreamReader(stream);
         var html = HttpUtility.HtmlDecode(await sr.ReadToEndAsync());
-        if (html == "true")
-        {
-            return Result<bool, DomainError>.Success(true);
-        }
-
-        return Result<bool, DomainError>.Failure(new DomainError
-        {
-            Code = "CEDULA_NOT_FOUND",
-            Message = "No existe contribuyente con esa cédula"
-        });
+        return html == "true"
+            ? Result<bool, DomainError>.Success(true)
+            : Result<bool, DomainError>.Failure(new DomainError
+            {
+                Code = "CEDULA_NOT_FOUND",
+                Message = "No existe contribuyente con esa cédula"
+            });
     }
 
     private async Task<Result<ContribuyenteCedulaDto, DomainError>> GetCedulaSriAsync(string cedula, CookieContainer cookies,
@@ -129,11 +126,12 @@ public class CedulaService(IServiceProvider serviceProvider) : ICedulaService
         sriResponse = sriResponse.Replace("[", "");
         sriResponse = sriResponse.Replace("]", "");
         var result = sriResponse.DeserializeOptimized<ContribuyenteCedulaDto>();
-        if (result != null) return Result<ContribuyenteCedulaDto, DomainError>.Success(result);
-        return Result<ContribuyenteCedulaDto, DomainError>.Failure(new DomainError
-        {
-            Code = "CEDULA_NOT_FOUND",
-            Message = "No existe contribuyente con esa cédula"
-        });
+        return result != null
+            ? Result<ContribuyenteCedulaDto, DomainError>.Success(result)
+            : Result<ContribuyenteCedulaDto, DomainError>.Failure(new DomainError
+            {
+                Code = "CEDULA_NOT_FOUND",
+                Message = "No existe contribuyente con esa cédula"
+            });
     }
 }

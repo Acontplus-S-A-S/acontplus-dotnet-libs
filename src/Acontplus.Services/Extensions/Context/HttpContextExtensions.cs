@@ -48,12 +48,9 @@ public static class HttpContextExtensions
 
     public static DeviceType? GetDeviceType(this HttpContext context)
     {
-        if (context.Items.TryGetValue(DeviceTypeKey, out var value) && value is string typeString)
-        {
-            return Enum.TryParse<DeviceType>(typeString, ignoreCase: true, out var deviceType) ? deviceType : null;
-        }
-
-        return null;
+        return context.Items.TryGetValue(DeviceTypeKey, out var value) && value is string typeString
+            ? Enum.TryParse<DeviceType>(typeString, ignoreCase: true, out var deviceType) ? deviceType : null
+            : (DeviceType?)null;
     }
 
     public static void SetIsMobileRequest(this HttpContext context, bool isMobileRequest)

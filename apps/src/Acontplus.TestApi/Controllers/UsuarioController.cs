@@ -1,4 +1,4 @@
-﻿using Acontplus.Utilities.Mapping;
+using Acontplus.Utilities.Mapping;
 
 namespace Acontplus.TestApi.Controllers
 {
@@ -33,11 +33,9 @@ namespace Acontplus.TestApi.Controllers
         {
             var usuario = ObjectMapper.Map<UsuarioDto, Usuario>(usuarioDto);
             var result = await usuarioService.UpdateAsync(id, usuario);
-            if (result.IsSuccess)
-            {
-                return ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario actualizado correctamente." }).ToActionResult();
-            }
-            return result.ToActionResult();
+            return result.IsSuccess
+                ? ApiResponse<Usuario>.Success(result.Value, new ApiResponseOptions { Message = "Usuario actualizado correctamente." }).ToActionResult()
+                : result.ToActionResult();
         }
 
         [HttpDelete("{id:int}")]

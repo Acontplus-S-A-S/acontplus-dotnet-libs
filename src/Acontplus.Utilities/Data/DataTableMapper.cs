@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace Acontplus.Utilities.Data;
 
@@ -99,20 +99,16 @@ public static class DataTableMapper
         var backingField = property.DeclaringType?.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
             .FirstOrDefault(f => f.Name.StartsWith($"<{property.Name}>"));
 
-        if (backingField == null) return false;
-
-        return backingField.CustomAttributes.Any(attr =>
+        return backingField != null && backingField.CustomAttributes.Any(attr =>
             attr.AttributeType.FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute");
     }
 
     private static bool IsDefaultValue(PropertyInfo property, object instance)
     {
         var value = property.GetValue(instance);
-        if (value == null) return true;
-
-        return property.PropertyType == typeof(string)
+        return value == null || (property.PropertyType == typeof(string)
             ? string.IsNullOrEmpty((string)value)
-            : value.Equals(GetDefaultValue(property.PropertyType));
+            : value.Equals(GetDefaultValue(property.PropertyType)));
     }
 
     private static object? GetDefaultValue(Type type)
@@ -165,9 +161,7 @@ public static class DataTableMapper
 
             if (underlyingType == typeof(int) && value is string intStr)
             {
-                if (int.TryParse(intStr, out var intResult))
-                    return intResult;
-                return 0;
+                return int.TryParse(intStr, out var intResult) ? intResult : 0;
             }
 
             if (underlyingType == typeof(byte[]) && value is string base64Str)

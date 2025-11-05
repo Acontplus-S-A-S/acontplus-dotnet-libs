@@ -257,12 +257,11 @@ public class DataXmlComprobante
         foreach (XmlNode item in details)
         {
             var detail = new Detalle { IdDetalle = idDetalle };
-            if (comp.CodDoc == "01")
-                detail.CodigoPrincipal = item.SelectSingleNode("codigoPrincipal") == null
+            detail.CodigoPrincipal = comp.CodDoc == "01"
+                ? item.SelectSingleNode("codigoPrincipal") == null
                     ? ""
-                    : item.SelectSingleNode("codigoPrincipal")?.InnerText;
-            else
-                detail.CodigoPrincipal = item.SelectSingleNode("codigoInterno") == null
+                    : item.SelectSingleNode("codigoPrincipal")?.InnerText
+                : item.SelectSingleNode("codigoInterno") == null
                     ? ""
                     : item.SelectSingleNode("codigoInterno")?.InnerText;
 

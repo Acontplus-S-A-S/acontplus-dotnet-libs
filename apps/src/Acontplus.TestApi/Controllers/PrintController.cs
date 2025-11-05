@@ -1,5 +1,3 @@
-﻿using Acontplus.Persistence.SqlServer.Utilities;
-
 namespace Acontplus.TestApi.Controllers
 {
     [Route("api/[controller]")]

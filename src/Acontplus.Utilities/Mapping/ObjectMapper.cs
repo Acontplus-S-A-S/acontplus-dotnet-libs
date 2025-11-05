@@ -600,28 +600,18 @@ public static class ObjectMapper
         private string GetMemberName<TProperty>(Expression<Func<TTarget, TProperty>> expression)
         {
             var memberExp = expression.Body as MemberExpression;
-            if (memberExp == null)
-            {
-                throw new ArgumentException("Expression must be a member expression");
-            }
-            return memberExp.Member.Name;
+            return memberExp == null ? throw new ArgumentException("Expression must be a member expression") : memberExp.Member.Name;
         }
 
         private string GetMemberNameFromSource<TProperty>(Expression<Func<TSource, TProperty>> expression)
         {
             var memberExp = expression.Body as MemberExpression;
-            if (memberExp == null)
-            {
-                throw new ArgumentException("Expression must be a member expression");
-            }
-            return memberExp.Member.Name;
+            return memberExp == null ? throw new ArgumentException("Expression must be a member expression") : memberExp.Member.Name;
         }
 
         private static object GetDefaultValue(Type type)
         {
-            if (type.IsValueType)
-                return Activator.CreateInstance(type);
-            return null;
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
 
         // For use by the CreateInstance method

@@ -779,10 +779,9 @@ public static class ResultApiExtensions
     // ================ Error Analysis Helpers ================
     public static DomainError GetMostSevereError(this IEnumerable<DomainError> errors)
     {
-        if (!errors.Any())
-            throw new ArgumentException("No errors provided", nameof(errors));
-
-        return errors.MaxBy(e => ErrorSeverity.GetValueOrDefault(e.Type, 0));
+        return !errors.Any()
+            ? throw new ArgumentException("No errors provided", nameof(errors))
+            : errors.MaxBy(e => ErrorSeverity.GetValueOrDefault(e.Type, 0));
     }
 
     public static ErrorType GetMostSevereErrorType(this DomainErrors errors)
@@ -794,12 +793,11 @@ public static class ResultApiExtensions
     // ================ Error Details Formatting ================
     public static Dictionary<string, object>? ToErrorDetails(this DomainErrors errors)
     {
-        if (errors.Errors.Count == 0)
-            return null;
-
-        return new Dictionary<string, object>
-        {
-            ["errors"] = errors.Errors
+        return errors.Errors.Count == 0
+            ? null
+            : new Dictionary<string, object>
+            {
+                ["errors"] = errors.Errors
                 .Select((e, i) => new
                 {
                     Index = i,
@@ -809,7 +807,7 @@ public static class ResultApiExtensions
                     Severity = e.Type.ToSeverityString()
                 })
                 .ToList()
-        };
+            };
     }
 
     #endregion
@@ -1042,14 +1040,9 @@ public static class ResultApiExtensions
             Timestamp = response.Timestamp
         };
 
-        if (response.IsSuccess)
-        {
-            return ApiResponse.Success(response.Data, options);
-        }
-        else // Assuming error/warning cases
-        {
-            return ApiResponse.Failure(response.Errors ?? Array.Empty<ApiError>(), options);
-        }
+        return response.IsSuccess
+            ? ApiResponse.Success(response.Data, options)
+            : ApiResponse.Failure(response.Errors ?? Array.Empty<ApiError>(), options);
     }
 
     /// <summary>
@@ -1370,12 +1363,11 @@ public static class ResultApiExtensions
 
     public static Dictionary<string, object>? ToWarningDetails(this DomainWarnings warnings)
     {
-        if (!warnings.HasWarnings)
-            return null;
-
-        return new Dictionary<string, object>
-        {
-            ["warnings"] = warnings.Warnings
+        return !warnings.HasWarnings
+            ? null
+            : new Dictionary<string, object>
+            {
+                ["warnings"] = warnings.Warnings
                 .Select((w, i) => new
                 {
                     Index = i,
@@ -1385,7 +1377,7 @@ public static class ResultApiExtensions
                     Severity = w.Type.ToSeverityString()
                 })
                 .ToList()
-        };
+            };
     }
 
     public static DomainWarnings AddToCopy(

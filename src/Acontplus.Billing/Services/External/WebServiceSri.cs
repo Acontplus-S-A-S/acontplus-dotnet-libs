@@ -35,10 +35,7 @@ public class WebServiceSri : IWebServiceSri
 
             var nroComp = nlNroCompAuth[0] != null ? nlNroCompAuth[0].InnerText : string.Empty;
 
-            if (nroComp == "0")
-                responseSri.Estado = "NO AUTORIZADO";
-            else
-                responseSri.Estado = estadoComp[0] != null ? estadoComp[0].InnerText : string.Empty;
+            responseSri.Estado = nroComp == "0" ? "NO AUTORIZADO" : estadoComp[0] != null ? estadoComp[0].InnerText : string.Empty;
 
             switch (responseSri.Estado)
             {

@@ -44,31 +44,25 @@ public static class PostgresExceptionHandler
                 "String data, right truncated",
                 ex);
         }
-        if (ex.SqlState == "40001")
-        {
-            return new SqlErrorInfo(
+        return ex.SqlState == "40001"
+            ? new SqlErrorInfo(
                 ErrorType.Conflict,
                 "PG_SERIALIZATION_FAILURE",
                 "Serialization failure (deadlock or concurrency conflict)",
-                ex);
-        }
-        if (ex.SqlState == "40P01")
-        {
-            return new SqlErrorInfo(
+                ex)
+            : ex.SqlState == "40P01"
+            ? new SqlErrorInfo(
                 ErrorType.Conflict,
                 "PG_DEADLOCK_DETECTED",
                 "Deadlock detected",
-                ex);
-        }
-        if (ex.SqlState == "28P01")
-        {
-            return new SqlErrorInfo(
+                ex)
+            : ex.SqlState == "28P01"
+            ? new SqlErrorInfo(
                 ErrorType.Unauthorized,
                 "PG_AUTH_FAILED",
                 "Authentication failed",
-                ex);
-        }
-        return new SqlErrorInfo(
+                ex)
+            : new SqlErrorInfo(
             ErrorType.Internal,
             $"PG_ERROR_{ex.SqlState}",
             ex.Message,

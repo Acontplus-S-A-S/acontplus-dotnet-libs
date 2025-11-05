@@ -77,12 +77,7 @@ public static class SqlServerExceptionHandler
     public static bool IsTransientException(SqlException ex)
     {
         // Special case for transient authentication errors
-        if (ex.Number == 18456 && ex.Class == 14)
-        {
-            return true;
-        }
-
-        return ErrorRanges.TransientErrors.Contains(ex.Number);
+        return ex.Number == 18456 && ex.Class == 14 || ErrorRanges.TransientErrors.Contains(ex.Number);
     }
 
     public static SqlErrorInfo MapSqlException(SqlException ex)
@@ -103,12 +98,9 @@ public static class SqlServerExceptionHandler
         }
 
         // Handle custom stored procedure errors
-        if (IsCustomStoredProcedureError(ex.Number))
-        {
-            return HandleCustomStoredProcedureError(ex);
-        }
-
-        return new SqlErrorInfo(
+        return IsCustomStoredProcedureError(ex.Number)
+            ? HandleCustomStoredProcedureError(ex)
+            : new SqlErrorInfo(
             ErrorType.Internal,
             $"SQL_ERROR_{ex.Number}",
             ex.Message,

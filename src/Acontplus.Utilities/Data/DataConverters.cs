@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Utilities.Data;
+namespace Acontplus.Utilities.Data;
 
 /// <summary>
 /// Data Converters
@@ -84,7 +84,7 @@ public static class DataConverters
                     // Handle JsonElement from System.Text.Json
                     if (valueType.Name == "JsonElement")
                     {
-                        var jsonElement = (System.Text.Json.JsonElement)(object)kvp.Value;
+                        var jsonElement = (System.Text.Json.JsonElement)kvp.Value;
                         columnType = jsonElement.ValueKind switch
                         {
                             System.Text.Json.JsonValueKind.Number => typeof(decimal),
@@ -112,7 +112,7 @@ public static class DataConverters
                         // Handle JsonElement conversion
                         if (kvp.Value.GetType().Name == "JsonElement")
                         {
-                            var jsonElement = (System.Text.Json.JsonElement)(object)kvp.Value;
+                            var jsonElement = (System.Text.Json.JsonElement)kvp.Value;
                             dataRow[kvp.Key] = jsonElement.ValueKind switch
                             {
                                 System.Text.Json.JsonValueKind.String => jsonElement.GetString(),
@@ -228,10 +228,7 @@ public static class DataConverters
     /// </summary>
     public static string DictionaryToString<TKey, TValue>(IDictionary<TKey, TValue> dictionary)
     {
-        if (dictionary == null)
-            return "{}";
-
-        return "{" + string.Join(", ", dictionary.Select(kvp => kvp.Key + "=" + kvp.Value).ToArray()) + "}";
+        return dictionary == null ? "{}" : "{" + string.Join(", ", dictionary.Select(kvp => kvp.Key + "=" + kvp.Value).ToArray()) + "}";
     }
 
     /// <summary>

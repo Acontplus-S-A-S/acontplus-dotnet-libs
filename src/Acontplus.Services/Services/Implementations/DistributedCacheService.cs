@@ -21,10 +21,7 @@ public class DistributedCacheService : ICacheService
         try
         {
             var value = _cache.GetString(key);
-            if (string.IsNullOrEmpty(value))
-                return default;
-
-            return JsonSerializer.Deserialize<T>(value);
+            return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
         catch (Exception ex)
         {
@@ -38,10 +35,7 @@ public class DistributedCacheService : ICacheService
         try
         {
             var value = await _cache.GetStringAsync(key, cancellationToken);
-            if (string.IsNullOrEmpty(value))
-                return default;
-
-            return JsonSerializer.Deserialize<T>(value);
+            return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
         catch (Exception ex)
         {

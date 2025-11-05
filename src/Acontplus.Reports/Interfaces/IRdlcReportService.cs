@@ -1,5 +1,3 @@
-﻿using Acontplus.Reports.DTOs;
-
 namespace Acontplus.Reports.Interfaces
 {
     /// <summary>

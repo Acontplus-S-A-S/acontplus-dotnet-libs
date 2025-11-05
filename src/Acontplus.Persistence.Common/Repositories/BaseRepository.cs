@@ -1158,18 +1158,13 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         IOrderedQueryable<TEntity>? orderedQuery = null;
         foreach (var (keySelector, descending) in orderExpressions)
         {
-            if (orderedQuery is null)
-            {
-                orderedQuery = descending
+            orderedQuery = orderedQuery is null
+                ? descending
                     ? query.OrderByDescending(keySelector)
-                    : query.OrderBy(keySelector);
-            }
-            else
-            {
-                orderedQuery = descending
+                    : query.OrderBy(keySelector)
+                : descending
                     ? orderedQuery.ThenByDescending(keySelector)
                     : orderedQuery.ThenBy(keySelector);
-            }
         }
 
         return orderedQuery ?? query;
