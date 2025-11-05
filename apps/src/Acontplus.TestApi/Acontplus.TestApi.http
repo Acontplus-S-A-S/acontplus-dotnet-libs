@@ -1,10 +1,5 @@
 @Acontplus.TestApi_HostAddress = https://localhost:7111
 
-GET {{Acontplus.TestApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
 GET {{Acontplus.TestApi_HostAddress}}/api/barcode
 
 ###
@@ -31,10 +26,6 @@ Content-Type: application/json
 ###
 
 GET {{Acontplus.TestApi_HostAddress}}/api/report
-
-###
-
-GET {{Acontplus.TestApi_HostAddress}}/api/simplemodel/map-data-list
 
 ###
 @pageIndex = 1

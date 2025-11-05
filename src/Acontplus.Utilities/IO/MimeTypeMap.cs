@@ -699,30 +699,18 @@ public static class MimeTypeMap
             extension = "." + extension;
         }
 
-        string mime;
 
-        return Mappings.Value.TryGetValue(extension, out mime) ? mime : "application/octet-stream";
+        return Mappings.Value.TryGetValue(extension, out string mime) ? mime : "application/octet-stream";
     }
 
     public static string GetExtension(string mimeType)
     {
-        if (mimeType == null)
-        {
-            throw new ArgumentNullException("mimeType");
-        }
-
-        if (mimeType.StartsWith("."))
-        {
-            throw new ArgumentException("Requested mime type is not valid: " + mimeType);
-        }
-
-        string extension;
-
-        if (Mappings.Value.TryGetValue(mimeType, out extension))
-        {
-            return extension;
-        }
-
-        throw new ArgumentException("Requested mime type is not registered: " + mimeType);
+        return mimeType == null
+            ? throw new ArgumentNullException("mimeType")
+            : mimeType.StartsWith(".")
+            ? throw new ArgumentException("Requested mime type is not valid: " + mimeType)
+            : Mappings.Value.TryGetValue(mimeType, out string extension)
+            ? extension
+            : throw new ArgumentException("Requested mime type is not registered: " + mimeType);
     }
 }

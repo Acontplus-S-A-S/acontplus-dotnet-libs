@@ -1,4 +1,4 @@
-﻿using System.Xml.Schema;
+using System.Xml.Schema;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Acontplus.Core.Validation;
@@ -125,7 +125,7 @@ public static class XmlValidator
 
             return xml;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             //Log.Error(ex, "Error limpiando XML");
             // En caso de error, al menos eliminar la declaración XML
@@ -318,9 +318,6 @@ public static class XmlValidator
         xml = Regex.Replace(xml, @"</?(?:div|span|p|h[1-6]|ul|ol|li|table|tr|td|th|thead|tbody|tfoot|strong|b|em|i|u|small|big)[^>]*?>", "", RegexOptions.IgnoreCase);
 
         // Si después de limpiar queda muy poco contenido, es probable que fuera principalmente HTML
-        if (xml.Trim().Length < 10)
-            return string.Empty;
-
-        return xml;
+        return xml.Trim().Length < 10 ? string.Empty : xml;
     }
 }

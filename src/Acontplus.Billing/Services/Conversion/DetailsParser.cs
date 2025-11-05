@@ -16,10 +16,9 @@ public class DetailsParser : IDetailsParser
         {
             var detail = new Detalle { IdDetalle = idDetalle };
 
-            if (comprobante.CodDoc == "01")
-                detail.CodigoPrincipal = item.SelectSingleNode("codigoPrincipal")?.InnerText ?? "";
-            else
-                detail.CodigoPrincipal = item.SelectSingleNode("codigoInterno")?.InnerText ?? "";
+            detail.CodigoPrincipal = comprobante.CodDoc == "01"
+                ? item.SelectSingleNode("codigoPrincipal")?.InnerText ?? ""
+                : item.SelectSingleNode("codigoInterno")?.InnerText ?? "";
 
             detail.CodigoAuxiliar = item.SelectSingleNode("codigoAuxiliar")?.InnerText ?? "";
             detail.Descripcion = item.SelectSingleNode("descripcion")?.InnerText;

@@ -40,10 +40,7 @@ public record PaginationDto
     /// <returns>Dictionary of filters or null if no filters exist</returns>
     public Dictionary<string, object>? BuildFilters()
     {
-        if (Filters == null || !Filters.Any())
-            return null;
-
-        return Filters.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        return Filters == null || !Filters.Any() ? null : Filters.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 
     /// <summary>
@@ -53,10 +50,7 @@ public record PaginationDto
     /// <returns>Dictionary of filters with prefixed keys or null if no filters exist</returns>
     public Dictionary<string, object>? BuildFiltersWithPrefix(string prefix)
     {
-        if (Filters == null || !Filters.Any())
-            return null;
-
-        return Filters.ToDictionary(kvp => prefix + kvp.Key, kvp => kvp.Value);
+        return Filters == null || !Filters.Any() ? null : Filters.ToDictionary(kvp => prefix + kvp.Key, kvp => kvp.Value);
     }
 
     /// <summary>

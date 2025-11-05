@@ -13,10 +13,9 @@ public static class TimeZoneHelper
     /// </summary>
     public static DateTime ToEcuadorTime(this DateTime utcDateTime)
     {
-        if (utcDateTime.Kind != DateTimeKind.Utc)
-            throw new ArgumentException("DateTime must be UTC", nameof(utcDateTime));
-
-        return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, EcuadorTimeZone);
+        return utcDateTime.Kind != DateTimeKind.Utc
+            ? throw new ArgumentException("DateTime must be UTC", nameof(utcDateTime))
+            : TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, EcuadorTimeZone);
     }
 
     public static DateTime? ToEcuadorTime(this DateTime? utcDateTime)
@@ -26,10 +25,9 @@ public static class TimeZoneHelper
 
     public static DateTime ToServerTime(this DateTime utcDateTime)
     {
-        if (utcDateTime.Kind != DateTimeKind.Utc)
-            throw new ArgumentException("DateTime must be UTC", nameof(utcDateTime));
-
-        return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, ServerTimeZone);
+        return utcDateTime.Kind != DateTimeKind.Utc
+            ? throw new ArgumentException("DateTime must be UTC", nameof(utcDateTime))
+            : TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, ServerTimeZone);
     }
 
     /// <summary>

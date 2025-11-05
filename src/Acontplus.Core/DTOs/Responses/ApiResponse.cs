@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs.Responses;
+namespace Acontplus.Core.DTOs.Responses;
 
 public sealed record ApiResponseOptions
 {
@@ -117,17 +117,11 @@ public record ApiResponse<T>
 
     private static ApiResponseOptions InitializeOptions(ApiResponseOptions? options, HttpStatusCode defaultStatusCode)
     {
-        if (options == null)
-        {
-            return new ApiResponseOptions { StatusCode = defaultStatusCode };
-        }
-
-        if (options.StatusCode == HttpStatusCode.OK && defaultStatusCode != HttpStatusCode.OK)
-        {
-            return options with { StatusCode = defaultStatusCode };
-        }
-
-        return options;
+        return options == null
+            ? new ApiResponseOptions { StatusCode = defaultStatusCode }
+            : options.StatusCode == HttpStatusCode.OK && defaultStatusCode != HttpStatusCode.OK
+            ? (options with { StatusCode = defaultStatusCode })
+            : options;
     }
 }
 
@@ -187,14 +181,10 @@ public sealed record ApiResponse : ApiResponse<object?>
 
     private static ApiResponseOptions InitializeOptions(ApiResponseOptions? options, HttpStatusCode defaultStatusCode)
     {
-        if (options == null)
-        {
-            return new ApiResponseOptions { StatusCode = defaultStatusCode };
-        }
-
-        if (options.StatusCode == HttpStatusCode.OK && defaultStatusCode != HttpStatusCode.OK)
-        {
-            return new ApiResponseOptions
+        return options == null
+            ? new ApiResponseOptions { StatusCode = defaultStatusCode }
+            : options.StatusCode == HttpStatusCode.OK && defaultStatusCode != HttpStatusCode.OK
+            ? new ApiResponseOptions
             {
                 Message = options.Message,
                 Errors = options.Errors,
@@ -204,9 +194,7 @@ public sealed record ApiResponse : ApiResponse<object?>
                 TraceId = options.TraceId,
                 Timestamp = options.Timestamp,
                 StatusCode = defaultStatusCode
-            };
-        }
-
-        return options;
+            }
+            : options;
     }
 }

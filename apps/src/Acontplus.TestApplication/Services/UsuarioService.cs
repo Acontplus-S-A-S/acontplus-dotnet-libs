@@ -271,9 +271,9 @@ namespace Acontplus.TestApplication.Services
             try
             {
                 var user = await _usuarioRepository.GetByIdAsync(id);
-                if (user == null)
-                    return DomainError.NotFound("USER_NOT_FOUND", $"User with ID {id} not found");
-                return Result<Usuario, DomainError>.Success(user);
+                return user == null
+                    ? (Result<Usuario, DomainError>)DomainError.NotFound("USER_NOT_FOUND", $"User with ID {id} not found")
+                    : Result<Usuario, DomainError>.Success(user);
             }
             catch (Exception ex)
             {

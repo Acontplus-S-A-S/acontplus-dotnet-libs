@@ -37,17 +37,11 @@ public class CircuitBreakerHealthCheck : IHealthCheck
             var anyCircuitOpen = new[] { defaultState, apiState, databaseState, externalState, authState }
                 .Any(state => state == CircuitBreakerState.Open);
 
-            if (criticalCircuitsOpen)
-            {
-                return Task.FromResult(HealthCheckResult.Unhealthy("Critical circuit breakers are open", data: data));
-            }
-
-            if (anyCircuitOpen)
-            {
-                return Task.FromResult(HealthCheckResult.Degraded("Some circuit breakers are open", data: data));
-            }
-
-            return Task.FromResult(HealthCheckResult.Healthy("All circuit breakers are operational", data));
+            return criticalCircuitsOpen
+                ? Task.FromResult(HealthCheckResult.Unhealthy("Critical circuit breakers are open", data: data))
+                : anyCircuitOpen
+                ? Task.FromResult(HealthCheckResult.Degraded("Some circuit breakers are open", data: data))
+                : Task.FromResult(HealthCheckResult.Healthy("All circuit breakers are operational", data));
         }
         catch (Exception ex)
         {

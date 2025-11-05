@@ -87,16 +87,13 @@ public class RucService(IServiceProvider serviceProvider) : IRucService
         var stream = await response.Content.ReadAsStreamAsync();
         using var sr = new StreamReader(stream);
         var htmlDecode = HttpUtility.HtmlDecode(await sr.ReadToEndAsync());
-        if (htmlDecode == "true")
-        {
-            return Result<bool, DomainError>.Success(true);
-        }
-
-        return Result<bool, DomainError>.Failure(new DomainError
-        {
-            Code = "RUC_NOT_FOUND",
-            Message = "RUC No existe"
-        });
+        return htmlDecode == "true"
+            ? Result<bool, DomainError>.Success(true)
+            : Result<bool, DomainError>.Failure(new DomainError
+            {
+                Code = "RUC_NOT_FOUND",
+                Message = "RUC No existe"
+            });
     }
 
     private async Task<Result<ContribuyenteCompleteDto, DomainError>> GetRucSriAsync(string idCard,

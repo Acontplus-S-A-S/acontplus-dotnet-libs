@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Utilities.Adapters;
+namespace Acontplus.Utilities.Adapters;
 
 /// <summary>
 /// Provides helpers to map SQL Server error codes to domain errors.
@@ -13,11 +13,9 @@ public static class SqlResponseAdapter
     /// <returns>A <see cref="DomainError"/> representing the error.</returns>
     public static DomainError MapSqlServerError(string errorCode, string message)
     {
-        if (int.TryParse(errorCode, out int sqlErrorNumber))
-        {
-            return MapSqlErrorNumber(sqlErrorNumber, message);
-        }
-        return DomainError.Internal("SERVER_ERROR", message ?? "Unknown database error");
+        return int.TryParse(errorCode, out int sqlErrorNumber)
+            ? MapSqlErrorNumber(sqlErrorNumber, message)
+            : DomainError.Internal("SERVER_ERROR", message ?? "Unknown database error");
     }
 
     /// <summary>

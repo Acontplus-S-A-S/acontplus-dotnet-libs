@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Utilities.Time;
+namespace Acontplus.Utilities.Time;
 
 /// <summary>
 /// Converter for nullable DateTime values
@@ -22,9 +22,7 @@ public class NullableDateTimeConverter : JsonConverter<DateTime?>
             if (DateTime.TryParse(str, out var date))
                 return date;
         }
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-        throw new JsonException("Invalid date format.");
+        return reader.TokenType == JsonTokenType.Null ? null : throw new JsonException("Invalid date format.");
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)

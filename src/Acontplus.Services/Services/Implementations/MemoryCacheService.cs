@@ -20,11 +20,7 @@ public class MemoryCacheService : ICacheService
     {
         try
         {
-            if (_cache.TryGetValue(key, out var value))
-            {
-                return Task.FromResult((T?)value);
-            }
-            return Task.FromResult<T?>(default);
+            return _cache.TryGetValue(key, out var value) ? Task.FromResult((T?)value) : Task.FromResult<T?>(default);
         }
         catch (Exception ex)
         {
@@ -97,11 +93,7 @@ public class MemoryCacheService : ICacheService
     {
         try
         {
-            if (_cache.TryGetValue(key, out var value))
-            {
-                return (T?)value;
-            }
-            return default;
+            return _cache.TryGetValue(key, out var value) ? (T?)value : default;
         }
         catch (Exception ex)
         {

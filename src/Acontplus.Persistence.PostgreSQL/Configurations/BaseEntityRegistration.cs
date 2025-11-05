@@ -98,10 +98,7 @@ public static class BaseEntityRegistration
                         determinedTableName = dbSetProperty.Name;
                     }
                 }
-                if (determinedTableName == null)
-                {
-                    determinedTableName = entityType.Name;
-                }
+                determinedTableName ??= entityType.Name;
             }
 
             // Apply the determined name and schema based on explicit intent
@@ -164,8 +161,7 @@ public static class BaseEntityRegistration
         if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
             return true;
         Type baseType = givenType.BaseType;
-        if (baseType == null) return false;
-        return IsAssignableToGenericType(baseType, genericType);
+        return baseType != null && IsAssignableToGenericType(baseType, genericType);
     }
 
     /// <summary>

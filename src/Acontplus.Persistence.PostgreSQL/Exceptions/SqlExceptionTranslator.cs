@@ -14,12 +14,7 @@ public class PostgresExceptionTranslator : ISqlExceptionTranslator
 
         // Check if it's wrapped in another exception
         var innerNpgsqlException = FindNpgsqlException(ex);
-        if (innerNpgsqlException != null)
-        {
-            return PostgresExceptionHandler.IsTransientException(innerNpgsqlException);
-        }
-
-        return false;
+        return innerNpgsqlException != null && PostgresExceptionHandler.IsTransientException(innerNpgsqlException);
     }
 
     public DomainException Translate(Exception ex)

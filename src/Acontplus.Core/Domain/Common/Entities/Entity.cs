@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common.Entities;
+namespace Acontplus.Core.Domain.Common.Entities;
 
 public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
 {
@@ -15,30 +15,14 @@ public abstract class Entity<TId> : IEntityWithDomainEvents where TId : notnull
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Entity<TId> other)
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        if (GetType() != other.GetType())
-            return false;
-
-        if (Id.Equals(default) || other.Id.Equals(default))
-            return false;
-
-        return Id.Equals(other.Id);
+        return obj is not Entity<TId> other
+            ? false
+            : ReferenceEquals(this, other) || GetType() == other.GetType() && !Id.Equals(default) && !other.Id.Equals(default) && Id.Equals(other.Id);
     }
 
     public static bool operator ==(Entity<TId>? a, Entity<TId>? b)
     {
-        if (a is null && b is null)
-            return true;
-
-        if (a is null || b is null)
-            return false;
-
-        return a.Equals(b);
+        return a is null && b is null || a is not null && b is not null && a.Equals(b);
     }
 
     public static bool operator !=(Entity<TId>? a, Entity<TId>? b) => !(a == b);

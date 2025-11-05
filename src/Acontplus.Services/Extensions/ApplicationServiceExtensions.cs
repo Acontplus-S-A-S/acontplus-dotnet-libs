@@ -187,12 +187,9 @@ public class RequestContextHealthCheck : IHealthCheck
             healthData["hasTimestamp"] = hasTimestamp;
             healthData["lastCheckTime"] = DateTime.UtcNow;
 
-            if (hasRequestId && hasCorrelationId && hasTimestamp)
-            {
-                return Task.FromResult(HealthCheckResult.Healthy("Request context service is fully operational", healthData));
-            }
-
-            return Task.FromResult(HealthCheckResult.Degraded("Request context service is partially operational", data: healthData));
+            return hasRequestId && hasCorrelationId && hasTimestamp
+                ? Task.FromResult(HealthCheckResult.Healthy("Request context service is fully operational", healthData))
+                : Task.FromResult(HealthCheckResult.Degraded("Request context service is partially operational", data: healthData));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("HTTP context is not available"))
         {
@@ -278,12 +275,9 @@ public class DeviceDetectionHealthCheck : IHealthCheck
             results["lastCheckTime"] = DateTime.UtcNow;
             results["allTestsPassed"] = allTestsPassed;
 
-            if (allTestsPassed)
-            {
-                return Task.FromResult(HealthCheckResult.Healthy("Device detection service is fully operational", results));
-            }
-
-            return Task.FromResult(HealthCheckResult.Degraded("Device detection service has some detection issues", data: results));
+            return allTestsPassed
+                ? Task.FromResult(HealthCheckResult.Healthy("Device detection service is fully operational", results))
+                : Task.FromResult(HealthCheckResult.Degraded("Device detection service has some detection issues", data: results));
         }
         catch (Exception ex)
         {

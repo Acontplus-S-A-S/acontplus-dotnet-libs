@@ -1,57 +1,371 @@
-﻿using Acontplus.Utilities.Data;
+using Acontplus.Utilities.Data;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
 
 namespace Acontplus.Reports.Services;
 
-public interface IRdlcPrinterService
-{
-    public bool Print(RdlcPrinter rdlcPrinter, RdlcPrintRequest printRequest);
-}
-
 public class RdlcPrinterService : IRdlcPrinterService
 {
-    public bool Print(RdlcPrinter rdlcPrinter, RdlcPrintRequest printRequest)
+    private readonly ILogger<RdlcPrinterService> _logger;
+    private readonly ReportOptions _options;
+    private readonly SemaphoreSlim _printSemaphore;
+    private readonly ReportDefinitionCache _cache;
+
+    public RdlcPrinterService(
+        ILogger<RdlcPrinterService> logger,
+        IOptions<ReportOptions> options,
+        ReportDefinitionCache cache)
     {
-        var streams = new List<Stream>();
-        using var lr = new LocalReport();
-        lr.LoadReportDefinition(LoadReportDefinition(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-            rdlcPrinter.ReportsDirectory, rdlcPrinter.FileName)));
-        if (printRequest.DataSources != null)
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _printSemaphore = new SemaphoreSlim(_options.MaxConcurrentPrintJobs);
+    }
+
+    public async Task<bool> PrintAsync(RdlcPrinterDto rdlcPrinter, RdlcPrintRequestDto printRequest, CancellationToken cancellationToken = default)
+    {
+        if (rdlcPrinter == null) throw new ArgumentNullException(nameof(rdlcPrinter));
+        if (printRequest == null) throw new ArgumentNullException(nameof(printRequest));
+
+        var printJobId = Guid.NewGuid().ToString("N")[..8];
+
+        if (_options.EnableDetailedLogging)
         {
-            foreach (var item in printRequest.DataSources)
-            {
-                lr.DataSources.Add(new ReportDataSource(item.Key,
-                    DataConverters.JsonToDataTable(JsonExtensions.SerializeOptimized(item.Value))));
-            }
+            _logger.LogInformation(
+                "Starting print job {PrintJobId} for printer {PrinterName}, copies: {Copies}, format: {Format}",
+                printJobId, rdlcPrinter.PrinterName, rdlcPrinter.Copies, rdlcPrinter.Format);
         }
 
+        var startTime = DateTime.UtcNow;
+
+        try
+        {
+            // Wait for available print slot
+            await _printSemaphore.WaitAsync(cancellationToken);
+
+            try
+            {
+                // Create timeout cancellation token
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(_options.PrintJobTimeoutSeconds));
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+                var result = await PrintInternalAsync(rdlcPrinter, printRequest, printJobId, linkedCts.Token);
+
+                var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+
+                if (_options.EnableDetailedLogging)
+                {
+                    _logger.LogInformation(
+                        "Print job {PrintJobId} completed successfully in {Duration}ms",
+                        printJobId, duration);
+                }
+
+                return result;
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                _logger.LogWarning(
+                    "Print job {PrintJobId} timed out after {Duration}ms (limit: {Timeout}s)",
+                    printJobId, duration, _options.PrintJobTimeoutSeconds);
+                throw new ReportTimeoutException(_options.PrintJobTimeoutSeconds);
+            }
+            finally
+            {
+                _printSemaphore.Release();
+            }
+        }
+        catch (Exception ex) when (ex is not ReportGenerationException)
+        {
+            var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+            _logger.LogError(ex,
+                "Print job {PrintJobId} failed after {Duration}ms: {ErrorMessage}",
+                printJobId, duration, ex.Message);
+            throw new ReportGenerationException($"Print job {printJobId} failed: {ex.Message}", ex);
+        }
+    }
+
+    private async Task<bool> PrintInternalAsync(
+        RdlcPrinterDto rdlcPrinter,
+        RdlcPrintRequestDto printRequest,
+        string printJobId,
+        CancellationToken cancellationToken)
+    {
+        List<Stream>? streams = null;
+        PrintDocument? printDoc = null;
+
+        try
+        {
+            streams = new List<Stream>();
+            using var lr = new LocalReport();
+
+            // Load report definition (with caching)
+            var reportPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                rdlcPrinter.ReportsDirectory,
+                rdlcPrinter.FileName);
+
+            await LoadReportDefinitionAsync(lr, reportPath, cancellationToken);
+
+            // Add data sources
+            if (printRequest.DataSources != null)
+            {
+                foreach (var item in printRequest.DataSources)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var dataTable = DataConverters.JsonToDataTable(
+                        JsonExtensions.SerializeOptimized(item.Value));
+                    lr.DataSources.Add(new ReportDataSource(item.Key, dataTable));
+                }
+            }
+
+            // Set parameters
+            await SetReportParametersAsync(lr, rdlcPrinter, printRequest, cancellationToken);
+
+            // Render to streams
+            lr.Render(rdlcPrinter.Format, rdlcPrinter.DeviceInfo, (_, _, _, _, _) =>
+            {
+                var stream = new MemoryStream();
+                streams.Add(stream);
+                return stream;
+            }, out _);
+
+            foreach (var stream in streams)
+            {
+                stream.Position = 0;
+            }
+
+            if (streams == null || streams.Count == 0)
+            {
+                throw new ReportGenerationException("No streams generated for printing");
+            }
+
+            // Validate printer
+            printDoc = new PrintDocument();
+            printDoc.PrinterSettings.PrinterName = rdlcPrinter.PrinterName;
+
+            if (!printDoc.PrinterSettings.IsValid)
+            {
+                _logger.LogWarning(
+                    "Print job {PrintJobId}: Printer '{PrinterName}' is not valid or not found",
+                    printJobId, rdlcPrinter.PrinterName);
+                return false;
+            }
+
+            // Configure printer settings for thermal/matricial printers
+            ConfigurePrinterSettings(printDoc, rdlcPrinter, printJobId);
+
+            // Set up print handler
+            var currentPage = 0;
+            var hasErrors = false;
+
+            printDoc.PrintPage += (sender, e) =>
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (currentPage < streams.Count && e.Graphics != null)
+                    {
+                        using var pageImage = new Metafile(streams[currentPage]);
+
+                        // Optimize for thermal printers - use bounds properly
+                        var bounds = e.MarginBounds;
+                        if (e.PageSettings.Landscape)
+                        {
+                            bounds = new System.Drawing.Rectangle(
+                                e.PageBounds.X,
+                                e.PageBounds.Y,
+                                e.PageBounds.Height,
+                                e.PageBounds.Width);
+                        }
+
+                        e.Graphics.DrawImage(pageImage, bounds);
+                        currentPage++;
+                        e.HasMorePages = currentPage < streams.Count;
+                    }
+                    else
+                    {
+                        e.HasMorePages = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        "Print job {PrintJobId}: Error rendering page {PageNumber}",
+                        printJobId, currentPage + 1);
+                    hasErrors = true;
+                    e.HasMorePages = false;
+                }
+            };
+
+            printDoc.EndPrint += (sender, e) =>
+            {
+                try
+                {
+                    // Clean up streams
+                    if (streams != null)
+                    {
+                        foreach (var stream in streams)
+                        {
+                            stream?.Dispose();
+                        }
+                        streams.Clear();
+                    }
+
+                    if (_options.EnableDetailedLogging)
+                    {
+                        _logger.LogInformation(
+                            "Print job {PrintJobId}: Printed {PageCount} pages",
+                            printJobId, currentPage);
+                    }
+                }
+                catch (Exception cleanupEx)
+                {
+                    _logger.LogWarning(cleanupEx,
+                        "Print job {PrintJobId}: Error during cleanup",
+                        printJobId);
+                }
+            };
+
+            printDoc.QueryPageSettings += (sender, e) =>
+            {
+                // Allow dynamic page settings for thermal printers
+                if (e.PageSettings != null && rdlcPrinter.Format == "Image")
+                {
+                    // Thermal printers often need specific settings
+                    e.PageSettings.Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
+                }
+            };
+
+            // Execute print
+            printDoc.Print();
+
+            return !hasErrors;
+        }
+        finally
+        {
+            // Ensure cleanup
+            if (streams != null)
+            {
+                foreach (var stream in streams)
+                {
+                    stream?.Dispose();
+                }
+                streams.Clear();
+            }
+
+            printDoc?.Dispose();
+        }
+    }
+
+    private void ConfigurePrinterSettings(PrintDocument printDoc, RdlcPrinterDto rdlcPrinter, string printJobId)
+    {
+        // Set printer-specific settings
+        var pageSettings = new PrinterSettings { PrinterName = rdlcPrinter.PrinterName };
+        printDoc.DefaultPageSettings = pageSettings.DefaultPageSettings;
+        printDoc.PrinterSettings.Copies = rdlcPrinter.Copies;
+
+        // Optimize for thermal/matricial printers
+        if (IsLikelyThermalPrinter(rdlcPrinter.PrinterName))
+        {
+            if (_options.EnableDetailedLogging)
+            {
+                _logger.LogInformation(
+                    "Print job {PrintJobId}: Detected thermal printer, applying optimizations",
+                    printJobId);
+            }
+
+            // Thermal printers typically work best with specific settings
+            printDoc.DefaultPageSettings.Margins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
+
+            // Some thermal printers require raw mode
+            printDoc.PrinterSettings.DefaultPageSettings.Color = false;
+        }
+        else if (IsLikelyMatricialPrinter(rdlcPrinter.PrinterName))
+        {
+            if (_options.EnableDetailedLogging)
+            {
+                _logger.LogInformation(
+                    "Print job {PrintJobId}: Detected matricial printer, applying optimizations",
+                    printJobId);
+            }
+
+            // Matricial printers work best with draft quality
+            printDoc.DefaultPageSettings.Color = false;
+        }
+    }
+
+    private static bool IsLikelyThermalPrinter(string printerName)
+    {
+        if (string.IsNullOrEmpty(printerName)) return false;
+
+        var thermalKeywords = new[] { "thermal", "zebra", "tsc", "datamax", "sato", "godex", "pos", "receipt", "bixolon", "citizen" };
+        var nameLower = printerName.ToLowerInvariant();
+        return thermalKeywords.Any(keyword => nameLower.Contains(keyword));
+    }
+
+    private static bool IsLikelyMatricialPrinter(string printerName)
+    {
+        if (string.IsNullOrEmpty(printerName)) return false;
+
+        var matricialKeywords = new[] { "epson", "lx", "fx", "dfx", "matrix", "dot", "impact", "okidata", "oki" };
+        var nameLower = printerName.ToLowerInvariant();
+        return matricialKeywords.Any(keyword => nameLower.Contains(keyword));
+    }
+
+    private async Task LoadReportDefinitionAsync(LocalReport lr, string reportPath, CancellationToken cancellationToken)
+    {
+        if (!File.Exists(reportPath))
+        {
+            throw new ReportNotFoundException($"Report file not found: {reportPath}");
+        }
+
+        if (_options.EnableReportDefinitionCache)
+        {
+            var reportStream = await _cache.GetOrAddAsync(reportPath, async (key) =>
+            {
+                using var fileStream = new FileStream(key, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+                var memoryStream = new MemoryStream();
+                await fileStream.CopyToAsync(memoryStream, cancellationToken);
+                memoryStream.Position = 0;
+                return memoryStream;
+            });
+
+            lr.LoadReportDefinition(reportStream);
+        }
+        else
+        {
+            using var fileStream = new FileStream(reportPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+            lr.LoadReportDefinition(fileStream);
+        }
+    }
+
+    private async Task SetReportParametersAsync(
+        LocalReport lr,
+        RdlcPrinterDto rdlcPrinter,
+        RdlcPrintRequestDto printRequest,
+        CancellationToken cancellationToken)
+    {
         var reportParams = lr.GetParameters();
 
         if (reportParams.Count > 0 && printRequest.ReportParams != null)
         {
             foreach (var item in printRequest.ReportParams)
             {
-                printRequest.ReportParams.TryGetValue("mimeType", out _);
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (item.Key == "logo")
                 {
-                    var logoPath = "";
-                    if (Directory.Exists(rdlcPrinter.LogoDirectory))
+                    var logoPath = await FindLogoPathAsync(rdlcPrinter, cancellationToken);
+                    if (!string.IsNullOrEmpty(logoPath))
                     {
-                        var fileEntries = Directory.GetFiles(rdlcPrinter.LogoDirectory);
-                        foreach (var entry in fileEntries)
-                        {
-                            var fileName = Path.GetFileNameWithoutExtension(entry);
-                            if (fileName == rdlcPrinter.LogoName)
-                            {
-                                logoPath = Path.Combine(rdlcPrinter.LogoDirectory, entry);
-                                break;
-                            }
-                        }
+                        var logoBytes = await File.ReadAllBytesAsync(logoPath, cancellationToken);
+                        lr.SetParameters(new ReportParameter(item.Key, Convert.ToBase64String(logoBytes)));
                     }
-
-                    lr.SetParameters(new ReportParameter(item.Key,
-                        Convert.ToBase64String(File.ReadAllBytes(logoPath))));
                 }
                 else
                 {
@@ -59,72 +373,28 @@ public class RdlcPrinterService : IRdlcPrinterService
                 }
             }
         }
-
-        lr.Render(rdlcPrinter.Format, rdlcPrinter.DeviceInfo, (_, _, _, _, _) =>
-        {
-            var stream = new MemoryStream();
-            streams.Add(stream);
-            return stream;
-        }, out _);
-
-        foreach (var stream in streams)
-            stream.Position = 0;
-
-        if (streams == null || streams.Count == 0)
-        {
-            throw new Exception("Error: no stream to print.");
-        }
-
-        var printDoc = new PrintDocument();
-        printDoc.PrinterSettings.PrinterName = rdlcPrinter.PrinterName;
-        var pageSettings = new PrinterSettings();
-        pageSettings.PrinterName = rdlcPrinter.PrinterName;
-        printDoc.DefaultPageSettings = pageSettings.DefaultPageSettings;
-
-        var currentPage = 0;
-        switch (printDoc.PrinterSettings.IsValid)
-        {
-            case true:
-                printDoc.PrintPage += (sender, e) =>
-                {
-                    var pageImage = new Metafile(streams[currentPage]);
-                    e.Graphics.DrawImage(
-                        pageImage, e.PageBounds);
-                    currentPage++;
-                    e.HasMorePages = currentPage < streams.Count;
-                };
-                printDoc.EndPrint += (sender, e) =>
-                {
-                    if (streams != null)
-                    {
-                        foreach (var item in streams)
-                        {
-                            item.Close();
-                        }
-
-                        streams.Clear();
-                    }
-                    if (printDoc.PrintController.IsPreview)
-                    {
-                    }
-                };
-                printDoc.PrinterSettings.Copies = rdlcPrinter.Copies;
-                printDoc.Print();
-                return true;
-            default:
-                return false;
-        }
     }
 
-    private static MemoryStream LoadReportDefinition(string filePath)
+    private async Task<string?> FindLogoPathAsync(RdlcPrinterDto rdlcPrinter, CancellationToken cancellationToken)
     {
-        var memoryStream = new MemoryStream();
-        using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+        if (string.IsNullOrEmpty(rdlcPrinter.LogoDirectory) || !Directory.Exists(rdlcPrinter.LogoDirectory))
         {
-            fileStream.CopyTo(memoryStream);
+            return null;
         }
 
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        return memoryStream;
+        var fileEntries = await Task.Run(
+            () => Directory.GetFiles(rdlcPrinter.LogoDirectory),
+            cancellationToken);
+
+        foreach (var entry in fileEntries)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(entry);
+            if (fileName == rdlcPrinter.LogoName)
+            {
+                return entry;
+            }
+        }
+
+        return null;
     }
 }

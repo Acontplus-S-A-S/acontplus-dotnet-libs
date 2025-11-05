@@ -98,10 +98,7 @@ public static class SimpleEntityRegistration
                         determinedTableName = dbSetProperty.Name;
                     }
                 }
-                if (determinedTableName == null)
-                {
-                    determinedTableName = entityType.Name;
-                }
+                determinedTableName ??= entityType.Name;
             }
 
             // Apply the determined name and schema based on explicit intent

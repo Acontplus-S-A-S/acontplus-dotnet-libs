@@ -1,4 +1,4 @@
-﻿using Acontplus.Core.Extensions;
+using Acontplus.Core.Extensions;
 using Acontplus.Notifications.Abstractions;
 using Acontplus.Notifications.Models;
 using MailKit.Net.Smtp;
@@ -178,13 +178,8 @@ public class MailKitService : IMailKitService, IDisposable
         }
 
         // Check minimum interval between attempts
-        if (_lastAuthAttempt.TryGetValue(serverKey, out var lastAuth) &&
-            now - lastAuth < _minAuthInterval)
-        {
-            return false;
-        }
-
-        return true;
+        return !_lastAuthAttempt.TryGetValue(serverKey, out var lastAuth) ||
+            now - lastAuth >= _minAuthInterval;
     }
 
     private TimeSpan GetAuthenticationWaitTime(string serverKey)
@@ -393,9 +388,7 @@ public class MailKitService : IMailKitService, IDisposable
 
     private static string LowerFirstCharacter(string value)
     {
-        if (value.Length > 1)
-            return char.ToLower(value[0]) + value.Substring(1);
-        return value;
+        return value.Length > 1 ? char.ToLower(value[0]) + value.Substring(1) : value;
     }
 
     public void Dispose()
