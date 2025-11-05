@@ -34,8 +34,8 @@ public class ApiExceptionMiddleware
         var correlationId = GetCorrelationId(context);
         var tenantId = GetTenantId(context);
 
-        context.Items["CorrelationId"] = correlationId;
-        context.Items["TenantId"] = tenantId;
+        context.Items[ApiMetadataKeys.CorrelationId] = correlationId;
+        context.Items[ApiMetadataKeys.TenantId] = tenantId;
 
         try
         {
@@ -117,10 +117,10 @@ public class ApiExceptionMiddleware
             Code: "UNHANDLED_ERROR",
             Message: "An unexpected error occurred",
             Category: "system",
-            Details: debugInfo != null
+                Details: debugInfo != null
                 ? new Dictionary<string, object>
                 {
-                    ["debug"] = debugInfo
+                    [DebugMetadataKeys.Debug] = debugInfo
                 }
                 : null,
             TraceId: Activity.Current?.TraceId.ToString());
@@ -221,17 +221,17 @@ public class ApiExceptionMiddleware
             ? null
             : new Dictionary<string, object>
             {
-                ["type"] = ex.GetType().Name,
-                ["message"] = ex.Message,
-                ["stackTrace"] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
-                ["innerException"] = ex.InnerException != null
+                [DebugMetadataKeys.ExceptionType] = ex.GetType().Name,
+                [DebugMetadataKeys.Message] = ex.Message,
+                [DebugMetadataKeys.StackTrace] = ex.StackTrace?.Split(Environment.NewLine) ?? Array.Empty<string>(),
+                [DebugMetadataKeys.InnerException] = ex.InnerException != null
                 ? new
                 {
                     type = ex.InnerException.GetType().Name,
                     message = ex.InnerException.Message
                 }
                 : (object?)null,
-                ["activityId"] = Activity.Current?.Id ?? "none"
+                [DebugMetadataKeys.ActivityId] = Activity.Current?.Id ?? "none"
             };
     }
 
@@ -260,8 +260,8 @@ public class ApiExceptionMiddleware
     {
         return new Dictionary<string, object>
         {
-            ["tenantId"] = tenantId,
-            ["timestampUtc"] = DateTime.UtcNow
+            [ApiMetadataKeys.TenantId] = tenantId,
+            [ApiMetadataKeys.TimestampUtc] = DateTime.UtcNow
         };
     }
 }

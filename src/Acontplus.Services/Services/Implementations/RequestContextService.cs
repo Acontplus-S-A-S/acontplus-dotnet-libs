@@ -64,16 +64,16 @@ public class RequestContextService : IRequestContextService
 
         return new Dictionary<string, object?>
         {
-            ["requestId"] = GetRequestId(),
-            ["correlationId"] = GetCorrelationId(),
-            ["tenantId"] = GetTenantId(),
-            ["clientId"] = GetClientId(),
-            ["issuer"] = GetIssuer(),
+            [ApiMetadataKeys.RequestId] = GetRequestId(),
+            [ApiMetadataKeys.CorrelationId] = GetCorrelationId(),
+            [ApiMetadataKeys.TenantId] = GetTenantId(),
+            [ApiMetadataKeys.ClientId] = GetClientId(),
+            [ApiMetadataKeys.Issuer] = GetIssuer(),
             ["deviceType"] = GetDeviceType().ToString(),
             ["isMobileRequest"] = IsMobileRequest(),
             ["userAgent"] = context.Request.Headers.UserAgent.ToString(),
             ["ipAddress"] = context.Connection.RemoteIpAddress?.ToString(),
-            ["timestamp"] = DateTime.UtcNow
+            [ApiMetadataKeys.TimestampUtc] = DateTime.UtcNow
         };
     }
 
