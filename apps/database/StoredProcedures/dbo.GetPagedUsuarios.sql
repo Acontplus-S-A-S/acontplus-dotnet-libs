@@ -10,13 +10,13 @@ GO
 -- Author:      Acontplus Team
 -- Create date: 2025-11-05
 -- Description: High-performance paginated query for Usuario table
---              Supports filtering by email domain, sorting, and search
+--              Supports filtering via JSON filters, sorting, and search
 --              Returns both data and total count for pagination metadata
 -- Usage:
 --   EXEC dbo.GetPagedUsuarios
 --     @PageIndex = 1,
 --     @PageSize = 10,
---     @EmailDomain = 'example.com',
+--     @Filters = '{"UserId":"123","EmailDomain":"example.com"}',
 --     @SortBy = 'CreatedAt',
 --     @SortDirection = 'DESC',
 --     @SearchTerm = 'john'
@@ -24,11 +24,10 @@ GO
 CREATE OR ALTER PROCEDURE dbo.GetPagedUsuarios
     @PageIndex INT = 1,
     @PageSize INT = 10,
-    @EmailDomain NVARCHAR(100) = NULL,
     @SortBy NVARCHAR(50) = 'CreatedAt',
     @SortDirection NVARCHAR(4) = 'DESC',
     @SearchTerm NVARCHAR(100) = NULL,
-    @IncludeDeleted BIT = 0,
+    @Filters NVARCHAR(MAX) = NULL,
     @TotalCount INT OUTPUT
 AS
 BEGIN
@@ -62,6 +61,19 @@ BEGIN
         -- Calculate offset
         DECLARE @Offset INT = (@PageIndex - 1) * @PageSize;
 
+        -- Parse JSON filters
+        DECLARE @UserId NVARCHAR(100) = NULL;
+        DECLARE @EmailDomain NVARCHAR(100) = NULL;
+        DECLARE @IncludeDeleted BIT = 0; -- Default to exclude deleted
+
+        IF @Filters IS NOT NULL AND ISJSON(@Filters) = 1
+        BEGIN
+            SELECT
+                @UserId = JSON_VALUE(@Filters, '$.UserId'),
+                @EmailDomain = JSON_VALUE(@Filters, '$.EmailDomain'),
+                @IncludeDeleted = ISNULL(TRY_CAST(JSON_VALUE(@Filters, '$.IncludeDeleted') AS BIT), 0);
+        END
+
         -- Build WHERE clause dynamically
         DECLARE @WhereClause NVARCHAR(MAX) = N'WHERE 1=1';
 
@@ -69,6 +81,12 @@ BEGIN
         IF @IncludeDeleted = 0
         BEGIN
             SET @WhereClause = @WhereClause + N' AND IsDeleted = 0';
+        END
+
+        -- Filter by UserId
+        IF @UserId IS NOT NULL AND LEN(@UserId) > 0
+        BEGIN
+            SET @WhereClause = @WhereClause + N' AND Id = @UserIdParam';
         END
 
         -- Filter by EmailDomain
@@ -118,7 +136,8 @@ BEGIN
         -- Execute count query
         EXEC sp_executesql
             @CountSQL,
-            N'@EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @TotalCountOut INT OUTPUT',
+            N'@UserIdParam NVARCHAR(100), @EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @TotalCountOut INT OUTPUT',
+            @UserIdParam = @UserId,
             @EmailDomainParam = @EmailDomain,
             @SearchTermParam = @SearchTerm,
             @TotalCountOut = @LocalTotalCount OUTPUT;
@@ -129,7 +148,8 @@ BEGIN
         -- Execute data query (returns the result set)
         EXEC sp_executesql
             @DataSQL,
-            N'@EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @OffsetParam INT, @PageSizeParam INT',
+            N'@UserIdParam NVARCHAR(100), @EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @OffsetParam INT, @PageSizeParam INT',
+            @UserIdParam = @UserId,
             @EmailDomainParam = @EmailDomain,
             @SearchTermParam = @SearchTerm,
             @OffsetParam = @Offset,
@@ -152,7 +172,7 @@ BEGIN
                    ' | Error: ', @ErrorMessage,
                    ' | Parameters: PageIndex=', @PageIndex,
                    ', PageSize=', @PageSize,
-                   ', EmailDomain=', ISNULL(@EmailDomain, 'NULL'),
+                   ', Filters=', ISNULL(@Filters, 'NULL'),
                    ', SortBy=', @SortBy,
                    ', SortDirection=', @SortDirection);
 
@@ -174,34 +194,69 @@ GO
 -- EXEC dbo.GetPagedUsuarios @PageIndex = 1, @PageSize = 10, @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;
 
--- Example 2: Filter by email domain
+-- Example 2: Filter by UserId using JSON
 -- DECLARE @TotalCount INT;
--- EXEC dbo.GetPagedUsuarios @PageIndex = 1, @PageSize = 10, @EmailDomain = 'example.com', @TotalCount = @TotalCount OUTPUT;
+-- EXEC dbo.GetPagedUsuarios
+--     @PageIndex = 1,
+--     @PageSize = 10,
+--     @Filters = '{"UserId":"123"}',
+--     @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;
 
--- Example 3: Search by term
+-- Example 3: Filter by EmailDomain using JSON
+-- DECLARE @TotalCount INT;
+-- EXEC dbo.GetPagedUsuarios
+--     @PageIndex = 1,
+--     @PageSize = 10,
+--     @Filters = '{"EmailDomain":"example.com"}',
+--     @TotalCount = @TotalCount OUTPUT;
+-- SELECT @TotalCount AS TotalCount;
+
+-- Example 4: Multiple filters using JSON
+-- DECLARE @TotalCount INT;
+-- EXEC dbo.GetPagedUsuarios
+--     @PageIndex = 1,
+--     @PageSize = 10,
+--     @Filters = '{"UserId":"123","EmailDomain":"gmail.com"}',
+--     @TotalCount = @TotalCount OUTPUT;
+-- SELECT @TotalCount AS TotalCount;
+
+-- Example 5: Search by term
 -- DECLARE @TotalCount INT;
 -- EXEC dbo.GetPagedUsuarios @PageIndex = 1, @PageSize = 10, @SearchTerm = 'john', @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;
 
--- Example 4: Custom sorting
+-- Example 6: Custom sorting
 -- DECLARE @TotalCount INT;
 -- EXEC dbo.GetPagedUsuarios @PageIndex = 1, @PageSize = 10, @SortBy = 'Username', @SortDirection = 'ASC', @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;
 
--- Example 5: Include deleted users
+-- Example 7: Include deleted users (using Filters JSON)
 -- DECLARE @TotalCount INT;
--- EXEC dbo.GetPagedUsuarios @PageIndex = 1, @PageSize = 10, @IncludeDeleted = 1, @TotalCount = @TotalCount OUTPUT;
+-- EXEC dbo.GetPagedUsuarios
+--     @PageIndex = 1,
+--     @PageSize = 10,
+--     @Filters = '{"IncludeDeleted":true}',
+--     @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;
 
--- Example 6: Combined filters
+-- Example 8: Combined filters with JSON, search and sorting
 -- DECLARE @TotalCount INT;
 -- EXEC dbo.GetPagedUsuarios
 --     @PageIndex = 2,
 --     @PageSize = 20,
---     @EmailDomain = 'gmail.com',
+--     @Filters = '{"UserId":"123","EmailDomain":"gmail.com"}',
 --     @SearchTerm = 'test',
 --     @SortBy = 'Email',
 --     @SortDirection = 'ASC',
+--     @TotalCount = @TotalCount OUTPUT;
+-- SELECT @TotalCount AS TotalCount;
+
+-- Example 9: Complex filters with various data types (string, int, bool, date)
+-- DECLARE @TotalCount INT;
+-- EXEC dbo.GetPagedUsuarios
+--     @PageIndex = 1,
+--     @PageSize = 10,
+--     @Filters = '{"UserId":"123","IncludeDeleted":true,"EmailDomain":"example.com"}',
 --     @TotalCount = @TotalCount OUTPUT;
 -- SELECT @TotalCount AS TotalCount;

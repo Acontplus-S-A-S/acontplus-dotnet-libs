@@ -2,7 +2,7 @@
 ### This file demonstrates all the new ADO.NET repository methods
 ### for high-performance scenarios with SQL Server/PostgreSQL
 
-@baseUrl = https://localhost:7001
+@baseUrl = https://localhost:7111
 @apiBase = {{baseUrl}}/api/usuario
 
 ### ============================================
@@ -57,9 +57,36 @@ Accept: application/json
 ### 7. Get paginated users from stored procedure
 ### Demonstrates: GetPagedFromStoredProcedureAsync with PaginationDto
 ### NOTE: Requires stored procedure dbo.GetPagedUsuarios to exist
-GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=15&emailDomain=example.com&sortBy=Username
+### Complete pagination parameters:
+### - pageIndex: Page number (1-based)
+### - pageSize: Items per page
+### - sortBy: Column name to sort by
+### - sortDirection: Asc or Desc
+### - searchTerm: Global search term
+### - Filters are passed internally (UserId extracted from JWT claims)
+GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=15&sortBy=Username&sortDirection=Asc&searchTerm=admin
 Accept: application/json
 
+###
+
+### 7b. Stored procedure pagination - Different page with descending sort
+GET {{apiBase}}/paged-sp?pageIndex=2&pageSize=20&sortBy=Email&sortDirection=Desc
+Accept: application/json
+
+###
+
+### 7c. Stored procedure pagination - With search term only
+GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=10&searchTerm=test
+Accept: application/json
+
+###
+
+### 7d. Stored procedure pagination - With custom filters passed in Filters dictionary
+### Demonstrates: Multiple filters combined in JSON and passed to stored procedure
+### Filters sent to SP: {"UserId": "auto-from-jwt", "EmailDomain": "example.com", "Status": "Active"}
+### The stored procedure receives this as @Filters NVARCHAR(MAX) JSON parameter
+GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=10&sortBy=Email&filters[EmailDomain]=example.com&filters[Status]=Active
+Accept: application/json
 ###
 
 ### ============================================
@@ -152,12 +179,6 @@ Accept: application/json
 
 ### Invalid sort column (should be prevented by ValidateAndSanitizeSortColumn)
 GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10&sortBy=DropTableUsuario&sortDirection=Desc
-Accept: application/json
-
-###
-
-### SQL injection attempt in search (should be parameterized)
-GET {{apiBase}}/paged-ado?searchTerm=test' OR '1'='1&pageIndex=1&pageSize=10
 Accept: application/json
 
 ###

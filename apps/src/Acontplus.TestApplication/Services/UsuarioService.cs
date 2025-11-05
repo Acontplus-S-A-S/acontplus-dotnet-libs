@@ -426,15 +426,10 @@ namespace Acontplus.TestApplication.Services
                     FROM dbo.Usuario
                     WHERE IsDeleted = 0";
 
-                var parameters = new Dictionary<string, object>();
+                // Note: SearchTerm is already handled by the ADO repository via pagination.SearchTerm
+                // No need to manually add it here - it will be added automatically as @__SearchTerm
 
-                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
-                {
-                    baseSql += " AND (Username LIKE @SearchTerm OR Email LIKE @SearchTerm)";
-                    parameters["@SearchTerm"] = $"%{pagination.SearchTerm}%";
-                }
-
-                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination, parameters);
+                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination);
                 return Result<PagedResult<Usuario>, DomainError>.Success(result);
             }
             catch (Exception ex)
@@ -455,15 +450,20 @@ namespace Acontplus.TestApplication.Services
                     FROM dbo.Usuario
                     WHERE IsDeleted = 0";
 
-                var parameters = new Dictionary<string, object>();
-
+                // If we have additional filter parameters, add them to pagination.Filters
                 if (createdAfter.HasValue)
                 {
                     baseSql += " AND CreatedAt >= @CreatedAfter";
-                    parameters["@CreatedAfter"] = createdAfter.Value;
+
+                    // Merge additional filter into pagination
+                    var filters = pagination.Filters?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                        ?? new Dictionary<string, object>();
+                    filters["CreatedAfter"] = createdAfter.Value;
+
+                    pagination = pagination with { Filters = filters };
                 }
 
-                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination, parameters);
+                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination);
                 return Result<PagedResult<Usuario>, DomainError>.Success(result);
             }
             catch (Exception ex)
@@ -474,22 +474,15 @@ namespace Acontplus.TestApplication.Services
         }
 
         public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(
-            PaginationDto pagination,
-            string? emailDomain = null)
+            PaginationDto pagination)
         {
             try
             {
-                var parameters = new Dictionary<string, object>();
-
-                if (!string.IsNullOrWhiteSpace(emailDomain))
-                {
-                    parameters["@EmailDomain"] = emailDomain;
-                }
-
+                // Stored procedure will receive filters from pagination.Filters
+                // No need to pass additional parameters - they're already in pagination
                 var result = await _adoRepository.GetPagedFromStoredProcedureAsync<Usuario>(
                     "dbo.GetPagedUsuarios",
-                    pagination,
-                    parameters);
+                    pagination);
 
                 return Result<PagedResult<Usuario>, DomainError>.Success(result);
             }

@@ -2,6 +2,7 @@ using Acontplus.Billing.Models.Documents;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Extensions;
 using Acontplus.TestApi.Endpoints;
+using Acontplus.TestApi.Endpoints.Business;
 
 namespace Acontplus.TestApi.Extensions.Program;
 
@@ -21,6 +22,7 @@ public static class EndpointMappingExtensions
         app.MapAtsEndpoint();
         app.MapMinimalTestEndpoint();
         app.MapDiaEndpoints();
+        app.MapUsuarioEndpoints();
     }
 
     private static void MapAtsEndpoint(this WebApplication app)

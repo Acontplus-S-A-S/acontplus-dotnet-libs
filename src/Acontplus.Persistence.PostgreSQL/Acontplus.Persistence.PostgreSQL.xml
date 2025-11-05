@@ -225,18 +225,18 @@
             Gets the long count of rows for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with automatic count query.
             Uses PostgreSQL LIMIT-OFFSET with parallel query support.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with custom count query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated stored procedure/function.
             </summary>
@@ -272,10 +272,9 @@
             Only allows alphanumeric characters, underscores, and dots for qualified names.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.ApplyPaginationFilters(System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.PaginationDto)">
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.DTOs.Requests.PaginationDto)">
             <summary>
-            Applies pagination filters to parameters dictionary.
-            Merges pagination filters with existing parameters.
+            Builds query parameters from pagination filters and search term.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.PostgreSQL.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">

@@ -56,29 +56,31 @@
             Gets the long count of rows for the given query (for tables with billions of rows).
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with automatic count query.
             For SQL Server 2022: Uses OFFSET-FETCH with optimized query plans.
             For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
+            Filters and parameters are extracted from the PaginationDto.Filters property.
             </summary>
             <param name="sql">Main SELECT query (without OFFSET/LIMIT)</param>
-            <param name="pagination">Pagination parameters including sort, filters</param>
-            <param name="parameters">Query parameters</param>
+            <param name="pagination">Pagination parameters including sort, filters, and search</param>
             <param name="options">Command options</param>
             <param name="cancellationToken">Cancellation token</param>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with a custom count query for complex scenarios.
             Use this when the count query needs to be different from the main query.
+            Filters and parameters are extracted from the PaginationDto.Filters property.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated stored procedure that returns results and total count.
             Expects the stored procedure to have @PageIndex, @PageSize parameters
             and return both results and total count (via output parameter or second result set).
+            Filters and parameters are extracted from the PaginationDto.Filters property.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">

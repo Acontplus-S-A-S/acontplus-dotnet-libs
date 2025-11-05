@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Acontplus.Core.Extensions;
 using Acontplus.Persistence.PostgreSQL.Mapping;
 
 namespace Acontplus.Persistence.PostgreSQL.Repositories;
@@ -458,13 +459,12 @@ public class AdoRepository : IAdoRepository
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
         PaginationDto pagination,
-        Dictionary<string, object>? parameters = null,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
         // Generate count SQL from the main SQL
         var countSql = GenerateCountSql(sql);
-        return await GetPagedAsync<T>(sql, countSql, pagination, parameters, options, cancellationToken);
+        return await GetPagedAsync<T>(sql, countSql, pagination, options, cancellationToken);
     }
 
     /// <summary>
@@ -474,11 +474,9 @@ public class AdoRepository : IAdoRepository
         string sql,
         string countSql,
         PaginationDto pagination,
-        Dictionary<string, object>? parameters = null,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
-        parameters ??= new Dictionary<string, object>();
         ValidatePagination(pagination);
 
         return await RetryPolicy.ExecuteAsync(async () =>
@@ -489,24 +487,21 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Apply pagination filters to parameters
-                var enrichedParameters = ApplyPaginationFilters(parameters, pagination);
+                // Build parameters from pagination filters
+                var parameters = BuildPaginationParameters(pagination);
 
                 // Get total count
-                var totalCount = await CountAsync(countSql, enrichedParameters, options, cancellationToken);
+                var totalCount = await CountAsync(countSql, parameters, options, cancellationToken);
 
                 // Build paginated query with ORDER BY and LIMIT-OFFSET
                 var pagedSql = BuildPagedSql(sql, pagination);
 
-                // Add pagination parameters
-                var pagedParameters = new Dictionary<string, object>(enrichedParameters)
-                {
-                    ["@__Limit"] = pagination.PageSize,
-                    ["@__Offset"] = (pagination.PageIndex - 1) * pagination.PageSize
-                };
+                // Add pagination offset/limit parameters
+                parameters["@__Limit"] = pagination.PageSize;
+                parameters["@__Offset"] = (pagination.PageIndex - 1) * pagination.PageSize;
 
                 // Execute paged query
-                await using var cmd = CreateCommand(connection, pagedSql, pagedParameters, options);
+                await using var cmd = CreateCommand(connection, pagedSql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 var items = await reader.ToListAsync<T>(cancellationToken);
 
@@ -557,11 +552,9 @@ public class AdoRepository : IAdoRepository
     public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
         PaginationDto pagination,
-        Dictionary<string, object>? parameters = null,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
-        parameters ??= new Dictionary<string, object>();
         ValidatePagination(pagination);
 
         return await RetryPolicy.ExecuteAsync(async () =>
@@ -572,8 +565,8 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Add pagination parameters (PostgreSQL convention uses lowercase with underscores)
-                var spParameters = new Dictionary<string, object>(parameters)
+                // Build stored procedure parameters from pagination (PostgreSQL convention uses lowercase with underscores)
+                var spParameters = new Dictionary<string, object>
                 {
                     ["page_index"] = pagination.PageIndex,
                     ["page_size"] = pagination.PageSize
@@ -592,14 +585,15 @@ public class AdoRepository : IAdoRepository
                     spParameters["search_term"] = pagination.SearchTerm;
                 }
 
-                // Add individual filters from pagination
+                // Serialize filters to JSON for PostgreSQL JSONB using optimized serialization
                 if (pagination.Filters != null && pagination.Filters.Any())
                 {
-                    foreach (var filter in pagination.Filters)
-                    {
-                        var paramName = filter.Key.StartsWith("@") ? filter.Key : $"@{filter.Key}";
-                        spParameters[paramName] = filter.Value;
-                    }
+                    var filtersJson = pagination.Filters.SerializeOptimized();
+                    spParameters["filters"] = filtersJson;
+                }
+                else
+                {
+                    spParameters["filters"] = DBNull.Value;
                 }
 
                 var spOptions = options ?? new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
@@ -1010,14 +1004,11 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Applies pagination filters to parameters dictionary.
-    /// Merges pagination filters with existing parameters.
+    /// Builds query parameters from pagination filters and search term.
     /// </summary>
-    private Dictionary<string, object> ApplyPaginationFilters(
-        Dictionary<string, object> parameters,
-        PaginationDto pagination)
+    private Dictionary<string, object> BuildPaginationParameters(PaginationDto pagination)
     {
-        var result = new Dictionary<string, object>(parameters);
+        var result = new Dictionary<string, object>();
 
         // Add search term if provided
         if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))

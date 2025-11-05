@@ -21,7 +21,7 @@ public interface IUsuarioService
     Task<Result<long, DomainError>> GetActiveUsersCountAsync();
     Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersAdoAsync(PaginationDto pagination);
     Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersComplexAsync(PaginationDto pagination, DateTime? createdAfter = null);
-    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(PaginationDto pagination, string? emailDomain = null);
+    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(PaginationDto pagination);
     Task<Result<int, DomainError>> BulkInsertUsersAsync(List<UsuarioDto> users);
     Task<Result<int, DomainError>> ExecuteBatchOperationsAsync(List<int> userIds);
 }
