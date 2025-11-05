@@ -1,8 +1,10 @@
 using Acontplus.Utilities.Data;
+using Acontplus.Utilities.Security.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Security;
 using System.Web;
 using static System.Enum;
 
@@ -124,22 +126,79 @@ namespace Acontplus.Reports.Services
 
         private string GetReportPath(ReportPropsDto reportProps, bool offline)
         {
-            if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
+            // Validate input
+            if (string.IsNullOrWhiteSpace(reportProps.ReportPath))
             {
-                var reportPath = reportProps.ReportPath.TrimStart('/', '\\');
-                return Path.Combine(_options.ExternalDirectory, reportPath);
+                throw new InvalidReportPathException("Report path cannot be null or empty");
             }
 
-            var mainPath = Path.Combine(Directory.GetCurrentDirectory(), _options.MainDirectory);
-            var paths = reportProps.ReportPath.Split("/");
-            paths = paths.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+            string baseDirectory;
+            string requestedPath;
 
-            return paths.Length switch
+            if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
             {
-                1 => Path.Combine(mainPath, paths[0]),
-                2 => Path.Combine(mainPath, paths[0], paths[1]),
-                _ => Path.Combine(mainPath, reportProps.ReportPath),
-            };
+                baseDirectory = _options.ExternalDirectory;
+                requestedPath = reportProps.ReportPath;
+            }
+            else
+            {
+                baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), _options.MainDirectory);
+                requestedPath = reportProps.ReportPath;
+            }
+
+            // Apply strict path validation if enabled
+            string resolvedPath;
+            if (_options.EnableStrictPathValidation)
+            {
+                try
+                {
+                    resolvedPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, requestedPath);
+
+                    // Validate file extension
+                    if (_options.AllowedReportExtensions.Length > 0)
+                    {
+                        PathSecurityValidator.ValidateFileExtension(resolvedPath, _options.AllowedReportExtensions);
+                    }
+                }
+                catch (SecurityException ex)
+                {
+                    throw InvalidReportPathException.FromSecurityException(ex, reportProps.ReportPath);
+                }
+            }
+            else
+            {
+                // Legacy behavior (not recommended for production)
+                _logger.LogWarning("Strict path validation is disabled. This is not recommended for production environments.");
+
+                var reportPath = requestedPath.TrimStart('/', '\\');
+
+                if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
+                {
+                    resolvedPath = Path.Combine(_options.ExternalDirectory, reportPath);
+                }
+                else
+                {
+                    var mainPath = Path.Combine(Directory.GetCurrentDirectory(), _options.MainDirectory);
+                    var paths = requestedPath.Split("/");
+                    paths = paths.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+                    resolvedPath = paths.Length switch
+                    {
+                        1 => Path.Combine(mainPath, paths[0]),
+                        2 => Path.Combine(mainPath, paths[0], paths[1]),
+                        _ => Path.Combine(mainPath, requestedPath),
+                    };
+                }
+            }
+
+            // Log the resolved path for security auditing
+            if (_options.EnableDetailedLogging)
+            {
+                _logger.LogInformation("Resolved report path: {ResolvedPath} (requested: {RequestedPath})",
+                    resolvedPath, reportProps.ReportPath);
+            }
+
+            return resolvedPath;
         }
 
         private void AddDataSources(LocalReport lr, DataSet parameters, DataSet data)
@@ -222,7 +281,23 @@ namespace Acontplus.Reports.Services
 
         public async Task<ReportResponse> GetErrorAsync()
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "NotFound.pdf");
+            var baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
+            var filePath = Path.Combine(baseDirectory, "NotFound.pdf");
+
+            // Ensure the file exists and is safe to access
+            if (!File.Exists(filePath))
+            {
+                _logger.LogError("Error report file not found at: {FilePath}", filePath);
+
+                // Return a minimal error response
+                return new ReportResponse
+                {
+                    FileContents = Encoding.UTF8.GetBytes("Report not found"),
+                    ContentType = "text/plain",
+                    FileDownloadName = "Error.txt"
+                };
+            }
+
             var fileContents = await File.ReadAllBytesAsync(filePath);
             return new ReportResponse
             {

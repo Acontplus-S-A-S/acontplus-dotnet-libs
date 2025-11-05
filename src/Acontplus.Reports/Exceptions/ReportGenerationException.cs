@@ -1,3 +1,5 @@
+using System.Security;
+
 namespace Acontplus.Reports.Exceptions;
 
 /// <summary>
@@ -81,5 +83,33 @@ public class ReportNotFoundException : ReportGenerationException
     public ReportNotFoundException(string reportPath, Exception innerException)
         : base($"Report file not found at path: {reportPath}", innerException)
     {
+    }
+}
+
+/// <summary>
+/// Exception thrown when an invalid or potentially malicious report path is detected
+/// </summary>
+public class InvalidReportPathException : ReportGenerationException
+{
+    public InvalidReportPathException(string message)
+        : base(message)
+    {
+    }
+
+    public InvalidReportPathException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Creates an InvalidReportPathException from a SecurityException thrown by PathSecurityValidator
+    /// </summary>
+    public static InvalidReportPathException FromSecurityException(SecurityException securityException, string? reportPath = null)
+    {
+        var message = reportPath != null
+            ? $"Invalid report path '{reportPath}': {securityException.Message}"
+            : securityException.Message;
+
+        return new InvalidReportPathException(message, securityException);
     }
 }

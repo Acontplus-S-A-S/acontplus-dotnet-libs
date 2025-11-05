@@ -69,6 +69,16 @@
             Enable detailed logging for report operations (default false)
             </summary>
         </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.AllowedReportExtensions">
+            <summary>
+            Allowed file extensions for report files (default: .rdlc, .rdl)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.EnableStrictPathValidation">
+            <summary>
+            Enable strict path validation to prevent directory traversal attacks (default true)
+            </summary>
+        </member>
         <member name="T:Acontplus.Reports.Exceptions.ReportGenerationException">
             <summary>
             Exception thrown when report generation fails
@@ -87,6 +97,16 @@
         <member name="T:Acontplus.Reports.Exceptions.ReportNotFoundException">
             <summary>
             Exception thrown when report file is not found
+            </summary>
+        </member>
+        <member name="T:Acontplus.Reports.Exceptions.InvalidReportPathException">
+            <summary>
+            Exception thrown when an invalid or potentially malicious report path is detected
+            </summary>
+        </member>
+        <member name="M:Acontplus.Reports.Exceptions.InvalidReportPathException.FromSecurityException(System.Security.SecurityException,System.String)">
+            <summary>
+            Creates an InvalidReportPathException from a SecurityException thrown by PathSecurityValidator
             </summary>
         </member>
         <member name="T:Acontplus.Reports.Extensions.ServiceCollectionExtensions">

@@ -64,4 +64,14 @@ public class ReportOptions
     /// Enable detailed logging for report operations (default false)
     /// </summary>
     public bool EnableDetailedLogging { get; set; } = false;
+
+    /// <summary>
+    /// Allowed file extensions for report files (default: .rdlc, .rdl)
+    /// </summary>
+    public string[] AllowedReportExtensions { get; set; } = [".rdlc", ".rdl"];
+
+    /// <summary>
+    /// Enable strict path validation to prevent directory traversal attacks (default true)
+    /// </summary>
+    public bool EnableStrictPathValidation { get; set; } = true;
 }
