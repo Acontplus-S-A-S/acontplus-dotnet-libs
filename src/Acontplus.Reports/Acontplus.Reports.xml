@@ -51,7 +51,17 @@
         </member>
         <member name="P:Acontplus.Reports.Configuration.ReportOptions.MaxConcurrentReports">
             <summary>
-            Maximum concurrent report generations (default 10)
+            Maximum number of concurrent report generation tasks. Default: 10
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.MaxConcurrentPrintJobs">
+            <summary>
+            Maximum number of concurrent print jobs. Default: 5 (printing is slower than generation)
+            </summary>
+        </member>
+        <member name="P:Acontplus.Reports.Configuration.ReportOptions.PrintJobTimeoutSeconds">
+            <summary>
+            Timeout for print jobs in seconds. Default: 180 (3 minutes)
             </summary>
         </member>
         <member name="P:Acontplus.Reports.Configuration.ReportOptions.EnableDetailedLogging">
@@ -99,6 +109,11 @@
             <param name="services">The service collection</param>
             <param name="configureOptions">Action to configure report options</param>
             <returns>The service collection for chaining</returns>
+        </member>
+        <member name="M:Acontplus.Reports.Interfaces.IRdlcPrinterService.PrintAsync(Acontplus.Reports.Models.RdlcPrinter,Acontplus.Reports.Models.RdlcPrintRequest,System.Threading.CancellationToken)">
+            <summary>
+            Prints a report asynchronously with support for cancellation and timeout
+            </summary>
         </member>
         <member name="T:Acontplus.Reports.Interfaces.IRdlcReportService">
             <summary>

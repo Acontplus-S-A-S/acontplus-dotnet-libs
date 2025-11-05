@@ -37,7 +37,7 @@ internal class CachedReportDefinition : IDisposable
 /// <summary>
 /// Thread-safe cache for report definitions with size limits and TTL
 /// </summary>
-internal class ReportDefinitionCache : IDisposable
+public class ReportDefinitionCache : IDisposable
 {
     private readonly ConcurrentDictionary<string, CachedReportDefinition> _cache = new();
     private readonly int _maxSize;

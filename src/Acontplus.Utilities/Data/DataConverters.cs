@@ -61,8 +61,87 @@ public static class DataConverters
         if (string.IsNullOrWhiteSpace(json))
             return new DataTable();
 
-        var dt = json.DeserializeOptimized<DataTable>();
-        return dt;
+        try
+        {
+            // Deserialize JSON to a list of dictionaries
+            var rows = json.DeserializeOptimized<List<Dictionary<string, object>>>();
+
+            if (rows == null || rows.Count == 0)
+                return new DataTable();
+
+            var dt = new DataTable();
+
+            // Create columns based on the first row
+            var firstRow = rows[0];
+            foreach (var kvp in firstRow)
+            {
+                // Try to infer the column type from the value
+                Type columnType = typeof(string); // Default to string
+                if (kvp.Value != null)
+                {
+                    var valueType = kvp.Value.GetType();
+
+                    // Handle JsonElement from System.Text.Json
+                    if (valueType.Name == "JsonElement")
+                    {
+                        var jsonElement = (System.Text.Json.JsonElement)(object)kvp.Value;
+                        columnType = jsonElement.ValueKind switch
+                        {
+                            System.Text.Json.JsonValueKind.Number => typeof(decimal),
+                            System.Text.Json.JsonValueKind.True or System.Text.Json.JsonValueKind.False => typeof(bool),
+                            _ => typeof(string)
+                        };
+                    }
+                    else
+                    {
+                        columnType = valueType;
+                    }
+                }
+
+                dt.Columns.Add(kvp.Key, columnType);
+            }
+
+            // Add rows
+            foreach (var row in rows)
+            {
+                var dataRow = dt.NewRow();
+                foreach (var kvp in row)
+                {
+                    if (kvp.Value != null)
+                    {
+                        // Handle JsonElement conversion
+                        if (kvp.Value.GetType().Name == "JsonElement")
+                        {
+                            var jsonElement = (System.Text.Json.JsonElement)(object)kvp.Value;
+                            dataRow[kvp.Key] = jsonElement.ValueKind switch
+                            {
+                                System.Text.Json.JsonValueKind.String => jsonElement.GetString(),
+                                System.Text.Json.JsonValueKind.Number => jsonElement.TryGetDecimal(out var d) ? d : jsonElement.GetDouble(),
+                                System.Text.Json.JsonValueKind.True => true,
+                                System.Text.Json.JsonValueKind.False => false,
+                                System.Text.Json.JsonValueKind.Null => DBNull.Value,
+                                _ => jsonElement.ToString()
+                            };
+                        }
+                        else
+                        {
+                            dataRow[kvp.Key] = kvp.Value;
+                        }
+                    }
+                    else
+                    {
+                        dataRow[kvp.Key] = DBNull.Value;
+                    }
+                }
+                dt.Rows.Add(dataRow);
+            }
+
+            return dt;
+        }
+        catch (JsonException ex)
+        {
+            throw new JsonException($"Failed to convert JSON to DataTable: {ex.Message}", ex);
+        }
     }
 
     public static string SerializeDictionary(Dictionary<string, object> data)

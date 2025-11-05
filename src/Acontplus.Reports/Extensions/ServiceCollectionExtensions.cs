@@ -1,6 +1,8 @@
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Acontplus.Reports.Extensions;
 
@@ -24,6 +26,17 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
         services.TryAddScoped<IRdlcPrinterService, Services.RdlcPrinterService>();
 
+        // Register report definition cache (constructed from configured options).
+        // RdlcPrinterService depends on ReportDefinitionCache in its constructor,
+        // so we always register one (even if caching is disabled, it won't be used).
+        services.AddSingleton<Services.ReportDefinitionCache>(sp =>
+        {
+            var opts = sp.GetRequiredService<IOptions<Configuration.ReportOptions>>().Value;
+            var max = Math.Max(1, opts.MaxCachedReportDefinitions);
+            var ttl = TimeSpan.FromMinutes(Math.Max(1, opts.CacheTtlMinutes));
+            return new Services.ReportDefinitionCache(max, ttl);
+        });
+
         return services;
     }
 
@@ -43,6 +56,15 @@ public static class ServiceCollectionExtensions
         // Register services
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
         services.TryAddScoped<IRdlcPrinterService, Services.RdlcPrinterService>();
+
+        // Register report definition cache (constructed from configured options).
+        services.AddSingleton<Services.ReportDefinitionCache>(sp =>
+        {
+            var opts = sp.GetRequiredService<IOptions<Configuration.ReportOptions>>().Value;
+            var max = Math.Max(1, opts.MaxCachedReportDefinitions);
+            var ttl = TimeSpan.FromMinutes(Math.Max(1, opts.CacheTtlMinutes));
+            return new Services.ReportDefinitionCache(max, ttl);
+        });
 
         return services;
     }

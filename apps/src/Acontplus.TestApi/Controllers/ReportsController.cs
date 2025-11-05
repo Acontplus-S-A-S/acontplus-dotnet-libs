@@ -10,11 +10,16 @@ namespace Acontplus.TestApi.Controllers;
 public class ReportsController : ControllerBase
 {
     private readonly IRdlcReportService _reportService;
+    private readonly IRdlcPrinterService _printerService;
     private readonly ILogger<ReportsController> _logger;
 
-    public ReportsController(IRdlcReportService reportService, ILogger<ReportsController> logger)
+    public ReportsController(
+        IRdlcReportService reportService,
+        IRdlcPrinterService printerService,
+        ILogger<ReportsController> logger)
     {
         _reportService = reportService;
+        _printerService = printerService;
         _logger = logger;
     }
 
@@ -189,5 +194,117 @@ public class ReportsController : ControllerBase
             timestamp = DateTime.UtcNow,
             supportedFormats = new[] { "PDF", "EXCEL", "EXCELOPENXML", "WORDOPENXML", "HTML5", "IMAGE" }
         });
+    }
+
+    /// <summary>
+    /// Test print endpoint - prints a sample receipt to a thermal printer
+    /// </summary>
+    /// <param name="printerName">Name of the printer (optional, uses default if not specified)</param>
+    [HttpPost("test-print")]
+    public async Task<IActionResult> TestPrint(
+        [FromQuery] string? printerName = null,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _logger.LogInformation("Testing thermal printer with sample invoice");
+
+            // Create data sources matching the SampleInvoice.rdlc schema
+            var dataSources = new Dictionary<string, List<Dictionary<string, string>>>
+            {
+                ["InvoiceHeader"] = new List<Dictionary<string, string>>
+                {
+                    new Dictionary<string, string>
+                    {
+                        ["InvoiceNumber"] = "INV-" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+                        ["InvoiceDate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        ["CustomerName"] = "Acontplus Demo Customer",
+                        ["CustomerAddress"] = "123 Main St, City, State 12345",
+                        ["CustomerTaxId"] = "TAX-123456789",
+                        ["Subtotal"] = "13.50",
+                        ["Tax"] = "1.62",
+                        ["Total"] = "15.12"
+                    }
+                },
+                ["InvoiceItems"] = new List<Dictionary<string, string>>
+                {
+                    new Dictionary<string, string>
+                    {
+                        ["ItemNumber"] = "1",
+                        ["Description"] = "Coffee - Latte",
+                        ["Quantity"] = "2",
+                        ["UnitPrice"] = "3.50",
+                        ["Amount"] = "7.00"
+                    },
+                    new Dictionary<string, string>
+                    {
+                        ["ItemNumber"] = "2",
+                        ["Description"] = "Croissant",
+                        ["Quantity"] = "1",
+                        ["UnitPrice"] = "2.50",
+                        ["Amount"] = "2.50"
+                    },
+                    new Dictionary<string, string>
+                    {
+                        ["ItemNumber"] = "3",
+                        ["Description"] = "Orange Juice",
+                        ["Quantity"] = "1",
+                        ["UnitPrice"] = "4.00",
+                        ["Amount"] = "4.00"
+                    }
+                }
+            };
+
+            // Create report parameters (can add logo or other params here)
+            var reportParams = new Dictionary<string, string>
+            {
+                ["CompanyName"] = "Acontplus Demo Store",
+                ["InvoiceTitle"] = "RECEIPT"
+            };
+
+            // Create printer configuration
+            var rdlcPrinter = new RdlcPrinter
+            {
+                PrinterName = printerName ?? "Microsoft Print to PDF", // Default to PDF printer for testing
+                FileName = "SampleInvoice.rdlc", // Reuse existing invoice template for testing
+                Format = "IMAGE", // Use IMAGE format for printing
+                ReportsDirectory = Path.Combine(AppContext.BaseDirectory, "Reports"),
+                LogoDirectory = Path.Combine(AppContext.BaseDirectory, "Reports", "Images"),
+                LogoName = "logo",
+                DeviceInfo = "<DeviceInfo><OutputFormat>EMF</OutputFormat></DeviceInfo>",
+                Copies = 1
+            };
+
+            // Create print request
+            var printRequest = new RdlcPrintRequest
+            {
+                DataSources = dataSources,
+                ReportParams = reportParams
+            };
+
+            // Execute the print
+            var success = await _printerService.PrintAsync(rdlcPrinter, printRequest, cancellationToken);
+
+            if (success)
+            {
+                _logger.LogInformation("Print test completed successfully to printer: {PrinterName}", rdlcPrinter.PrinterName);
+                return Ok(new
+                {
+                    message = "Print job sent successfully",
+                    printerName = rdlcPrinter.PrinterName,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                _logger.LogWarning("Print test failed for printer: {PrinterName}", rdlcPrinter.PrinterName);
+                return StatusCode(500, new { error = "Print job failed" });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during print test");
+            return StatusCode(500, new { error = "Print test failed", details = ex.Message });
+        }
     }
 }

@@ -46,9 +46,19 @@ public class ReportOptions
     public bool EnableMemoryPooling { get; set; } = true;
 
     /// <summary>
-    /// Maximum concurrent report generations (default 10)
+    /// Maximum number of concurrent report generation tasks. Default: 10
     /// </summary>
     public int MaxConcurrentReports { get; set; } = 10;
+
+    /// <summary>
+    /// Maximum number of concurrent print jobs. Default: 5 (printing is slower than generation)
+    /// </summary>
+    public int MaxConcurrentPrintJobs { get; set; } = 5;
+
+    /// <summary>
+    /// Timeout for print jobs in seconds. Default: 180 (3 minutes)
+    /// </summary>
+    public int PrintJobTimeoutSeconds { get; set; } = 180;
 
     /// <summary>
     /// Enable detailed logging for report operations (default false)
