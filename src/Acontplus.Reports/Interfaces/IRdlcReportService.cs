@@ -1,4 +1,6 @@
-﻿namespace Acontplus.Reports.Interfaces
+﻿using Acontplus.Reports.DTOs;
+
+namespace Acontplus.Reports.Interfaces
 {
     /// <summary>
     /// Service for generating RDLC reports with support for multiple formats and data sources

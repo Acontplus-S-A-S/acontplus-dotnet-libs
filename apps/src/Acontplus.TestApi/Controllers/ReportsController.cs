@@ -1,5 +1,5 @@
+using Acontplus.Reports.DTOs;
 using Acontplus.Reports.Interfaces;
-using Acontplus.Reports.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
@@ -263,7 +263,7 @@ public class ReportsController : ControllerBase
             };
 
             // Create printer configuration
-            var rdlcPrinter = new RdlcPrinter
+            var rdlcPrinter = new RdlcPrinterDto
             {
                 PrinterName = printerName ?? "Microsoft Print to PDF", // Default to PDF printer for testing
                 FileName = "SampleInvoice.rdlc", // Reuse existing invoice template for testing
@@ -276,7 +276,7 @@ public class ReportsController : ControllerBase
             };
 
             // Create print request
-            var printRequest = new RdlcPrintRequest
+            var printRequest = new RdlcPrintRequestDto
             {
                 DataSources = dataSources,
                 ReportParams = reportParams

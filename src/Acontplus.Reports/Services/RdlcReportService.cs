@@ -1,4 +1,6 @@
-﻿using Acontplus.Utilities.Data;
+﻿using Acontplus.Reports.DTOs;
+using Acontplus.Reports.Helpers;
+using Acontplus.Utilities.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +33,7 @@ namespace Acontplus.Reports.Services
         public async Task<ReportResponse> GetReportAsync(DataSet parameters, DataSet data, bool externalDirectory = false, CancellationToken cancellationToken = default)
         {
             var stopwatch = Stopwatch.StartNew();
-            ReportProps? reportProps = null;
+            ReportPropsDto? reportProps = null;
 
             try
             {
@@ -40,7 +42,7 @@ namespace Acontplus.Reports.Services
 
                 try
                 {
-                    reportProps = DataTableMapper.MapDataRowToModel<ReportProps>(
+                    reportProps = DataTableMapper.MapDataRowToModel<ReportPropsDto>(
                         parameters.Tables["ReportProps"]?.Rows[0]
                         ?? throw new ArgumentException("ReportProps table is required in parameters DataSet"));
 
@@ -123,7 +125,7 @@ namespace Acontplus.Reports.Services
             return GetReportAsync(parameters, data, externalDirectory).GetAwaiter().GetResult();
         }
 
-        private string GetReportPath(ReportProps reportProps, bool offline)
+        private string GetReportPath(ReportPropsDto reportProps, bool offline)
         {
             if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
             {
@@ -207,7 +209,7 @@ namespace Acontplus.Reports.Services
             }
         }
 
-        private ReportResponse BuildReportResponse(ReportProps reportProps, byte[] fileReport)
+        private ReportResponse BuildReportResponse(ReportPropsDto reportProps, byte[] fileReport)
         {
             TryParse(reportProps.ReportFormat.ToUpper(), out FileFormats.FileContentType fc);
             TryParse(reportProps.ReportFormat.ToUpper(), out FileFormats.FileExtension fe);

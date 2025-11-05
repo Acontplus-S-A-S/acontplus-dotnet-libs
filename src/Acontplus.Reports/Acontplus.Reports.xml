@@ -110,7 +110,7 @@
             <param name="configureOptions">Action to configure report options</param>
             <returns>The service collection for chaining</returns>
         </member>
-        <member name="M:Acontplus.Reports.Interfaces.IRdlcPrinterService.PrintAsync(Acontplus.Reports.Models.RdlcPrinter,Acontplus.Reports.Models.RdlcPrintRequest,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Reports.Interfaces.IRdlcPrinterService.PrintAsync(Acontplus.Reports.DTOs.RdlcPrinterDto,Acontplus.Reports.DTOs.RdlcPrintRequestDto,System.Threading.CancellationToken)">
             <summary>
             Prints a report asynchronously with support for cancellation and timeout
             </summary>

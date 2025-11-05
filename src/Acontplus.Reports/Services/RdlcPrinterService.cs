@@ -1,4 +1,5 @@
 using Acontplus.Reports.Configuration;
+using Acontplus.Reports.DTOs;
 using Acontplus.Reports.Exceptions;
 using Acontplus.Utilities.Data;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ public class RdlcPrinterService : IRdlcPrinterService
         _printSemaphore = new SemaphoreSlim(_options.MaxConcurrentPrintJobs);
     }
 
-    public async Task<bool> PrintAsync(RdlcPrinter rdlcPrinter, RdlcPrintRequest printRequest, CancellationToken cancellationToken = default)
+    public async Task<bool> PrintAsync(RdlcPrinterDto rdlcPrinter, RdlcPrintRequestDto printRequest, CancellationToken cancellationToken = default)
     {
         if (rdlcPrinter == null) throw new ArgumentNullException(nameof(rdlcPrinter));
         if (printRequest == null) throw new ArgumentNullException(nameof(printRequest));
@@ -90,8 +91,8 @@ public class RdlcPrinterService : IRdlcPrinterService
     }
 
     private async Task<bool> PrintInternalAsync(
-        RdlcPrinter rdlcPrinter,
-        RdlcPrintRequest printRequest,
+        RdlcPrinterDto rdlcPrinter,
+        RdlcPrintRequestDto printRequest,
         string printJobId,
         CancellationToken cancellationToken)
     {
@@ -264,7 +265,7 @@ public class RdlcPrinterService : IRdlcPrinterService
         }
     }
 
-    private void ConfigurePrinterSettings(PrintDocument printDoc, RdlcPrinter rdlcPrinter, string printJobId)
+    private void ConfigurePrinterSettings(PrintDocument printDoc, RdlcPrinterDto rdlcPrinter, string printJobId)
     {
         // Set printer-specific settings
         var pageSettings = new PrinterSettings { PrinterName = rdlcPrinter.PrinterName };
@@ -348,8 +349,8 @@ public class RdlcPrinterService : IRdlcPrinterService
 
     private async Task SetReportParametersAsync(
         LocalReport lr,
-        RdlcPrinter rdlcPrinter,
-        RdlcPrintRequest printRequest,
+        RdlcPrinterDto rdlcPrinter,
+        RdlcPrintRequestDto printRequest,
         CancellationToken cancellationToken)
     {
         var reportParams = lr.GetParameters();
@@ -377,7 +378,7 @@ public class RdlcPrinterService : IRdlcPrinterService
         }
     }
 
-    private async Task<string?> FindLogoPathAsync(RdlcPrinter rdlcPrinter, CancellationToken cancellationToken)
+    private async Task<string?> FindLogoPathAsync(RdlcPrinterDto rdlcPrinter, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(rdlcPrinter.LogoDirectory) || !Directory.Exists(rdlcPrinter.LogoDirectory))
         {
