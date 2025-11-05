@@ -1,0 +1,171 @@
+### ADO Repository Demo - Advanced Performance Examples
+### This file demonstrates all the new ADO.NET repository methods
+### for high-performance scenarios with SQL Server/PostgreSQL
+
+@baseUrl = https://localhost:7001
+@apiBase = {{baseUrl}}/api/usuario
+
+### ============================================
+### SCALAR QUERIES - Single Value Retrieval
+### ============================================
+
+### 1. Get total user count
+### Demonstrates: ExecuteScalarAsync
+GET {{apiBase}}/count
+Accept: application/json
+
+###
+
+### 2. Check if username exists
+### Demonstrates: ExistsAsync - More efficient than fetching full record
+GET {{apiBase}}/exists/admin
+Accept: application/json
+
+###
+
+### 3. Count active users (modified in last 6 months)
+### Demonstrates: LongCountAsync with complex WHERE clause
+GET {{apiBase}}/active-count
+Accept: application/json
+
+###
+
+### ============================================
+### PAGINATION - High Performance Queries
+### ============================================
+
+### 4. Get paginated users with search and sorting
+### Demonstrates: GetPagedAsync with PaginationDto (filters, search, and sorting)
+GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10&searchTerm=test&sortBy=CreatedAt&sortDirection=Desc
+Accept: application/json
+
+###
+
+### 5. Get paginated users - Page 2 with ascending sort
+GET {{apiBase}}/paged-ado?pageIndex=2&pageSize=10&sortBy=Username&sortDirection=Asc
+Accept: application/json
+
+###
+
+### 6. Get paginated users with complex filters (created in last 30 days)
+### Demonstrates: GetPagedAsync with pre-built WHERE clause and PaginationDto
+GET {{apiBase}}/paged-complex?pageIndex=1&pageSize=20&sortBy=Email
+Accept: application/json
+
+###
+
+### 7. Get paginated users from stored procedure
+### Demonstrates: GetPagedFromStoredProcedureAsync with PaginationDto
+### NOTE: Requires stored procedure dbo.GetPagedUsuarios to exist
+GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=15&emailDomain=example.com&sortBy=Username
+Accept: application/json
+
+###
+
+### ============================================
+### BULK OPERATIONS - High Performance Inserts
+### ============================================
+
+### 8. Bulk insert users (SqlBulkCopy/PostgreSQL COPY)
+### Demonstrates: BulkInsertAsync - Can handle 10,000+ records/second
+POST {{apiBase}}/bulk
+Content-Type: application/json
+
+[
+  {
+    "username": "bulk_user_1",
+    "email": "bulk1@example.com"
+  },
+  {
+    "username": "bulk_user_2",
+    "email": "bulk2@example.com"
+  },
+  {
+    "username": "bulk_user_3",
+    "email": "bulk3@example.com"
+  },
+  {
+    "username": "bulk_user_4",
+    "email": "bulk4@example.com"
+  },
+  {
+    "username": "bulk_user_5",
+    "email": "bulk5@example.com"
+  }
+]
+
+###
+
+### 9. Execute batch operations (transactional)
+### Demonstrates: ExecuteBatchNonQueryAsync - Multiple commands, one transaction
+POST {{apiBase}}/batch
+Content-Type: application/json
+
+[1, 2, 3, 4, 5]
+
+###
+
+### ============================================
+### PERFORMANCE COMPARISON SCENARIOS
+### ============================================
+
+### Scenario 1: Pagination comparison
+### Old approach (EF): Loads all into memory, then paginates
+### New approach (ADO): OFFSET-FETCH at database level
+
+# EF Approach (for comparison - if you have an EF endpoint)
+# GET {{baseUrl}}/api/usuario?pageIndex=1&pageSize=10
+
+# ADO Approach
+GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10
+
+###
+
+### Scenario 2: Bulk insert comparison
+### Old: 1000 users = 1000 INSERT statements
+### New: 1000 users = 1 SqlBulkCopy operation (50-100x faster)
+
+# Generate large dataset for testing
+POST {{apiBase}}/bulk
+Content-Type: application/json
+
+[
+  {{#repeat 100}}
+  {
+    "username": "perf_test_{{@index}}",
+    "email": "perf{{@index}}@loadtest.com"
+  }{{#unless @last}},{{/unless}}
+  {{/repeat}}
+]
+
+###
+
+### ============================================
+### ERROR SCENARIOS (for testing robustness)
+### ============================================
+
+### Invalid page index
+GET {{apiBase}}/paged-ado?pageIndex=0&pageSize=10
+Accept: application/json
+
+###
+
+### Invalid sort column (should be prevented by ValidateAndSanitizeSortColumn)
+GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10&sortBy=DropTableUsuario&sortDirection=Desc
+Accept: application/json
+
+###
+
+### SQL injection attempt in search (should be parameterized)
+GET {{apiBase}}/paged-ado?searchTerm=test' OR '1'='1&pageIndex=1&pageSize=10
+Accept: application/json
+
+###
+
+### Empty bulk insert
+POST {{apiBase}}/bulk
+Content-Type: application/json
+
+[]
+
+###

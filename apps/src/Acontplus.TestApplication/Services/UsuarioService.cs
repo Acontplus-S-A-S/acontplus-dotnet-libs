@@ -240,9 +240,10 @@ namespace Acontplus.TestApplication.Services
 
                 var metadata = new Dictionary<string, object>
                 {
-                    ["filter"] = new { IsDeleted = false },
-                    ["sort"] = "CreatedAt DESC",
-                    ["links"] = links
+                    [PaginationMetadataKeys.HasFilters] = true,
+                    [PaginationMetadataKeys.SortBy] = "CreatedAt",
+                    [PaginationMetadataKeys.SortDirection] = "DESC",
+                    [ApiMetadataKeys.Links] = links
                 };
 
                 return new PagedResult<UsuarioDto>(
@@ -260,8 +261,8 @@ namespace Acontplus.TestApplication.Services
                     message: "Failed to retrieve paginated users",
                     details: new Dictionary<string, object>
                     {
-                        ["page"] = pagination.PageIndex,
-                        ["pageSize"] = pagination.PageSize
+                        [ApiMetadataKeys.PageIndex] = pagination.PageIndex,
+                        [ApiMetadataKeys.PageSize] = pagination.PageSize
                     });
             }
         }
@@ -361,5 +362,202 @@ namespace Acontplus.TestApplication.Services
                     details: new Dictionary<string, object> { ["userId"] = id }));
             }
         }
+
+        #region High-Performance ADO.NET Operations
+
+        public async Task<Result<int, DomainError>> GetUserCountAsync()
+        {
+            try
+            {
+                var sql = "SELECT COUNT(*) FROM dbo.Usuario WHERE IsDeleted = 0";
+                var count = await _adoRepository.ExecuteScalarAsync<int>(sql);
+                return Result<int, DomainError>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user count");
+                return DomainError.Internal("GET_USER_COUNT_ERROR", "Failed to get user count");
+            }
+        }
+
+        public async Task<Result<bool, DomainError>> CheckUserExistsAsync(string username)
+        {
+            try
+            {
+                var sql = "SELECT CASE WHEN EXISTS(SELECT 1 FROM dbo.Usuario WHERE Username = @Username AND IsDeleted = 0) THEN 1 ELSE 0 END";
+                var parameters = new Dictionary<string, object> { ["@Username"] = username };
+                var exists = await _adoRepository.ExistsAsync(sql, parameters);
+                return Result<bool, DomainError>.Success(exists);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking if user exists: {Username}", username);
+                return DomainError.Internal("CHECK_USER_EXISTS_ERROR", "Failed to check user existence");
+            }
+        }
+
+        public async Task<Result<long, DomainError>> GetActiveUsersCountAsync()
+        {
+            try
+            {
+                var sql = @"
+                    SELECT COUNT(*)
+                    FROM dbo.Usuario
+                    WHERE IsDeleted = 0
+                    AND CreatedAt >= DATEADD(MONTH, -6, GETUTCDATE())";
+
+                var count = await _adoRepository.LongCountAsync(sql);
+                return Result<long, DomainError>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting active users count");
+                return DomainError.Internal("GET_ACTIVE_COUNT_ERROR", "Failed to get active users count");
+            }
+        }
+
+        public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersAdoAsync(
+            PaginationDto pagination)
+        {
+            try
+            {
+                var baseSql = @"
+                    SELECT Id, Username, Email, CreatedAt, UpdatedAt, IsDeleted
+                    FROM dbo.Usuario
+                    WHERE IsDeleted = 0";
+
+                var parameters = new Dictionary<string, object>();
+
+                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+                {
+                    baseSql += " AND (Username LIKE @SearchTerm OR Email LIKE @SearchTerm)";
+                    parameters["@SearchTerm"] = $"%{pagination.SearchTerm}%";
+                }
+
+                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination, parameters);
+                return Result<PagedResult<Usuario>, DomainError>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting paged users with ADO");
+                return DomainError.Internal("GET_PAGED_ADO_ERROR", "Failed to get paged users");
+            }
+        }
+
+        public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersComplexAsync(
+            PaginationDto pagination,
+            DateTime? createdAfter = null)
+        {
+            try
+            {
+                var baseSql = @"
+                    SELECT Id, Username, Email, CreatedAt, UpdatedAt, IsDeleted
+                    FROM dbo.Usuario
+                    WHERE IsDeleted = 0";
+
+                var parameters = new Dictionary<string, object>();
+
+                if (createdAfter.HasValue)
+                {
+                    baseSql += " AND CreatedAt >= @CreatedAfter";
+                    parameters["@CreatedAfter"] = createdAfter.Value;
+                }
+
+                var result = await _adoRepository.GetPagedAsync<Usuario>(baseSql, pagination, parameters);
+                return Result<PagedResult<Usuario>, DomainError>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting complex paged users");
+                return DomainError.Internal("GET_PAGED_COMPLEX_ERROR", "Failed to get complex paged users");
+            }
+        }
+
+        public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(
+            PaginationDto pagination,
+            string? emailDomain = null)
+        {
+            try
+            {
+                var parameters = new Dictionary<string, object>();
+
+                if (!string.IsNullOrWhiteSpace(emailDomain))
+                {
+                    parameters["@EmailDomain"] = emailDomain;
+                }
+
+                var result = await _adoRepository.GetPagedFromStoredProcedureAsync<Usuario>(
+                    "dbo.GetPagedUsuarios",
+                    pagination,
+                    parameters);
+
+                return Result<PagedResult<Usuario>, DomainError>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting paged users from stored procedure");
+                return DomainError.Internal("GET_PAGED_SP_ERROR", "Failed to get users from stored procedure");
+            }
+        }
+
+        public async Task<Result<int, DomainError>> BulkInsertUsersAsync(List<UsuarioDto> users)
+        {
+            try
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("Username", typeof(string));
+                dataTable.Columns.Add("Email", typeof(string));
+                dataTable.Columns.Add("CreatedAt", typeof(DateTime));
+                dataTable.Columns.Add("UpdatedAt", typeof(DateTime));
+                dataTable.Columns.Add("IsDeleted", typeof(bool));
+
+                foreach (var user in users)
+                {
+                    dataTable.Rows.Add(
+                        user.Username,
+                        user.Email,
+                        DateTime.UtcNow,
+                        DateTime.UtcNow,
+                        false);
+                }
+
+                var insertedCount = await _adoRepository.BulkInsertAsync(dataTable, "dbo.Usuario");
+                return Result<int, DomainError>.Success(insertedCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error bulk inserting users");
+                return DomainError.Internal("BULK_INSERT_ERROR", "Failed to bulk insert users");
+            }
+        }
+
+        public async Task<Result<int, DomainError>> ExecuteBatchOperationsAsync(List<int> userIds)
+        {
+            try
+            {
+                var commands = userIds.Select(id =>
+                {
+                    var parameters = new Dictionary<string, object>
+                    {
+                        ["@UserId"] = id,
+                        ["@UpdatedAt"] = DateTime.UtcNow
+                    };
+                    return (
+                        Sql: "UPDATE dbo.Usuario SET UpdatedAt = @UpdatedAt WHERE Id = @UserId AND IsDeleted = 0",
+                        Parameters: (Dictionary<string, object>?)parameters
+                    );
+                });
+
+                var affectedRows = await _adoRepository.ExecuteBatchNonQueryAsync(commands);
+                return Result<int, DomainError>.Success(affectedRows);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error executing batch operations");
+                return DomainError.Internal("BATCH_OPERATIONS_ERROR", "Failed to execute batch operations");
+            }
+        }
+
+        #endregion
     }
 }
