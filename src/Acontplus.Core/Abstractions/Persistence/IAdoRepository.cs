@@ -4,7 +4,7 @@ namespace Acontplus.Core.Abstractions.Persistence;
 
 /// <summary>
 /// ADO.NET repository interface for high-performance, raw SQL operations.
-/// Optimized for scalable, high-workload scenarios with SQL Server 2022 and PostgreSQL.
+/// Optimized for scalable, high-workload scenarios with SQL Server and PostgreSQL.
 /// </summary>
 public interface IAdoRepository
 {
@@ -104,7 +104,7 @@ public interface IAdoRepository
 
     /// <summary>
     /// Executes a paginated SQL query with automatic count query.
-    /// For SQL Server 2022: Uses OFFSET-FETCH with optimized query plans.
+    /// For SQL Server: Uses OFFSET-FETCH with optimized query plans.
     /// For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
     /// Filters and parameters are extracted from the PaginationDto.Filters property.
     /// </summary>

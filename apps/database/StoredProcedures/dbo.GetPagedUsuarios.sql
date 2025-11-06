@@ -46,13 +46,15 @@ BEGIN
             THROW 50002, 'PageSize must be between 1 and 1000', 1;
         END
 
-        -- Validate and sanitize SortBy to prevent SQL injection
+        -- Validate and sanitize SortBy to prevent SQL injection (CWE-89)
+        -- Security: Whitelist-only approach - only allow predefined column names
         IF @SortBy NOT IN ('Id', 'Username', 'Email', 'CreatedAt', 'UpdatedAt')
         BEGIN
             SET @SortBy = 'CreatedAt'; -- Default to safe column
         END
 
-        -- Validate SortDirection
+        -- Validate SortDirection (CWE-89 Prevention)
+        -- Security: Only allow ASC or DESC
         IF @SortDirection NOT IN ('ASC', 'DESC')
         BEGIN
             SET @SortDirection = 'DESC'; -- Default to descending
@@ -75,6 +77,8 @@ BEGIN
         END
 
         -- Build WHERE clause dynamically
+        -- CWE-89 Prevention: All user inputs are parameterized via sp_executesql
+        -- No direct string concatenation of user values into SQL
         DECLARE @WhereClause NVARCHAR(MAX) = N'WHERE 1=1';
 
         -- Filter by IsDeleted
@@ -101,15 +105,17 @@ BEGIN
             SET @WhereClause = @WhereClause + N' AND (Username LIKE N''%'' + @SearchTermParam + N''%'' OR Email LIKE N''%'' + @SearchTermParam + N''%'')';
         END
 
-        -- Build ORDER BY clause
-        DECLARE @OrderByClause NVARCHAR(100) =
+        -- Build ORDER BY clause using QUOTENAME for security
+        -- CWE-89 Prevention: QUOTENAME safely escapes identifiers to prevent SQL injection
+        DECLARE @OrderByClause NVARCHAR(200);
+        SET @OrderByClause =
             CASE @SortBy
-                WHEN 'Id' THEN N'ORDER BY Id ' + @SortDirection
-                WHEN 'Username' THEN N'ORDER BY Username ' + @SortDirection
-                WHEN 'Email' THEN N'ORDER BY Email ' + @SortDirection
-                WHEN 'CreatedAt' THEN N'ORDER BY CreatedAt ' + @SortDirection
-                WHEN 'UpdatedAt' THEN N'ORDER BY UpdatedAt ' + @SortDirection
-                ELSE N'ORDER BY CreatedAt DESC'
+                WHEN 'Id' THEN N'ORDER BY ' + QUOTENAME('Id') + N' ' + @SortDirection
+                WHEN 'Username' THEN N'ORDER BY ' + QUOTENAME('Username') + N' ' + @SortDirection
+                WHEN 'Email' THEN N'ORDER BY ' + QUOTENAME('Email') + N' ' + @SortDirection
+                WHEN 'CreatedAt' THEN N'ORDER BY ' + QUOTENAME('CreatedAt') + N' ' + @SortDirection
+                WHEN 'UpdatedAt' THEN N'ORDER BY ' + QUOTENAME('UpdatedAt') + N' ' + @SortDirection
+                ELSE N'ORDER BY ' + QUOTENAME('CreatedAt') + N' DESC'
             END;
 
         -- Build count query
@@ -134,6 +140,7 @@ BEGIN
         DECLARE @LocalTotalCount INT;
 
         -- Execute count query
+        -- Security: sp_executesql with parameterized queries prevents SQL injection
         EXEC sp_executesql
             @CountSQL,
             N'@UserIdParam NVARCHAR(100), @EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @TotalCountOut INT OUTPUT',
@@ -146,6 +153,7 @@ BEGIN
         SET @TotalCount = @LocalTotalCount;
 
         -- Execute data query (returns the result set)
+        -- Security: sp_executesql with parameterized queries prevents SQL injection
         EXEC sp_executesql
             @DataSQL,
             N'@UserIdParam NVARCHAR(100), @EmailDomainParam NVARCHAR(100), @SearchTermParam NVARCHAR(100), @OffsetParam INT, @PageSizeParam INT',

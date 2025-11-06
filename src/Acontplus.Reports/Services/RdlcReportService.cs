@@ -146,49 +146,30 @@ namespace Acontplus.Reports.Services
                 requestedPath = reportProps.ReportPath;
             }
 
-            // Apply strict path validation if enabled
+            // Always apply strict path validation - this is a security requirement
             string resolvedPath;
-            if (_options.EnableStrictPathValidation)
+            if (!_options.EnableStrictPathValidation)
             {
-                try
-                {
-                    resolvedPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, requestedPath);
+                // CWE-22 Prevention: Path traversal attacks must be prevented in all environments
+                _logger.LogCritical("SECURITY ERROR: Strict path validation is disabled. This is a critical security vulnerability (CWE-22).");
+                throw new SecurityException(
+                    "Strict path validation must be enabled to prevent path traversal attacks (CWE-22). " +
+                    "Set ReportOptions.EnableStrictPathValidation = true in your configuration.");
+            }
 
-                    // Validate file extension
-                    if (_options.AllowedReportExtensions.Length > 0)
-                    {
-                        PathSecurityValidator.ValidateFileExtension(resolvedPath, _options.AllowedReportExtensions);
-                    }
-                }
-                catch (SecurityException ex)
+            try
+            {
+                resolvedPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, requestedPath);
+
+                // Validate file extension
+                if (_options.AllowedReportExtensions.Length > 0)
                 {
-                    throw InvalidReportPathException.FromSecurityException(ex, reportProps.ReportPath);
+                    PathSecurityValidator.ValidateFileExtension(resolvedPath, _options.AllowedReportExtensions);
                 }
             }
-            else
+            catch (SecurityException ex)
             {
-                // Legacy behavior (not recommended for production)
-                _logger.LogWarning("Strict path validation is disabled. This is not recommended for production environments.");
-
-                var reportPath = requestedPath.TrimStart('/', '\\');
-
-                if (offline && !string.IsNullOrEmpty(_options.ExternalDirectory))
-                {
-                    resolvedPath = Path.Combine(_options.ExternalDirectory, reportPath);
-                }
-                else
-                {
-                    var mainPath = Path.Combine(Directory.GetCurrentDirectory(), _options.MainDirectory);
-                    var paths = requestedPath.Split("/");
-                    paths = paths.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-
-                    resolvedPath = paths.Length switch
-                    {
-                        1 => Path.Combine(mainPath, paths[0]),
-                        2 => Path.Combine(mainPath, paths[0], paths[1]),
-                        _ => Path.Combine(mainPath, requestedPath),
-                    };
-                }
+                throw InvalidReportPathException.FromSecurityException(ex, reportProps.ReportPath);
             }
 
             // Log the resolved path for security auditing

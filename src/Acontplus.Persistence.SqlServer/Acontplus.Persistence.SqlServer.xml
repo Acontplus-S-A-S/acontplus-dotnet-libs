@@ -267,8 +267,9 @@
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ValidateAndSanitizeSortColumn(System.String)">
             <summary>
-            Validates and sanitizes sort column names to prevent SQL injection.
-            Only allows alphanumeric characters, underscores, and dots for qualified names.
+            Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
+            Uses a strict whitelist approach - only allows exact matches from a predefined set.
+            Falls back to regex validation with comprehensive keyword blacklist.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.DTOs.Requests.PaginationDto)">
