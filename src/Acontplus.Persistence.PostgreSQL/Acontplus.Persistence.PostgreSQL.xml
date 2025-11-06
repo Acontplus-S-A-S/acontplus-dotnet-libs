@@ -268,8 +268,8 @@
         </member>
         <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.ValidateAndSanitizeSortColumn(System.String)">
             <summary>
-            Validates and sanitizes sort column names to prevent SQL injection.
-            Only allows alphanumeric characters, underscores, and dots for qualified names.
+            Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
+            Uses a strict multi-layer validation approach - regex, length checks, and comprehensive keyword blacklist.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.DTOs.Requests.PaginationDto)">

@@ -10,7 +10,7 @@ SQL Server implementation of the Acontplus persistence layer. Provides optimized
 
 ## 🚀 SQL Server-Specific Features
 
-- **SQL Server 2022 Optimization** - OFFSET-FETCH pagination, query hints, and connection pooling
+- **SQL Server Optimization** - OFFSET-FETCH pagination, query hints, and connection pooling
 - **Advanced Error Translation** - SQL Server error code mapping to domain exceptions with retry policies
 - **Transaction Management** - Distributed transactions and savepoints support
 - **High-Performance ADO.NET** - Direct database access with 10,000+ records/sec bulk operations
@@ -338,7 +338,7 @@ services.AddDbContext<BaseContext>(options =>
 
 ### ADO.NET High-Performance Repositories
 - `IAdoRepository` - Interface for direct ADO.NET operations
-- `AdoRepository` - SQL Server 2022-optimized implementation with:
+- `AdoRepository` - SQL Server optimized implementation with:
   - **Scalar Queries**: `ExecuteScalarAsync<T>`, `ExistsAsync`, `CountAsync`, `LongCountAsync`
   - **Pagination**: `GetPagedAsync<T>` with OFFSET-FETCH optimization
   - **Bulk Operations**: `BulkInsertAsync` using SqlBulkCopy (10,000+ records/sec)

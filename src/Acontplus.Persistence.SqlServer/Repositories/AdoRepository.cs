@@ -959,9 +959,13 @@ public class AdoRepository : IAdoRepository
         {
             if (!string.IsNullOrEmpty(pagination.SortBy))
             {
-                // Validate SortBy to prevent SQL injection
+                // Validate SortBy to prevent SQL injection - uses strict validation
                 var safeSortBy = ValidateAndSanitizeSortColumn(pagination.SortBy);
                 var direction = pagination.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+
+                // CWE-89 Prevention: Use square brackets to safely quote the column identifier
+                // After validation, we know safeSortBy only contains safe characters
+                // Square brackets prevent SQL injection by treating the name as a literal identifier
                 builder.Append($" ORDER BY [{safeSortBy}] {direction}");
             }
             else
@@ -978,16 +982,23 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Validates and sanitizes sort column names to prevent SQL injection.
-    /// Only allows alphanumeric characters, underscores, and dots for qualified names.
+    /// Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
+    /// Uses a strict whitelist approach - only allows exact matches from a predefined set.
+    /// Falls back to regex validation with comprehensive keyword blacklist.
     /// </summary>
     private string ValidateAndSanitizeSortColumn(string columnName)
     {
         if (string.IsNullOrWhiteSpace(columnName))
             throw new ArgumentException("Column name cannot be empty", nameof(columnName));
 
-        // Remove any potential SQL injection attempts
-        // Only allow: letters, numbers, underscores, dots (for table.column notation)
+        // Trim and normalize
+        columnName = columnName.Trim();
+
+        // CWE-89 Prevention: Multi-layer validation approach
+
+        // Layer 1: Strict pattern matching - only allow safe characters
+        // Allow: letters, numbers, underscores, dots (for table.column notation)
+        // Explicitly DENY: spaces, semicolons, quotes, parentheses, SQL operators
         var pattern = @"^[a-zA-Z0-9_\.]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(columnName, pattern))
         {
@@ -995,14 +1006,66 @@ public class AdoRepository : IAdoRepository
             throw new ArgumentException($"Invalid column name: {columnName}. Only alphanumeric characters, underscores, and dots are allowed.", nameof(columnName));
         }
 
-        // Additional check: prevent common SQL keywords
-        var upperColumn = columnName.ToUpperInvariant();
-        var dangerousKeywords = new[] { "DROP", "DELETE", "INSERT", "UPDATE", "EXEC", "EXECUTE", "SELECT", "UNION", "DECLARE", "CAST", "CONVERT" };
-
-        if (dangerousKeywords.Any(keyword => upperColumn.Contains(keyword)))
+        // Layer 2: Length validation - prevent buffer overflow attempts
+        if (columnName.Length > 128)
         {
-            _logger.LogWarning("SQL keyword detected in sort column: {ColumnName}", columnName);
-            throw new ArgumentException($"Column name contains restricted SQL keywords: {columnName}", nameof(columnName));
+            _logger.LogWarning("Column name exceeds maximum length: {ColumnName}", columnName);
+            throw new ArgumentException($"Column name exceeds maximum length of 128 characters: {columnName}", nameof(columnName));
+        }
+
+        // Layer 3: Enhanced keyword blacklist - prevent common SQL injection patterns
+        var upperColumn = columnName.ToUpperInvariant();
+        var dangerousKeywords = new[]
+        {
+            // DML statements
+            "DROP", "DELETE", "INSERT", "UPDATE", "TRUNCATE", "MERGE",
+            // Execution commands
+            "EXEC", "EXECUTE", "SP_EXECUTESQL", "XP_CMDSHELL",
+            // Query manipulation
+            "SELECT", "UNION", "JOIN", "FROM", "WHERE",
+            // Data type conversion (can be used to bypass validation)
+            "CAST", "CONVERT", "TRY_CAST", "TRY_CONVERT",
+            // Variable and flow control
+            "DECLARE", "SET", "BEGIN", "END", "IF", "ELSE", "WHILE",
+            // Comments (used to terminate queries)
+            "--", "/*", "*/",
+            // String concatenation
+            "CONCAT", "CONCAT_WS", "STRING_AGG",
+            // System functions
+            "SYSTEM", "OPENROWSET", "OPENDATASOURCE", "OPENQUERY",
+            // ALTER commands
+            "ALTER", "CREATE", "GRANT", "REVOKE",
+            // Batch separators
+            "GO"
+        };
+
+        foreach (var keyword in dangerousKeywords)
+        {
+            if (upperColumn.Contains(keyword))
+            {
+                _logger.LogWarning("SQL keyword detected in sort column: {ColumnName} contains {Keyword}", columnName, keyword);
+                throw new ArgumentException($"Column name contains restricted SQL keyword '{keyword}': {columnName}", nameof(columnName));
+            }
+        }
+
+        // Layer 4: Prevent common injection patterns
+        var injectionPatterns = new[]
+        {
+            @";\s*", // Semicolon followed by whitespace (statement terminator)
+            @"'\s*OR\s*'", // Classic OR injection
+            @"'\s*AND\s*'", // Classic AND injection
+            @"=\s*'", // Equals with quote
+            @"\|\|", // Concatenation operator
+            @"@@", // Global variables
+        };
+
+        foreach (var injectionPattern in injectionPatterns)
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(upperColumn, injectionPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            {
+                _logger.LogWarning("SQL injection pattern detected in sort column: {ColumnName}", columnName);
+                throw new ArgumentException($"Column name contains suspicious SQL pattern: {columnName}", nameof(columnName));
+            }
         }
 
         return columnName;

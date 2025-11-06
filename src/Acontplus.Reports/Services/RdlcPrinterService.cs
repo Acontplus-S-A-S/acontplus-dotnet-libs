@@ -95,56 +95,58 @@ public class RdlcPrinterService : IRdlcPrinterService
         string printJobId,
         CancellationToken cancellationToken)
     {
+        // Resource Management: Properly track all disposable resources
         List<Stream>? streams = null;
         PrintDocument? printDoc = null;
+        List<DataTable>? dataTablesToDispose = null;
 
         try
         {
             streams = new List<Stream>();
             using var lr = new LocalReport();
 
-            // Validate and construct secure report path
+            // Validate and construct secure report path - always enforce security
             string reportPath;
-            if (_options.EnableStrictPathValidation)
+            if (!_options.EnableStrictPathValidation)
             {
-                // Ensure ReportsDirectory and FileName are provided
-                if (string.IsNullOrWhiteSpace(rdlcPrinter.ReportsDirectory))
-                {
-                    throw new InvalidReportPathException("ReportsDirectory cannot be null or empty");
-                }
-                if (string.IsNullOrWhiteSpace(rdlcPrinter.FileName))
-                {
-                    throw new InvalidReportPathException("FileName cannot be null or empty");
-                }
+                // CWE-22 Prevention: Path traversal attacks must be prevented in all environments
+                _logger.LogCritical("SECURITY ERROR: Strict path validation is disabled. This is a critical security vulnerability (CWE-22).");
+                throw new SecurityException(
+                    "Strict path validation must be enabled to prevent path traversal attacks (CWE-22). " +
+                    "Set ReportOptions.EnableStrictPathValidation = true in your configuration.");
+            }
 
-                try
-                {
-                    var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, rdlcPrinter.ReportsDirectory);
-                    reportPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, rdlcPrinter.FileName);
+            // Ensure ReportsDirectory and FileName are provided
+            if (string.IsNullOrWhiteSpace(rdlcPrinter.ReportsDirectory))
+            {
+                throw new InvalidReportPathException("ReportsDirectory cannot be null or empty");
+            }
+            if (string.IsNullOrWhiteSpace(rdlcPrinter.FileName))
+            {
+                throw new InvalidReportPathException("FileName cannot be null or empty");
+            }
 
-                    // Validate file extension
-                    if (_options.AllowedReportExtensions.Length > 0)
-                    {
-                        PathSecurityValidator.ValidateFileExtension(reportPath, _options.AllowedReportExtensions);
-                    }
-                }
-                catch (SecurityException ex)
+            try
+            {
+                var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, rdlcPrinter.ReportsDirectory);
+                reportPath = PathSecurityValidator.ValidateAndResolvePath(baseDirectory, rdlcPrinter.FileName);
+
+                // Validate file extension
+                if (_options.AllowedReportExtensions.Length > 0)
                 {
-                    throw InvalidReportPathException.FromSecurityException(ex, rdlcPrinter.FileName);
+                    PathSecurityValidator.ValidateFileExtension(reportPath, _options.AllowedReportExtensions);
                 }
             }
-            else
+            catch (SecurityException ex)
             {
-                // Legacy behavior (not recommended)
-                reportPath = Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    rdlcPrinter.ReportsDirectory ?? string.Empty,
-                    rdlcPrinter.FileName ?? string.Empty);
+                throw InvalidReportPathException.FromSecurityException(ex, rdlcPrinter.FileName);
             }
 
             await LoadReportDefinitionAsync(lr, reportPath, cancellationToken);
 
             // Add data sources
+            // Resource Management: Track DataTables for proper disposal
+            dataTablesToDispose = new List<DataTable>();
             if (printRequest.DataSources != null)
             {
                 foreach (var item in printRequest.DataSources)
@@ -153,6 +155,7 @@ public class RdlcPrinterService : IRdlcPrinterService
 
                     var dataTable = DataConverters.JsonToDataTable(
                         JsonExtensions.SerializeOptimized(item.Value));
+                    dataTablesToDispose.Add(dataTable);
                     lr.DataSources.Add(new ReportDataSource(item.Key, dataTable));
                 }
             }
@@ -241,16 +244,8 @@ public class RdlcPrinterService : IRdlcPrinterService
             {
                 try
                 {
-                    // Clean up streams
-                    if (streams != null)
-                    {
-                        foreach (var stream in streams)
-                        {
-                            stream?.Dispose();
-                        }
-                        streams.Clear();
-                    }
-
+                    // Note: Stream cleanup is handled in the finally block
+                    // This event just logs completion
                     if (_options.EnableDetailedLogging)
                     {
                         _logger.LogInformation(
@@ -258,10 +253,10 @@ public class RdlcPrinterService : IRdlcPrinterService
                             printJobId, currentPage);
                     }
                 }
-                catch (Exception cleanupEx)
+                catch (Exception ex)
                 {
-                    _logger.LogWarning(cleanupEx,
-                        "Print job {PrintJobId}: Error during cleanup",
+                    _logger.LogWarning(ex,
+                        "Print job {PrintJobId}: Error during EndPrint event",
                         printJobId);
                 }
             };
@@ -283,25 +278,58 @@ public class RdlcPrinterService : IRdlcPrinterService
         }
         finally
         {
-            // Ensure cleanup
+            // Resource Management: Ensure all resources are properly disposed
+            // Dispose streams
             if (streams != null)
             {
                 foreach (var stream in streams)
                 {
-                    stream?.Dispose();
+                    try
+                    {
+                        stream?.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error disposing stream in print job {PrintJobId}", printJobId);
+                    }
                 }
                 streams.Clear();
             }
 
-            printDoc?.Dispose();
+            // Dispose DataTables
+            if (dataTablesToDispose != null)
+            {
+                foreach (var dt in dataTablesToDispose)
+                {
+                    try
+                    {
+                        dt?.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error disposing DataTable in print job {PrintJobId}", printJobId);
+                    }
+                }
+                dataTablesToDispose.Clear();
+            }
+
+            // Dispose PrintDocument
+            try
+            {
+                printDoc?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error disposing PrintDocument in print job {PrintJobId}", printJobId);
+            }
         }
     }
 
     private void ConfigurePrinterSettings(PrintDocument printDoc, RdlcPrinterDto rdlcPrinter, string printJobId)
     {
         // Set printer-specific settings
-        var pageSettings = new PrinterSettings { PrinterName = rdlcPrinter.PrinterName };
-        printDoc.DefaultPageSettings = pageSettings.DefaultPageSettings;
+        // Resource Management: PrinterSettings is managed by PrintDocument, no separate disposal needed
+        printDoc.PrinterSettings.PrinterName = rdlcPrinter.PrinterName;
         printDoc.PrinterSettings.Copies = rdlcPrinter.Copies;
 
         // Optimize for thermal/matricial printers

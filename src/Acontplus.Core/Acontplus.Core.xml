@@ -7,7 +7,7 @@
         <member name="T:Acontplus.Core.Abstractions.Persistence.IAdoRepository">
             <summary>
             ADO.NET repository interface for high-performance, raw SQL operations.
-            Optimized for scalable, high-workload scenarios with SQL Server 2022 and PostgreSQL.
+            Optimized for scalable, high-workload scenarios with SQL Server and PostgreSQL.
             </summary>
         </member>
         <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
@@ -59,7 +59,7 @@
         <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with automatic count query.
-            For SQL Server 2022: Uses OFFSET-FETCH with optimized query plans.
+            For SQL Server: Uses OFFSET-FETCH with optimized query plans.
             For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
             Filters and parameters are extracted from the PaginationDto.Filters property.
             </summary>
