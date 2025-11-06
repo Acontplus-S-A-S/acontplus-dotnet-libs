@@ -1043,7 +1043,7 @@ public class AdoRepository : IAdoRepository
         {
             // Use word boundary regex to match complete keywords only, not substrings
             // This prevents false positives like "Description" matching "DESC" or "UserName" matching "USE"
-            var keywordPattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(keyword)}\b";
+            var keywordPattern = $"\\b{System.Text.RegularExpressions.Regex.Escape(keyword)}\\b";
             if (System.Text.RegularExpressions.Regex.IsMatch(upperColumn, keywordPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
             {
                 _logger.LogWarning("SQL keyword detected in sort column: {ColumnName} contains {Keyword}", columnName, keyword);
