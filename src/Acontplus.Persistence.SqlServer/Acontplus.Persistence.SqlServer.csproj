@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.SqlServer</PackageId>
-    <Version>1.6.3</Version>
+    <Version>1.6.4</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for SQL Server persistence with Entity Framework Core integration. Includes repositories, context management, ADO.NET support, advanced error handling, and enterprise-ready data access patterns for SQL Server databases.</Description>
