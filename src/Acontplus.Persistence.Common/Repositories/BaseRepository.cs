@@ -205,7 +205,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     }
 
     public virtual Task<PagedResult<TEntity>> GetPagedAsync(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
         bool orderByDescending = false)
@@ -214,7 +214,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     }
 
     public virtual async Task<PagedResult<TEntity>> GetPagedAsync(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
@@ -260,7 +260,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     }
 
     public virtual async Task<PagedResult<TProjection>> GetPagedProjectionAsync<TProjection>(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         Expression<Func<TEntity, TProjection>> projection,
         Expression<Func<TEntity, bool>>? predicate = null,
         Expression<Func<TEntity, object>>? orderBy = null,
@@ -930,7 +930,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 
     public virtual async Task<PagedResult<TResult>> ExecutePagedQueryAsync<TResult>(
         Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CancellationToken cancellationToken = default)
     {
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(ExecutePagedQueryAsync)}");
@@ -1170,7 +1170,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         return orderedQuery ?? query;
     }
 
-    protected virtual void ValidatePagination(PaginationDto pagination)
+    protected virtual void ValidatePagination(PaginationRequest pagination)
     {
         ArgumentNullException.ThrowIfNull(pagination);
         if (pagination.PageIndex < 1)
@@ -1244,3 +1244,4 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 
     #endregion
 }
+
