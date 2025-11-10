@@ -10,86 +10,86 @@
             Optimized for scalable, high-workload scenarios with SQL Server and PostgreSQL.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and maps results to a list of objects.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and returns a DataSet with multiple tables.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a non-query SQL command (INSERT, UPDATE, DELETE).
             Returns the number of affected rows.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query designed to return a single row or null.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and returns the first row or null.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a query and returns a single scalar value (e.g., COUNT, MAX, SUM).
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Checks if any rows exist for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Gets the count of rows for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Gets the long count of rows for the given query (for tables with billions of rows).
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with automatic count query.
             For SQL Server: Uses OFFSET-FETCH with optimized query plans.
             For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
-            Filters and parameters are extracted from the PaginationDto.Filters property.
+            Filters and parameters are extracted from the PaginationRequest.Filters property.
             </summary>
             <param name="sql">Main SELECT query (without OFFSET/LIMIT)</param>
             <param name="pagination">Pagination parameters including sort, filters, and search</param>
             <param name="options">Command options</param>
             <param name="cancellationToken">Cancellation token</param>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with a custom count query for complex scenarios.
             Use this when the count query needs to be different from the main query.
-            Filters and parameters are extracted from the PaginationDto.Filters property.
+            Filters and parameters are extracted from the PaginationRequest.Filters property.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated stored procedure that returns results and total count.
             Expects the stored procedure to have @PageIndex, @PageSize parameters
             and return both results and total count (via output parameter or second result set).
-            Filters and parameters are extracted from the PaginationDto.Filters property.
+            Filters and parameters are extracted from the PaginationRequest.Filters property.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple queries in a single batch for better performance.
             Returns multiple result sets.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple non-query commands in a batch.
             Returns total affected rows.
@@ -107,7 +107,7 @@
             Bulk insert data from a DataTable using optimized bulk copy operations.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Streams query results as an async enumerable for memory-efficient processing.
             Ideal for processing large datasets without loading all into memory.
@@ -157,7 +157,7 @@
             <param name="cancellationToken">Cancellation token</param>
             <returns>The query results as a list</returns>
         </member>
-        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExecutePagedQueryAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}}},Acontplus.Core.DTOs.Requests.PaginationDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IRepository`1.ExecutePagedQueryAsync``1(System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{``0}}},Acontplus.Core.Dtos.Requests.PaginationRequest,System.Threading.CancellationToken)">
             <summary>
             Executes a custom query with pagination and returns paged results.
             Use this for complex queries that need pagination.
@@ -672,25 +672,88 @@
             </summary>
             <returns>String representation</returns>
         </member>
-        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildFilters">
+        <member name="T:Acontplus.Core.Dtos.Requests.FilterRequest">
+            <summary>
+            Request model for filtering, sorting, and searching without pagination.
+            Ideal for reports, exports, simple searches, and scenarios where all matching results are needed.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.SortBy">
+            <summary>
+            Property name to sort by.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.SortDirection">
+            <summary>
+            Direction of sorting (Ascending or Descending).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.SearchTerm">
+            <summary>
+            General search term to filter results.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.Filters">
+            <summary>
+            Dictionary of additional filters with dynamic key-value pairs.
+            Keys represent filter field names, values represent filter values.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.IsEmpty">
+            <summary>
+            Indicates whether the filter is empty (no search term and no filters).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.FilterRequest.HasCriteria">
+            <summary>
+            Indicates whether the filter has any criteria (search term or filters).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Dtos.Requests.FilterRequest.BuildFilters">
             <summary>
             Builds a dictionary of filters if they exist, otherwise returns null.
             Useful for converting to stored procedure parameters or other filter formats.
             </summary>
             <returns>Dictionary of filters or null if no filters exist</returns>
         </member>
-        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildFiltersWithPrefix(System.String)">
+        <member name="M:Acontplus.Core.Dtos.Requests.FilterRequest.BuildFiltersWithPrefix(System.String)">
             <summary>
             Builds a dictionary of filters with custom key prefix (e.g., "@" for SQL parameters).
             </summary>
             <param name="prefix">Prefix to add to filter keys</param>
             <returns>Dictionary of filters with prefixed keys or null if no filters exist</returns>
         </member>
-        <member name="M:Acontplus.Core.DTOs.Requests.PaginationDto.BuildSqlParameters">
+        <member name="M:Acontplus.Core.Dtos.Requests.FilterRequest.BuildSqlParameters">
             <summary>
             Builds a dictionary of filters with "@" prefix for SQL parameters.
             </summary>
             <returns>Dictionary of filters with "@" prefix or null if no filters exist</returns>
+        </member>
+        <member name="T:Acontplus.Core.Dtos.Requests.PaginationRequest">
+            <summary>
+            Request model for paginated queries with filtering, sorting, and searching capabilities.
+            Extends FilterRequest with pagination properties.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.PaginationRequest.PageIndex">
+            <summary>
+            Current page number (1-based index).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.PaginationRequest.PageSize">
+            <summary>
+            Number of items per page (max 1000).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.PaginationRequest.Skip">
+            <summary>
+            Number of items to skip in the query (calculated from PageIndex and PageSize).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.PaginationRequest.Take">
+            <summary>
+            Number of items to take in the query (same as PageSize).
+            </summary>
         </member>
         <member name="T:Acontplus.Core.Enums.AddressType">
             <summary>
@@ -2013,107 +2076,107 @@
         </member>
         <member name="T:Acontplus.Core.Extensions.PaginationExtensions">
             <summary>
-            Extension methods for PaginationDto to provide fluent API and helper functionality.
+            Extension methods for PaginationRequest to provide fluent API and helper functionality.
             </summary>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSearch(Acontplus.Core.DTOs.Requests.PaginationDto,System.String)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSearch(Acontplus.Core.Dtos.Requests.PaginationRequest,System.String)">
             <summary>
             Adds a search term to the pagination request.
             </summary>
             <param name="pagination">The pagination object</param>
             <param name="searchTerm">The search term to add</param>
-            <returns>A new PaginationDto with the search term</returns>
+            <returns>A new PaginationRequest with the search term</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSort(Acontplus.Core.DTOs.Requests.PaginationDto,System.String,Acontplus.Core.Enums.SortDirection)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithSort(Acontplus.Core.Dtos.Requests.PaginationRequest,System.String,Acontplus.Core.Enums.SortDirection)">
             <summary>
             Adds sorting criteria to the pagination request.
             </summary>
             <param name="pagination">The pagination object</param>
             <param name="sortBy">The field to sort by</param>
             <param name="direction">The sort direction</param>
-            <returns>A new PaginationDto with sorting criteria</returns>
+            <returns>A new PaginationRequest with sorting criteria</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilters(Acontplus.Core.DTOs.Requests.PaginationDto,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilters(Acontplus.Core.Dtos.Requests.PaginationRequest,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
             <summary>
             Adds filters to the pagination request.
             </summary>
             <param name="pagination">The pagination object</param>
             <param name="filters">The filters to add</param>
-            <returns>A new PaginationDto with filters</returns>
+            <returns>A new PaginationRequest with filters</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilter(Acontplus.Core.DTOs.Requests.PaginationDto,System.String,System.Object)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.WithFilter(Acontplus.Core.Dtos.Requests.PaginationRequest,System.String,System.Object)">
             <summary>
             Adds a single filter to the pagination request.
             </summary>
             <param name="pagination">The pagination object</param>
             <param name="key">The filter key</param>
             <param name="value">The filter value</param>
-            <returns>A new PaginationDto with the additional filter</returns>
+            <returns>A new PaginationRequest with the additional filter</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.PaginationExtensions.Create(System.Int32,System.Int32)">
             <summary>
-            Creates a new PaginationDto with the specified page and size.
+            Creates a new PaginationRequest with the specified page and size.
             </summary>
             <param name="pageIndex">The page index (1-based)</param>
             <param name="pageSize">The page size</param>
-            <returns>A new PaginationDto</returns>
+            <returns>A new PaginationRequest</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithSearch(System.String,System.Int32,System.Int32)">
             <summary>
-            Creates a new PaginationDto with search term.
+            Creates a new PaginationRequest with search term.
             </summary>
             <param name="searchTerm">The search term</param>
             <param name="pageIndex">The page index (1-based)</param>
             <param name="pageSize">The page size</param>
-            <returns>A new PaginationDto with search</returns>
+            <returns>A new PaginationRequest with search</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithSort(System.String,Acontplus.Core.Enums.SortDirection,System.Int32,System.Int32)">
             <summary>
-            Creates a new PaginationDto with sorting.
+            Creates a new PaginationRequest with sorting.
             </summary>
             <param name="sortBy">The field to sort by</param>
             <param name="direction">The sort direction</param>
             <param name="pageIndex">The page index (1-based)</param>
             <param name="pageSize">The page size</param>
-            <returns>A new PaginationDto with sorting</returns>
+            <returns>A new PaginationRequest with sorting</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.PaginationExtensions.CreateWithFilters(System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object},System.Int32,System.Int32)">
             <summary>
-            Creates a new PaginationDto with filters.
+            Creates a new PaginationRequest with filters.
             </summary>
             <param name="filters">The filters</param>
             <param name="pageIndex">The page index (1-based)</param>
             <param name="pageSize">The page size</param>
-            <returns>A new PaginationDto with filters</returns>
+            <returns>A new PaginationRequest with filters</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.Validate(Acontplus.Core.DTOs.Requests.PaginationDto)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.Validate(Acontplus.Core.Dtos.Requests.PaginationRequest)">
             <summary>
             Validates the pagination parameters and returns a corrected version if needed.
             </summary>
             <param name="pagination">The pagination object to validate</param>
-            <returns>A validated and corrected PaginationDto</returns>
+            <returns>A validated and corrected PaginationRequest</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.NextPage(Acontplus.Core.DTOs.Requests.PaginationDto)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.NextPage(Acontplus.Core.Dtos.Requests.PaginationRequest)">
             <summary>
             Gets the next page pagination object.
             </summary>
             <param name="pagination">The current pagination object</param>
-            <returns>A new PaginationDto for the next page</returns>
+            <returns>A new PaginationRequest for the next page</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.PreviousPage(Acontplus.Core.DTOs.Requests.PaginationDto)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.PreviousPage(Acontplus.Core.Dtos.Requests.PaginationRequest)">
             <summary>
             Gets the previous page pagination object.
             </summary>
             <param name="pagination">The current pagination object</param>
-            <returns>A new PaginationDto for the previous page</returns>
+            <returns>A new PaginationRequest for the previous page</returns>
         </member>
-        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.ToPage(Acontplus.Core.DTOs.Requests.PaginationDto,System.Int32)">
+        <member name="M:Acontplus.Core.Extensions.PaginationExtensions.ToPage(Acontplus.Core.Dtos.Requests.PaginationRequest,System.Int32)">
             <summary>
             Gets a pagination object for a specific page.
             </summary>
             <param name="pagination">The current pagination object</param>
             <param name="pageIndex">The target page index</param>
-            <returns>A new PaginationDto for the specified page</returns>
+            <returns>A new PaginationRequest for the specified page</returns>
         </member>
         <member name="T:Acontplus.Core.Extensions.RepositoryAuditExtensions">
             <summary>

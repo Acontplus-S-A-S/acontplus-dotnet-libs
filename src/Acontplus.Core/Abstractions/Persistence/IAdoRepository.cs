@@ -106,7 +106,7 @@ public interface IAdoRepository
     /// Executes a paginated SQL query with automatic count query.
     /// For SQL Server: Uses OFFSET-FETCH with optimized query plans.
     /// For PostgreSQL: Uses LIMIT-OFFSET with parallel query support.
-    /// Filters and parameters are extracted from the PaginationDto.Filters property.
+    /// Filters and parameters are extracted from the PaginationRequest.Filters property.
     /// </summary>
     /// <param name="sql">Main SELECT query (without OFFSET/LIMIT)</param>
     /// <param name="pagination">Pagination parameters including sort, filters, and search</param>
@@ -114,19 +114,19 @@ public interface IAdoRepository
     /// <param name="cancellationToken">Cancellation token</param>
     Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Executes a paginated SQL query with a custom count query for complex scenarios.
     /// Use this when the count query needs to be different from the main query.
-    /// Filters and parameters are extracted from the PaginationDto.Filters property.
+    /// Filters and parameters are extracted from the PaginationRequest.Filters property.
     /// </summary>
     Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
         string countSql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default);
 
@@ -134,11 +134,11 @@ public interface IAdoRepository
     /// Executes a paginated stored procedure that returns results and total count.
     /// Expects the stored procedure to have @PageIndex, @PageSize parameters
     /// and return both results and total count (via output parameter or second result set).
-    /// Filters and parameters are extracted from the PaginationDto.Filters property.
+    /// Filters and parameters are extracted from the PaginationRequest.Filters property.
     /// </summary>
     Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default);
 

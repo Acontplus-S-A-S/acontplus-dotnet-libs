@@ -1,4 +1,4 @@
-namespace Acontplus.Core.DTOs.Common;
+namespace Acontplus.Core.Dtos.Common;
 
 public class FileModel
 {

@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Abstractions.Context;
+namespace Acontplus.Core.Abstractions.Context;
 
 public interface IUserContext
 {

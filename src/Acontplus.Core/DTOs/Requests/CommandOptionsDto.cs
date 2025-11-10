@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs.Requests;
+namespace Acontplus.Core.Dtos.Requests;
 
 public class CommandOptionsDto
 {

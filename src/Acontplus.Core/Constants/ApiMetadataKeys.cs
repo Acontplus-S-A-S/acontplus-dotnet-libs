@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Constants;
+namespace Acontplus.Core.Constants;
 
 /// <summary>
 /// Metadata keys for API-level response metadata (tracing, correlation, versioning, etc.).

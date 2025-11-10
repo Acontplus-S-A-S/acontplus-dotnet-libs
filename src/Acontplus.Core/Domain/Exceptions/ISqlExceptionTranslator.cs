@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Exceptions;
+namespace Acontplus.Core.Domain.Exceptions;
 
 public interface ISqlExceptionTranslator
 {

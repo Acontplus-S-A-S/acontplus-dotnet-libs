@@ -6,7 +6,7 @@ public interface ISpecification<T>
     IReadOnlyList<Expression<Func<T, object>>> Includes { get; }
     IReadOnlyList<string> IncludeStrings { get; }
     IReadOnlyList<OrderByExpression<T>> OrderByExpressions { get; }
-    PaginationDto Pagination { get; }
+    PaginationRequest Pagination { get; }
     bool IsPagingEnabled { get; }
     bool IsTrackingEnabled { get; }
 }
@@ -18,7 +18,7 @@ public abstract class BaseSpecification<T> : ISpecification<T>
     public IReadOnlyList<Expression<Func<T, object>>> Includes => _includes.AsReadOnly();
     public IReadOnlyList<string> IncludeStrings => _includeStrings.AsReadOnly();
     public IReadOnlyList<OrderByExpression<T>> OrderByExpressions => _orderByExpressions.AsReadOnly();
-    public PaginationDto Pagination { get; private set; } = new();
+    public PaginationRequest Pagination { get; private set; } = new();
     public bool IsPagingEnabled { get; private set; } = false;
     public bool IsTrackingEnabled { get; private set; } = false;
 
@@ -46,7 +46,7 @@ public abstract class BaseSpecification<T> : ISpecification<T>
         _orderByExpressions.Add(new OrderByExpression<T>(orderByExpression, isDescending));
     }
 
-    protected virtual void ApplyPaging(PaginationDto pagination)
+    protected virtual void ApplyPaging(PaginationRequest pagination)
     {
         Pagination = pagination;
         IsPagingEnabled = true;

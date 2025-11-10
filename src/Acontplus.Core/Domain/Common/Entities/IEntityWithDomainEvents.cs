@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common.Entities;
+namespace Acontplus.Core.Domain.Common.Entities;
 
 public interface IEntityWithDomainEvents
 {

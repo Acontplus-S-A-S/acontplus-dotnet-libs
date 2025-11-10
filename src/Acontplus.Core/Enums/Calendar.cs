@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Enums;
+namespace Acontplus.Core.Enums;
 
 public static class Calendar
 {
