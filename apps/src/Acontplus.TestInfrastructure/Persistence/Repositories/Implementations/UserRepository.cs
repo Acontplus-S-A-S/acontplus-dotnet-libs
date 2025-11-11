@@ -8,7 +8,7 @@ public class UserRepository : BaseRepository<Usuario>, IUserRepository
     {
     }
 
-    public async Task<PagedResult<Usuario>> GetPaginatedUsersAsync(PaginationDto pagination)
+    public async Task<PagedResult<Usuario>> GetPaginatedUsersAsync(PaginationRequest pagination)
     {
         IQueryable<Usuario> query = _dbSet;
 
@@ -47,3 +47,4 @@ public class UserRepository : BaseRepository<Usuario>, IUserRepository
         };
     }
 }
+

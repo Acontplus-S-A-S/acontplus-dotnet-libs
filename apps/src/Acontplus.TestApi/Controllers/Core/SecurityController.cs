@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers.Core
+namespace Acontplus.TestApi.Controllers.Core
 {
     public class SecurityController : BaseApiController
     {
@@ -51,3 +51,4 @@
         public string PasswordHash { get; set; } = string.Empty;
     }
 }
+

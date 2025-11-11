@@ -157,3 +157,4 @@ public class EmailRequest
     public string Body { get; set; } = string.Empty;
     public bool IsHtml { get; set; }
 }
+

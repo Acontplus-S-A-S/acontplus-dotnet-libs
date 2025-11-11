@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.DTOs
+namespace Acontplus.TestApplication.DTOs
 {
     public class UpdateDiaDto
     {
@@ -7,3 +7,4 @@
         public string? Description { get; set; }
     }
 }
+

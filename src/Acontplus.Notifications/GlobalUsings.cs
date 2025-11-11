@@ -1,5 +1,5 @@
-﻿global using Acontplus.Core.Domain.Common.Entities;
-global using Acontplus.Core.DTOs.Common;
+global using Acontplus.Core.Domain.Common.Entities;
+global using Acontplus.Core.Dtos.Common;
 global using Acontplus.Utilities.Format;
 global using Amazon.Runtime;
 global using Amazon.SimpleEmailV2;

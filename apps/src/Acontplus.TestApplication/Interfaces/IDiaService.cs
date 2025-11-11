@@ -1,4 +1,4 @@
-﻿using Acontplus.Core.Domain.Common.Results;
+using Acontplus.Core.Domain.Common.Results;
 
 namespace Acontplus.TestApplication.Interfaces
 {
@@ -8,3 +8,4 @@ namespace Acontplus.TestApplication.Interfaces
         Task<Result<Dia, DomainError>> UpdateAsync(int id, UpdateDiaDto updateDiaDto);
     }
 }
+

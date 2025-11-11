@@ -8,7 +8,9 @@
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\src\Acontplus.Core\Acontplus.Core.csproj" />
 		<ProjectReference Include="..\..\..\src\Acontplus.Notifications\Acontplus.Notifications.csproj" />
+		<ProjectReference Include="..\..\..\src\Acontplus.Persistence.Common\Acontplus.Persistence.Common.csproj" />
 		<ProjectReference Include="..\..\..\src\Acontplus.Persistence.SqlServer\Acontplus.Persistence.SqlServer.csproj" />
 		<ProjectReference Include="..\Acontplus.TestDomain\Acontplus.TestDomain.csproj" />
 	</ItemGroup>

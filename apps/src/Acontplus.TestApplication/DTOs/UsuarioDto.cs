@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.DTOs
+namespace Acontplus.TestApplication.DTOs
 {
     public class UsuarioDto
     {
@@ -12,3 +12,4 @@
             new(dto.Id, dto.Username, dto.Email);
     }
 }
+

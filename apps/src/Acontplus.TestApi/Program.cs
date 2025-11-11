@@ -57,3 +57,4 @@ finally
     // Ensure all buffered logs are flushed on application shutdown
     Log.CloseAndFlush();
 }
+

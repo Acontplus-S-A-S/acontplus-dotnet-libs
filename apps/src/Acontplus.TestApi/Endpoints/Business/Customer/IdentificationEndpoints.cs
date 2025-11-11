@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Endpoints.Business.Customer;
+namespace Acontplus.TestApi.Endpoints.Business.Customer;
 
 public static class IdentificationEndpoints
 {
@@ -45,3 +45,4 @@ public static class IdentificationEndpoints
         }
     }
 }
+

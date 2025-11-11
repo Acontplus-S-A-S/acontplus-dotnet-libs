@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers.Core;
+namespace Acontplus.TestApi.Controllers.Core;
 
 public class EncryptionController(
     IDataEncryptionService dataEncryptionService,
@@ -63,3 +63,4 @@ public class VerifyRequest
     public string Password { get; set; }
     public string HashedPassword { get; set; }
 }
+

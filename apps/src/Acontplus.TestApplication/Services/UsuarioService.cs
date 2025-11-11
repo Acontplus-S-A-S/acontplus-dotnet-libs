@@ -217,7 +217,7 @@ namespace Acontplus.TestApplication.Services
             }
         }
         public async Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(
-            PaginationDto pagination)
+            PaginationRequest pagination)
         {
             try
             {
@@ -417,7 +417,7 @@ namespace Acontplus.TestApplication.Services
         }
 
         public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersAdoAsync(
-            PaginationDto pagination)
+            PaginationRequest pagination)
         {
             try
             {
@@ -440,7 +440,7 @@ namespace Acontplus.TestApplication.Services
         }
 
         public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersComplexAsync(
-            PaginationDto pagination,
+            PaginationRequest pagination,
             DateTime? createdAfter = null)
         {
             try
@@ -474,7 +474,7 @@ namespace Acontplus.TestApplication.Services
         }
 
         public async Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(
-            PaginationDto pagination)
+            PaginationRequest pagination)
         {
             try
             {
@@ -554,3 +554,4 @@ namespace Acontplus.TestApplication.Services
         #endregion
     }
 }
+

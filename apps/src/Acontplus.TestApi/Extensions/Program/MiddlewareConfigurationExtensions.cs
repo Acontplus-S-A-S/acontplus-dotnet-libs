@@ -28,3 +28,4 @@ public static class MiddlewareConfigurationExtensions
         app.MapControllers();
     }
 }
+

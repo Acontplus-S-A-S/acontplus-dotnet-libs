@@ -45,7 +45,11 @@
             Base configuration for non-auditable entities.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetPrimaryKeyType(System.Type)" -->
+        <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetPrimaryKeyType(System.Type)">
+            <summary>
+            Gets the primary key type for an entity that inherits from Entity&lt;TKey&gt;
+            </summary>
+        </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
             Registers non-auditable entities with the ModelBuilder, applying base configurations,
@@ -174,78 +178,96 @@
             Creates and opens a new SqlConnection.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CreateCommand(System.Data.Common.DbConnection,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CreateCommand(System.Data.Common.DbConnection,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
             Creates and configures a SqlCommand.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and maps results to a list of objects.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and returns a DataSet.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a non-query SQL command.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query designed to return a single row.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a SQL query and returns the first row or null.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a query and returns a single scalar value.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Checks if any rows exist for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Gets the count of rows for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Gets the long count of rows for the given query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with automatic count query.
             Uses SQL Server OFFSET-FETCH with optimized query plans.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with custom count query.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.DTOs.Requests.PaginationDto,Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated stored procedure.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+            Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered stored procedure (non-paginated).
+            Passes filter criteria to the stored procedure without pagination parameters.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered query and returns a DataSet (non-paginated).
+            Useful for reports that need multiple result sets with filtering and sorting.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple queries in a single batch.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple non-query commands in a batch.
             </summary>
@@ -260,9 +282,19 @@
             Bulk insert from DataTable using SqlBulkCopy.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.DTOs.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Streams query results as an async enumerable for memory-efficient processing.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.FilterRequest)">
+            <summary>
+            Builds query parameters from filter's filters and search term.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilteredSql(System.String,Acontplus.Core.Dtos.Requests.FilterRequest)">
+            <summary>
+            Builds filtered SQL with ORDER BY clause based on FilterRequest.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ValidateAndSanitizeSortColumn(System.String)">
@@ -272,7 +304,7 @@
             Falls back to regex validation with comprehensive keyword blacklist.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.DTOs.Requests.PaginationDto)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.Dtos.Requests.PaginationRequest)">
             <summary>
             Builds query parameters from pagination filters and search term.
             </summary>

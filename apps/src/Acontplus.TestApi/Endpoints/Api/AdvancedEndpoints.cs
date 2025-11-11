@@ -300,3 +300,4 @@ public class EndpointValidationRequest
     public int Age { get; set; }
     public string Email { get; set; } = string.Empty;
 }
+
