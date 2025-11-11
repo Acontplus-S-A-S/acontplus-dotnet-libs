@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Acontplus.Utilities.DTOs;
+namespace Acontplus.Utilities.Dtos;
 
 /// <summary>
 /// Represents a pagination query with sorting and search capabilities.

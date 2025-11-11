@@ -3,6 +3,7 @@ using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Extensions;
 using Acontplus.TestApi.Endpoints;
 using Acontplus.TestApi.Endpoints.Business;
+using Acontplus.TestApplication.Dtos;
 
 namespace Acontplus.TestApi.Extensions.Program;
 

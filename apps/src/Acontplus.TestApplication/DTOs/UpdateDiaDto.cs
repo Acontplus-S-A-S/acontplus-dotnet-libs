@@ -1,4 +1,4 @@
-namespace Acontplus.TestApplication.DTOs
+namespace Acontplus.TestApplication.Dtos
 {
     public class UpdateDiaDto
     {
