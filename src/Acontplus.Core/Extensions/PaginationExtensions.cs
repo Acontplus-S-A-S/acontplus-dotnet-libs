@@ -1,7 +1,7 @@
 namespace Acontplus.Core.Extensions;
 
 /// <summary>
-/// Extension methods for PaginationDto to provide fluent API and helper functionality.
+/// Extension methods for PaginationRequest to provide fluent API and helper functionality.
 /// </summary>
 public static class PaginationExtensions
 {
@@ -10,8 +10,8 @@ public static class PaginationExtensions
     /// </summary>
     /// <param name="pagination">The pagination object</param>
     /// <param name="searchTerm">The search term to add</param>
-    /// <returns>A new PaginationDto with the search term</returns>
-    public static PaginationDto WithSearch(this PaginationDto pagination, string searchTerm)
+    /// <returns>A new PaginationRequest with the search term</returns>
+    public static PaginationRequest WithSearch(this PaginationRequest pagination, string searchTerm)
         => pagination with { SearchTerm = searchTerm };
 
     /// <summary>
@@ -20,8 +20,8 @@ public static class PaginationExtensions
     /// <param name="pagination">The pagination object</param>
     /// <param name="sortBy">The field to sort by</param>
     /// <param name="direction">The sort direction</param>
-    /// <returns>A new PaginationDto with sorting criteria</returns>
-    public static PaginationDto WithSort(this PaginationDto pagination, string sortBy, SortDirection direction = SortDirection.Asc)
+    /// <returns>A new PaginationRequest with sorting criteria</returns>
+    public static PaginationRequest WithSort(this PaginationRequest pagination, string sortBy, SortDirection direction = SortDirection.Asc)
         => pagination with { SortBy = sortBy, SortDirection = direction };
 
     /// <summary>
@@ -29,8 +29,8 @@ public static class PaginationExtensions
     /// </summary>
     /// <param name="pagination">The pagination object</param>
     /// <param name="filters">The filters to add</param>
-    /// <returns>A new PaginationDto with filters</returns>
-    public static PaginationDto WithFilters(this PaginationDto pagination, IReadOnlyDictionary<string, object> filters)
+    /// <returns>A new PaginationRequest with filters</returns>
+    public static PaginationRequest WithFilters(this PaginationRequest pagination, IReadOnlyDictionary<string, object> filters)
         => pagination with { Filters = filters };
 
     /// <summary>
@@ -39,8 +39,8 @@ public static class PaginationExtensions
     /// <param name="pagination">The pagination object</param>
     /// <param name="key">The filter key</param>
     /// <param name="value">The filter value</param>
-    /// <returns>A new PaginationDto with the additional filter</returns>
-    public static PaginationDto WithFilter(this PaginationDto pagination, string key, object value)
+    /// <returns>A new PaginationRequest with the additional filter</returns>
+    public static PaginationRequest WithFilter(this PaginationRequest pagination, string key, object value)
     {
         var existingFilters = pagination.Filters?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? new Dictionary<string, object>();
         existingFilters[key] = value;
@@ -48,51 +48,51 @@ public static class PaginationExtensions
     }
 
     /// <summary>
-    /// Creates a new PaginationDto with the specified page and size.
+    /// Creates a new PaginationRequest with the specified page and size.
     /// </summary>
     /// <param name="pageIndex">The page index (1-based)</param>
     /// <param name="pageSize">The page size</param>
-    /// <returns>A new PaginationDto</returns>
-    public static PaginationDto Create(int pageIndex = 1, int pageSize = 10)
+    /// <returns>A new PaginationRequest</returns>
+    public static PaginationRequest Create(int pageIndex = 1, int pageSize = 10)
         => new() { PageIndex = pageIndex, PageSize = pageSize };
 
     /// <summary>
-    /// Creates a new PaginationDto with search term.
+    /// Creates a new PaginationRequest with search term.
     /// </summary>
     /// <param name="searchTerm">The search term</param>
     /// <param name="pageIndex">The page index (1-based)</param>
     /// <param name="pageSize">The page size</param>
-    /// <returns>A new PaginationDto with search</returns>
-    public static PaginationDto CreateWithSearch(string searchTerm, int pageIndex = 1, int pageSize = 10)
+    /// <returns>A new PaginationRequest with search</returns>
+    public static PaginationRequest CreateWithSearch(string searchTerm, int pageIndex = 1, int pageSize = 10)
         => Create(pageIndex, pageSize).WithSearch(searchTerm);
 
     /// <summary>
-    /// Creates a new PaginationDto with sorting.
+    /// Creates a new PaginationRequest with sorting.
     /// </summary>
     /// <param name="sortBy">The field to sort by</param>
     /// <param name="direction">The sort direction</param>
     /// <param name="pageIndex">The page index (1-based)</param>
     /// <param name="pageSize">The page size</param>
-    /// <returns>A new PaginationDto with sorting</returns>
-    public static PaginationDto CreateWithSort(string sortBy, SortDirection direction = SortDirection.Asc, int pageIndex = 1, int pageSize = 10)
+    /// <returns>A new PaginationRequest with sorting</returns>
+    public static PaginationRequest CreateWithSort(string sortBy, SortDirection direction = SortDirection.Asc, int pageIndex = 1, int pageSize = 10)
         => Create(pageIndex, pageSize).WithSort(sortBy, direction);
 
     /// <summary>
-    /// Creates a new PaginationDto with filters.
+    /// Creates a new PaginationRequest with filters.
     /// </summary>
     /// <param name="filters">The filters</param>
     /// <param name="pageIndex">The page index (1-based)</param>
     /// <param name="pageSize">The page size</param>
-    /// <returns>A new PaginationDto with filters</returns>
-    public static PaginationDto CreateWithFilters(IReadOnlyDictionary<string, object> filters, int pageIndex = 1, int pageSize = 10)
+    /// <returns>A new PaginationRequest with filters</returns>
+    public static PaginationRequest CreateWithFilters(IReadOnlyDictionary<string, object> filters, int pageIndex = 1, int pageSize = 10)
         => Create(pageIndex, pageSize).WithFilters(filters);
 
     /// <summary>
     /// Validates the pagination parameters and returns a corrected version if needed.
     /// </summary>
     /// <param name="pagination">The pagination object to validate</param>
-    /// <returns>A validated and corrected PaginationDto</returns>
-    public static PaginationDto Validate(this PaginationDto pagination)
+    /// <returns>A validated and corrected PaginationRequest</returns>
+    public static PaginationRequest Validate(this PaginationRequest pagination)
     {
         var pageIndex = pagination.PageIndex < 1 ? 1 : pagination.PageIndex;
         var pageSize = pagination.PageSize switch
@@ -109,16 +109,16 @@ public static class PaginationExtensions
     /// Gets the next page pagination object.
     /// </summary>
     /// <param name="pagination">The current pagination object</param>
-    /// <returns>A new PaginationDto for the next page</returns>
-    public static PaginationDto NextPage(this PaginationDto pagination)
+    /// <returns>A new PaginationRequest for the next page</returns>
+    public static PaginationRequest NextPage(this PaginationRequest pagination)
         => pagination with { PageIndex = pagination.PageIndex + 1 };
 
     /// <summary>
     /// Gets the previous page pagination object.
     /// </summary>
     /// <param name="pagination">The current pagination object</param>
-    /// <returns>A new PaginationDto for the previous page</returns>
-    public static PaginationDto PreviousPage(this PaginationDto pagination)
+    /// <returns>A new PaginationRequest for the previous page</returns>
+    public static PaginationRequest PreviousPage(this PaginationRequest pagination)
         => pagination with { PageIndex = Math.Max(1, pagination.PageIndex - 1) };
 
     /// <summary>
@@ -126,7 +126,7 @@ public static class PaginationExtensions
     /// </summary>
     /// <param name="pagination">The current pagination object</param>
     /// <param name="pageIndex">The target page index</param>
-    /// <returns>A new PaginationDto for the specified page</returns>
-    public static PaginationDto ToPage(this PaginationDto pagination, int pageIndex)
+    /// <returns>A new PaginationRequest for the specified page</returns>
+    public static PaginationRequest ToPage(this PaginationRequest pagination, int pageIndex)
         => pagination with { PageIndex = Math.Max(1, pageIndex) };
 }

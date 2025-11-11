@@ -7,7 +7,7 @@ public interface IUsuarioService
     // Standard CRUD operations
     Task<Result<Usuario, DomainErrors>> AddAsync(Usuario usuario);
     Task<Result<int, DomainError>> CreateAsync();
-    Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(PaginationDto pagination);
+    Task<Result<PagedResult<UsuarioDto>, DomainError>> GetPaginatedUsersAsync(PaginationRequest pagination);
     Task<Result<SpResponse, DomainError>> GetLegacySpResponseAsync();
     Task<Result<List<UsuarioDto>, DomainError>> GetDynamicUserListAsync();
     Task<Result<Usuario, DomainErrors>> UpdateAsync(int id, Usuario usuario);
@@ -19,9 +19,10 @@ public interface IUsuarioService
     Task<Result<int, DomainError>> GetUserCountAsync();
     Task<Result<bool, DomainError>> CheckUserExistsAsync(string username);
     Task<Result<long, DomainError>> GetActiveUsersCountAsync();
-    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersAdoAsync(PaginationDto pagination);
-    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersComplexAsync(PaginationDto pagination, DateTime? createdAfter = null);
-    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(PaginationDto pagination);
+    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersAdoAsync(PaginationRequest pagination);
+    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersComplexAsync(PaginationRequest pagination, DateTime? createdAfter = null);
+    Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(PaginationRequest pagination);
     Task<Result<int, DomainError>> BulkInsertUsersAsync(List<UsuarioDto> users);
     Task<Result<int, DomainError>> ExecuteBatchOperationsAsync(List<int> userIds);
 }
+

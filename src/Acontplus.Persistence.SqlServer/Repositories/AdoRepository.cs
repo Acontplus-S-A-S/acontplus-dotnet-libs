@@ -457,7 +457,7 @@ public class AdoRepository : IAdoRepository
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -472,7 +472,7 @@ public class AdoRepository : IAdoRepository
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
         string countSql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -550,7 +550,7 @@ public class AdoRepository : IAdoRepository
     /// </summary>
     public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -646,6 +646,191 @@ public class AdoRepository : IAdoRepository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error executing GetPagedFromStoredProcedureAsync for '{storedProcedureName}'.", storedProcedureName);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    #endregion
+
+    #region Filtered Query Methods (Non-Paginated)
+
+    /// <summary>
+    /// Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+    /// Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+    /// </summary>
+    public async Task<List<T>> GetFilteredAsync<T>(
+        string sql,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Build parameters from filter
+                var parameters = BuildFilterParameters(filter);
+
+                // Build filtered query with ORDER BY
+                var filteredSql = BuildFilteredSql(sql, filter);
+
+                // Execute query
+                await using var cmd = CreateCommand(connection, filteredSql, parameters, options);
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                return await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+            }
+            catch (SqlException ex)
+            {
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(GetFilteredAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing GetFilteredAsync for '{Sql}'.", sql);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Executes a filtered stored procedure (non-paginated).
+    /// Passes filter criteria to the stored procedure without pagination parameters.
+    /// </summary>
+    public async Task<List<T>> GetFilteredFromStoredProcedureAsync<T>(
+        string storedProcedureName,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Build stored procedure parameters from filter
+                var spParameters = new Dictionary<string, object>();
+
+                // Add sort parameters if provided
+                if (!string.IsNullOrWhiteSpace(filter.SortBy))
+                {
+                    spParameters["@SortBy"] = ValidateAndSanitizeSortColumn(filter.SortBy);
+                    spParameters["@SortDirection"] = filter.SortDirection.ToString();
+                }
+
+                // Add search term if provided
+                if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+                {
+                    spParameters["@SearchTerm"] = filter.SearchTerm;
+                }
+
+                // Serialize filters to JSON for SQL Server OPENJSON using optimized serialization
+                if (filter.Filters != null && filter.Filters.Any())
+                {
+                    var filtersJson = filter.Filters.SerializeOptimized();
+                    spParameters["@Filters"] = filtersJson;
+                }
+                else
+                {
+                    spParameters["@Filters"] = DBNull.Value;
+                }
+
+                var spOptions = options ?? new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
+
+                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, spOptions);
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                return await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+            }
+            catch (SqlException ex)
+            {
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(GetFilteredFromStoredProcedureAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing GetFilteredFromStoredProcedureAsync for '{storedProcedureName}'.", storedProcedureName);
+                throw;
+            }
+            finally
+            {
+                connectionToClose?.Close();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Executes a filtered query and returns a DataSet (non-paginated).
+    /// Useful for reports that need multiple result sets with filtering and sorting.
+    /// </summary>
+    public async Task<DataSet> GetFilteredDataSetAsync(
+        string sql,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        return await RetryPolicy.ExecuteAsync(async () =>
+        {
+            DbConnection? connectionToClose = null;
+            try
+            {
+                var connection = await GetOpenConnectionAsync(null, cancellationToken);
+                if (_currentConnection == null) connectionToClose = connection;
+
+                // Build parameters from filter
+                var parameters = BuildFilterParameters(filter);
+
+                // Build filtered query with ORDER BY
+                var filteredSql = BuildFilteredSql(sql, filter);
+
+                options ??= new CommandOptionsDto();
+                await using var cmd = CreateCommand(connection, filteredSql, parameters, options);
+
+                if (options.WithTableNames)
+                {
+                    CommandParameterBuilder.AddOutputParameter(cmd, "@tableNames", SqlDbType.VarChar,
+                        options.TableNamesLength);
+                }
+
+                var ds = new DataSet();
+                using var adapter = new SqlDataAdapter(cmd);
+                await Task.Run(() => adapter.Fill(ds), cancellationToken);
+
+                if (options.WithTableNames)
+                {
+                    await DataTableNameMapper.ProcessTableNames(cmd, ds);
+                }
+
+                return ds;
+            }
+            catch (SqlException ex)
+            {
+                SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(GetFilteredDataSetAsync));
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error executing GetFilteredDataSetAsync for '{Sql}'.", sql);
                 throw;
             }
             finally
@@ -938,6 +1123,57 @@ public class AdoRepository : IAdoRepository
 
     #region Helper Methods
 
+    /// <summary>
+    /// Builds query parameters from filter's filters and search term.
+    /// </summary>
+    private Dictionary<string, object> BuildFilterParameters(FilterRequest filter)
+    {
+        var result = new Dictionary<string, object>();
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+        {
+            result["@__SearchTerm"] = $"%{filter.SearchTerm}%"; // For LIKE queries
+        }
+
+        // Add individual filters
+        if (filter.Filters != null && filter.Filters.Any())
+        {
+            foreach (var kvp in filter.Filters)
+            {
+                // Use a prefix to avoid parameter name conflicts
+                var paramName = kvp.Key.StartsWith("@") ? kvp.Key : $"@{kvp.Key}";
+                result[paramName] = kvp.Value;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Builds filtered SQL with ORDER BY clause based on FilterRequest.
+    /// </summary>
+    private string BuildFilteredSql(string sql, FilterRequest filter)
+    {
+        var builder = new System.Text.StringBuilder(sql);
+
+        // Add ORDER BY if not present and if SortBy is provided
+        if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrEmpty(filter.SortBy))
+            {
+                // Validate SortBy to prevent SQL injection
+                var safeSortBy = ValidateAndSanitizeSortColumn(filter.SortBy);
+                var direction = filter.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+
+                // CWE-89 Prevention: Use square brackets to safely quote the column identifier
+                builder.Append($" ORDER BY [{safeSortBy}] {direction}");
+            }
+        }
+
+        return builder.ToString();
+    }
+
     private static string GenerateCountSql(string sql)
     {
         // Simple count SQL generation - removes ORDER BY and wraps in COUNT
@@ -950,7 +1186,7 @@ public class AdoRepository : IAdoRepository
         return $"SELECT COUNT(*) FROM ({cleanSql}) AS CountQuery";
     }
 
-    private string BuildPagedSql(string sql, PaginationDto pagination)
+    private string BuildPagedSql(string sql, PaginationRequest pagination)
     {
         var builder = new System.Text.StringBuilder(sql);
 
@@ -1077,7 +1313,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Builds query parameters from pagination filters and search term.
     /// </summary>
-    private Dictionary<string, object> BuildPaginationParameters(PaginationDto pagination)
+    private Dictionary<string, object> BuildPaginationParameters(PaginationRequest pagination)
     {
         var result = new Dictionary<string, object>();
 
@@ -1101,7 +1337,7 @@ public class AdoRepository : IAdoRepository
         return result;
     }
 
-    private void ValidatePagination(PaginationDto pagination)
+    private void ValidatePagination(PaginationRequest pagination)
     {
         ArgumentNullException.ThrowIfNull(pagination);
         if (pagination.PageIndex < 1)
@@ -1147,3 +1383,4 @@ public class AdoRepository : IAdoRepository
 
     #endregion
 }
+

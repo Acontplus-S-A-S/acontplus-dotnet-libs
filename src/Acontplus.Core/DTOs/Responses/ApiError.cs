@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.DTOs.Responses;
+namespace Acontplus.Core.Dtos.Responses;
 
 public sealed record ApiError(
     string Code,

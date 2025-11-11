@@ -1,37 +1,42 @@
-namespace Acontplus.Core.DTOs.Requests;
+namespace Acontplus.Core.Dtos.Requests;
 
-public record PaginationDto
+/// <summary>
+/// Request model for filtering, sorting, and searching without pagination.
+/// Ideal for reports, exports, simple searches, and scenarios where all matching results are needed.
+/// </summary>
+public record FilterRequest
 {
-    private int _pageIndex = 1;
-    private int _pageSize = 10;
-
-    public int PageIndex
-    {
-        get => _pageIndex;
-        init => _pageIndex = value < 1 ? 1 : value;
-    }
-
-    public int PageSize
-    {
-        get => _pageSize;
-        init => _pageSize = value switch
-        {
-            < 1 => 10,
-            > 1000 => 1000, // Increased limit for large systems
-            _ => value
-        };
-    }
-
+    /// <summary>
+    /// Property name to sort by.
+    /// </summary>
     public string? SortBy { get; init; }
+
+    /// <summary>
+    /// Direction of sorting (Ascending or Descending).
+    /// </summary>
     public SortDirection SortDirection { get; init; } = SortDirection.Asc;
+
+    /// <summary>
+    /// General search term to filter results.
+    /// </summary>
     public string? SearchTerm { get; init; }
+
+    /// <summary>
+    /// Dictionary of additional filters with dynamic key-value pairs.
+    /// Keys represent filter field names, values represent filter values.
+    /// </summary>
     public IReadOnlyDictionary<string, object>? Filters { get; init; }
 
-    public int Skip => (PageIndex - 1) * PageSize;
-    public int Take => PageSize;
-
+    /// <summary>
+    /// Indicates whether the filter is empty (no search term and no filters).
+    /// </summary>
     public bool IsEmpty => string.IsNullOrWhiteSpace(SearchTerm) &&
                           (Filters is null || !Filters.Any());
+
+    /// <summary>
+    /// Indicates whether the filter has any criteria (search term or filters).
+    /// </summary>
+    public bool HasCriteria => !IsEmpty;
 
     /// <summary>
     /// Builds a dictionary of filters if they exist, otherwise returns null.

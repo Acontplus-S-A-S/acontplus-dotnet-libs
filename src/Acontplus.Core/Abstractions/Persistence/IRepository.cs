@@ -37,13 +37,13 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default);
 
     Task<PagedResult<TEntity>> GetPagedAsync(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
         bool orderByDescending = false);
 
     Task<PagedResult<TEntity>> GetPagedAsync(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
@@ -51,7 +51,7 @@ public interface IRepository<TEntity>
         params Expression<Func<TEntity, object>>[] includeProperties);
 
     Task<PagedResult<TProjection>> GetPagedProjectionAsync<TProjection>(
-        PaginationDto pagination,
+        PaginationRequest pagination,
         Expression<Func<TEntity, TProjection>> projection,
         Expression<Func<TEntity, bool>>? predicate = null,
         Expression<Func<TEntity, object>>? orderBy = null,
@@ -215,7 +215,7 @@ public interface IRepository<TEntity>
     /// <returns>Paged query results</returns>
     Task<PagedResult<TResult>> ExecutePagedQueryAsync<TResult>(
         Expression<Func<IQueryable<TEntity>, IQueryable<TResult>>> queryExpression,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TEntity>> GetOrderedAsync(

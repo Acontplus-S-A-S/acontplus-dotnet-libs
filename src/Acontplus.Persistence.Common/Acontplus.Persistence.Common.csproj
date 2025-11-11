@@ -1,36 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<PackageId>Acontplus.Persistence.Common</PackageId>
-		<Version>1.1.17</Version>
-		<Authors>Ivan Paz</Authors>
-		<Company>Acontplus</Company>
-		<Description>Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.</Description>
-		<PackageTags>dotnet9;persistence;database;abstractions;repository;efcore;multi-provider;entity-framework;connection-string;context-factory;enterprise;infrastructure;sql-server;postgresql</PackageTags>
-		<RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageReleaseNotes>Enhanced with contemporary repository patterns, multi-provider support, connection string management, context factory patterns, and enterprise-ready abstractions for SQL Server, PostgreSQL, and other database providers.</PackageReleaseNotes>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-		<NoWarn>$(NoWarn);1591</NoWarn>
-		<LangVersion>latest</LangVersion>
-		<AnalysisLevel>latest</AnalysisLevel>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Acontplus.Core" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>Acontplus.Persistence.Common</PackageId>
+    <Version>1.2.0</Version>
+    <Authors>Ivan Paz</Authors>
+    <Company>Acontplus</Company>
+    <Description>Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.</Description>
+    <PackageTags>dotnet9;persistence;database;abstractions;repository;efcore;multi-provider;entity-framework;connection-string;context-factory;enterprise;infrastructure;sql-server;postgresql</PackageTags>
+    <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Enhanced with contemporary repository patterns, multi-provider support, connection string management, context factory patterns, and enterprise-ready abstractions for SQL Server, PostgreSQL, and other database providers.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Resources\Images\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Acontplus.Core" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+  </ItemGroup>
 </Project>

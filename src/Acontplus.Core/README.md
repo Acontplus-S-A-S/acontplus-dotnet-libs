@@ -22,6 +22,11 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
   - `CreatePredicate<T>()`, `CreateContainsPredicate<T>()`, `CreateRangePredicate<T>()` for specific filter types
   - Support for string, enum, and boolean comparisons
   - *See [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) for implementation details and examples*
+- **📄 Request Models** - Clean API contracts with semantic naming
+  - `FilterRequest` - Non-paginated filtering, sorting, and searching (for reports, exports, autocomplete)
+  - `PaginationRequest` - Paginated queries extending FilterRequest (for lists, tables, infinite scroll)
+  - Semantic naming without "Dto" suffix for frontend-facing API contracts
+  - Internal DTOs (like `CommandOptionsDto`) retain "Dto" suffix for infrastructure concerns
 - **📄 Enhanced Pagination Extensions** - Fluent API for pagination management
   - `WithSearch()`, `WithSort()`, `WithFilters()` for building pagination requests
   - `Create()`, `CreateWithSearch()`, `CreateWithSort()`, `CreateWithFilters()` factory methods
@@ -59,7 +64,7 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 
 ### 📊 Advanced Data Patterns
 - **Async Streaming** - `IAsyncEnumerable<T>` for memory-efficient processing
-- **Projections** - Expression-based data transfer for performance  
+- **Projections** - Expression-based data transfer for performance
 - **Bulk Operations** - High-performance batch processing interfaces
 - **Smart Pagination** - Advanced pagination with search and filtering
 - **JSON Utilities** - System.Text.Json with source generation
@@ -74,11 +79,11 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 
 #### **🔄 Process & Status Management**
 - **`BusinessStatus`** - 13 lifecycle states (Draft → Active → Archived)
-- **`Priority`** - 5 priority levels (Low → Emergency) 
+- **`Priority`** - 5 priority levels (Low → Emergency)
 - **`DocumentType`** - 16 document types (Invoice, Contract, Report, etc.)
 - **`EventType`** - 19 event types (Authentication, CRUD operations, Workflow, etc.)
 
-#### **👤 Person & Demographics** 
+#### **👤 Person & Demographics**
 - **`Gender`** - 5 inclusive options (Male, Female, NonBinary, Other, NotSpecified)
 - **`MaritalStatus`** - 8 relationship states (Single, Married, Divorced, etc.)
 - **`Title`** - 12 honorifics (Mr, Mrs, Dr, Prof, Sir, Dame, etc.)
@@ -95,7 +100,7 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 - **`UserRole`** - 14 role levels (Guest → SuperAdmin → ServiceAccount)
 
 #### **🌍 Internationalization**
-- **`Language`** - 20 languages (Major world languages + Latin American Spanish)  
+- **`Language`** - 20 languages (Major world languages + Latin American Spanish)
 - **`TimeZone`** - 16 time zones (UTC, regional + Latin American zones)
 
 #### **📱 Communication & Content**
@@ -105,10 +110,10 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 
 ```csharp
 // ✅ Available everywhere via global using
-public class Customer : BaseEntity 
+public class Customer : BaseEntity
 {
     public Gender Gender { get; set; }                    // 🌟 Global enum
-    public Title Title { get; set; }                      // 🌟 Global enum  
+    public Title Title { get; set; }                      // 🌟 Global enum
     public MaritalStatus MaritalStatus { get; set; }      // 🌟 Global enum
     public Language PreferredLanguage { get; set; }       // 🌟 Global enum
     public CommunicationChannel PreferredChannel { get; set; } // 🌟 Global enum
@@ -118,7 +123,7 @@ public class Order : BaseEntity
 {
     public BusinessStatus Status { get; set; }            // 🌟 Global enum
     public Priority Priority { get; set; }                // 🌟 Global enum
-    public Currency Currency { get; set; }                // 🌟 Global enum  
+    public Currency Currency { get; set; }                // 🌟 Global enum
     public PaymentMethod PaymentMethod { get; set; }      // 🌟 Global enum
 }
 ```
@@ -149,13 +154,13 @@ SuccessWithWarnings<TValue>
 ```csharp
 // ✅ CURRENT: Single error using Result factory
 public static Result<User> GetUser(int id) =>
-    id <= 0 
+    id <= 0
         ? Result<User>.Failure(DomainError.Validation("INVALID_ID", "ID must be positive"))
         : Result<User>.Success(new User { Id = id });
 
 // ✅ CURRENT: Single error using Result factory (alternative)
 public static Result<User> GetUserAlt(int id) =>
-    id <= 0 
+    id <= 0
         ? Result<User>.Failure(DomainError.Validation("INVALID_ID", "ID must be positive"))
         : Result<User>.Success(new User { Id = id });
 ```
@@ -164,14 +169,14 @@ public static Result<User> GetUserAlt(int id) =>
 public static Result<User, DomainErrors> ValidateUser(CreateUserRequest request)
 {
     var errors = new List<DomainError>();
-    
+
     if (string.IsNullOrEmpty(request.Name))
         errors.Add(DomainError.Validation("NAME_REQUIRED", "Name required"));
-        
+
     if (string.IsNullOrEmpty(request.Email))
         errors.Add(DomainError.Validation("EMAIL_REQUIRED", "Email required"));
-        
-    return errors.Count > 0 
+
+    return errors.Count > 0
         ? Result<User, DomainErrors>.Failure(new DomainErrors(errors))
         : Result<User, DomainErrors>.Success(new User { Name = request.Name, Email = request.Email });
 }
@@ -210,7 +215,7 @@ public async Task<Result<OrderConfirmation>> ProcessOrderAsync(CreateOrderReques
 public IActionResult HandleOrderResult(Result<Order> result)
 {
     var (isSuccess, value, error) = result; // Deconstruct support
-    
+
     return result.Match(
         success: order => Ok(order),
         failure: error => BadRequest(error.ToApiResponse<Order>())
@@ -222,10 +227,10 @@ public string GetOrderStatus(Result<Order> result)
 {
     if (result.TryGetValue(out var order))
         return order.Status.ToString();
-        
+
     if (result.TryGetError(out var error))
         return $"Error: {error.Message}";
-        
+
     return "Unknown";
 }
 
@@ -237,7 +242,7 @@ public IActionResult HandleOrderResultWithMessage(Result<Order, DomainErrors> re
         var message = result.SuccessMessage ?? "Order processed successfully";
         return Ok(new { order = result.Value, message });
     }
-    
+
     return BadRequest(result.Error);
 }
 ```
@@ -302,16 +307,16 @@ public async Task<Result<SuccessWithWarnings<List<Product>>>> ImportProductsAsyn
         }
         catch (ValidationException ex)
         {
-            warnings.Add(DomainError.Validation("IMPORT_WARNING", 
+            warnings.Add(DomainError.Validation("IMPORT_WARNING",
                 $"Product {dto.Name} skipped: {ex.Message}"));
         }
     }
 
     var successWithWarnings = new SuccessWithWarnings<List<Product>>(
-        products, 
+        products,
         new DomainWarnings(warnings)
     );
-    
+
     return Result<SuccessWithWarnings<List<Product>>>.Success(successWithWarnings);
 }
 
@@ -348,10 +353,10 @@ public Result<User> CreateUser(string name, string email)
 {
     if (string.IsNullOrWhiteSpace(name))
         return DomainError.Validation("NAME_REQUIRED", "Name is required").ToResult<User>();
-        
+
     if (!IsValidEmail(email))
         return DomainError.Validation("EMAIL_INVALID", "Invalid email format").ToResult<User>();
-        
+
     return new User { Name = name, Email = email }.ToResult();
 }
 
@@ -359,12 +364,12 @@ public Result<User> CreateUser(string name, string email)
 public async Task<Result<Order, DomainErrors>> ProcessOrderAsync(OrderRequest request)
 {
     var validationErrors = new List<DomainError>();
-    
+
     // Validate customer
     var customer = await _customerService.GetByIdAsync(request.CustomerId);
     if (customer is null)
         validationErrors.Add(DomainError.NotFound("CUSTOMER_NOT_FOUND", "Customer not found"));
-    
+
     // Validate products
     foreach (var item in request.Items)
     {
@@ -374,10 +379,10 @@ public async Task<Result<Order, DomainErrors>> ProcessOrderAsync(OrderRequest re
         else if (product.Stock < item.Quantity)
             validationErrors.Add(DomainError.Conflict("INSUFFICIENT_STOCK", $"Not enough stock for {product.Name}"));
     }
-    
+
     if (validationErrors.Count > 0)
         return validationErrors.ToFailureResult<Order>();
-        
+
     // Process order
     var order = new Order
     {
@@ -385,7 +390,7 @@ public async Task<Result<Order, DomainErrors>> ProcessOrderAsync(OrderRequest re
         Items = request.Items,
         Status = BusinessStatus.Active
     };
-    
+
     return Result<Order, DomainErrors>.Success(await _orderRepository.CreateAsync(order));
 }
 
@@ -411,9 +416,176 @@ public async Task<Result<InvoiceDto>> GenerateInvoiceAsync(int orderId, Cancella
 
 *For comprehensive examples of dynamic filtering, predicate creation, and filter utilities, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
 
-#### **📄 Enhanced Pagination with Fluent API**
+#### **📄 Request Models for Clean APIs**
 
-*For detailed examples of fluent pagination building, navigation helpers, and advanced pagination features, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
+Following Clean Architecture principles, the library provides semantic request models without the "Dto" suffix for frontend-facing contracts:
+
+```csharp
+// ✅ FilterRequest - For non-paginated scenarios
+public record FilterRequest
+{
+    public string? SortBy { get; init; }
+    public SortDirection SortDirection { get; init; } = SortDirection.Asc;
+    public string? SearchTerm { get; init; }
+    public IReadOnlyDictionary<string, object>? Filters { get; init; }
+
+    public bool IsEmpty => string.IsNullOrWhiteSpace(SearchTerm) && (Filters is null || !Filters.Any());
+    public bool HasCriteria => !IsEmpty;
+
+    // Helper methods for SQL parameter building
+    public Dictionary<string, object>? BuildSqlParameters() => BuildFiltersWithPrefix("@");
+}
+
+// ✅ PaginationRequest - Extends FilterRequest with pagination
+public record PaginationRequest : FilterRequest
+{
+    public int PageIndex { get; init; } = 1;        // Auto-validated (min: 1)
+    public int PageSize { get; init; } = 10;        // Auto-validated (1-1000)
+
+    public int Skip => (PageIndex - 1) * PageSize;
+    public int Take => PageSize;
+}
+
+// 📊 Use Cases
+
+// Non-Paginated Scenarios (FilterRequest):
+// - Reports (export all matching records)
+// - Data exports (CSV, Excel, PDF)
+// - Autocomplete/dropdowns
+// - Simple searches returning all results
+// - Analytics queries
+[HttpGet("products/export")]
+public async Task<IActionResult> ExportProducts([FromQuery] FilterRequest filter)
+{
+    var products = await _productService.GetAllAsync(filter);
+    return File(products.ToCsv(), "text/csv", "products.csv");
+}
+
+[HttpGet("customers/autocomplete")]
+public async Task<IActionResult> AutocompleteCustomers([FromQuery] FilterRequest filter)
+{
+    var customers = await _customerService.SearchAsync(filter);
+    return Ok(customers.Select(c => new { c.Id, c.Name }));
+}
+
+// Paginated Scenarios (PaginationRequest):
+// - Product lists with pagination
+// - Search results tables
+// - Infinite scroll feeds
+// - Large datasets requiring pagination
+[HttpGet("products")]
+public async Task<IActionResult> GetProducts([FromQuery] PaginationRequest pagination)
+{
+    var result = await _productService.GetPagedAsync(pagination);
+    return Ok(result); // Returns PagedResult<Product>
+}
+
+[HttpPost("orders/search")]
+public async Task<IActionResult> SearchOrders([FromBody] PaginationRequest request)
+{
+    var result = await _orderService.SearchPagedAsync(request);
+    return Ok(result);
+}
+
+// 🎯 Naming Convention
+
+// ✅ API Contracts (Frontend-facing) - No "Dto" suffix
+FilterRequest           // Request from frontend
+PaginationRequest       // Request from frontend
+CreateOrderRequest      // Request from frontend
+OrderResponse          // Response to frontend
+PagedResult<T>         // Response to frontend
+
+// ✅ Internal/Infrastructure - Keep "Dto" suffix
+CommandOptionsDto      // Internal ADO.NET configuration
+SqlParameterDto       // Internal SQL mapping
+CacheEntryDto         // Internal caching structure
+
+// This separation follows Clean Architecture:
+// - Domain/API Layer: Business language, no technical suffixes
+// - Infrastructure Layer: Technical implementation details, "Dto" acceptable
+```
+
+#### **🔧 Filter Request Helpers**
+
+```csharp
+// Building SQL parameters from filters
+var filter = new FilterRequest
+{
+    SearchTerm = "laptop",
+    Filters = new Dictionary<string, object>
+    {
+        ["category"] = "electronics",
+        ["inStock"] = true,
+        ["minPrice"] = 100
+    }
+};
+
+// Get parameters with "@" prefix for SQL
+var sqlParams = filter.BuildSqlParameters();
+// Returns: { "@category": "electronics", "@inStock": true, "@minPrice": 100 }
+
+// Check if filter has criteria
+if (filter.HasCriteria)
+{
+    // Apply filters to query
+    query = query.Where(p => /* filter logic */);
+}
+```
+
+#### **📄 Pagination Request with Fluent Extensions**
+
+```csharp
+// Create pagination with fluent API
+var pagination = PaginationExtensions.Create(pageIndex: 1, pageSize: 20)
+    .WithSearch("laptop")
+    .WithSort("price", SortDirection.Asc)
+    .WithFilter("category", "electronics")
+    .WithFilter("inStock", true);
+
+// Navigation helpers
+var nextPage = pagination.NextPage();        // Page 2
+var previousPage = pagination.PreviousPage(); // Page 1 (min)
+var specificPage = pagination.ToPage(5);      // Jump to page 5
+
+// Validation
+var validated = pagination.Validate(); // Ensures valid page index and size
+
+// Factory methods for common scenarios
+var searchPagination = PaginationExtensions.CreateWithSearch("laptop", pageIndex: 1, pageSize: 10);
+var sortedPagination = PaginationExtensions.CreateWithSort("price", SortDirection.Desc);
+var filteredPagination = PaginationExtensions.CreateWithFilters(
+    new Dictionary<string, object> { ["category"] = "electronics" }
+);
+```
+
+#### **🌐 Minimal API Support**
+
+For Minimal APIs, use the corresponding Query models from `Acontplus.Utilities`:
+
+```csharp
+using Acontplus.Utilities.Dtos;
+
+// Automatic binding for Minimal APIs
+app.MapGet("/api/products/export",
+    async (FilterQuery filter, IProductService service) =>
+    {
+        var products = await service.GetAllAsync(filter);
+        return Results.Ok(products);
+    });
+
+app.MapGet("/api/products",
+    async (PaginationQuery pagination, IProductService service) =>
+    {
+        var result = await service.GetPagedAsync(pagination);
+        return Results.Ok(result);
+    });
+
+// Query string example:
+// GET /api/products?pageIndex=2&pageSize=20&sortBy=price&sortDirection=desc&searchTerm=laptop&filters[category]=electronics
+```
+
+*For detailed repository implementation examples and advanced queries, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
 ```
 
 #### **🎯 Current Best Practices**
@@ -444,7 +616,7 @@ var errors = new List<DomainError>();
 if (IsInvalid(name)) errors.Add(DomainError.Validation("INVALID_NAME", "Name invalid"));
 if (IsInvalid(email)) errors.Add(DomainError.Validation("INVALID_EMAIL", "Email invalid"));
 
-return errors.Count > 0 
+return errors.Count > 0
     ? errors.ToFailureResult<User>()
     : Result<User>.Success(CreateUser(name, email));
 ```
@@ -526,7 +698,7 @@ public static class ResultExtensions
     // Success with warnings helpers
     public static Result<SuccessWithWarnings<T>> ToSuccessWithWarningsResult<T>(this T value, DomainWarnings warnings);
     public static Result<SuccessWithWarnings<T>> ToSuccessWithWarningsResult<T>(this T value, params DomainError[] warnings);
-    
+
     // Fluent factory methods for common error types
     public static Result<T> ValidationError<T>(string code, string message, string? target = null);
     public static Result<T> NotFoundError<T>(string code, string message, string? target = null);

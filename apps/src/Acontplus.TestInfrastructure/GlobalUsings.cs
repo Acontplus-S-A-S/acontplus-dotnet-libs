@@ -1,8 +1,8 @@
-﻿// Global using directives
+// Global using directives
 
 global using Acontplus.Core.Abstractions.Persistence;
-global using Acontplus.Core.DTOs.Requests;
-global using Acontplus.Core.DTOs.Responses;
+global using Acontplus.Core.Dtos.Requests;
+global using Acontplus.Core.Dtos.Responses;
 global using Acontplus.Notifications.Entities;
 global using Acontplus.Persistence.SqlServer.Configurations;
 global using Acontplus.Persistence.SqlServer.Context;

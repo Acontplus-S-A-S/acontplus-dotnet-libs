@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.Services;
+namespace Acontplus.TestApplication.Services;
 
 
 public class ReportService(IAdoRepository adoRepository) : IReportService
@@ -18,3 +18,4 @@ public class ReportService(IAdoRepository adoRepository) : IReportService
         return await adoRepository.GetDataSetAsync(spname, parameters, options);
     }
 }
+

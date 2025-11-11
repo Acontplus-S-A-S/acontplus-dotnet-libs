@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers.Infrastructure
+namespace Acontplus.TestApi.Controllers.Infrastructure
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -7,3 +7,4 @@
 
     }
 }
+

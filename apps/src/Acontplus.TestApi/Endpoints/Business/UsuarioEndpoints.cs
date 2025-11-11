@@ -1,5 +1,5 @@
-using Acontplus.Core.DTOs.Requests;
-using Acontplus.Core.DTOs.Responses;
+using Acontplus.Core.Dtos.Requests;
+using Acontplus.Core.Dtos.Responses;
 using Acontplus.Core.Enums;
 using Acontplus.Core.Extensions;
 using Acontplus.Utilities.DTOs;
@@ -157,8 +157,8 @@ public static class UsuarioEndpoints
         PaginationQuery pagination,
         IUsuarioService usuarioService)
     {
-        // Map PaginationQuery to PaginationDto
-        var paginationDto = new PaginationDto
+        // Map PaginationQuery to PaginationRequest
+        var PaginationRequest = new PaginationRequest
         {
             PageIndex = pagination.PageIndex,
             PageSize = pagination.PageSize,
@@ -168,7 +168,7 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
-        return await usuarioService.GetPaginatedUsersAsync(paginationDto).ToGetMinimalApiResultAsync();
+        return await usuarioService.GetPaginatedUsersAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }
 
     private static async Task<IResult> ImportUsuarios(
@@ -209,8 +209,8 @@ public static class UsuarioEndpoints
         PaginationQuery pagination,
         IUsuarioService usuarioService)
     {
-        // Map PaginationQuery to PaginationDto
-        var paginationDto = new PaginationDto
+        // Map PaginationQuery to PaginationRequest
+        var PaginationRequest = new PaginationRequest
         {
             PageIndex = pagination.PageIndex,
             PageSize = pagination.PageSize,
@@ -220,15 +220,15 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
-        return await usuarioService.GetPagedUsersAdoAsync(paginationDto).ToGetMinimalApiResultAsync();
+        return await usuarioService.GetPagedUsersAdoAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }
 
     private static async Task<IResult> GetPagedUsersComplex(
         PaginationQuery pagination,
         IUsuarioService usuarioService)
     {
-        // Map PaginationQuery to PaginationDto
-        var paginationDto = new PaginationDto
+        // Map PaginationQuery to PaginationRequest
+        var PaginationRequest = new PaginationRequest
         {
             PageIndex = pagination.PageIndex,
             PageSize = pagination.PageSize,
@@ -238,7 +238,7 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
-        return await usuarioService.GetPagedUsersComplexAsync(paginationDto).ToGetMinimalApiResultAsync();
+        return await usuarioService.GetPagedUsersComplexAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }
 
     private static async Task<IResult> GetPagedUsersFromStoredProc(
@@ -246,8 +246,8 @@ public static class UsuarioEndpoints
         IUsuarioService usuarioService,
         HttpContext httpContext)
     {
-        // Map PaginationQuery to PaginationDto
-        var paginationDto = new PaginationDto
+        // Map PaginationQuery to PaginationRequest
+        var PaginationRequest = new PaginationRequest
         {
             PageIndex = pagination.PageIndex,
             PageSize = pagination.PageSize,
@@ -263,10 +263,10 @@ public static class UsuarioEndpoints
 
         if (!string.IsNullOrEmpty(userId))
         {
-            paginationDto = paginationDto.WithFilter("UserId", userId);
+            PaginationRequest = PaginationRequest.WithFilter("UserId", userId);
         }
 
-        return await usuarioService.GetPagedUsersFromStoredProcAsync(paginationDto).ToGetMinimalApiResultAsync();
+        return await usuarioService.GetPagedUsersFromStoredProcAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }
 
     private static async Task<IResult> BulkInsertUsers(
@@ -285,3 +285,4 @@ public static class UsuarioEndpoints
 
     #endregion
 }
+

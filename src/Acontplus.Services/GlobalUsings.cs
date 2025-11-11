@@ -2,7 +2,7 @@ global using Acontplus.Core.Abstractions.Context;
 global using Acontplus.Core.Constants;
 global using Acontplus.Core.Domain.Enums;
 global using Acontplus.Core.Domain.Exceptions;
-global using Acontplus.Core.DTOs.Responses;
+global using Acontplus.Core.Dtos.Responses;
 global using Acontplus.Services.Configuration;
 global using Acontplus.Services.Extensions.Context;
 global using Acontplus.Services.Extensions.Middleware;

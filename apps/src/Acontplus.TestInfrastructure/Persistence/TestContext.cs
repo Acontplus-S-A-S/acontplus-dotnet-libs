@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace Acontplus.TestInfrastructure.Persistence;
 
@@ -47,3 +47,4 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
         //SimpleEntityRegistration.RegisterEntitiesWithCustomConfigurations(modelBuilder, typeof(TestContext), customConfigs, typeof(Producto));
     }
 }
+

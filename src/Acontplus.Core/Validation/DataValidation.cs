@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Validation;
+namespace Acontplus.Core.Validation;
 
 public static class DataValidation
 {

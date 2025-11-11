@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestInfrastructure.Persistence.Configurations;
+namespace Acontplus.TestInfrastructure.Persistence.Configurations;
 
 public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUsage>
 {
@@ -36,3 +36,4 @@ public class WhatsAppUsageConfiguration : BaseEntityTypeConfiguration<WhatsAppUs
         builder.ToTable("WhatsAppUsage", "Config");
     }
 }
+

@@ -8,3 +8,4 @@ public static class EndpointGroups
         app.MapAdvancedEndpoints();
     }
 }
+

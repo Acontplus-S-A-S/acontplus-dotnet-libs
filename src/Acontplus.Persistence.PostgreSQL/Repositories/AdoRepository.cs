@@ -458,7 +458,7 @@ public class AdoRepository : IAdoRepository
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -473,7 +473,7 @@ public class AdoRepository : IAdoRepository
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
         string countSql,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -551,7 +551,7 @@ public class AdoRepository : IAdoRepository
     /// </summary>
     public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
-        PaginationDto pagination,
+        PaginationRequest pagination,
         CommandOptionsDto? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -945,7 +945,7 @@ public class AdoRepository : IAdoRepository
         return $"SELECT COUNT(*) FROM ({cleanSql}) AS CountQuery";
     }
 
-    private string BuildPagedSql(string sql, PaginationDto pagination)
+    private string BuildPagedSql(string sql, PaginationRequest pagination)
     {
         var builder = new System.Text.StringBuilder(sql);
 
@@ -1071,7 +1071,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Builds query parameters from pagination filters and search term.
     /// </summary>
-    private Dictionary<string, object> BuildPaginationParameters(PaginationDto pagination)
+    private Dictionary<string, object> BuildPaginationParameters(PaginationRequest pagination)
     {
         var result = new Dictionary<string, object>();
 
@@ -1095,7 +1095,7 @@ public class AdoRepository : IAdoRepository
         return result;
     }
 
-    private void ValidatePagination(PaginationDto pagination)
+    private void ValidatePagination(PaginationRequest pagination)
     {
         ArgumentNullException.ThrowIfNull(pagination);
         if (pagination.PageIndex < 1)
@@ -1141,3 +1141,4 @@ public class AdoRepository : IAdoRepository
 
     #endregion
 }
+

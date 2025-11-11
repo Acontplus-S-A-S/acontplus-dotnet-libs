@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Domain.Common.Events;
+namespace Acontplus.Core.Domain.Common.Events;
 
 public interface IDomainEventDispatcher
 {

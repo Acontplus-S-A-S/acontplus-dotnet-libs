@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.DTOs
+namespace Acontplus.TestApplication.DTOs
 {
     public record CreateDiaDto
     {
@@ -6,3 +6,4 @@
         public string? Description { get; set; }
     }
 }
+

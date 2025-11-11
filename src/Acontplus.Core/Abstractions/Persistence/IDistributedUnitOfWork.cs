@@ -1,4 +1,4 @@
-﻿namespace Acontplus.Core.Abstractions.Persistence;
+namespace Acontplus.Core.Abstractions.Persistence;
 
 public interface IDistributedUnitOfWork : IUnitOfWork
 {

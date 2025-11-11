@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApplication.Services;
+namespace Acontplus.TestApplication.Services;
 
 public sealed class NotificacionService(IAdoRepository repository) : IEmailService
 {
@@ -25,3 +25,4 @@ public sealed class NotificacionService(IAdoRepository repository) : IEmailServi
         return await repository.ExecuteNonQueryAsync("App.Notificacion_Serv_Update", parameters);
     }
 }
+

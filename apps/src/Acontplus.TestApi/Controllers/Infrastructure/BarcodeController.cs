@@ -1,4 +1,4 @@
-﻿namespace Acontplus.TestApi.Controllers.Infrastructure;
+namespace Acontplus.TestApi.Controllers.Infrastructure;
 
 using Acontplus.TestApi.Controllers.Core;
 
@@ -20,3 +20,4 @@ public class BarcodeController(IUsuarioService usuarioService) : BaseApiControll
         return File(barcode, "image/png", "ci.png");
     }
 }
+

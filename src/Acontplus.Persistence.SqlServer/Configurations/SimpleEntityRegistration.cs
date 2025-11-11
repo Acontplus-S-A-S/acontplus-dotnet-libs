@@ -6,7 +6,7 @@ namespace Acontplus.Persistence.SqlServer.Configurations;
 public static class SimpleEntityRegistration
 {
     /// <summary>
-    /// Gets the primary key type for an entity that inherits from Entity<TKey>
+    /// Gets the primary key type for an entity that inherits from Entity&lt;TKey&gt;
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
