@@ -1,3 +1,5 @@
+using Acontplus.TestApplication.Dtos;
+
 namespace Acontplus.TestApi.Endpoints.Business.Customer;
 
 public static class IdentificationEndpoints

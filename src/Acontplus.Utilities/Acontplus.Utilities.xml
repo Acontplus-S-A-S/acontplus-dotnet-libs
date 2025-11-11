@@ -70,31 +70,31 @@
             Generic method to serialize any object to JSON
             </summary>
         </member>
-        <member name="T:Acontplus.Utilities.DTOs.FilterQuery">
+        <member name="T:Acontplus.Utilities.Dtos.FilterQuery">
             <summary>
             Represents a filter query with sorting and search capabilities for non-paginated results.
             Implements the minimal API binding pattern for automatic parameter binding.
             Ideal for reports, exports, and scenarios where all matching results are needed.
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.DTOs.FilterQuery.#ctor(System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+        <member name="M:Acontplus.Utilities.Dtos.FilterQuery.#ctor(System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
             <summary>
             Represents a filter query with sorting and search capabilities for non-paginated results.
             Implements the minimal API binding pattern for automatic parameter binding.
             Ideal for reports, exports, and scenarios where all matching results are needed.
             </summary>
         </member>
-        <member name="P:Acontplus.Utilities.DTOs.FilterQuery.IsEmpty">
+        <member name="P:Acontplus.Utilities.Dtos.FilterQuery.IsEmpty">
             <summary>
             Gets whether the query has no search criteria.
             </summary>
         </member>
-        <member name="P:Acontplus.Utilities.DTOs.FilterQuery.HasCriteria">
+        <member name="P:Acontplus.Utilities.Dtos.FilterQuery.HasCriteria">
             <summary>
             Gets whether the query has any criteria (search term or filters).
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.DTOs.FilterQuery.BindAsync(Microsoft.AspNetCore.Http.HttpContext,System.Reflection.ParameterInfo)">
+        <member name="M:Acontplus.Utilities.Dtos.FilterQuery.BindAsync(Microsoft.AspNetCore.Http.HttpContext,System.Reflection.ParameterInfo)">
             <summary>
             Binds query parameters from the HTTP context to create a FilterQuery instance.
             This method enables automatic parameter binding in minimal APIs.
@@ -103,34 +103,34 @@
             <param name="parameter">The parameter information (required by the binding contract)</param>
             <returns>A ValueTask containing the bound FilterQuery or null</returns>
         </member>
-        <member name="T:Acontplus.Utilities.DTOs.PaginationQuery">
+        <member name="T:Acontplus.Utilities.Dtos.PaginationQuery">
             <summary>
             Represents a pagination query with sorting and search capabilities.
             Implements the minimal API binding pattern for automatic parameter binding.
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.#ctor(System.Int32,System.Int32,System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+        <member name="M:Acontplus.Utilities.Dtos.PaginationQuery.#ctor(System.Int32,System.Int32,System.String,System.Nullable{Acontplus.Core.Enums.SortDirection},System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
             <summary>
             Represents a pagination query with sorting and search capabilities.
             Implements the minimal API binding pattern for automatic parameter binding.
             </summary>
         </member>
-        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.Skip">
+        <member name="P:Acontplus.Utilities.Dtos.PaginationQuery.Skip">
             <summary>
             Gets the number of items to skip for database queries.
             </summary>
         </member>
-        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.Take">
+        <member name="P:Acontplus.Utilities.Dtos.PaginationQuery.Take">
             <summary>
             Gets the number of items to take for database queries.
             </summary>
         </member>
-        <member name="P:Acontplus.Utilities.DTOs.PaginationQuery.IsEmpty">
+        <member name="P:Acontplus.Utilities.Dtos.PaginationQuery.IsEmpty">
             <summary>
             Gets whether the query has no search criteria.
             </summary>
         </member>
-        <member name="M:Acontplus.Utilities.DTOs.PaginationQuery.BindAsync(Microsoft.AspNetCore.Http.HttpContext,System.Reflection.ParameterInfo)">
+        <member name="M:Acontplus.Utilities.Dtos.PaginationQuery.BindAsync(Microsoft.AspNetCore.Http.HttpContext,System.Reflection.ParameterInfo)">
             <summary>
             Binds query parameters from the HTTP context to create a PaginationQuery instance.
             This method enables automatic parameter binding in minimal APIs.

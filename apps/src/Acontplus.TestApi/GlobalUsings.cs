@@ -18,7 +18,7 @@ global using Acontplus.Reports.Interfaces;
 global using Acontplus.TestApi.Controllers.Core;
 global using Acontplus.TestApi.Endpoints.Api;
 global using Acontplus.TestApi.Endpoints.Business.Customer;
-global using Acontplus.TestApplication.DTOs;
+global using Acontplus.TestApplication.Dtos;
 global using Acontplus.TestApplication.Interfaces;
 global using Acontplus.TestDomain.Entities;
 global using Acontplus.Utilities.Extensions;

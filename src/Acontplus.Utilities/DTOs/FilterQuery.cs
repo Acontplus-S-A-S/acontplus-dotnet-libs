@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Acontplus.Utilities.DTOs;
+namespace Acontplus.Utilities.Dtos;
 
 /// <summary>
 /// Represents a filter query with sorting and search capabilities for non-paginated results.
