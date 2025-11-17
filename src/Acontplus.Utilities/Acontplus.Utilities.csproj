@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Utilities</PackageId>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Comprehensive utilities library with cross-cutting concerns and general-purpose tools. Includes encryption, IO operations, text processing, time utilities, API helpers, JSON utilities, and security features for enterprise applications.</Description>

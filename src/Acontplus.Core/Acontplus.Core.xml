@@ -2038,6 +2038,45 @@
             <param name="maxValue">The maximum value</param>
             <returns>A LINQ expression predicate</returns>
         </member>
+        <member name="T:Acontplus.Core.Extensions.FilterRequestExtensions">
+            <summary>
+            Extension methods for FilterRequest to provide fluent API and helper functionality.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.WithSearch(Acontplus.Core.Dtos.Requests.FilterRequest,System.String)">
+            <summary>
+            Adds a search term to the filter request.
+            </summary>
+            <param name="filter">The filter object</param>
+            <param name="searchTerm">The search term to add</param>
+            <returns>A new FilterRequest with the search term</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.WithSort(Acontplus.Core.Dtos.Requests.FilterRequest,System.String,Acontplus.Core.Enums.SortDirection)">
+            <summary>
+            Adds sorting criteria to the filter request.
+            </summary>
+            <param name="filter">The filter object</param>
+            <param name="sortBy">The field to sort by</param>
+            <param name="direction">The sort direction</param>
+            <returns>A new FilterRequest with sorting criteria</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.WithFilters(Acontplus.Core.Dtos.Requests.FilterRequest,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            Adds or merges filters with the existing filter request.
+            </summary>
+            <param name="filter">The filter object</param>
+            <param name="filters">The filters to add or merge</param>
+            <returns>A new FilterRequest with merged filters</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.WithFilter(Acontplus.Core.Dtos.Requests.FilterRequest,System.String,System.Object)">
+            <summary>
+            Adds a single filter to the filter request.
+            </summary>
+            <param name="filter">The filter object</param>
+            <param name="key">The filter key</param>
+            <param name="value">The filter value</param>
+            <returns>A new FilterRequest with the additional filter</returns>
+        </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeOptimized``1(System.String)">
             <summary>
             Deserializes JSON string to the specified type using optimized options.
