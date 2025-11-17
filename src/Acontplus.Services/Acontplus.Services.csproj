@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Services</PackageId>
@@ -8,7 +8,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Comprehensive library for API services, authentication, claims, middleware, and configuration. Includes JWT authentication, user context management, exception handling, security headers, and enterprise-ready service patterns for ASP.NET Core applications.</Description>
-    <PackageTags>dotnet9;services;authentication;claims;api;versioning;middlewares;jwt;configuration;security-headers;user-context;exception-handling;aspnetcore;enterprise</PackageTags>
+    <PackageTags>dotnet;dotnet10;services;authentication;claims;api;versioning;middlewares;jwt;configuration;security-headers;user-context;exception-handling;aspnetcore;enterprise</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -35,7 +35,7 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acontplus.Core" />
+    <ProjectReference Include="..\Acontplus.Core\Acontplus.Core.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />

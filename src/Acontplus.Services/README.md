@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A comprehensive .NET 9+ service library providing business-grade patterns, security, caching, resilience, and monitoring for ASP.NET Core applications. Built with .NET features and best practices.
+A comprehensive .NET service library providing business-grade patterns, security, caching, resilience, and monitoring for ASP.NET Core applications. Built with modern .NET features and best practices.
 
 ## 🚀 Features
 
@@ -156,7 +156,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireClaim("role", "admin"));
-    
+
     options.AddPolicy("TenantAccess", policy =>
         policy.RequireClaim("tenant_id"));
 });
@@ -221,10 +221,10 @@ public class HelloController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var message = await _cache.GetOrCreateAsync("hello", 
-            () => Task.FromResult("Hello from Acontplus.Services!"), 
+        var message = await _cache.GetOrCreateAsync("hello",
+            () => Task.FromResult("Hello from Acontplus.Services!"),
             TimeSpan.FromMinutes(5));
-        
+
         return Ok(message);
     }
 }
@@ -306,9 +306,9 @@ public class BasicController : ControllerBase
             TimeSpan.FromMinutes(5)
         );
 
-        return Ok(new { 
-            Message = message, 
-            CorrelationId = _context.GetCorrelationId() 
+        return Ok(new {
+            Message = message,
+            CorrelationId = _context.GetCorrelationId()
         });
     }
 }
@@ -400,7 +400,7 @@ public class IntermediateController : ControllerBase
     private readonly ICircuitBreakerService _circuitBreaker;
 
     public IntermediateController(
-        ICacheService cache, 
+        ICacheService cache,
         IDeviceDetectionService deviceDetection,
         ICircuitBreakerService circuitBreaker)
     {
@@ -588,7 +588,7 @@ public class EnterpriseController : ControllerBase
         var tenantId = _requestContext.GetTenantId();
         var clientId = _requestContext.GetClientId();
         var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
-        
+
         var cacheKey = $"dashboard:{tenantId}:{clientId}:{deviceType}";
 
         var dashboard = await _cache.GetOrCreateAsync(cacheKey, async () =>
@@ -620,7 +620,7 @@ public class EnterpriseController : ControllerBase
     public IActionResult LogAuditEvent([FromBody] AuditEvent auditEvent)
     {
         var context = _requestContext.GetRequestContext();
-        
+
         var auditLog = new
         {
             Event = auditEvent,
@@ -647,7 +647,7 @@ public class EnterpriseController : ControllerBase
     {
         var headers = _securityHeaders.GetRecommendedHeaders(false);
         var cspNonce = _securityHeaders.GenerateCspNonce();
-        
+
         return Ok(new
         {
             SecurityHeaders = headers,
@@ -1009,7 +1009,7 @@ public class HealthCheckResponse
 
 ```csharp
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net100)]
 public class CacheServiceBenchmarks
 {
     private ICacheService _memoryCache = null!;
@@ -1206,23 +1206,23 @@ public class AdvancedController : ControllerBase
     {
         // Get full request context
         var context = _requestContext.GetRequestContext();
-        
+
         // Get individual context values
         var correlationId = _requestContext.GetCorrelationId();
         var tenantId = _requestContext.GetTenantId();
         var clientId = _requestContext.GetClientId();
         var userId = _requestContext.GetUserId();
-        
+
         // Get HTTP context extensions
         var userAgent = HttpContext.GetUserAgent();
         var ipAddress = HttpContext.GetClientIpAddress();
         var requestPath = HttpContext.GetRequestPath();
-        
+
         // Get claims principal extensions
         var userEmail = User.GetEmail();
         var userRoles = User.GetRoles();
         var userPermissions = User.GetPermissions();
-        
+
         return Ok(new
         {
             Context = new
@@ -1265,12 +1265,12 @@ public class UserController : ControllerBase
         var roles = User.GetRoles();
         var permissions = User.GetPermissions();
         var tenantId = User.GetTenantId();
-        
+
         // Check specific claims
         var isAdmin = User.HasRole("admin");
         var canEdit = User.HasPermission("users.edit");
         var isInTenant = User.IsInTenant("tenant-123");
-        
+
         return Ok(new
         {
             UserId = userId,
@@ -1300,16 +1300,16 @@ public class RequestInfoController : ControllerBase
         var requestPath = HttpContext.GetRequestPath();
         var method = HttpContext.GetRequestMethod();
         var headers = HttpContext.GetRequestHeaders();
-        
+
         // Get response information
         var statusCode = HttpContext.GetResponseStatusCode();
         var responseHeaders = HttpContext.GetResponseHeaders();
-        
+
         // Get connection information
         var isHttps = HttpContext.IsHttps();
         var host = HttpContext.GetHost();
         var port = HttpContext.GetPort();
-        
+
         return Ok(new
         {
             Request = new
@@ -1391,19 +1391,19 @@ public class AdvancedSecurityController : ControllerBase
     {
         // Get recommended security headers
         var headers = _securityHeaders.GetRecommendedHeaders(isDevelopment: false);
-        
+
         // Generate CSP nonce for inline scripts
         var cspNonce = _securityHeaders.GenerateCspNonce();
-        
+
         // Get specific security policies
         var cspPolicy = _securityHeaders.GetContentSecurityPolicy();
         var hstsPolicy = _securityHeaders.GetHstsPolicy();
         var referrerPolicy = _securityHeaders.GetReferrerPolicy();
-        
+
         // Check security features
         var hasSecurityHeaders = _securityHeaders.HasSecurityHeaders(HttpContext);
         var hasCspHeader = _securityHeaders.HasCspHeader(HttpContext);
-        
+
         return Ok(new
         {
             Headers = headers,
@@ -1427,7 +1427,7 @@ public class AdvancedSecurityController : ControllerBase
     {
         // Generate a new CSP nonce for this request
         var nonce = _securityHeaders.GenerateCspNonce();
-        
+
         return Ok(new { Nonce = nonce });
     }
 
@@ -1437,7 +1437,7 @@ public class AdvancedSecurityController : ControllerBase
         // Validate CSP policy
         var isValid = _securityHeaders.ValidateCspPolicy(request.Policy);
         var violations = _securityHeaders.GetCspViolations(request.Policy);
-        
+
         return Ok(new
         {
             IsValid = isValid,
@@ -1463,11 +1463,11 @@ public class SecurityPolicyController : ControllerBase
         var strictPolicy = SecurityHeaderPolicyExtensions.GetStrictSecurityPolicy();
         var moderatePolicy = SecurityHeaderPolicyExtensions.GetModerateSecurityPolicy();
         var permissivePolicy = SecurityHeaderPolicyExtensions.GetPermissiveSecurityPolicy();
-        
+
         // Get custom policy for specific use case
         var apiPolicy = SecurityHeaderPolicyExtensions.GetApiSecurityPolicy();
         var webPolicy = SecurityHeaderPolicyExtensions.GetWebSecurityPolicy();
-        
+
         return Ok(new
         {
             Strict = strictPolicy,
@@ -1652,11 +1652,11 @@ public class SecureController : ControllerBase
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        
-        return Ok(new { 
-            Message = "Secure data accessed", 
-            UserId = userId, 
-            Email = email 
+
+        return Ok(new {
+            Message = "Secure data accessed",
+            UserId = userId,
+            Email = email
         });
     }
 }
@@ -1830,14 +1830,14 @@ public class DeviceController : ControllerBase
     {
         var deviceType = _deviceDetection.DetectDeviceType(HttpContext);
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         var content = deviceType switch
         {
             DeviceType.Mobile => GetMobileContent(userId),
             DeviceType.Tablet => GetTabletContent(userId),
             _ => GetDesktopContent(userId)
         };
-        
+
         return Ok(content);
     }
 }
@@ -1859,13 +1859,13 @@ public class AuthController : ControllerBase
         {
             // Validate refresh token
             var principal = ValidateRefreshToken(request.RefreshToken);
-            
+
             // Generate new access token
             var newToken = GenerateAccessToken(principal);
-            
-            return Ok(new { 
+
+            return Ok(new {
                 AccessToken = newToken,
-                ExpiresIn = 3600 
+                ExpiresIn = 3600
             });
         }
         catch (SecurityTokenException)
@@ -1937,7 +1937,7 @@ public class JwtAuthenticationIntegrationTests : IClassFixture<WebApplicationFac
     {
         // Arrange
         var token = GenerateValidJwtToken();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
         // Act
@@ -1981,30 +1981,30 @@ public class JwtAuthenticationOptions
             {
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
-                
+
                 var result = JsonSerializer.Serialize(new
                 {
                     Error = "Authentication failed",
                     Message = "Invalid or expired token",
                     Timestamp = DateTime.UtcNow
                 });
-                
+
                 return context.Response.WriteAsync(result);
             },
-            
+
             OnChallenge = context =>
             {
                 context.HandleResponse();
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
-                
+
                 var result = JsonSerializer.Serialize(new
                 {
                     Error = "Authentication required",
                     Message = "Valid JWT token is required",
                     Timestamp = DateTime.UtcNow
                 });
-                
+
                 return context.Response.WriteAsync(result);
             }
         };
@@ -2020,17 +2020,17 @@ public class JwtAuthenticationOptions
 public static class CustomJwtExtensions
 {
     public static IServiceCollection AddCustomJwtAuthentication(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfiguration config)
     {
         services.AddJwtAuthentication(config);
-        
+
         // Add custom validation
         services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
         {
             options.TokenValidationParameters.ValidateIssuerSigningKey = true;
             options.TokenValidationParameters.ValidateLifetime = true;
-            
+
             // Custom validation logic
             options.TokenValidationParameters.ValidateIssuer = (issuer, token, parameters) =>
             {
@@ -2038,7 +2038,7 @@ public static class CustomJwtExtensions
                 return issuer == "https://custom.auth.com";
             };
         });
-        
+
         return services;
     }
 }
@@ -2050,12 +2050,12 @@ public static class CustomJwtExtensions
 public static class MultiSchemeExtensions
 {
     public static IServiceCollection AddMultiSchemeAuthentication(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfiguration config)
     {
         // Add JWT authentication
         services.AddJwtAuthentication(config);
-        
+
         // Add API key authentication
         services.AddAuthentication(options =>
         {
@@ -2067,17 +2067,17 @@ public static class MultiSchemeExtensions
             options.ForwardDefaultSelector = context =>
             {
                 var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
-                
+
                 if (authHeader?.StartsWith("Bearer ") == true)
                     return JwtBearerDefaults.AuthenticationScheme;
-                
+
                 if (authHeader?.StartsWith("ApiKey ") == true)
                     return "ApiKey";
-                
+
                 return JwtBearerDefaults.AuthenticationScheme;
             };
         });
-        
+
         return services;
     }
 }
@@ -2091,7 +2091,7 @@ public static class MultiSchemeExtensions
 public class JwtAuthenticationHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
-        HealthCheckContext context, 
+        HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
         try
@@ -2101,15 +2101,15 @@ public class JwtAuthenticationHealthCheck : IHealthCheck
             var issuer = config?["JwtSettings:Issuer"];
             var audience = config?["JwtSettings:Audience"];
             var securityKey = config?["JwtSettings:SecurityKey"];
-            
-            if (string.IsNullOrEmpty(issuer) || 
-                string.IsNullOrEmpty(audience) || 
+
+            if (string.IsNullOrEmpty(issuer) ||
+                string.IsNullOrEmpty(audience) ||
                 string.IsNullOrEmpty(securityKey))
             {
                 return Task.FromResult(HealthCheckResult.Unhealthy(
                     "JWT configuration is incomplete"));
             }
-            
+
             return Task.FromResult(HealthCheckResult.Healthy(
                 "JWT authentication is properly configured"));
         }
@@ -2191,14 +2191,14 @@ public static class CustomInfrastructureExtensions
     {
         // Add infrastructure services
         services.AddInfrastructureServices(configuration);
-        
+
         // Add custom infrastructure components
         services.AddScoped<ICustomInfrastructureService, CustomInfrastructureService>();
         services.AddSingleton<ICustomConfigurationService, CustomConfigurationService>();
-        
+
         // Configure infrastructure options
         services.Configure<InfrastructureOptions>(configuration.GetSection("Infrastructure"));
-        
+
         return services;
     }
 }
@@ -2245,13 +2245,13 @@ public class CustomInfrastructureService : ICustomInfrastructureService
         {
             var client = _httpClientFactory.CreateClient("health-check");
             var response = await client.GetAsync($"/health/{serviceName}");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var healthData = await response.Content.ReadFromJsonAsync<ServiceHealth>();
                 return healthData ?? new ServiceHealth { Status = "Unknown" };
             }
-            
+
             return new ServiceHealth { Status = "Unhealthy" };
         }
         catch (Exception ex)
@@ -2267,13 +2267,13 @@ public class CustomInfrastructureService : ICustomInfrastructureService
         {
             var client = _httpClientFactory.CreateClient("metrics");
             var response = await client.GetAsync($"/metrics/{serviceName}");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var metrics = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
                 return metrics ?? new Dictionary<string, object>();
             }
-            
+
             return new Dictionary<string, object>();
         }
         catch (Exception ex)
@@ -2329,7 +2329,7 @@ public class InfrastructureHealthCheck : IHealthCheck
             {
                 var isAvailable = await _infrastructureService.IsServiceAvailableAsync(service);
                 results[service] = isAvailable ? "Healthy" : "Unhealthy";
-                
+
                 if (!isAvailable)
                 {
                     unhealthyServices.Add(service);
@@ -2532,7 +2532,7 @@ public class ExceptionHandlingController : ControllerBase
             // This will be handled by the global exception handler
             throw new ValidationException("Required parameter is missing");
         }
-        
+
         return Ok(new { Message = "Validation passed", Value = required });
     }
 }
@@ -2551,7 +2551,7 @@ public static class CustomExceptionHandlingExtensions
             options.IncludeDebugDetailsInResponse = environment.IsDevelopment();
             options.LogLevel = LogLevel.Warning;
             options.CorrelationIdHeader = "X-Correlation-ID";
-            
+
             // Custom exception mappings
             options.MapException<ValidationException>(HttpStatusCode.BadRequest);
             options.MapException<UnauthorizedAccessException>(HttpStatusCode.Unauthorized);
@@ -2571,20 +2571,20 @@ public static class CustomMiddlewareExtensions
     {
         // Security headers (early in pipeline)
         app.UseSecurityHeaders(environment);
-        
+
         // CSP nonce generation
         app.UseMiddleware<CspNonceMiddleware>();
-        
+
         // Advanced rate limiting
         app.UseAdvancedRateLimiting();
-        
+
         // Request context and tracking
         app.UseMiddleware<RequestContextMiddleware>();
-        
+
         // Custom middleware
         app.UseMiddleware<CustomLoggingMiddleware>();
         app.UseMiddleware<PerformanceMonitoringMiddleware>();
-        
+
         // Global exception handling (late in pipeline, before MVC)
         app.UseAcontplusExceptionHandling(options =>
         {
@@ -2592,7 +2592,7 @@ public static class CustomMiddlewareExtensions
             options.LogRequestBody = environment.IsDevelopment();
             options.IncludeDebugDetailsInResponse = environment.IsDevelopment();
         });
-        
+
         return app;
     }
 }
@@ -2612,7 +2612,7 @@ public class CustomLoggingMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var startTime = DateTime.UtcNow;
-        
+
         try
         {
             await _next(context);
@@ -2644,7 +2644,7 @@ public class PerformanceMonitoringMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var startTime = DateTime.UtcNow;
-        
+
         try
         {
             await _next(context);
@@ -2667,14 +2667,14 @@ public class ClientValidationAttribute : ActionFilterAttribute
     {
         var requestContext = context.HttpContext.RequestServices
             .GetRequiredService<IRequestContextService>();
-        
+
         var clientId = requestContext.GetClientId();
         if (!IsValidClient(clientId))
         {
             context.Result = new UnauthorizedResult();
             return;
         }
-        
+
         base.OnActionExecuting(context);
     }
 }
@@ -2693,14 +2693,14 @@ public class ContentService
             context.Request.Headers.UserAgent.ToString());
 
         var baseContent = await GetBaseContentAsync();
-        
+
         return deviceType switch
         {
-            DeviceType.Mobile when capabilities.SupportsTouch => 
+            DeviceType.Mobile when capabilities.SupportsTouch =>
                 EnhanceForTouch(baseContent),
-            DeviceType.Mobile => 
+            DeviceType.Mobile =>
                 EnhanceForMobile(baseContent),
-            DeviceType.Tablet => 
+            DeviceType.Tablet =>
                 EnhanceForTablet(baseContent),
             _ => baseContent
         };
@@ -3016,4 +3016,4 @@ public async Task<IActionResult> SecureEndpoint()
 
 ---
 
-**Built with ❤️ for the .NET community using the latest .NET 9 features**
+**Built with ❤️ for the .NET community using the latest .NET features**

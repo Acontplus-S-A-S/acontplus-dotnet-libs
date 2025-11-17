@@ -687,24 +687,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             ArgumentNullException.ThrowIfNull(predicate);
             ArgumentNullException.ThrowIfNull(propertyExpression);
 
-            var setPropertyCalls = Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(
-                Expression.Call(
-                    typeof(SetPropertyCalls<TEntity>).GetMethods()
-                        .Single(m =>
-                            m.Name == nameof(SetPropertyCalls<TEntity>.SetProperty) && m.IsGenericMethod &&
-                            m.GetParameters().Length == 2 &&
-                            m.GetParameters()[0].ParameterType.GetGenericArguments().Length == 2)
-                        .MakeGenericMethod(typeof(TProperty)),
-                    Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "s"),
-                    propertyExpression,
-                    Expression.Constant(newValue, typeof(TProperty))
-                ),
-                Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "s")
-            );
-
             return await _dbSet
                 .Where(predicate)
-                .ExecuteUpdateAsync(setPropertyCalls, cancellationToken)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(propertyExpression, newValue), cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (Exception ex)

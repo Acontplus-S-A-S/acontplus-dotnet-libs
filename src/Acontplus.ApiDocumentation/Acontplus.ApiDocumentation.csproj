@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for comprehensive API documentation and versioning. Includes OpenAPI/Swagger integration, API versioning support for both controller-based and minimal APIs, advanced customization options, and enterprise-ready documentation patterns for ASP.NET Core applications.</Description>
-    <PackageTags>dotnet9;openapi;swagger;api-versioning;documentation;minimal-api;aspnetcore;enterprise;api-docs;versioning</PackageTags>
+    <PackageTags>dotnet;dotnet10;openapi;swagger;api-versioning;documentation;minimal-api;aspnetcore;enterprise;api-docs;versioning</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

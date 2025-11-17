@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Complete library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML validation, SRI web service support, and embedded XSD schemas for compliance.</Description>
-    <PackageTags>dotnet9;facturacion;sri;ecuador;electronic-invoicing;xml;validation;token;captcha;integration;compliance;xsd-schemas</PackageTags>
+    <PackageTags>dotnet;dotnet10;facturacion;sri;ecuador;electronic-invoicing;xml;validation;token;captcha;integration;compliance;xsd-schemas</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -48,8 +48,8 @@
     <EmbeddedResource Include="Resources\Schemas\NotaCredito_V1.1.0.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Acontplus.Barcode" />
-    <PackageReference Include="Acontplus.Utilities" />
+    <ProjectReference Include="..\Acontplus.Barcode\Acontplus.Barcode.csproj" />
+    <ProjectReference Include="..\Acontplus.Utilities\Acontplus.Utilities.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>

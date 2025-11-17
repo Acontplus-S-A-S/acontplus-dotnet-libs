@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Comprehensive library for notification services. Includes email (MailKit, Amazon SES), WhatsApp, push notifications, templating with Scriban, queue management, and enterprise-ready delivery patterns for cloud-native applications.</Description>
-    <PackageTags>dotnet9;notifications;mailkit;email;whatsapp;push;ses;templates;queue;scriban;amazon-ses;enterprise;cloud-native</PackageTags>
+    <PackageTags>dotnet;dotnet10;notifications;mailkit;email;whatsapp;push;ses;templates;queue;scriban;amazon-ses;enterprise;cloud-native</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -24,7 +24,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Acontplus.Utilities" />
+    <ProjectReference Include="..\Acontplus.Utilities\Acontplus.Utilities.csproj" />
     <PackageReference Include="AWSSDK.SimpleEmailV2" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />

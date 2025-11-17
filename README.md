@@ -8,13 +8,13 @@ Welcome to the official monorepo for Acontplus S.A.S. .NET libraries and applica
 
 ## 🏢 About Acontplus S.A.S.
 
-[Acontplus S.A.S.](https://www.acontplus.com) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET 9+.
+[Acontplus S.A.S.](https://www.acontplus.com) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET.
 
 ---
 
 ## 📦 Solution Structure
 
-This repository contains multiple libraries and sample applications, each in its own directory. All projects target .NET (9+) and are distributed as NuGet packages.
+This repository contains multiple libraries and sample applications, each in its own directory. All projects target .NET and are distributed as NuGet packages.
 
 ### Main Libraries (src/)
 

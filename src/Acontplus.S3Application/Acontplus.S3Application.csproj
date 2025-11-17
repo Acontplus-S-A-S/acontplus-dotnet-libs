@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for AWS S3 storage operations and cloud file management. Provides async CRUD operations, strongly-typed S3 object handling, presigned URLs, bucket management, and enterprise-ready cloud storage patterns for cloud-native applications.</Description>
-    <PackageTags>dotnet9;aws;s3;storage;files;upload;download;presigned-url;enterprise;async;cloud;integration;bucket-management;cloud-native</PackageTags>
+    <PackageTags>dotnet;dotnet10;aws;s3;storage;files;upload;download;presigned-url;enterprise;async;cloud;integration;bucket-management;cloud-native</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

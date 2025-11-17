@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A .NET 9+ library providing a simple, robust, and strongly-typed interface for AWS S3 storage operations. Includes async CRUD, presigned URLs, and business-grade error handling.
+A .NET library providing a simple, robust, and strongly-typed interface for AWS S3 storage operations. Includes async CRUD, presigned URLs, and business-grade error handling.
 
 ---
 

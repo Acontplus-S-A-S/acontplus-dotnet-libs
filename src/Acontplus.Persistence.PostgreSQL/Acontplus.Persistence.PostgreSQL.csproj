@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.PostgreSQL</PackageId>
@@ -8,7 +8,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for PostgreSQL persistence with Entity Framework Core integration. Includes repositories, context management, ADO.NET support, advanced error handling, and enterprise-ready data access patterns for PostgreSQL databases.</Description>
-    <PackageTags>dotnet9;database;ado-net;data-access;postgres;postgresql;orm;micro-orm;query;crud;efcore;repository;entity-framework;npgsql</PackageTags>
+    <PackageTags>dotnet;dotnet10;database;ado-net;data-access;postgres;postgresql;orm;micro-orm;query;crud;efcore;repository;entity-framework;npgsql</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,7 +23,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Acontplus.Persistence.Common" />
+    <ProjectReference Include="..\Acontplus.Persistence.Common\Acontplus.Persistence.Common.csproj" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />

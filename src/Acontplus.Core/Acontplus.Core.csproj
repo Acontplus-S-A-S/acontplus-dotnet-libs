@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +9,7 @@
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced foundational library with cutting-edge C# features and 17 global business enums for multi-application standardization. Includes domain-driven design patterns, comprehensive error handling with HTTP mapping, specification pattern interfaces, functional result types, JSON utilities, validation helpers, and enterprise-ready abstractions. Features ready-to-use enums for business status, priorities, document types, demographics, currencies, payment methods, user roles, industries, company sizes, event types, and internationalization. Built with collection expressions, required properties, record structs, and source generation for optimal performance. Clean architecture with no persistence dependencies.</Description>
-    <PackageTags>dotnet9;domain-driven-design;ddd;enterprise;abstractions;entities;dtos;enums;global-enums;business-enums;models;validations;specification-pattern;error-handling;functional-programming;result-pattern;json-utilities;validation-helpers;repository-interfaces;unit-of-work;pagination;api-responses;domain-events;audit-trail;http-mapping;modern-csharp;collection-expressions;required-properties;record-structs;source-generation;aot-compatible;internationalization;multi-application;standardization;clean-architecture</PackageTags>
+    <PackageTags>dotnet;dotnet10;domain-driven-design;ddd;enterprise;abstractions;entities;dtos;enums;global-enums;business-enums;models;validations;specification-pattern;error-handling;functional-programming;result-pattern;json-utilities;validation-helpers;repository-interfaces;unit-of-work;pagination;api-responses;domain-events;audit-trail;http-mapping;modern-csharp;collection-expressions;required-properties;record-structs;source-generation;aot-compatible;internationalization;multi-application;standardization;clean-architecture</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
