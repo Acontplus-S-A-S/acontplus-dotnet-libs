@@ -83,6 +83,24 @@
             Filters and parameters are extracted from the PaginationRequest.Filters property.
             </summary>
         </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+            Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered stored procedure (non-paginated).
+            Passes filter criteria to the stored procedure without pagination parameters.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered query and returns a DataSet (non-paginated).
+            Useful for reports that need multiple result sets with filtering and sorting.
+            </summary>
+        </member>
         <member name="M:Acontplus.Core.Abstractions.Persistence.IAdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple queries in a single batch for better performance.

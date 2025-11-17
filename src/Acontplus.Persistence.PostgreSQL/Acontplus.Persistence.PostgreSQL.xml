@@ -245,6 +245,24 @@
             Executes a paginated stored procedure/function.
             </summary>
         </member>
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+            Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered stored procedure/function (non-paginated).
+            Passes filter criteria to the stored procedure without pagination parameters.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+            Executes a filtered query and returns a DataSet (non-paginated).
+            Useful for reports that need multiple result sets with filtering and sorting.
+            </summary>
+        </member>
         <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes multiple queries in a single batch.
@@ -279,6 +297,16 @@
         <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.Dtos.Requests.PaginationRequest)">
             <summary>
             Builds query parameters from pagination filters and search term.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.FilterRequest)">
+            <summary>
+            Builds query parameters from filter request and search term.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.PostgreSQL.Repositories.AdoRepository.BuildFilteredSql(System.String,Acontplus.Core.Dtos.Requests.FilterRequest)">
+            <summary>
+            Builds filtered SQL with ORDER BY clause based on FilterRequest.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.PostgreSQL.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
