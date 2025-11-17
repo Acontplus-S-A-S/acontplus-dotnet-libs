@@ -27,8 +27,9 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
   - `PaginationRequest` - Paginated queries extending FilterRequest (for lists, tables, infinite scroll)
   - Semantic naming without "Dto" suffix for frontend-facing API contracts
   - Internal DTOs (like `CommandOptionsDto`) retain "Dto" suffix for infrastructure concerns
-- **📄 Enhanced Pagination Extensions** - Fluent API for pagination management
-  - `WithSearch()`, `WithSort()`, `WithFilters()` for building pagination requests
+- **📄 Enhanced Request Extensions** - Fluent APIs for request management
+  - **FilterRequestExtensions**: `WithSearch()`, `WithSort()`, `WithFilters()`, `WithFilter()` for building filter requests
+  - **PaginationExtensions**: `WithSearch()`, `WithSort()`, `WithFilters()` for building pagination requests
   - `Create()`, `CreateWithSearch()`, `CreateWithSort()`, `CreateWithFilters()` factory methods
   - `Validate()`, `NextPage()`, `PreviousPage()`, `ToPage()` for pagination navigation
   - *See [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) for implementation details and examples*
@@ -533,7 +534,36 @@ if (filter.HasCriteria)
 }
 ```
 
-#### **📄 Pagination Request with Fluent Extensions**
+#### **📄 Request Extensions with Fluent APIs**
+
+**FilterRequest Extensions** - For non-paginated scenarios:
+
+```csharp
+// Create filter requests with fluent API
+var filter = new FilterRequest()
+    .WithSearch("laptop")
+    .WithSort("price", SortDirection.Asc)
+    .WithFilter("category", "electronics")
+    .WithFilter("inStock", true);
+
+// Merge multiple filters
+var additionalFilters = new Dictionary<string, object>
+{
+    ["brand"] = "Dell",
+    ["rating"] = 4.5
+};
+var enrichedFilter = filter.WithFilters(additionalFilters);
+
+// Usage in services
+[HttpGet("products/export")]
+public async Task<IActionResult> ExportProducts([FromQuery] FilterRequest filter)
+{
+    var products = await _productService.GetAllAsync(filter);
+    return File(products.ToCsv(), "text/csv", "products.csv");
+}
+```
+
+**PaginationRequest Extensions** - For paginated scenarios:
 
 ```csharp
 // Create pagination with fluent API
