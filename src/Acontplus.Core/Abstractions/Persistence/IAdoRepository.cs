@@ -144,6 +144,40 @@ public interface IAdoRepository
 
     #endregion
 
+    #region Filtered Query Methods (Non-Paginated)
+
+    /// <summary>
+    /// Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+    /// Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+    /// </summary>
+    Task<List<T>> GetFilteredAsync<T>(
+        string sql,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a filtered stored procedure (non-paginated).
+    /// Passes filter criteria to the stored procedure without pagination parameters.
+    /// </summary>
+    Task<List<T>> GetFilteredFromStoredProcedureAsync<T>(
+        string storedProcedureName,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Executes a filtered query and returns a DataSet (non-paginated).
+    /// Useful for reports that need multiple result sets with filtering and sorting.
+    /// </summary>
+    Task<DataSet> GetFilteredDataSetAsync(
+        string sql,
+        FilterRequest filter,
+        CommandOptionsDto? options = null,
+        CancellationToken cancellationToken = default);
+
+    #endregion
+
     #region Batch Operations (High-Performance)
 
     /// <summary>
