@@ -690,6 +690,14 @@
             </summary>
             <returns>String representation</returns>
         </member>
+        <member name="P:Acontplus.Core.Dtos.Requests.CommandOptionsDto.UseJsonFilters">
+            <summary>
+            Controls filter parameter strategy:
+            - false (default): Individual parameters for raw SQL (better performance)
+            - true: JSON serialized parameters for stored procedures (flexibility)
+            - null: Auto-detect based on CommandType (JSON for StoredProcedure)
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Dtos.Requests.FilterRequest">
             <summary>
             Request model for filtering, sorting, and searching without pagination.

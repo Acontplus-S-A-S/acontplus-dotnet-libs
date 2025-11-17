@@ -145,7 +145,7 @@
         <member name="T:Acontplus.Persistence.SqlServer.Repositories.AdoRepository">
             <summary>
             Provides ADO.NET data access operations with retry policy and optional transaction sharing.
-            Enhanced with SQL Server error handling and domain error mapping.
+            Enhanced with SQL Server error handling, domain error mapping, and flexible filter parameter strategies.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Acontplus.Persistence.SqlServer.Repositories.AdoRepository})">
@@ -232,34 +232,40 @@
             <summary>
             Executes a paginated SQL query with automatic count query.
             Uses SQL Server OFFSET-FETCH with optimized query plans.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated SQL query with custom count query.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a paginated stored procedure.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a filtered SQL query with sorting and search capabilities (non-paginated).
             Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a filtered stored procedure (non-paginated).
             Passes filter criteria to the stored procedure without pagination parameters.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
             Executes a filtered query and returns a DataSet (non-paginated).
             Useful for reports that need multiple result sets with filtering and sorting.
+            Supports flexible filter parameter strategy via CommandOptionsDto.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
@@ -287,9 +293,40 @@
             Streams query results as an async enumerable for memory-efficient processing.
             </summary>
         </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.FilterRequest)">
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds query parameters from filter's filters and search term.
+            Builds query parameters from FilterRequest using flexible strategy.
+            Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+            - UseJsonFilters = false (default): Individual parameters for raw SQL queries
+            - UseJsonFilters = true: JSON serialized parameters for stored procedures
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+            Builds query parameters from PaginationRequest using flexible strategy.
+            Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildStoredProcedureParameters(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+            Builds stored procedure parameters from FilterRequest.
+            Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildStoredProcedureParameters(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+            Builds stored procedure parameters from PaginationRequest.
+            Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationMetadata(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+            Builds pagination metadata for PagedResult.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterMetadata(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+            Builds pagination metadata for FilterRequest (non-paginated).
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilteredSql(System.String,Acontplus.Core.Dtos.Requests.FilterRequest)">
@@ -302,11 +339,6 @@
             Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
             Uses a strict whitelist approach - only allows exact matches from a predefined set.
             Falls back to regex validation with comprehensive keyword blacklist.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationParameters(Acontplus.Core.Dtos.Requests.PaginationRequest)">
-            <summary>
-            Builds query parameters from pagination filters and search term.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">

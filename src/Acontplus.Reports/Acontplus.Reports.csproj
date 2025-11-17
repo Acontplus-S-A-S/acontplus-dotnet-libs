@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Reports</PackageId>
-    <Version>1.4.8</Version>
+    <Version>1.4.9</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for comprehensive report generation and management. Includes RDLC report processing, PDF/Excel export capabilities, ReportViewer integration, template support, and enterprise-ready reporting patterns for business applications.</Description>
