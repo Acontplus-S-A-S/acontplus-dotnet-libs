@@ -6,7 +6,7 @@ namespace Acontplus.Persistence.PostgreSQL.Repositories;
 
 /// <summary>
 /// Provides ADO.NET data access operations with retry policy and optional transaction sharing.
-/// Enhanced with PostgreSQL error handling and domain error mapping.
+/// Enhanced with PostgreSQL error handling, domain error mapping, and flexible filter parameter strategies.
 /// Optimized for PostgreSQL with high-performance, scalable operations.
 /// </summary>
 public class AdoRepository : IAdoRepository
@@ -455,6 +455,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Executes a paginated SQL query with automatic count query.
     /// Uses PostgreSQL LIMIT-OFFSET with parallel query support.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
@@ -469,6 +470,7 @@ public class AdoRepository : IAdoRepository
 
     /// <summary>
     /// Executes a paginated SQL query with custom count query.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
@@ -478,6 +480,7 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         ValidatePagination(pagination);
+        options ??= new CommandOptionsDto();
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -487,8 +490,8 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Build parameters from pagination filters
-                var parameters = BuildPaginationParameters(pagination);
+                // Build parameters using flexible strategy
+                var parameters = BuildFilterParameters(pagination, options);
 
                 // Get total count
                 var totalCount = await CountAsync(countSql, parameters, options, cancellationToken);
@@ -505,27 +508,8 @@ public class AdoRepository : IAdoRepository
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 var items = await reader.ToListAsync<T>(cancellationToken);
 
-                // Build result with metadata using standardized keys
-                var metadata = new Dictionary<string, object>
-                {
-                    [PaginationMetadataKeys.HasFilters] = pagination.Filters?.Any() ?? false,
-                    [PaginationMetadataKeys.HasSearch] = !string.IsNullOrWhiteSpace(pagination.SearchTerm),
-                    [PaginationMetadataKeys.SortBy] = pagination.SortBy ?? string.Empty,
-                    [PaginationMetadataKeys.SortDirection] = pagination.SortDirection.ToString()
-                };
-
-                // Optional: Only add in non-production environments
-                // metadata[PaginationMetadataKeys.QuerySource] = PaginationMetadataKeys.QuerySourceRawQuery;
-
-                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
-                {
-                    metadata[PaginationMetadataKeys.SearchTerm] = pagination.SearchTerm;
-                }
-
-                if (pagination.Filters?.Any() == true)
-                {
-                    metadata[PaginationMetadataKeys.FilterCount] = pagination.Filters.Count;
-                }
+                // Build result with metadata
+                var metadata = BuildPaginationMetadata(pagination, options);
 
                 return new PagedResult<T>(items, pagination.PageIndex, pagination.PageSize, totalCount, metadata);
             }
@@ -548,6 +532,7 @@ public class AdoRepository : IAdoRepository
 
     /// <summary>
     /// Executes a paginated stored procedure/function.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
@@ -556,6 +541,7 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         ValidatePagination(pagination);
+        options ??= new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -565,42 +551,12 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Build stored procedure parameters from pagination (PostgreSQL convention uses lowercase with underscores)
-                var spParameters = new Dictionary<string, object>
-                {
-                    ["page_index"] = pagination.PageIndex,
-                    ["page_size"] = pagination.PageSize
-                };
+                // Build stored procedure parameters using flexible strategy
+                var spParameters = BuildStoredProcedureParameters(pagination, options);
 
-                // Add sort parameters if provided
-                if (!string.IsNullOrWhiteSpace(pagination.SortBy))
-                {
-                    spParameters["sort_by"] = ValidateAndSanitizeSortColumn(pagination.SortBy);
-                    spParameters["sort_direction"] = pagination.SortDirection.ToString();
-                }
+                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, options);
 
-                // Add search term if provided
-                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
-                {
-                    spParameters["search_term"] = pagination.SearchTerm;
-                }
-
-                // Serialize filters to JSON for PostgreSQL JSONB using optimized serialization
-                if (pagination.Filters != null && pagination.Filters.Any())
-                {
-                    var filtersJson = pagination.Filters.SerializeOptimized();
-                    spParameters["filters"] = filtersJson;
-                }
-                else
-                {
-                    spParameters["filters"] = DBNull.Value;
-                }
-
-                var spOptions = options ?? new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
-
-                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, spOptions);
-
-                // Add output parameter for total count
+                // Add output parameter for total count (PostgreSQL uses lowercase with underscores)
                 CommandParameterBuilder.AddOutputParameter(cmd, "total_count", NpgsqlDbType.Integer, 0);
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -613,29 +569,8 @@ public class AdoRepository : IAdoRepository
                     ? Convert.ToInt32(cmd.Parameters["total_count"].Value)
                     : 0;
 
-                // Build result with metadata using standardized keys
-                var metadata = new Dictionary<string, object>
-                {
-                    [PaginationMetadataKeys.HasFilters] = pagination.Filters?.Any() ?? false,
-                    [PaginationMetadataKeys.HasSearch] = !string.IsNullOrWhiteSpace(pagination.SearchTerm),
-                    [PaginationMetadataKeys.SortBy] = pagination.SortBy ?? string.Empty,
-                    [PaginationMetadataKeys.SortDirection] = pagination.SortDirection.ToString()
-                };
-
-                // ⚠️ Security: Only add stored procedure name in development/staging
-                // Uncomment if PaginationMetadataOptions.IncludeStoredProcedureName is enabled:
-                // metadata[PaginationMetadataKeys.QuerySource] = PaginationMetadataKeys.QuerySourceStoredProcedure;
-                // metadata["storedProcedureName"] = storedProcedureName;
-
-                if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
-                {
-                    metadata[PaginationMetadataKeys.SearchTerm] = pagination.SearchTerm;
-                }
-
-                if (pagination.Filters?.Any() == true)
-                {
-                    metadata[PaginationMetadataKeys.FilterCount] = pagination.Filters.Count;
-                }
+                // Build result with metadata
+                var metadata = BuildPaginationMetadata(pagination, options);
 
                 return new PagedResult<T>(items, pagination.PageIndex, pagination.PageSize, totalCount, metadata);
             }
@@ -663,6 +598,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Executes a filtered SQL query with sorting and search capabilities (non-paginated).
     /// Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<List<T>> GetFilteredAsync<T>(
         string sql,
@@ -671,6 +607,7 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(filter);
+        options ??= new CommandOptionsDto();
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -680,8 +617,8 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Build parameters from filter
-                var parameters = BuildFilterParameters(filter);
+                // Build parameters using flexible strategy
+                var parameters = BuildFilterParameters(filter, options);
 
                 // Build filtered query with ORDER BY
                 var filteredSql = BuildFilteredSql(sql, filter);
@@ -711,6 +648,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Executes a filtered stored procedure/function (non-paginated).
     /// Passes filter criteria to the stored procedure without pagination parameters.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<List<T>> GetFilteredFromStoredProcedureAsync<T>(
         string storedProcedureName,
@@ -719,6 +657,7 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(filter);
+        options ??= new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -728,36 +667,10 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Build stored procedure parameters from filter (PostgreSQL convention uses lowercase with underscores)
-                var spParameters = new Dictionary<string, object>();
+                // Build stored procedure parameters using flexible strategy
+                var spParameters = BuildStoredProcedureParameters(filter, options);
 
-                // Add sort parameters if provided
-                if (!string.IsNullOrWhiteSpace(filter.SortBy))
-                {
-                    spParameters["sort_by"] = ValidateAndSanitizeSortColumn(filter.SortBy);
-                    spParameters["sort_direction"] = filter.SortDirection.ToString();
-                }
-
-                // Add search term if provided
-                if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
-                {
-                    spParameters["search_term"] = filter.SearchTerm;
-                }
-
-                // Serialize filters to JSON for PostgreSQL JSONB using optimized serialization
-                if (filter.Filters != null && filter.Filters.Any())
-                {
-                    var filtersJson = filter.Filters.SerializeOptimized();
-                    spParameters["filters"] = filtersJson;
-                }
-                else
-                {
-                    spParameters["filters"] = DBNull.Value;
-                }
-
-                var spOptions = options ?? new CommandOptionsDto { CommandType = CommandType.StoredProcedure };
-
-                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, spOptions);
+                await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 return await reader.ToListAsync<T>(cancellationToken);
             }
@@ -781,6 +694,7 @@ public class AdoRepository : IAdoRepository
     /// <summary>
     /// Executes a filtered query and returns a DataSet (non-paginated).
     /// Useful for reports that need multiple result sets with filtering and sorting.
+    /// Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<DataSet> GetFilteredDataSetAsync(
         string sql,
@@ -789,6 +703,7 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(filter);
+        options ??= new CommandOptionsDto();
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -798,13 +713,12 @@ public class AdoRepository : IAdoRepository
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null) connectionToClose = connection;
 
-                // Build parameters from filter
-                var parameters = BuildFilterParameters(filter);
+                // Build parameters using flexible strategy
+                var parameters = BuildFilterParameters(filter, options);
 
                 // Build filtered query with ORDER BY
                 var filteredSql = BuildFilteredSql(sql, filter);
 
-                options ??= new CommandOptionsDto();
                 await using var cmd = CreateCommand(connection, filteredSql, parameters, options);
 
                 if (options.WithTableNames)
@@ -1116,6 +1030,258 @@ public class AdoRepository : IAdoRepository
 
     #endregion
 
+    #region Flexible Filter Parameter Builders
+
+    /// <summary>
+    /// Builds query parameters from FilterRequest using flexible strategy.
+    /// Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+    /// - UseJsonFilters = false (default): Individual parameters for raw SQL queries
+    /// - UseJsonFilters = true: JSONB serialized parameters for PostgreSQL functions
+    /// </summary>
+    private Dictionary<string, object> BuildFilterParameters(FilterRequest filter, CommandOptionsDto options)
+    {
+        var result = new Dictionary<string, object>();
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+        {
+            result["@__SearchTerm"] = $"%{filter.SearchTerm}%"; // For LIKE/ILIKE queries
+        }
+
+        // Apply flexible filter strategy
+        if (options.UseJsonFilters ?? true)
+        {
+            // JSON approach - single parameter for PostgreSQL functions
+            if (filter.Filters != null && filter.Filters.Any())
+            {
+                result["filters"] = filter.Filters.SerializeOptimized();
+            }
+            else
+            {
+                result["filters"] = DBNull.Value;
+            }
+        }
+        else
+        {
+            // Individual parameters approach - for raw SQL queries
+            if (filter.Filters != null && filter.Filters.Any())
+            {
+                foreach (var kvp in filter.Filters)
+                {
+                    var paramName = kvp.Key.StartsWith("@") ? kvp.Key : $"@{kvp.Key}";
+                    result[paramName] = kvp.Value;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Builds query parameters from PaginationRequest using flexible strategy.
+    /// Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+    /// </summary>
+    private Dictionary<string, object> BuildFilterParameters(PaginationRequest pagination, CommandOptionsDto options)
+    {
+        var result = new Dictionary<string, object>();
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+        {
+            result["@__SearchTerm"] = $"%{pagination.SearchTerm}%"; // For LIKE/ILIKE queries
+        }
+
+        // Apply flexible filter strategy
+        if (options.UseJsonFilters ?? true)
+        {
+            // JSON approach - single parameter for PostgreSQL functions
+            if (pagination.Filters != null && pagination.Filters.Any())
+            {
+                result["filters"] = pagination.Filters.SerializeOptimized();
+            }
+            else
+            {
+                result["filters"] = DBNull.Value;
+            }
+        }
+        else
+        {
+            // Individual parameters approach - for raw SQL queries
+            if (pagination.Filters != null && pagination.Filters.Any())
+            {
+                foreach (var kvp in pagination.Filters)
+                {
+                    var paramName = kvp.Key.StartsWith("@") ? kvp.Key : $"@{kvp.Key}";
+                    result[paramName] = kvp.Value;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Builds stored procedure/function parameters from FilterRequest.
+    /// Automatically uses JSON strategy for PostgreSQL functions unless explicitly overridden.
+    /// Uses PostgreSQL naming conventions (lowercase with underscores).
+    /// </summary>
+    private Dictionary<string, object> BuildStoredProcedureParameters(FilterRequest filter, CommandOptionsDto options)
+    {
+        var spParameters = new Dictionary<string, object>();
+
+        // Add sort parameters if provided (PostgreSQL convention: lowercase with underscores)
+        if (!string.IsNullOrWhiteSpace(filter.SortBy))
+        {
+            spParameters["sort_by"] = ValidateAndSanitizeSortColumn(filter.SortBy);
+            spParameters["sort_direction"] = filter.SortDirection.ToString();
+        }
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+        {
+            spParameters["search_term"] = filter.SearchTerm;
+        }
+
+        // Default to JSON for PostgreSQL functions unless explicitly set to false
+        var useJsonForSp = options.UseJsonFilters ?? true;
+
+        if (useJsonForSp)
+        {
+            // JSON approach - recommended for PostgreSQL functions (JSONB type)
+            if (filter.Filters != null && filter.Filters.Any())
+            {
+                spParameters["filters"] = filter.Filters.SerializeOptimized();
+            }
+            else
+            {
+                spParameters["filters"] = DBNull.Value;
+            }
+        }
+        else
+        {
+            // Individual parameters approach - if explicitly requested
+            if (filter.Filters != null && filter.Filters.Any())
+            {
+                foreach (var kvp in filter.Filters)
+                {
+                    // Convert to PostgreSQL naming convention (snake_case)
+                    var paramName = ConvertToSnakeCase(kvp.Key);
+                    spParameters[paramName] = kvp.Value;
+                }
+            }
+        }
+
+        return spParameters;
+    }
+
+    /// <summary>
+    /// Builds stored procedure/function parameters from PaginationRequest.
+    /// Automatically uses JSON strategy for PostgreSQL functions unless explicitly overridden.
+    /// Uses PostgreSQL naming conventions (lowercase with underscores).
+    /// </summary>
+    private Dictionary<string, object> BuildStoredProcedureParameters(PaginationRequest pagination, CommandOptionsDto options)
+    {
+        var spParameters = new Dictionary<string, object>
+        {
+            ["page_index"] = pagination.PageIndex,
+            ["page_size"] = pagination.PageSize
+        };
+
+        // Add sort parameters if provided (PostgreSQL convention: lowercase with underscores)
+        if (!string.IsNullOrWhiteSpace(pagination.SortBy))
+        {
+            spParameters["sort_by"] = ValidateAndSanitizeSortColumn(pagination.SortBy);
+            spParameters["sort_direction"] = pagination.SortDirection.ToString();
+        }
+
+        // Add search term if provided
+        if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+        {
+            spParameters["search_term"] = pagination.SearchTerm;
+        }
+
+        // Default to JSON for PostgreSQL functions unless explicitly set to false
+        var useJsonForSp = options.UseJsonFilters ?? true;
+
+        if (useJsonForSp)
+        {
+            // JSON approach - recommended for PostgreSQL functions (JSONB type)
+            if (pagination.Filters != null && pagination.Filters.Any())
+            {
+                spParameters["filters"] = pagination.Filters.SerializeOptimized();
+            }
+            else
+            {
+                spParameters["filters"] = DBNull.Value;
+            }
+        }
+        else
+        {
+            // Individual parameters approach - if explicitly requested
+            if (pagination.Filters != null && pagination.Filters.Any())
+            {
+                foreach (var kvp in pagination.Filters)
+                {
+                    // Convert to PostgreSQL naming convention (snake_case)
+                    var paramName = ConvertToSnakeCase(kvp.Key);
+                    spParameters[paramName] = kvp.Value;
+                }
+            }
+        }
+
+        return spParameters;
+    }
+
+    /// <summary>
+    /// Builds pagination metadata for PagedResult.
+    /// </summary>
+    private Dictionary<string, object> BuildPaginationMetadata(PaginationRequest pagination, CommandOptionsDto options)
+    {
+        var metadata = new Dictionary<string, object>
+        {
+            [PaginationMetadataKeys.HasFilters] = pagination.Filters?.Any() ?? false,
+            [PaginationMetadataKeys.HasSearch] = !string.IsNullOrWhiteSpace(pagination.SearchTerm),
+            [PaginationMetadataKeys.SortBy] = pagination.SortBy ?? string.Empty,
+            [PaginationMetadataKeys.SortDirection] = pagination.SortDirection.ToString()
+        };
+
+        if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+        {
+            metadata[PaginationMetadataKeys.SearchTerm] = pagination.SearchTerm;
+        }
+
+        if (pagination.Filters?.Any() == true)
+        {
+            metadata[PaginationMetadataKeys.FilterCount] = pagination.Filters.Count;
+        }
+
+        // Add strategy info in development environments (optional)
+        // metadata["filterStrategy"] = options.UseJsonFilters ?? true ? "JSONB" : "Individual";
+
+        return metadata;
+    }
+
+    /// <summary>
+    /// Converts a string to snake_case for PostgreSQL naming conventions.
+    /// </summary>
+    private string ConvertToSnakeCase(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // Remove @ prefix if present
+        input = input.TrimStart('@');
+
+        // Convert PascalCase/camelCase to snake_case
+        return System.Text.RegularExpressions.Regex.Replace(
+            input,
+            "([a-z0-9])([A-Z])",
+            "$1_$2"
+        ).ToLowerInvariant();
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private static string GenerateCountSql(string sql)
@@ -1139,13 +1305,8 @@ public class AdoRepository : IAdoRepository
         {
             if (!string.IsNullOrEmpty(pagination.SortBy))
             {
-                // Validate SortBy to prevent SQL injection - uses strict validation
                 var safeSortBy = ValidateAndSanitizeSortColumn(pagination.SortBy);
                 var direction = pagination.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
-
-                // CWE-89 Prevention: Use double quotes to safely quote the column identifier (PostgreSQL syntax)
-                // After validation, we know safeSortBy only contains safe characters
-                // Double quotes prevent SQL injection by treating the name as a literal identifier
                 builder.Append($" ORDER BY \"{safeSortBy}\" {direction}");
             }
             else
@@ -1157,6 +1318,27 @@ public class AdoRepository : IAdoRepository
 
         // Add LIMIT-OFFSET (PostgreSQL syntax)
         builder.Append(" LIMIT @__Limit OFFSET @__Offset");
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// Builds filtered SQL with ORDER BY clause based on FilterRequest.
+    /// </summary>
+    private string BuildFilteredSql(string sql, FilterRequest filter)
+    {
+        var builder = new System.Text.StringBuilder(sql);
+
+        // Add ORDER BY if not present and if SortBy is provided
+        if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.IsNullOrEmpty(filter.SortBy))
+            {
+                var safeSortBy = ValidateAndSanitizeSortColumn(filter.SortBy);
+                var direction = filter.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+                builder.Append($" ORDER BY \"{safeSortBy}\" {direction}");
+            }
+        }
 
         return builder.ToString();
     }
@@ -1176,8 +1358,6 @@ public class AdoRepository : IAdoRepository
         // CWE-89 Prevention: Multi-layer validation approach
 
         // Layer 1: Strict pattern matching - only allow safe characters
-        // Allow: letters, numbers, underscores, dots (for table.column notation)
-        // Explicitly DENY: spaces, semicolons, quotes, parentheses, SQL operators
         var pattern = @"^[a-zA-Z0-9_\.]+$";
         if (!System.Text.RegularExpressions.Regex.IsMatch(columnName, pattern))
         {
@@ -1196,32 +1376,20 @@ public class AdoRepository : IAdoRepository
         var upperColumn = columnName.ToUpperInvariant();
         var dangerousKeywords = new[]
         {
-            // DML statements
             "DROP", "DELETE", "INSERT", "UPDATE", "TRUNCATE", "MERGE",
-            // Execution commands
             "EXEC", "EXECUTE", "DO",
-            // Query manipulation
             "SELECT", "UNION", "JOIN", "FROM", "WHERE",
-            // Data type conversion (can be used to bypass validation)
             "CAST", "CONVERT", "TRY_CAST", "TRY_CONVERT",
-            // Variable and flow control
             "DECLARE", "SET", "BEGIN", "END", "IF", "ELSE", "WHILE", "LOOP",
-            // Comments (used to terminate queries)
             "--", "/*", "*/",
-            // String concatenation
             "CONCAT", "CONCAT_WS", "STRING_AGG",
-            // System functions
             "SYSTEM", "PG_SLEEP", "PG_READ_FILE",
-            // ALTER commands
             "ALTER", "CREATE", "GRANT", "REVOKE",
-            // Batch separators
             "GO"
         };
 
         foreach (var keyword in dangerousKeywords)
         {
-            // Use word boundary regex to match complete keywords only, not substrings
-            // This prevents false positives like "Description" matching "DESC" or "UserName" matching "USE"
             var keywordPattern = $"\\b{System.Text.RegularExpressions.Regex.Escape(keyword)}\\b";
             if (System.Text.RegularExpressions.Regex.IsMatch(upperColumn, keywordPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
             {
@@ -1233,12 +1401,12 @@ public class AdoRepository : IAdoRepository
         // Layer 4: Prevent common injection patterns
         var injectionPatterns = new[]
         {
-            @";\s*", // Semicolon followed by whitespace (statement terminator)
-            @"'\s*OR\s*'", // Classic OR injection
-            @"'\s*AND\s*'", // Classic AND injection
-            @"=\s*'", // Equals with quote
-            @"\|\|", // Concatenation operator
-            @"@@", // Global variables (SQL Server style, but check anyway)
+            @";\s*",
+            @"'\s*OR\s*'",
+            @"'\s*AND\s*'",
+            @"=\s*'",
+            @"\|\|",
+            @"@@",
         };
 
         foreach (var injectionPattern in injectionPatterns)
@@ -1251,86 +1419,6 @@ public class AdoRepository : IAdoRepository
         }
 
         return columnName;
-    }
-
-    /// <summary>
-    /// Builds query parameters from pagination filters and search term.
-    /// </summary>
-    private Dictionary<string, object> BuildPaginationParameters(PaginationRequest pagination)
-    {
-        var result = new Dictionary<string, object>();
-
-        // Add search term if provided
-        if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
-        {
-            result["@__SearchTerm"] = $"%{pagination.SearchTerm}%"; // For LIKE queries
-        }
-
-        // Add individual filters from pagination
-        if (pagination.Filters != null && pagination.Filters.Any())
-        {
-            foreach (var filter in pagination.Filters)
-            {
-                // Use a prefix to avoid parameter name conflicts
-                var paramName = filter.Key.StartsWith("@") ? filter.Key : $"@{filter.Key}";
-                result[paramName] = filter.Value;
-            }
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Builds query parameters from filter request and search term.
-    /// </summary>
-    private Dictionary<string, object> BuildFilterParameters(FilterRequest filter)
-    {
-        var result = new Dictionary<string, object>();
-
-        // Add search term if provided
-        if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
-        {
-            result["@__SearchTerm"] = $"%{filter.SearchTerm}%"; // For LIKE queries
-        }
-
-        // Add individual filters
-        if (filter.Filters != null && filter.Filters.Any())
-        {
-            foreach (var kvp in filter.Filters)
-            {
-                // Use a prefix to avoid parameter name conflicts
-                var paramName = kvp.Key.StartsWith("@") ? kvp.Key : $"@{kvp.Key}";
-                result[paramName] = kvp.Value;
-            }
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Builds filtered SQL with ORDER BY clause based on FilterRequest.
-    /// </summary>
-    private string BuildFilteredSql(string sql, FilterRequest filter)
-    {
-        var builder = new System.Text.StringBuilder(sql);
-
-        // Add ORDER BY if not present and if SortBy is provided
-        if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
-        {
-            if (!string.IsNullOrEmpty(filter.SortBy))
-            {
-                // Validate SortBy to prevent SQL injection
-                var safeSortBy = ValidateAndSanitizeSortColumn(filter.SortBy);
-                var direction = filter.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
-
-                // CWE-89 Prevention: Use double quotes to safely quote the column identifier (PostgreSQL syntax)
-                // After validation, we know safeSortBy only contains safe characters
-                // Double quotes prevent SQL injection by treating the name as a literal identifier
-                builder.Append($" ORDER BY \"{safeSortBy}\" {direction}");
-            }
-        }
-
-        return builder.ToString();
     }
 
     private void ValidatePagination(PaginationRequest pagination)
@@ -1379,4 +1467,3 @@ public class AdoRepository : IAdoRepository
 
     #endregion
 }
-
