@@ -155,34 +155,9 @@ function Update-CsprojVersion {
     Write-Host "  Updated $CsprojPath" -ForegroundColor Green
 }
 
-# Function to update Directory.Packages.props
-function Update-DirectoryPackagesProps {
-    param(
-        [string]$PackageId,
-        [string]$NewVersion
-    )
 
-    $directoryPackagesPath = Join-Path $workspaceRoot "Directory.Packages.props"
 
-    if (-not (Test-Path $directoryPackagesPath)) {
-        return $false
-    }
 
-    [xml]$directoryPackages = Get-Content $directoryPackagesPath
-
-    $packageVersionNode = $directoryPackages.Project.ItemGroup.PackageVersion |
-        Where-Object { $_.Include -eq $PackageId } |
-        Select-Object -First 1
-
-    if ($packageVersionNode) {
-        $packageVersionNode.Version = $NewVersion
-        $directoryPackages.Save($directoryPackagesPath)
-        Write-Host "  Updated Directory.Packages.props" -ForegroundColor Green
-        return $true
-    }
-
-    return $false
-}
 
 # Function to update PackageReference dependencies in all .csproj files
 function Update-PackageReferences {
@@ -355,18 +330,8 @@ try {
 
 Write-Host ""
 
-# Step 2: Update Directory.Packages.props if applicable
-Write-Host "Step 2: Updating Directory.Packages.props..." -ForegroundColor Green
-$directoryPackagesUpdated = Update-DirectoryPackagesProps -PackageId $selectedPackage.PackageId -NewVersion $newVersion
-
-if (-not $directoryPackagesUpdated) {
-    Write-Host "  Package not found in Directory.Packages.props (this is OK if not using central package management)" -ForegroundColor Yellow
-}
-
-Write-Host ""
-
-# Step 3: Update PackageReference dependencies in other projects
-Write-Host "Step 3: Updating PackageReference dependencies in other projects..." -ForegroundColor Green
+# Step 2: Update PackageReference dependencies in other projects
+Write-Host "Step 2: Updating PackageReference dependencies in other projects..." -ForegroundColor Green
 $updatedCount = Update-PackageReferences -PackageId $selectedPackage.PackageId -NewVersion $newVersion
 
 if ($updatedCount -gt 0) {
@@ -377,9 +342,9 @@ if ($updatedCount -gt 0) {
 
 Write-Host ""
 
-# Step 4: Build the solution (optional)
+# Step 3: Build the solution (optional)
 if (-not $SkipBuild) {
-    Write-Host "Step 4: Building solution to verify changes..." -ForegroundColor Green
+    Write-Host "Step 3: Building solution to verify changes..." -ForegroundColor Green
     try {
         $solutionPath = Join-Path $workspaceRoot "Acontplus.DotNet.Libs.sln"
 
@@ -403,7 +368,7 @@ if (-not $SkipBuild) {
         Write-Host "  Build error: $_" -ForegroundColor Red
     }
 } else {
-    Write-Host "Step 4: Skipping build (use -SkipBuild:$false to enable)" -ForegroundColor Yellow
+    Write-Host "Step 3: Skipping build (use -SkipBuild:$false to enable)" -ForegroundColor Yellow
 }
 
 Write-Host ""
