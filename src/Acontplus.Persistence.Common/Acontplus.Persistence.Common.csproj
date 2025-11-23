@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.Common</PackageId>
-    <Version>1.2.3</Version>
+    <Version>2.0.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.</Description>
@@ -29,7 +29,7 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acontplus.Core\Acontplus.Core.csproj" />
+    <PackageReference Include="Acontplus.Core" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
   </ItemGroup>

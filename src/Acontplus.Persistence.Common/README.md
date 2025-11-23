@@ -1,7 +1,7 @@
 # Acontplus.Persistence.Common
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Persistence.Common.svg)](https://www.nuget.org/packages/Acontplus.Persistence.Common)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with business-ready abstractions.
@@ -16,7 +16,7 @@ Advanced persistence abstractions and infrastructure. Includes generic repositor
 - **Business Patterns** - Unit of work, specification pattern, and audit trail support
 
 ### 🔧 Contemporary Architecture
-- **.NET 9+ Compatible** - Latest C# features and performance optimizations
+- **.NET 10+ Compatible** - Latest C# features and performance optimizations
 - **Async/Await Support** - Full asynchronous operation support
 - **Dependency Injection** - Seamless integration with Microsoft DI container
 - **Configuration Driven** - Flexible configuration through appsettings.json
@@ -772,7 +772,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : clas
 
 ## 🔧 Dependencies
 
-- **.NET 9.0+** - Advanced .NET framework
+- **.NET 10+** - Advanced .NET framework
 - **Entity Framework Core** - ORM and data access
 - **Microsoft.Extensions.Configuration** - Configuration management
 - **Acontplus.Core** - Core abstractions and patterns
@@ -809,4 +809,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the .NET community using cutting-edge .NET 9 features** 
+**Built with ❤️ for the .NET community using cutting-edge .NET features** 

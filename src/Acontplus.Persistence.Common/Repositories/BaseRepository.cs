@@ -132,7 +132,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    public virtual async Task<TEntity> GetFirstOrDefaultAsync(
+    public virtual async Task<TEntity?> GetFirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
         params Expression<Func<TEntity, object>>[] includeProperties)
@@ -597,7 +597,6 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(DeleteByIdAsync)}");
         try
         {
-            ArgumentNullException.ThrowIfNull(id);
             var entity = await _dbSet.FindAsync([id], cancellationToken).ConfigureAwait(false);
             if (entity != null)
             {

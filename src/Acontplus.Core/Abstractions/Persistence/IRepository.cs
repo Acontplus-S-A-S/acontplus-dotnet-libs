@@ -8,7 +8,7 @@ public interface IRepository<TEntity>
     Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
 
-    Task<TEntity> GetFirstOrDefaultAsync(
+    Task<TEntity?> GetFirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default,
         params Expression<Func<TEntity, object>>[] includeProperties);
