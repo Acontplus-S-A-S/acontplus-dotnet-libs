@@ -56,7 +56,7 @@ public static class PictureHelper
         (Svg_xml_capital, "svg")
     };
 
-    public static string TryGetExtension(byte[] array)
+    public static string? TryGetExtension(byte[] array)
     {
         // check for simple formats first
         foreach (var imageFormat in ImageFormats)

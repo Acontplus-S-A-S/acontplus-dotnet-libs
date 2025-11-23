@@ -1,10 +1,10 @@
 # Acontplus.ApiDocumentation
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.ApiDocumentation.svg)](https://www.nuget.org/packages/Acontplus.ApiDocumentation)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A .NET 9+ library for standardized API versioning and OpenAPI/Swagger documentation. Supports both controller-based and minimal APIs, with advanced customization and versioning support.
+A .NET library for standardized API versioning and OpenAPI/Swagger documentation. Supports both controller-based and minimal APIs, with advanced customization and versioning support.
 
 ---
 
@@ -16,7 +16,7 @@ A .NET 9+ library for standardized API versioning and OpenAPI/Swagger documentat
 - **JWT Bearer Auth UI** - Secure your APIs and test with tokens
 - **XML Comments** - Show your code docs in Swagger UI
 - **Custom Metadata** - Configure contact, license, and more from `appsettings.json`
-- **.NET 9+ Ready** - Fast and future-proof
+- **.NET 10+ Ready** - Fast and future-proof
 
 ---
 
@@ -135,6 +135,14 @@ public class DataController : ControllerBase
 
 ---
 
+## 🏗️ Contemporary Architecture
+- **.NET 10+ Compatible** - Latest C# features and performance optimizations
+- **Modern API Patterns** - Supports both traditional and minimal API styles
+- **Integrated Security** - Out-of-the-box support for JWT Bearer authentication
+- **Extensible Configuration** - Fine-tune API behavior and documentation through `appsettings.json`
+
+---
+
 ## 📄 License & Info
 
 - **License:** [MIT](../LICENSE)
@@ -142,6 +150,10 @@ public class DataController : ControllerBase
 - **Company:** [Acontplus](https://www.acontplus.com)
 - **Repository:** [github.com/Acontplus-S-A-S/acontplus-dotnet-libs](https://github.com/acontplus/acontplus-dotnet-libs)
 - **Contact:** [proyectos@acontplus.com](mailto:proyectos@acontplus.com)
+
+---
+
+**Built with ❤️ for the .NET community**
 
 ---
 

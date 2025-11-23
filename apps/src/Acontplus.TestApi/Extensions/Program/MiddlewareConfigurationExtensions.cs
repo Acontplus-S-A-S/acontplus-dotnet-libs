@@ -1,5 +1,4 @@
 using Acontplus.ApiDocumentation;
-using Acontplus.Services.Extensions;
 using Serilog;
 
 public static class MiddlewareConfigurationExtensions
@@ -16,9 +15,6 @@ public static class MiddlewareConfigurationExtensions
             app.MapOpenApi();
             app.UseApiVersioningAndDocumentation();
         }
-
-        // Use application middleware pipeline
-        app.UseApplicationMiddleware(app.Environment);
 
         app.UseRouting();
         app.UseHttpsRedirection();

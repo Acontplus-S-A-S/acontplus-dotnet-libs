@@ -23,12 +23,12 @@ public static class DataConverters
             return "null";
 
         // Convert DataTable to a list of row dictionaries to avoid System.Type serialization issues
-        var rows = new List<Dictionary<string, object>>();
+        var rows = new List<Dictionary<string, object?>>();
         var namingPolicy = JsonNamingPolicy.CamelCase;
 
         foreach (DataRow dr in table.Rows)
         {
-            var row = new Dictionary<string, object>();
+            var row = new Dictionary<string, object?>();
             foreach (DataColumn col in table.Columns)
             {
                 // Apply camelCase naming to column names
@@ -144,14 +144,15 @@ public static class DataConverters
         }
     }
 
-    public static string SerializeDictionary(Dictionary<string, object> data)
+    public static string SerializeDictionary(Dictionary<string, object> data
+    )
     {
         return data.SerializeOptimized();
     }
     /// <summary>
     /// Helper method to sanitize values for serialization
     /// </summary>
-    private static object SanitizeValueForSerialization(object value)
+    private static object? SanitizeValueForSerialization(object? value)
     {
         if (value == null || value == DBNull.Value)
             return null;
@@ -178,7 +179,7 @@ public static class DataConverters
         // Check if it's an array
         if (value is Array arr)
         {
-            var result = new List<object>();
+            var result = new List<object?>();
             foreach (var item in arr)
             {
                 result.Add(SanitizeValueForSerialization(item));
@@ -187,9 +188,9 @@ public static class DataConverters
         }
 
         // Handle generic collections but preserve their actual values
-        if (value is IEnumerable collection && !(value is string))
+        if (value is IEnumerable collection && value is not string)
         {
-            var result = new List<object>();
+            var result = new List<object?>();
             foreach (var item in collection)
             {
                 result.Add(SanitizeValueForSerialization(item));
@@ -204,14 +205,14 @@ public static class DataConverters
     /// <summary>
     /// Helper method to convert DataTable to a list of dictionaries
     /// </summary>
-    private static List<Dictionary<string, object>> ConvertDataTableToList(DataTable table)
+    private static List<Dictionary<string, object?>> ConvertDataTableToList(DataTable table)
     {
-        var result = new List<Dictionary<string, object>>();
+        var result = new List<Dictionary<string, object?>>();
         var namingPolicy = JsonNamingPolicy.CamelCase;
 
         foreach (DataRow row in table.Rows)
         {
-            var dict = new Dictionary<string, object>();
+            var dict = new Dictionary<string, object?>();
             foreach (DataColumn col in table.Columns)
             {
                 var camelCaseName = namingPolicy.ConvertName(col.ColumnName);

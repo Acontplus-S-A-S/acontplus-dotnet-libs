@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Logging</PackageId>
-    <Version>1.1.4</Version>
+    <Version>1.2.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
-    <Description>Advanced logging library with Serilog integration. Provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Features official ELK stack integration with Elastic.Serilog.Sinks, ECS compliance, and high-performance logging for .NET 9 applications.</Description>
-    <PackageTags>dotnet9;logging;serilog;structured-logging;elasticsearch;elk-stack;ecs-compliance;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing;elastic-sinks;data-streams;ilm</PackageTags>
+    <Description>Advanced logging library with Serilog integration. Provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Features official ELK stack integration with Elastic.Serilog.Sinks, ECS compliance, and high-performance logging for .NET applications.</Description>
+    <PackageTags>dotnet;dotnet10;logging;serilog;structured-logging;elasticsearch;elk-stack;ecs-compliance;database-logs;console-logs;file-logs;enterprise;cloud-native;observability;tracing;elastic-sinks;data-streams;ilm</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>Enhanced with official Elastic.Serilog.Sinks integration for ELK stack support, ECS compliance, and data streams. Removed S3 dependencies for simplified architecture. Added enterprise-grade logging capabilities with structured logging, custom enrichers, and cloud-native observability patterns. Optimized for .NET 9 and high-performance production workloads.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhanced with official Elastic.Serilog.Sinks integration for ELK stack support, ECS compliance, and data streams. Removed S3 dependencies for simplified architecture. Added enterprise-grade logging capabilities with structured logging, custom enrichers, and cloud-native observability patterns. Optimized for high-performance production workloads.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Configuration;
+namespace Acontplus.Infrastructure.Configuration;
 
 /// <summary>
 /// Configuration for resilience patterns including rate limiting and circuit breakers.

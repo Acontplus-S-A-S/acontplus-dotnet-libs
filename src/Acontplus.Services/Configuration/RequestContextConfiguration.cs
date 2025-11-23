@@ -34,11 +34,6 @@ public class RequestContextConfiguration
     /// Content Security Policy configuration.
     /// </summary>
     public CspConfiguration? Csp { get; set; } = new();
-
-    /// <summary>
-    /// Resilience configuration for circuit breakers, rate limiting, and retry policies.
-    /// </summary>
-    public ResilienceConfiguration? Resilience { get; set; } = new();
 }
 
 /// <summary>

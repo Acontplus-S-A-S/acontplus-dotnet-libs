@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Middleware;
+namespace Acontplus.Infrastructure.Midleware;
 
 /// <summary>
 /// Advanced rate limiting middleware using .NET 9's built-in rate limiting.

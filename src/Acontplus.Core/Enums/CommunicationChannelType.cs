@@ -1,9 +1,10 @@
 namespace Acontplus.Core.Enums;
 
 /// <summary>
-/// Communication channel enum for notifications and contact preferences
+/// Communication channel type enum for notifications and contact preferences.
+/// Represents generic communication channel categories rather than specific platforms.
 /// </summary>
-public enum CommunicationChannel
+public enum CommunicationChannelType
 {
     /// <summary>
     /// Email communication
@@ -41,22 +42,7 @@ public enum CommunicationChannel
     Fax = 7,
 
     /// <summary>
-    /// WhatsApp message
+    /// Instant messaging (e.g., WhatsApp, Telegram, Slack, Teams)
     /// </summary>
-    WhatsApp = 8,
-
-    /// <summary>
-    /// Telegram message
-    /// </summary>
-    Telegram = 9,
-
-    /// <summary>
-    /// Slack message
-    /// </summary>
-    Slack = 10,
-
-    /// <summary>
-    /// Teams message
-    /// </summary>
-    Teams = 11
+    InstantMessaging = 8
 }

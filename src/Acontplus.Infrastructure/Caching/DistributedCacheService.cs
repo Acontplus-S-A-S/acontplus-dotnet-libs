@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Caching.Distributed;
-
-namespace Acontplus.Services.Services.Implementations;
+namespace Acontplus.Infrastructure.Caching;
 
 /// <summary>
 /// Distributed cache service implementation using Redis or other distributed cache.
@@ -101,6 +99,28 @@ public class DistributedCacheService : ICacheService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error removing key: {Key}", key);
+        }
+    }
+
+    public bool TryGetValue<T>(string key, out T? value)
+    {
+        try
+        {
+            var stringValue = _cache.GetString(key);
+            if (string.IsNullOrEmpty(stringValue))
+            {
+                value = default;
+                return false;
+            }
+
+            value = JsonSerializer.Deserialize<T>(stringValue);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving value for key: {Key}", key);
+            value = default;
+            return false;
         }
     }
 

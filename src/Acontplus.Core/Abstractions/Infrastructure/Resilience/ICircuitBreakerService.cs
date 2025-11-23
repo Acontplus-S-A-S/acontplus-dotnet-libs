@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Services.Abstractions;
+namespace Acontplus.Core.Abstractions.Infrastructure.Resilience;
 
 /// <summary>
 /// Interface for circuit breaker service providing resilience patterns.

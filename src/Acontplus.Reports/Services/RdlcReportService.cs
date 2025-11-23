@@ -1,5 +1,4 @@
 using Acontplus.Utilities.Data;
-using Acontplus.Utilities.Security.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
@@ -213,7 +212,7 @@ namespace Acontplus.Reports.Services
             {
                 var barcodeConfig = new BarcodeConfig
                 {
-                    Text = firstDataSource.Rows[0].Field<string>("codigoAutorizacion")
+                    Text = firstDataSource.Rows[0].Field<string>("codigoAutorizacion") ?? string.Empty
                 };
                 var byteBarcode = BarcodeGen.Create(barcodeConfig);
                 lr.SetParameters(new ReportParameter("barcode", Convert.ToBase64String(
@@ -225,7 +224,7 @@ namespace Acontplus.Reports.Services
 
             if (parameters.Tables.Contains("ReportParams") && parameters.Tables["ReportParams"]!.Rows.Count > 0)
             {
-                foreach (DataRow item in parameters.Tables["ReportParams"].Rows)
+                foreach (DataRow item in parameters.Tables["ReportParams"]!.Rows)
                 {
                     var paramValue = "";
                     if (Convert.ToBoolean(item["isPicture"]))
@@ -238,7 +237,11 @@ namespace Acontplus.Reports.Services
                     }
                     else
                     {
-                        paramValue = Encoding.UTF8.GetString(item.Field<byte[]>("paramValue"));
+                        var paramBytes = item.Field<byte[]>("paramValue");
+                        if (paramBytes != null)
+                        {
+                            paramValue = Encoding.UTF8.GetString(paramBytes);
+                        }
                     }
 
                     lr.SetParameters(new ReportParameter(item["paramName"].ToString(), paramValue));

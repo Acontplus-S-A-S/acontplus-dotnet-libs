@@ -159,7 +159,7 @@ public static class ResultApiExtensions
         string? correlationId = null)
     {
         return result.Match<IResult>(
-            value => CreateSuccessResult(value, result.SuccessMessage, correlationId),
+            value => CreateSuccessResult(value, result.SuccessMessage ?? string.Empty, correlationId),
             error => error.ToApiResponse<TValue>(correlationId).ToMinimalApiResult()
         );
     }

@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Services.Abstractions;
+namespace Acontplus.Core.Abstractions.Services;
 
 /// <summary>
 /// Service for managing request context information across the application.

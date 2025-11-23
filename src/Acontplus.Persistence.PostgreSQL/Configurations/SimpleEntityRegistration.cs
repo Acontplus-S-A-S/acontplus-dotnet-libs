@@ -48,8 +48,8 @@ public static class SimpleEntityRegistration
             }
 
             var entityBuilder = modelBuilder.Entity(entityType);
-            string determinedTableName = null;
-            string determinedSchemaName = null;
+            string? determinedTableName = null;
+            string? determinedSchemaName = null;
             var isTableNameExplicitlyProvided = false;
             var isSchemaNameExplicitlyProvided = false;
 
@@ -117,7 +117,7 @@ public static class SimpleEntityRegistration
                 var keyType = GetPrimaryKeyType(entityType);
                 var baseConfigurationType = typeof(SimpleEntityTypeConfiguration<>).MakeGenericType(entityType);
                 var baseConfiguration = Activator.CreateInstance(baseConfigurationType);
-                modelBuilder.ApplyConfiguration((dynamic)baseConfiguration);
+                modelBuilder.ApplyConfiguration((dynamic)baseConfiguration!);
             }
             catch (Exception ex)
             {
@@ -136,7 +136,7 @@ public static class SimpleEntityRegistration
                     try
                     {
                         var customConfigInstance = Activator.CreateInstance(customConfigType);
-                        modelBuilder.ApplyConfiguration((dynamic)customConfigInstance);
+                        modelBuilder.ApplyConfiguration((dynamic)customConfigInstance!);
                     }
                     catch (Exception ex)
                     {
@@ -170,7 +170,7 @@ public static class SimpleEntityRegistration
     /// </summary>
     public static void RegisterEntities(ModelBuilder modelBuilder, Type dbContextType, params Type[] entityTypes)
     {
-        RegisterEntities(modelBuilder, dbContextType, null, null, entityTypes);
+        RegisterEntities(modelBuilder, dbContextType, null!, null!, entityTypes);
     }
 
     /// <summary>
@@ -183,9 +183,9 @@ public static class SimpleEntityRegistration
     {
         var schemaMap = entitySchemas.ToDictionary(
             x => x.entityType,
-            x => (x.schema, table: (string)null));
+            x => (x.schema, table: (string?)null));
         var entityTypes = entitySchemas.Select(x => x.entityType).ToArray();
-        RegisterEntities(modelBuilder, dbContextType, schemaMap, null, entityTypes);
+        RegisterEntities(modelBuilder, dbContextType, schemaMap!, null!, entityTypes);
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public static class SimpleEntityRegistration
             x => x.entityType,
             x => (x.schema, x.table));
         var entityTypes = nameConfigs.Select(x => x.entityType).ToArray();
-        RegisterEntities(modelBuilder, dbContextType, nameMap, null, entityTypes);
+        RegisterEntities(modelBuilder, dbContextType, nameMap, null!, entityTypes);
     }
 
     /// <summary>
@@ -212,6 +212,6 @@ public static class SimpleEntityRegistration
         Dictionary<Type, Type> customConfigurations,
         params Type[] entityTypes)
     {
-        RegisterEntities(modelBuilder, dbContextType, null, customConfigurations, entityTypes);
+        RegisterEntities(modelBuilder, dbContextType, null!, customConfigurations, entityTypes);
     }
 }

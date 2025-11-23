@@ -17,7 +17,7 @@ public static class XmlValidator
     ///     Validates the provided XmlDocument against an XSD schema file.
     /// </summary>
     /// <param name="xmlDocument">The XML document to validate.</param>
-    /// <param name="xsdFilePath">The path to the XSD file.</param>
+    /// <param name="xsdStream">The stream containing the XSD schema.</param>
     /// <returns>A list of ValidationError objects containing error details.</returns>
     public static List<ValidationError> Validate(XmlDocument xmlDocument, Stream xsdStream)
     {

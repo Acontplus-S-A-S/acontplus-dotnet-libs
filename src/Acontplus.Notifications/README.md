@@ -1,10 +1,10 @@
 # Acontplus.Notifications
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Notifications.svg)](https://www.nuget.org/packages/Acontplus.Notifications)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A .NET 9+ library for notifications: email, MailKit, Amazon SES, WhatsApp, and push. Includes templates, queueing, and advanced delivery options.
+A .NET library for notifications: email, MailKit, Amazon SES, WhatsApp, and push. Includes templates, queueing, and advanced delivery options.
 
 ## 🚀 Features
 

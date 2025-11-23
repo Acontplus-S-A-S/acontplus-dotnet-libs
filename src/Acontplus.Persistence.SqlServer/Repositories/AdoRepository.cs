@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using Acontplus.Core.Extensions;
 using Acontplus.Persistence.SqlServer.Mapping;
+using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
 
@@ -151,7 +151,7 @@ public class AdoRepository : IAdoRepository
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
-            DbConnection connectionToClose = null;
+            DbConnection? connectionToClose = null;
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);

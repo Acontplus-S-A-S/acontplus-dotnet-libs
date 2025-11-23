@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Utilities</PackageId>
-    <Version>1.4.4</Version>
+    <Version>2.0.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Comprehensive utilities library with cross-cutting concerns and general-purpose tools. Includes encryption, IO operations, text processing, time utilities, API helpers, JSON utilities, and security features for enterprise applications.</Description>
-    <PackageTags>dotnet9;utilities;format;io;security;text;time;api;helpers;encryption;json;bcrypt;cross-cutting;enterprise</PackageTags>
+    <PackageTags>dotnet;dotnet10;utilities;format;io;security;text;time;api;helpers;encryption;json;bcrypt;cross-cutting;enterprise</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

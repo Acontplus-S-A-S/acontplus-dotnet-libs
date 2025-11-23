@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using System.Runtime.Versioning;
 
 namespace Acontplus.Reports.Extensions;
 
@@ -23,7 +24,12 @@ public static class ServiceCollectionExtensions
 
         // Register services
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
-        services.TryAddScoped<IRdlcPrinterService, Services.RdlcPrinterService>();
+
+        // Register printer service only on Windows 6.1+
+        if (OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+        {
+            AddPrinterServiceIfSupported(services);
+        }
 
         // Register report definition cache (constructed from configured options).
         // RdlcPrinterService depends on ReportDefinitionCache in its constructor,
@@ -54,7 +60,12 @@ public static class ServiceCollectionExtensions
 
         // Register services
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
-        services.TryAddScoped<IRdlcPrinterService, Services.RdlcPrinterService>();
+
+        // Register printer service only on Windows 6.1+
+        if (OperatingSystem.IsWindowsVersionAtLeast(6, 1))
+        {
+            AddPrinterServiceIfSupported(services);
+        }
 
         // Register report definition cache (constructed from configured options).
         services.AddSingleton<Services.ReportDefinitionCache>(sp =>
@@ -66,5 +77,11 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
+    }
+
+    [SupportedOSPlatform("windows6.1")]
+    private static void AddPrinterServiceIfSupported(IServiceCollection services)
+    {
+        services.TryAddScoped<IRdlcPrinterService, Services.RdlcPrinterService>();
     }
 }

@@ -34,10 +34,10 @@
         </member>
         <member name="M:Acontplus.ApiDocumentation.ConfigureSwaggerOptions.CreateVersionInfo(Asp.Versioning.ApiExplorer.ApiVersionDescription)">
             <summary>
-            Creates the <see cref="T:Microsoft.OpenApi.Models.OpenApiInfo"/> object for a given API version, including title, version, description, contact, and license information.
+            Creates the <see cref="T:Microsoft.OpenApi.OpenApiInfo"/> object for a given API version, including title, version, description, contact, and license information.
             </summary>
             <param name="description">The description of the API version.</param>
-            <returns>An <see cref="T:Microsoft.OpenApi.Models.OpenApiInfo"/> object with metadata for the Swagger document.</returns>
+            <returns>An <see cref="T:Microsoft.OpenApi.OpenApiInfo"/> object with metadata for the Swagger document.</returns>
         </member>
         <member name="T:Acontplus.ApiDocumentation.ApiDocumentationExtensions">
             <summary>

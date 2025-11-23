@@ -341,7 +341,7 @@ public sealed class AmazonSesService : IMailKitService, IDisposable
         var alternativeBoundary = $"----=_alt_{Guid.NewGuid():N}";
 
         // Headers (mantener igual)
-        message.AppendLine($"From: {FormatEmailAddress(email.SenderName, email.SenderEmail)}");
+        message.AppendLine($"From: {FormatEmailAddress(email.SenderName, email.SenderEmail ?? string.Empty)}");
 
         var toAddresses = ParseAndValidateRecipients(email.RecipientEmail, "To");
         message.AppendLine($"To: {string.Join(", ", toAddresses)}");
@@ -402,7 +402,7 @@ public sealed class AmazonSesService : IMailKitService, IDisposable
                 }
 
                 message.AppendLine($"--{boundary}");
-                message.AppendLine($"Content-Type: {GetMimeType(file.FileName)}; name=\"{file.FileName}\"");
+                message.AppendLine($"Content-Type: {GetMimeType(file.FileName ?? string.Empty)}; name=\"{file.FileName}\"");
                 message.AppendLine("Content-Transfer-Encoding: base64");
                 message.AppendLine($"Content-Disposition: attachment; filename=\"{file.FileName}\"");
                 message.AppendLine();
@@ -429,7 +429,7 @@ public sealed class AmazonSesService : IMailKitService, IDisposable
         string? logo,
         CancellationToken ct)
     {
-        var templatePath = Path.Combine(_templatesPath, templateName);
+        var templatePath = Path.Combine(_templatesPath ?? string.Empty, templateName);
         if (!File.Exists(templatePath))
         {
             throw new FileNotFoundException($"Template file not found: {templatePath}");

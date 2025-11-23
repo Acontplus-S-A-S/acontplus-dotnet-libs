@@ -42,9 +42,9 @@ namespace Acontplus.Billing.Services.Documents
             if (infoTributariaNode == null)
                 return null;
 
-            var claveAcceso = infoTributariaNode.SelectSingleNode("claveAcceso")?.InnerText;
-            var codDoc = infoTributariaNode.SelectSingleNode("codDoc")?.InnerText;
-            var fechaAutorizacion = xmlDocSri.SelectSingleNode("//fechaAutorizacion")?.InnerText;
+            var claveAcceso = infoTributariaNode.SelectSingleNode("claveAcceso")?.InnerText ?? string.Empty;
+            var codDoc = infoTributariaNode.SelectSingleNode("codDoc")?.InnerText ?? string.Empty;
+            var fechaAutorizacion = xmlDocSri.SelectSingleNode("//fechaAutorizacion")?.InnerText ?? string.Empty;
 
             string versionComp, fechaEmision;
 
@@ -102,7 +102,7 @@ namespace Acontplus.Billing.Services.Documents
                     break;
                 case "06":
                     versionComp = GetAttributeValue(xmlComprobante, "guiaRemision", TagVersionComp);
-                    fechaEmision = ""; // se asignará desde la autorización
+                    fechaEmision = string.Empty; // se asignará desde la autorización
                     break;
                 case "07":
                     versionComp = GetAttributeValue(xmlComprobante, "comprobanteRetencion", TagVersionComp);
@@ -126,3 +126,4 @@ namespace Acontplus.Billing.Services.Documents
         }
     }
 }
+

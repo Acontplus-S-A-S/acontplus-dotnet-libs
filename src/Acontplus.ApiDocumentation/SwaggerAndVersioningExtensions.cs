@@ -1,8 +1,8 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Acontplus.ApiDocumentation;
 
@@ -48,21 +48,19 @@ public static class ApiDocumentationExtensions
         services.AddSwaggerGen(options =>
         {
             // Enable JWT Bearer token authentication in the Swagger UI
-            var securitySchema = new OpenApiSecurityScheme
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token.",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            };
+                BearerFormat = "JWT"
+            });
 
-            options.AddSecurityDefinition("Bearer", securitySchema);
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                { securitySchema, ["Bearer"] }
+                [new OpenApiSecuritySchemeReference("Bearer")] = []
             });
 
             // Include XML comments from all assemblies in the base directory

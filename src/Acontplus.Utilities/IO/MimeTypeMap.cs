@@ -369,7 +369,7 @@ public static class MimeTypeMap
             { ".pls", "audio/scpls" },
             { ".pma", "application/x-perfmon" },
             { ".pmc", "application/x-perfmon" },
-            { ".pml", "application/x-perfmon" },
+            { ".pml" , "application/x-perfmon" },
             { ".pmr", "application/x-perfmon" },
             { ".pmw", "application/x-perfmon" },
             { ".png", "image/png" },
@@ -700,7 +700,7 @@ public static class MimeTypeMap
         }
 
 
-        return Mappings.Value.TryGetValue(extension, out string mime) ? mime : "application/octet-stream";
+        return Mappings.Value.TryGetValue(extension, out string? mime) ? mime : "application/octet-stream";
     }
 
     public static string GetExtension(string mimeType)
@@ -709,7 +709,7 @@ public static class MimeTypeMap
             ? throw new ArgumentNullException("mimeType")
             : mimeType.StartsWith(".")
             ? throw new ArgumentException("Requested mime type is not valid: " + mimeType)
-            : Mappings.Value.TryGetValue(mimeType, out string extension)
+            : Mappings.Value.TryGetValue(mimeType, out string? extension)
             ? extension
             : throw new ArgumentException("Requested mime type is not registered: " + mimeType);
     }

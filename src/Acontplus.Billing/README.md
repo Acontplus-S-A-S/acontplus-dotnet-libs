@@ -1,10 +1,10 @@
 # Acontplus.Billing
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Billing.svg)](https://www.nuget.org/packages/Acontplus.Billing)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A comprehensive .NET 9+ library for electronic invoicing and digital document handling in Ecuador, providing models, services, and utilities to facilitate integration with SRI (Servicio de Rentas Internas) systems.
+A comprehensive .NET library for electronic invoicing and digital document handling in Ecuador, providing models, services, and utilities to facilitate integration with SRI (Servicio de Rentas Internas) systems.
 
 ## 🚀 Features
 

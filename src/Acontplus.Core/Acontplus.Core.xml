@@ -4,6 +4,150 @@
         <name>Acontplus.Core</name>
     </assembly>
     <members>
+        <member name="T:Acontplus.Core.Abstractions.Infrastructure.Caching.ICacheService">
+            <summary>
+            Interface for caching service supporting both in-memory and distributed caching.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics">
+            <summary>
+            Cache statistics information.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.TotalEntries">
+            <summary>
+            Total number of cache entries.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.TotalMemoryBytes">
+            <summary>
+            Total memory usage in bytes.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.HitRatePercentage">
+            <summary>
+            Cache hit rate percentage.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.MissRatePercentage">
+            <summary>
+            Cache miss rate percentage.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.Evictions">
+            <summary>
+            Number of evictions.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Core.Abstractions.Infrastructure.Caching.CacheStatistics.LastCleanup">
+            <summary>
+            Last cleanup time.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Infrastructure.Monitoring.IMetricsService">
+            <summary>
+            Interface for metrics service.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Monitoring.IMetricsService.IncrementCounter(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Increment a counter metric.
+            </summary>
+            <param name="name">The name of the counter.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Monitoring.IMetricsService.RecordGauge(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a gauge metric.
+            </summary>
+            <param name="name">The name of the gauge.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Monitoring.IMetricsService.RecordHistogram(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Record a histogram metric.
+            </summary>
+            <param name="name">The name of the histogram.</param>
+            <param name="value">The value to record.</param>
+            <param name="tags">Optional tags for the metric.</param>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService">
+            <summary>
+            Interface for circuit breaker service providing resilience patterns.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.ExecuteAsync``1(System.Func{System.Threading.Tasks.Task{``0}},System.String)">
+            <summary>
+            Execute an action with circuit breaker protection.
+            </summary>
+            <typeparam name="TResult">The result type.</typeparam>
+            <param name="action">The action to execute.</param>
+            <param name="policyName">Optional policy name for specific configurations.</param>
+            <returns>The result of the action.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.ExecuteAsync(System.Func{System.Threading.Tasks.Task},System.String)">
+            <summary>
+            Execute an action with circuit breaker protection.
+            </summary>
+            <param name="action">The action to execute.</param>
+            <param name="policyName">Optional policy name for specific configurations.</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.Execute``1(System.Func{``0},System.String)">
+            <summary>
+            Execute a synchronous action with circuit breaker protection.
+            </summary>
+            <typeparam name="TResult">The result type.</typeparam>
+            <param name="action">The action to execute.</param>
+            <param name="policyName">Optional policy name for specific configurations.</param>
+            <returns>The result of the action.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.Execute(System.Action,System.String)">
+            <summary>
+            Execute a synchronous action with circuit breaker protection.
+            </summary>
+            <param name="action">The action to execute.</param>
+            <param name="policyName">Optional policy name for specific configurations.</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.GetCircuitBreakerState(System.String)">
+            <summary>
+            Get the current state of a circuit breaker policy.
+            </summary>
+            <param name="policyName">The policy name.</param>
+            <returns>The current circuit breaker state.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.OpenCircuit(System.String)">
+            <summary>
+            Manually open a circuit breaker.
+            </summary>
+            <param name="policyName">The policy name.</param>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Infrastructure.Resilience.ICircuitBreakerService.CloseCircuit(System.String)">
+            <summary>
+            Manually close a circuit breaker.
+            </summary>
+            <param name="policyName">The policy name.</param>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Infrastructure.Resilience.CircuitBreakerState">
+            <summary>
+            Represents the state of a circuit breaker.
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Abstractions.Infrastructure.Resilience.CircuitBreakerState.Closed">
+            <summary>
+            Circuit is closed and allowing requests.
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Abstractions.Infrastructure.Resilience.CircuitBreakerState.Open">
+            <summary>
+            Circuit is open and blocking requests.
+            </summary>
+        </member>
+        <member name="F:Acontplus.Core.Abstractions.Infrastructure.Resilience.CircuitBreakerState.HalfOpen">
+            <summary>
+            Circuit is half-open and testing if it should close.
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.IAdoRepository">
             <summary>
             ADO.NET repository interface for high-performance, raw SQL operations.
@@ -185,6 +329,51 @@
             <param name="pagination">Pagination parameters</param>
             <param name="cancellationToken">Cancellation token</param>
             <returns>Paged query results</returns>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Services.IRequestContextService">
+            <summary>
+            Service for managing request context information across the application.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetRequestId">
+            <summary>
+            Gets the current request ID.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetCorrelationId">
+            <summary>
+            Gets the current correlation ID.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetTenantId">
+            <summary>
+            Gets the current tenant ID.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetClientId">
+            <summary>
+            Gets the current client ID.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetIssuer">
+            <summary>
+            Gets the current issuer.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetDeviceType">
+            <summary>
+            Gets the detected device type for the current request.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.IsMobileRequest">
+            <summary>
+            Determines if the current request is from a mobile device.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Services.IRequestContextService.GetRequestContext">
+            <summary>
+            Gets all request context information as a dictionary.
+            </summary>
         </member>
         <member name="T:Acontplus.Core.Configuration.PaginationMetadataOptions">
             <summary>
@@ -916,64 +1105,50 @@
             Entity has been deleted (soft delete)
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Enums.CommunicationChannel">
+        <member name="T:Acontplus.Core.Enums.CommunicationChannelType">
             <summary>
-            Communication channel enum for notifications and contact preferences
+            Communication channel type enum for notifications and contact preferences.
+            Represents generic communication channel categories rather than specific platforms.
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Email">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.Email">
             <summary>
             Email communication
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.SMS">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.SMS">
             <summary>
             SMS text message
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Phone">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.Phone">
             <summary>
             Phone call
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Push">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.Push">
             <summary>
             Push notification (mobile/web)
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.InApp">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.InApp">
             <summary>
             In-app notification
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Mail">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.Mail">
             <summary>
             Postal mail
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Fax">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.Fax">
             <summary>
             Fax communication
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.WhatsApp">
+        <member name="F:Acontplus.Core.Enums.CommunicationChannelType.InstantMessaging">
             <summary>
-            WhatsApp message
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Telegram">
-            <summary>
-            Telegram message
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Slack">
-            <summary>
-            Slack message
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.CommunicationChannel.Teams">
-            <summary>
-            Teams message
+            Instant messaging (e.g., WhatsApp, Telegram, Slack, Teams)
             </summary>
         </member>
         <member name="T:Acontplus.Core.Enums.CompanySize">
@@ -1686,82 +1861,68 @@
             Common law marriage
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Enums.PaymentMethod">
+        <member name="T:Acontplus.Core.Enums.PaymentMethodType">
             <summary>
-            Payment method enum for e-commerce and financial applications
+            Payment method type enum for e-commerce and financial applications.
+            Represents generic payment method categories rather than specific providers.
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.Cash">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.Cash">
             <summary>
             Cash payment
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.CreditCard">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.CreditCard">
             <summary>
             Credit card payment
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.DebitCard">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.DebitCard">
             <summary>
             Debit card payment
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.BankTransfer">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.BankTransfer">
             <summary>
             Bank transfer
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.PayPal">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.DigitalWallet">
             <summary>
-            PayPal payment
+            Digital wallet payment (e.g., PayPal, Apple Pay, Google Pay)
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.ApplePay">
-            <summary>
-            Apple Pay
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.GooglePay">
-            <summary>
-            Google Pay
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.Stripe">
-            <summary>
-            Stripe payment
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.Cryptocurrency">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.Cryptocurrency">
             <summary>
             Cryptocurrency payment
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.Check">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.Check">
             <summary>
             Check payment
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.MoneyOrder">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.MoneyOrder">
             <summary>
             Money order
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.GiftCard">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.GiftCard">
             <summary>
             Gift card or voucher
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.StoreCredit">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.StoreCredit">
             <summary>
             Store credit
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.BuyNowPayLater">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.BuyNowPayLater">
             <summary>
             Buy now, pay later (BNPL)
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.PaymentMethod.MobilePayment">
+        <member name="F:Acontplus.Core.Enums.PaymentMethodType.MobilePayment">
             <summary>
             Mobile payment (generic)
             </summary>
@@ -1946,79 +2107,46 @@
             Lady
             </summary>
         </member>
-        <member name="T:Acontplus.Core.Enums.UserRole">
+        <member name="T:Acontplus.Core.Enums.UserRoleType">
             <summary>
-            User role enum for authorization and access control across applications
+            User role type enum for authorization and access control across applications.
+            Represents generic role levels rather than context-specific positions.
+            Higher numeric values generally indicate higher privilege levels.
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Guest">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.Guest">
             <summary>
-            Guest user with minimal access
+            Guest user with minimal access (unauthenticated or limited access)
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.User">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.User">
             <summary>
-            Standard user with basic access
+            Standard authenticated user with basic access to their own data
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Customer">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.Employee">
             <summary>
-            Customer with purchase access
+            Employee with internal organizational access
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Employee">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.Manager">
             <summary>
-            Employee with internal access
+            Manager with team/department management capabilities
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Manager">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.Administrator">
             <summary>
-            Manager with team management access
+            Administrator with elevated organizational access and user management
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Supervisor">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.SuperAdmin">
             <summary>
-            Supervisor with oversight access
+            Super administrator with full system access and configuration capabilities
             </summary>
         </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Administrator">
+        <member name="F:Acontplus.Core.Enums.UserRoleType.ServiceAccount">
             <summary>
-            Administrator with elevated access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.SuperAdmin">
-            <summary>
-            Super administrator with full system access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.SystemAdmin">
-            <summary>
-            System administrator with technical access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Support">
-            <summary>
-            Support agent with help desk access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Moderator">
-            <summary>
-            Moderator with content moderation access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.Auditor">
-            <summary>
-            Auditor with read-only audit access
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.ApiUser">
-            <summary>
-            API user for system integrations
-            </summary>
-        </member>
-        <member name="F:Acontplus.Core.Enums.UserRole.ServiceAccount">
-            <summary>
-            Service account for automated processes
+            Service account for automated processes, system integrations, and APIs
             </summary>
         </member>
         <member name="T:Acontplus.Core.Extensions.FilterPredicateExtensions">
@@ -2273,7 +2401,7 @@
                 Validates the provided XmlDocument against an XSD schema file.
             </summary>
             <param name="xmlDocument">The XML document to validate.</param>
-            <param name="xsdFilePath">The path to the XSD file.</param>
+            <param name="xsdStream">The stream containing the XSD schema.</param>
             <returns>A list of ValidationError objects containing error details.</returns>
         </member>
         <member name="M:Acontplus.Core.Validation.XmlValidator.ExportErrorsToJson(System.Collections.Generic.List{Acontplus.Core.Validation.ValidationError},System.String)">

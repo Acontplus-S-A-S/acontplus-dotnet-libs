@@ -4,13 +4,13 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Reports.svg)](https://www.nuget.org/packages/Acontplus.Reports)
 
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 
-A high-performance .NET 9+ library for RDLC report generation and direct printing with advanced features for enterprise applications. Optimized for high concurrency, large reports, thermal printers, and production workloads.
+A high-performance .NET library for RDLC report generation and direct printing with advanced features for enterprise applications. Optimized for high concurrency, large reports, thermal printers, and production workloads.
 
 
 

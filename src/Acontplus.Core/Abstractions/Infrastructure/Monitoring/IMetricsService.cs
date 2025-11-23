@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Services.Abstractions;
+namespace Acontplus.Core.Abstractions.Infrastructure.Monitoring;
 
 /// <summary>
 /// Interface for metrics service.

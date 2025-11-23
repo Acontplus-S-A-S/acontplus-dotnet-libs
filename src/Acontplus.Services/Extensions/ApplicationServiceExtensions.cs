@@ -1,3 +1,4 @@
+using Acontplus.Core.Abstractions.Services;
 using Acontplus.Services.Extensions.Security;
 using Acontplus.Services.Filters;
 using Acontplus.Services.Policies;
@@ -5,16 +6,15 @@ using Acontplus.Services.Policies;
 namespace Acontplus.Services.Extensions;
 
 /// <summary>
-/// Extension methods for registering application services, filters, and policies.
+/// Extension methods for registering complete application stack.
+/// For infrastructure services (caching, resilience), use Acontplus.Infrastructure.
 /// </summary>
 public static class ApplicationServiceExtensions
 {
     /// <summary>
-    /// Registers all application services including core services, filters, and policies.
+    /// Registers all application services (context, security, device detection) WITHOUT infrastructure.
+    /// For caching and resilience, use services.AddInfrastructureServices() from Acontplus.Infrastructure.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddApplicationServices(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -26,7 +26,6 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IRequestContextService, RequestContextService>();
         services.AddScoped<ISecurityHeaderService, SecurityHeaderService>();
         services.AddScoped<IDeviceDetectionService, DeviceDetectionService>();
-        services.AddScoped<IMetricsService, MetricsService>();
 
         // Register action filters
         services.AddScoped<ValidationActionFilter>();
@@ -43,9 +42,6 @@ public static class ApplicationServiceExtensions
     /// <summary>
     /// Registers authorization policies for multi-tenant and device-aware scenarios.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="allowedClientIds">Optional list of allowed client IDs.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddAuthorizationPolicies(
         this IServiceCollection services,
         List<string>? allowedClientIds = null)
@@ -67,11 +63,9 @@ public static class ApplicationServiceExtensions
     }
 
     /// <summary>
-    /// Configures application middleware pipeline with proper ordering for security and context management.
+    /// Configures application middleware pipeline WITHOUT infrastructure middleware.
+    /// For rate limiting, use app.UseInfrastructureMiddleware() from Acontplus.Infrastructure.
     /// </summary>
-    /// <param name="app">The application builder.</param>
-    /// <param name="environment">The web host environment.</param>
-    /// <returns>The application builder for chaining.</returns>
     public static IApplicationBuilder UseApplicationMiddleware(
         this IApplicationBuilder app,
         IWebHostEnvironment environment)
@@ -81,9 +75,6 @@ public static class ApplicationServiceExtensions
 
         // CSP nonce generation
         app.UseMiddleware<CspNonceMiddleware>();
-
-        // Advanced rate limiting
-        app.UseAdvancedRateLimiting();
 
         // Request context and tracking
         app.UseMiddleware<RequestContextMiddleware>();
@@ -102,9 +93,6 @@ public static class ApplicationServiceExtensions
     /// <summary>
     /// Configures MVC with application filters and JSON serialization options.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="enableGlobalFilters">Whether to enable global action filters.</param>
-    /// <returns>The MVC builder for further configuration.</returns>
     public static IMvcBuilder AddApplicationMvc(
         this IServiceCollection services,
         bool enableGlobalFilters = true)
@@ -127,11 +115,9 @@ public static class ApplicationServiceExtensions
     }
 
     /// <summary>
-    /// Adds comprehensive health checks for application services.
+    /// Adds health checks for application services only.
+    /// For infrastructure health checks, use services.AddInfrastructureHealthChecks().
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddApplicationHealthChecks(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -148,8 +134,6 @@ public static class ApplicationServiceExtensions
     /// <summary>
     /// Configures API explorer for documentation tools.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddApiExplorer(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();

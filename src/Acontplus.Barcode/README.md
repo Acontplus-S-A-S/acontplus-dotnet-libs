@@ -1,7 +1,7 @@
 # Acontplus.Barcode
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Barcode.svg)](https://www.nuget.org/packages/Acontplus.Barcode)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Advanced barcode generation library with ZXing.Net integration. Supports QR codes, 1D/2D barcodes, custom styling, and high-performance image generation using SkiaSharp for cross-platform applications.
@@ -319,7 +319,7 @@ public class BarcodeConfig
 
 ## 🔧 Dependencies
 
-- **.NET 9.0+** - Advanced .NET framework
+- **.NET 10+** - Modern .NET framework
 - **ZXing.Net** - Barcode generation library
 - **ZXing.Net.Bindings.SkiaSharp** - SkiaSharp bindings for ZXing
 - **SkiaSharp** - Cross-platform graphics library
@@ -358,4 +358,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the .NET community using cutting-edge .NET 9 features**
+**Built with ❤️ for the .NET community using cutting-edge .NET features**
