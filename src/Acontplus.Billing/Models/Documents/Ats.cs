@@ -45,16 +45,16 @@ public record Purchase
     public string AplicConvDobTrib { get; init; } = string.Empty;
     public string PagExtSujRetNorLeg { get; init; } = string.Empty;
     public string FormaPago { get; init; } = string.Empty;
-    public string DocModificado { get; init; }
-    public string EstabModificado { get; init; }
-    public string PtoEmiModificado { get; init; }
-    public string SecModificado { get; init; }
-    public string AutModificado { get; init; }
-    public string EstabRetencion1 { get; init; }
-    public string PtoEmiRetencion1 { get; init; }
-    public string SecRetencion1 { get; init; }
-    public string AutRetencion1 { get; init; }
-    public string FechaEmiRet1 { get; init; }
+    public string? DocModificado { get; init; }
+    public string? EstabModificado { get; init; }
+    public string? PtoEmiModificado { get; init; }
+    public string? SecModificado { get; init; }
+    public string? AutModificado { get; init; }
+    public string? EstabRetencion1 { get; init; }
+    public string? PtoEmiRetencion1 { get; init; }
+    public string? SecRetencion1 { get; init; }
+    public string? AutRetencion1 { get; init; }
+    public string? FechaEmiRet1 { get; init; }
     public string NroDocumento { get; init; } = string.Empty; // Used for linking with withholding taxes
 }
 
@@ -72,9 +72,9 @@ public record Sale
 {
     public string TpIdCliente { get; init; } = string.Empty;
     public string IdCliente { get; init; } = string.Empty;
-    public string ParteRelVtas { get; init; }
-    public string TipoCliente { get; init; }
-    public string DenoCli { get; init; }
+    public string? ParteRelVtas { get; init; }
+    public string? TipoCliente { get; init; }
+    public string? DenoCli { get; init; }
     public string TipoComprobante { get; init; } = string.Empty;
     public string TipoEmision { get; init; } = string.Empty;
     public string NumeroComprobantes { get; init; } = string.Empty;
@@ -82,8 +82,8 @@ public record Sale
     public string BaseImponible { get; init; } = string.Empty;
     public string BaseImpGrav { get; init; } = string.Empty;
     public string MontoIva { get; init; } = string.Empty;
-    public string TipoCompe { get; init; }
-    public string MontoCompensacion { get; init; }
+    public string? TipoCompe { get; init; }
+    public string? MontoCompensacion { get; init; }
     public string MontoIce { get; init; } = string.Empty;
     public string ValorRetIva { get; init; } = string.Empty;
     public string ValorRetRenta { get; init; } = string.Empty;

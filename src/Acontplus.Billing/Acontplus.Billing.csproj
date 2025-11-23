@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Billing</PackageId>
-    <Version>1.0.9</Version>
+    <Version>1.1.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Complete library for electronic invoicing and SRI integration in Ecuador. Includes models, services, XML validation, SRI web service support, and embedded XSD schemas for compliance.</Description>
@@ -48,8 +48,8 @@
     <EmbeddedResource Include="Resources\Schemas\NotaCredito_V1.1.0.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acontplus.Barcode\Acontplus.Barcode.csproj" />
-    <ProjectReference Include="..\Acontplus.Utilities\Acontplus.Utilities.csproj" />
+    <PackageReference Include="Acontplus.Barcode" />
+    <PackageReference Include="Acontplus.Utilities" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>

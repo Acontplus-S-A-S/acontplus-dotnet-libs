@@ -10,17 +10,17 @@ public class InfoTributariaParser : IInfoTributariaParser
     {
         comprobante.InfoTributaria = new InfoTributaria
         {
-            Ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText,
-            TipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText,
-            RazonSocial = nodeInfoTrib.SelectSingleNode("razonSocial")?.InnerText,
-            NombreComercial = nodeInfoTrib.SelectSingleNode("nombreComercial")?.InnerText ?? "",
-            Ruc = nodeInfoTrib.SelectSingleNode("ruc")?.InnerText,
-            ClaveAcceso = nodeInfoTrib.SelectSingleNode("claveAcceso")?.InnerText,
-            CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText,
-            Estab = nodeInfoTrib.SelectSingleNode("estab")?.InnerText,
-            PtoEmi = nodeInfoTrib.SelectSingleNode("ptoEmi")?.InnerText,
-            Secuencial = nodeInfoTrib.SelectSingleNode("secuencial")?.InnerText,
-            DirMatriz = nodeInfoTrib.SelectSingleNode("dirMatriz")?.InnerText
+            Ambiente = nodeInfoTrib.SelectSingleNode("ambiente")?.InnerText ?? string.Empty,
+            TipoEmision = nodeInfoTrib.SelectSingleNode("tipoEmision")?.InnerText ?? string.Empty,
+            RazonSocial = nodeInfoTrib.SelectSingleNode("razonSocial")?.InnerText ?? string.Empty,
+            NombreComercial = nodeInfoTrib.SelectSingleNode("nombreComercial")?.InnerText ?? string.Empty,
+            Ruc = nodeInfoTrib.SelectSingleNode("ruc")?.InnerText ?? string.Empty,
+            ClaveAcceso = nodeInfoTrib.SelectSingleNode("claveAcceso")?.InnerText ?? string.Empty,
+            CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText ?? string.Empty,
+            Estab = nodeInfoTrib.SelectSingleNode("estab")?.InnerText ?? string.Empty,
+            PtoEmi = nodeInfoTrib.SelectSingleNode("ptoEmi")?.InnerText ?? string.Empty,
+            Secuencial = nodeInfoTrib.SelectSingleNode("secuencial")?.InnerText ?? string.Empty,
+            DirMatriz = nodeInfoTrib.SelectSingleNode("dirMatriz")?.InnerText ?? string.Empty
         };
     }
 }

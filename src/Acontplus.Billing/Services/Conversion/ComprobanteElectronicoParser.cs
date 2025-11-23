@@ -34,8 +34,8 @@ public class ComprobanteElectronicoParser : IXmlDocumentParser<ComprobanteElectr
             }
 
             // Parse authorization info
-            result.NumeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText;
-            result.FechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText;
+            result.NumeroAutorizacion = nodeAuth.SelectSingleNode("numeroAutorizacion")?.InnerText ?? string.Empty;
+            result.FechaAutorizacion = nodeAuth.SelectSingleNode("fechaAutorizacion")?.InnerText ?? string.Empty;
 
             // Extract and load the comprobante
             var nodeComp = nodeAuth.SelectSingleNode("comprobante");
@@ -52,7 +52,7 @@ public class ComprobanteElectronicoParser : IXmlDocumentParser<ComprobanteElectr
             var nodeInfoTrib = xmlComp.GetElementsByTagName("infoTributaria")[0];
             if (nodeInfoTrib != null)
             {
-                result.CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText;
+                result.CodDoc = nodeInfoTrib.SelectSingleNode("codDoc")?.InnerText ?? string.Empty;
                 _infoTributariaParser.Parse(nodeInfoTrib, result);
             }
             else

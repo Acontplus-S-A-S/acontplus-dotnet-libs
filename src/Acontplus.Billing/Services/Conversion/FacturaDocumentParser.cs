@@ -14,7 +14,7 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
         try
         {
             var nodeFact = xmlDocument.GetElementsByTagName("factura")[0];
-            comprobante.VersionComp = nodeFact?.Attributes?["version"]?.Value;
+            comprobante.VersionComp = nodeFact?.Attributes?["version"]?.Value ?? string.Empty;
 
             var nodeInfoFactura = xmlDocument.GetElementsByTagName("infoFactura")[0];
             if (nodeInfoFactura != null)
@@ -46,20 +46,20 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
     {
         var infoFac = new InfoFactura
         {
-            FechaEmision = nodeInfoFactura.SelectSingleNode("fechaEmision")?.InnerText,
-            DirEstablecimiento = nodeInfoFactura.SelectSingleNode("dirEstablecimiento")?.InnerText ?? "",
-            ContribuyenteEspecial = nodeInfoFactura.SelectSingleNode("contribuyenteEspecial")?.InnerText ?? "",
-            ObligadoContabilidad = nodeInfoFactura.SelectSingleNode("obligadoContabilidad")?.InnerText ?? "",
-            TipoIdentificacionComprador = nodeInfoFactura.SelectSingleNode("tipoIdentificacionComprador")?.InnerText,
-            RazonSocialComprador = nodeInfoFactura.SelectSingleNode("razonSocialComprador")?.InnerText,
-            IdentificacionComprador = nodeInfoFactura.SelectSingleNode("identificacionComprador")?.InnerText,
-            DireccionComprador = nodeInfoFactura.SelectSingleNode("direccionComprador")?.InnerText ?? "",
-            GuiaRemision = nodeInfoFactura.SelectSingleNode("guiaRemision")?.InnerText ?? "",
-            TotalSinImpuestos = nodeInfoFactura.SelectSingleNode("totalSinImpuestos")?.InnerText,
-            TotalDescuento = nodeInfoFactura.SelectSingleNode("totalDescuento")?.InnerText,
+            FechaEmision = nodeInfoFactura.SelectSingleNode("fechaEmision")?.InnerText ?? string.Empty,
+            DirEstablecimiento = nodeInfoFactura.SelectSingleNode("dirEstablecimiento")?.InnerText ?? string.Empty,
+            ContribuyenteEspecial = nodeInfoFactura.SelectSingleNode("contribuyenteEspecial")?.InnerText ?? string.Empty,
+            ObligadoContabilidad = nodeInfoFactura.SelectSingleNode("obligadoContabilidad")?.InnerText ?? string.Empty,
+            TipoIdentificacionComprador = nodeInfoFactura.SelectSingleNode("tipoIdentificacionComprador")?.InnerText ?? string.Empty,
+            RazonSocialComprador = nodeInfoFactura.SelectSingleNode("razonSocialComprador")?.InnerText ?? string.Empty,
+            IdentificacionComprador = nodeInfoFactura.SelectSingleNode("identificacionComprador")?.InnerText ?? string.Empty,
+            DireccionComprador = nodeInfoFactura.SelectSingleNode("direccionComprador")?.InnerText ?? string.Empty,
+            GuiaRemision = nodeInfoFactura.SelectSingleNode("guiaRemision")?.InnerText ?? string.Empty,
+            TotalSinImpuestos = nodeInfoFactura.SelectSingleNode("totalSinImpuestos")?.InnerText ?? string.Empty,
+            TotalDescuento = nodeInfoFactura.SelectSingleNode("totalDescuento")?.InnerText ?? string.Empty,
             Propina = nodeInfoFactura.SelectSingleNode("propina")?.InnerText ?? "0.00",
-            ImporteTotal = nodeInfoFactura.SelectSingleNode("importeTotal")?.InnerText,
-            Moneda = nodeInfoFactura.SelectSingleNode("moneda")?.InnerText ?? ""
+            ImporteTotal = nodeInfoFactura.SelectSingleNode("importeTotal")?.InnerText ?? string.Empty,
+            Moneda = nodeInfoFactura.SelectSingleNode("moneda")?.InnerText ?? string.Empty
         };
 
         ParseTotalTaxes(comprobante.CodDoc, infoFac, nodeInfoFactura.SelectSingleNode("totalConImpuestos"));
@@ -73,16 +73,18 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
         comprobante.CreateInfoComp(comprobante.CodDoc, infoFac);
     }
 
-    private void ParseTotalTaxes(string codDoc, InfoFactura infoFac, XmlNode impuestos)
+    private void ParseTotalTaxes(string codDoc, InfoFactura infoFac, XmlNode? impuestos)
     {
+        if (impuestos == null) return;
+
         var totalImpuestos = (from XmlNode item in impuestos
                               select new TotalImpuesto
                               {
-                                  Codigo = item.SelectSingleNode("codigo")?.InnerText,
-                                  CodigoPorcentaje = item.SelectSingleNode("codigoPorcentaje")?.InnerText,
+                                  Codigo = item.SelectSingleNode("codigo")?.InnerText ?? string.Empty,
+                                  CodigoPorcentaje = item.SelectSingleNode("codigoPorcentaje")?.InnerText ?? string.Empty,
                                   DescuentoAdicional = item.SelectSingleNode("descuentoAdicional")?.InnerText ?? "0.00",
-                                  BaseImponible = item.SelectSingleNode("baseImponible")?.InnerText,
-                                  Valor = item.SelectSingleNode("valor")?.InnerText
+                                  BaseImponible = item.SelectSingleNode("baseImponible")?.InnerText ?? string.Empty,
+                                  Valor = item.SelectSingleNode("valor")?.InnerText ?? string.Empty
                               }).ToList();
 
         infoFac.CreateTotalTaxes(totalImpuestos);
@@ -93,10 +95,10 @@ public class FacturaDocumentParser(IDetailsParser detailsParser) : IDocumentType
         var pagos = (from XmlNode item in payments
                      select new Pago
                      {
-                         FormaPago = item.SelectSingleNode("formaPago")?.InnerText,
-                         Total = item.SelectSingleNode("total")?.InnerText,
-                         Plazo = item.SelectSingleNode("plazo")?.InnerText ?? "",
-                         UnidadTiempo = item.SelectSingleNode("unidadTiempo")?.InnerText ?? ""
+                         FormaPago = item.SelectSingleNode("formaPago")?.InnerText ?? string.Empty,
+                         Total = item.SelectSingleNode("total")?.InnerText ?? string.Empty,
+                         Plazo = item.SelectSingleNode("plazo")?.InnerText ?? string.Empty,
+                         UnidadTiempo = item.SelectSingleNode("unidadTiempo")?.InnerText ?? string.Empty
                      }).ToList();
 
         infoFac.CreatePayments(pagos);
