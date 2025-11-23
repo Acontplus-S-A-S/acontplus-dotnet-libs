@@ -4,10 +4,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Runtime.Versioning;
 using System.Security;
 
 namespace Acontplus.Reports.Services;
 
+[SupportedOSPlatform("windows6.1")]
 public class RdlcPrinterService : IRdlcPrinterService
 {
     private readonly ILogger<RdlcPrinterService> _logger;

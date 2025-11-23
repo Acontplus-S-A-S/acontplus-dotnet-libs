@@ -22,9 +22,9 @@ public class ReportResponse : IDisposable
             {
                 // Dispose managed resources here
                 // Example: clear sensitive data or other cleanup
-                FileContents = null;
-                ContentType = null;
-                FileDownloadName = null;
+                FileContents = Array.Empty<byte>();
+                ContentType = string.Empty;
+                FileDownloadName = string.Empty;
             }
 
             // Dispose unmanaged resources here

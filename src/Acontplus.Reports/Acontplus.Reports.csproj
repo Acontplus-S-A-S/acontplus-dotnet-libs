@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Reports</PackageId>
-    <Version>1.4.9</Version>
+    <Version>1.5.0</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Advanced library for comprehensive report generation and management. Includes RDLC report processing, PDF/Excel export capabilities, ReportViewer integration, template support, and enterprise-ready reporting patterns for business applications.</Description>
@@ -35,8 +35,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acontplus.Barcode\Acontplus.Barcode.csproj" />
-    <ProjectReference Include="..\Acontplus.Utilities\Acontplus.Utilities.csproj" />
+    <PackageReference Include="Acontplus.Barcode" />
+    <PackageReference Include="Acontplus.Utilities" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
