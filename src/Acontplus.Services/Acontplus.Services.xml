@@ -4,36 +4,6 @@
         <name>Acontplus.Services</name>
     </assembly>
     <members>
-        <member name="T:Acontplus.Services.Configuration.CacheConfiguration">
-            <summary>
-            Configuration for caching services.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.UseDistributedCache">
-            <summary>
-            Use distributed cache (Redis) instead of in-memory cache.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.RedisConnectionString">
-            <summary>
-            Redis connection string.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.RedisInstanceName">
-            <summary>
-            Redis instance name.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.MemoryCacheSizeLimit">
-            <summary>
-            Memory cache size limit in bytes.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CacheConfiguration.ExpirationScanFrequencyMinutes">
-            <summary>
-            Expiration scan frequency in minutes.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Configuration.JsonConfigurationService">
             <summary>
             Service for configuring JSON serialization in applications
@@ -126,11 +96,6 @@
             Content Security Policy configuration.
             </summary>
         </member>
-        <member name="P:Acontplus.Services.Configuration.RequestContextConfiguration.Resilience">
-            <summary>
-            Resilience configuration for circuit breakers, rate limiting, and retry policies.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Configuration.CspConfiguration">
             <summary>
             Configuration for Content Security Policy.
@@ -181,212 +146,44 @@
             List of allowed form action sources (domains) for form-action directive.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Configuration.ResilienceConfiguration">
-            <summary>
-            Configuration for resilience patterns including rate limiting and circuit breakers.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.ResilienceConfiguration.RateLimiting">
-            <summary>
-            Rate limiting configuration.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.ResilienceConfiguration.CircuitBreaker">
-            <summary>
-            Circuit breaker configuration.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.ResilienceConfiguration.RetryPolicy">
-            <summary>
-            Retry policy configuration.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.ResilienceConfiguration.Timeout">
-            <summary>
-            Timeout configuration.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Configuration.RateLimitingOptions">
-            <summary>
-            Rate limiting configuration options.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.Enabled">
-            <summary>
-            Enable rate limiting. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.WindowSeconds">
-            <summary>
-            Rate limit window in seconds. Default: 60.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.MaxRequestsPerWindow">
-            <summary>
-            Maximum requests per window. Default: 100.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.SlidingWindow">
-            <summary>
-            Enable sliding window. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.ByIpAddress">
-            <summary>
-            Rate limit by IP address. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.ByUserId">
-            <summary>
-            Rate limit by user ID. Default: false.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RateLimitingOptions.ByClientId">
-            <summary>
-            Rate limit by client ID. Default: true.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Configuration.CircuitBreakerOptions">
-            <summary>
-            Circuit breaker configuration options.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CircuitBreakerOptions.Enabled">
-            <summary>
-            Enable circuit breaker. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CircuitBreakerOptions.ExceptionsAllowedBeforeBreaking">
-            <summary>
-            Number of exceptions before opening circuit. Default: 5.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CircuitBreakerOptions.DurationOfBreakSeconds">
-            <summary>
-            Duration of break in seconds. Default: 30.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CircuitBreakerOptions.SamplingDurationSeconds">
-            <summary>
-            Sampling duration in seconds. Default: 60.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.CircuitBreakerOptions.MinimumThroughput">
-            <summary>
-            Minimum throughput before circuit can open. Default: 10.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Configuration.RetryPolicyOptions">
-            <summary>
-            Retry policy configuration options.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RetryPolicyOptions.Enabled">
-            <summary>
-            Enable retry policy. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RetryPolicyOptions.MaxRetries">
-            <summary>
-            Maximum number of retries. Default: 3.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RetryPolicyOptions.BaseDelaySeconds">
-            <summary>
-            Base delay between retries in seconds. Default: 1.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RetryPolicyOptions.ExponentialBackoff">
-            <summary>
-            Enable exponential backoff. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.RetryPolicyOptions.MaxDelaySeconds">
-            <summary>
-            Maximum delay between retries in seconds. Default: 30.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Configuration.TimeoutOptions">
-            <summary>
-            Timeout configuration options.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.TimeoutOptions.Enabled">
-            <summary>
-            Enable timeout policies. Default: true.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.TimeoutOptions.DefaultTimeoutSeconds">
-            <summary>
-            Default timeout in seconds. Default: 30.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.TimeoutOptions.DatabaseTimeoutSeconds">
-            <summary>
-            Database operation timeout in seconds. Default: 60.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.TimeoutOptions.HttpClientTimeoutSeconds">
-            <summary>
-            HTTP client timeout in seconds. Default: 30.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Configuration.TimeoutOptions.LongRunningTimeoutSeconds">
-            <summary>
-            Long-running operation timeout in seconds. Default: 300.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Extensions.ApplicationServiceExtensions">
             <summary>
-            Extension methods for registering application services, filters, and policies.
+            Extension methods for registering complete application stack.
+            For infrastructure services (caching, resilience), use Acontplus.Infrastructure.
             </summary>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.AddApplicationServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Registers all application services including core services, filters, and policies.
+            Registers all application services (context, security, device detection) WITHOUT infrastructure.
+            For caching and resilience, use services.AddInfrastructureServices() from Acontplus.Infrastructure.
             </summary>
-            <param name="services">The service collection.</param>
-            <param name="configuration">The application configuration.</param>
-            <returns>The service collection for chaining.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.AddAuthorizationPolicies(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Collections.Generic.List{System.String})">
             <summary>
             Registers authorization policies for multi-tenant and device-aware scenarios.
             </summary>
-            <param name="services">The service collection.</param>
-            <param name="allowedClientIds">Optional list of allowed client IDs.</param>
-            <returns>The service collection for chaining.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.UseApplicationMiddleware(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
             <summary>
-            Configures application middleware pipeline with proper ordering for security and context management.
+            Configures application middleware pipeline WITHOUT infrastructure middleware.
+            For rate limiting, use app.UseInfrastructureMiddleware() from Acontplus.Infrastructure.
             </summary>
-            <param name="app">The application builder.</param>
-            <param name="environment">The web host environment.</param>
-            <returns>The application builder for chaining.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.AddApplicationMvc(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
             Configures MVC with application filters and JSON serialization options.
             </summary>
-            <param name="services">The service collection.</param>
-            <param name="enableGlobalFilters">Whether to enable global action filters.</param>
-            <returns>The MVC builder for further configuration.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.AddApplicationHealthChecks(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Adds comprehensive health checks for application services.
+            Adds health checks for application services only.
+            For infrastructure health checks, use services.AddInfrastructureHealthChecks().
             </summary>
-            <param name="services">The service collection.</param>
-            <param name="configuration">The application configuration.</param>
-            <returns>The service collection for chaining.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.ApplicationServiceExtensions.AddApiExplorer(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Configures API explorer for documentation tools.
             </summary>
-            <param name="services">The service collection.</param>
-            <returns>The service collection for chaining.</returns>
         </member>
         <member name="M:Acontplus.Services.Extensions.Context.ClaimsPrincipalExtensions.GetClaimValue``1(System.Security.Claims.ClaimsPrincipal,System.String)">
             <summary>
@@ -434,21 +231,6 @@
             Gets the role name from the current user claims.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Extensions.Infrastructure.InfrastructureServiceExtensions">
-            <summary>
-            Extension methods for core infrastructure services like compression and basic rate limiting.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.Infrastructure.InfrastructureServiceExtensions.AddResponseCompressionServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Add response compression services with Brotli and Gzip support.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.Infrastructure.InfrastructureServiceExtensions.AddBasicRateLimiting(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Add basic rate limiting services with global limits.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Extensions.Middleware.GlobalExceptionHandlingExtensions">
             <summary>
             Provides extension methods for configuring global exception handling middleware.
@@ -477,47 +259,30 @@
             Includes stack traces and exception details in API responses (for debugging). Default: false.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Extensions.ServiceCollectionExtensions">
-            <summary>
-            Consolidated extension methods for registering all Acontplus.Services.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceCollectionExtensions.AddAcontplusServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Registers all Acontplus.Services including infrastructure, security, and application services.
-            </summary>
-            <param name="services">The service collection.</param>
-            <param name="configuration">The application configuration.</param>
-            <returns>The service collection for chaining.</returns>
-        </member>
         <member name="T:Acontplus.Services.Extensions.ServiceExtensions">
             <summary>
-            Extension methods for registering core services and patterns.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddCachingServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Add caching services with support for both in-memory and distributed caching.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddResilienceServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Add resilience services including circuit breakers, retry policies, and timeouts.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddResilientHttpClients(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Add HTTP client factory with resilience policies.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddServiceHealthChecks(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Add comprehensive health checks for all services.
+            Extension methods for registering application-level services.
+            NOTE: For infrastructure services (caching, resilience, HTTP clients), use Acontplus.Infrastructure package.
             </summary>
         </member>
         <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddMonitoringServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Add monitoring and telemetry services.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddDeviceDetection(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add device detection service.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddRequestContext(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add request context service.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddSecurityHeaders(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add security header service.
             </summary>
         </member>
         <member name="T:Acontplus.Services.Filters.RequestLoggingActionFilter">
@@ -535,16 +300,6 @@
             Action filter for automatic model validation with standardized error responses.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.HealthChecks.CacheHealthCheck">
-            <summary>
-            Health check for cache service.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.HealthChecks.CircuitBreakerHealthCheck">
-            <summary>
-            Health check for circuit breaker service.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Middleware.ApiExceptionMiddleware">
             <summary>
             Middleware for centralized API exception handling, logging, and standardized error responses.
@@ -555,26 +310,6 @@
             Handles the HTTP request and catches exceptions, returning standardized error responses.
             </summary>
             <param name="context">The HTTP context.</param>
-        </member>
-        <member name="T:Acontplus.Services.Middleware.RateLimitingMiddleware">
-            <summary>
-            Advanced rate limiting middleware using .NET 9's built-in rate limiting.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Middleware.RateLimitingExtensions">
-            <summary>
-            Extension methods for configuring rate limiting.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Middleware.RateLimitingExtensions.AddAdvancedRateLimiting(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Configure rate limiting with advanced patterns.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Middleware.RateLimitingExtensions.UseAdvancedRateLimiting(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Use advanced rate limiting middleware.
-            </summary>
         </member>
         <member name="T:Acontplus.Services.Policies.DeviceTypeRequirement">
             <summary>
@@ -621,224 +356,6 @@
             Extension methods for registering tenant isolation authorization policies.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.ICacheService">
-            <summary>
-            Interface for caching service supporting both in-memory and distributed caching.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.Get``1(System.String)">
-            <summary>
-            Get a value from cache.
-            </summary>
-            <typeparam name="T">The type of the cached value.</typeparam>
-            <param name="key">The cache key.</param>
-            <returns>The cached value or default if not found.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.GetAsync``1(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Get a value from cache asynchronously.
-            </summary>
-            <typeparam name="T">The type of the cached value.</typeparam>
-            <param name="key">The cache key.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>The cached value or default if not found.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.Set``1(System.String,``0,System.Nullable{System.TimeSpan})">
-            <summary>
-            Set a value in cache.
-            </summary>
-            <typeparam name="T">The type of the value to cache.</typeparam>
-            <param name="key">The cache key.</param>
-            <param name="value">The value to cache.</param>
-            <param name="expiration">Optional expiration time.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.SetAsync``1(System.String,``0,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Set a value in cache asynchronously.
-            </summary>
-            <typeparam name="T">The type of the value to cache.</typeparam>
-            <param name="key">The cache key.</param>
-            <param name="value">The value to cache.</param>
-            <param name="expiration">Optional expiration time.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.Remove(System.String)">
-            <summary>
-            Remove a value from cache.
-            </summary>
-            <param name="key">The cache key.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.RemoveAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Remove a value from cache asynchronously.
-            </summary>
-            <param name="key">The cache key.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.GetOrCreate``1(System.String,System.Func{``0},System.Nullable{System.TimeSpan})">
-            <summary>
-            Get or create a value from cache.
-            </summary>
-            <typeparam name="T">The type of the cached value.</typeparam>
-            <param name="key">The cache key.</param>
-            <param name="factory">Factory function to create the value if not cached.</param>
-            <param name="expiration">Optional expiration time.</param>
-            <returns>The cached or newly created value.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.GetOrCreateAsync``1(System.String,System.Func{System.Threading.Tasks.Task{``0}},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Get or create a value from cache asynchronously.
-            </summary>
-            <typeparam name="T">The type of the cached value.</typeparam>
-            <param name="key">The cache key.</param>
-            <param name="factory">Factory function to create the value if not cached.</param>
-            <param name="expiration">Optional expiration time.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>The cached or newly created value.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.Clear">
-            <summary>
-            Clear all cache entries.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.ClearAsync(System.Threading.CancellationToken)">
-            <summary>
-            Clear all cache entries asynchronously.
-            </summary>
-            <param name="cancellationToken">Cancellation token.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.GetStatistics">
-            <summary>
-            Get cache statistics.
-            </summary>
-            <returns>Cache statistics information.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.Exists(System.String)">
-            <summary>
-            Check if a key exists in cache.
-            </summary>
-            <param name="key">The cache key.</param>
-            <returns>True if the key exists, false otherwise.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICacheService.ExistsAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Check if a key exists in cache asynchronously.
-            </summary>
-            <param name="key">The cache key.</param>
-            <param name="cancellationToken">Cancellation token.</param>
-            <returns>True if the key exists, false otherwise.</returns>
-        </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.CacheStatistics">
-            <summary>
-            Cache statistics information.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.TotalEntries">
-            <summary>
-            Total number of cache entries.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.TotalMemoryBytes">
-            <summary>
-            Total memory usage in bytes.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.HitRatePercentage">
-            <summary>
-            Cache hit rate percentage.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.MissRatePercentage">
-            <summary>
-            Cache miss rate percentage.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.Evictions">
-            <summary>
-            Number of evictions.
-            </summary>
-        </member>
-        <member name="P:Acontplus.Services.Services.Abstractions.CacheStatistics.LastCleanup">
-            <summary>
-            Last cleanup time.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.ICircuitBreakerService">
-            <summary>
-            Interface for circuit breaker service providing resilience patterns.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.ExecuteAsync``1(System.Func{System.Threading.Tasks.Task{``0}},System.String)">
-            <summary>
-            Execute an action with circuit breaker protection.
-            </summary>
-            <typeparam name="TResult">The result type.</typeparam>
-            <param name="action">The action to execute.</param>
-            <param name="policyName">Optional policy name for specific configurations.</param>
-            <returns>The result of the action.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.ExecuteAsync(System.Func{System.Threading.Tasks.Task},System.String)">
-            <summary>
-            Execute an action with circuit breaker protection.
-            </summary>
-            <param name="action">The action to execute.</param>
-            <param name="policyName">Optional policy name for specific configurations.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.Execute``1(System.Func{``0},System.String)">
-            <summary>
-            Execute a synchronous action with circuit breaker protection.
-            </summary>
-            <typeparam name="TResult">The result type.</typeparam>
-            <param name="action">The action to execute.</param>
-            <param name="policyName">Optional policy name for specific configurations.</param>
-            <returns>The result of the action.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.Execute(System.Action,System.String)">
-            <summary>
-            Execute a synchronous action with circuit breaker protection.
-            </summary>
-            <param name="action">The action to execute.</param>
-            <param name="policyName">Optional policy name for specific configurations.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.GetCircuitBreakerState(System.String)">
-            <summary>
-            Get the current state of a circuit breaker policy.
-            </summary>
-            <param name="policyName">The policy name.</param>
-            <returns>The current circuit breaker state.</returns>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.OpenCircuit(System.String)">
-            <summary>
-            Manually open a circuit breaker.
-            </summary>
-            <param name="policyName">The policy name.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.ICircuitBreakerService.CloseCircuit(System.String)">
-            <summary>
-            Manually close a circuit breaker.
-            </summary>
-            <param name="policyName">The policy name.</param>
-        </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.CircuitBreakerState">
-            <summary>
-            Represents the state of a circuit breaker.
-            </summary>
-        </member>
-        <member name="F:Acontplus.Services.Services.Abstractions.CircuitBreakerState.Closed">
-            <summary>
-            Circuit is closed and allowing requests.
-            </summary>
-        </member>
-        <member name="F:Acontplus.Services.Services.Abstractions.CircuitBreakerState.Open">
-            <summary>
-            Circuit is open and blocking requests.
-            </summary>
-        </member>
-        <member name="F:Acontplus.Services.Services.Abstractions.CircuitBreakerState.HalfOpen">
-            <summary>
-            Circuit is half-open and testing if it should close.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Services.Abstractions.IDeviceDetectionService">
             <summary>
             Service for detecting device types and capabilities from HTTP requests.
@@ -882,79 +399,6 @@
             Represents device capabilities and characteristics.
             </summary>
         </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.IMetricsService">
-            <summary>
-            Interface for metrics service.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.IncrementCounter(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Increment a counter metric.
-            </summary>
-            <param name="name">The name of the counter.</param>
-            <param name="tags">Optional tags for the metric.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.RecordGauge(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Record a gauge metric.
-            </summary>
-            <param name="name">The name of the gauge.</param>
-            <param name="value">The value to record.</param>
-            <param name="tags">Optional tags for the metric.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IMetricsService.RecordHistogram(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Record a histogram metric.
-            </summary>
-            <param name="name">The name of the histogram.</param>
-            <param name="value">The value to record.</param>
-            <param name="tags">Optional tags for the metric.</param>
-        </member>
-        <member name="T:Acontplus.Services.Services.Abstractions.IRequestContextService">
-            <summary>
-            Service for managing request context information across the application.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetRequestId">
-            <summary>
-            Gets the current request ID.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetCorrelationId">
-            <summary>
-            Gets the current correlation ID.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetTenantId">
-            <summary>
-            Gets the current tenant ID.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetClientId">
-            <summary>
-            Gets the current client ID.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetIssuer">
-            <summary>
-            Gets the current issuer.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetDeviceType">
-            <summary>
-            Gets the detected device type for the current request.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.IsMobileRequest">
-            <summary>
-            Determines if the current request is from a mobile device.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Abstractions.IRequestContextService.GetRequestContext">
-            <summary>
-            Gets all request context information as a dictionary.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Services.Abstractions.ISecurityHeaderService">
             <summary>
             Service for managing security headers and policies.
@@ -987,58 +431,10 @@
             <param name="isDevelopment">Whether the application is in development mode.</param>
             <returns>Dictionary of recommended headers.</returns>
         </member>
-        <member name="T:Acontplus.Services.Services.Implementations.PolicyConfig">
-            <summary>
-            Configuration for policy creation.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Services.Implementations.CircuitBreakerService">
-            <summary>
-            Circuit breaker service implementation using Polly policies.
-            </summary>
-        </member>
         <member name="T:Acontplus.Services.Services.Implementations.DeviceDetectionService">
             <summary>
             Implementation of device detection service for identifying device types and capabilities.
             </summary>
-        </member>
-        <member name="T:Acontplus.Services.Services.Implementations.DistributedCacheService">
-            <summary>
-            Distributed cache service implementation using Redis or other distributed cache.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Services.Implementations.MemoryCacheService">
-            <summary>
-            In-memory cache service implementation.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Services.Services.Implementations.MetricsService">
-            <summary>
-            Implementation of metrics service.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.IncrementCounter(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Increment a counter metric.
-            </summary>
-            <param name="name">The name of the counter.</param>
-            <param name="tags">Optional tags for the metric.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.RecordGauge(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Record a gauge metric.
-            </summary>
-            <param name="name">The name of the gauge.</param>
-            <param name="value">The value to record.</param>
-            <param name="tags">Optional tags for the metric.</param>
-        </member>
-        <member name="M:Acontplus.Services.Services.Implementations.MetricsService.RecordHistogram(System.String,System.Double,System.Collections.Generic.Dictionary{System.String,System.String})">
-            <summary>
-            Record a histogram metric.
-            </summary>
-            <param name="name">The name of the histogram.</param>
-            <param name="value">The value to record.</param>
-            <param name="tags">Optional tags for the metric.</param>
         </member>
         <member name="T:Acontplus.Services.Services.Implementations.RequestContextService">
             <summary>

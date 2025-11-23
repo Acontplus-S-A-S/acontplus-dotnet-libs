@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Services.Implementations;
+namespace Acontplus.Infrastructure.Resilience;
 
 /// <summary>
 /// Configuration for policy creation.

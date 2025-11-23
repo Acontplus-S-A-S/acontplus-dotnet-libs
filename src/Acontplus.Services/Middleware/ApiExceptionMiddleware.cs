@@ -230,7 +230,7 @@ public class ApiExceptionMiddleware
                     type = ex.InnerException.GetType().Name,
                     message = ex.InnerException.Message
                 }
-                : (object?)null,
+                : null!,
                 [DebugMetadataKeys.ActivityId] = Activity.Current?.Id ?? "none"
             };
     }

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>Acontplus.Infrastructure</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Ivan Paz</Authors>
+    <Company>Acontplus</Company>
+    <Description>Infrastructure library providing caching (in-memory and Redis), resilience patterns (circuit breaker, retry, timeout), middleware (request context, exception handling, rate limiting, CSP), HTTP client factory, and health checks for ASP.NET Core applications.</Description>
+    <PackageTags>dotnet;dotnet10;infrastructure;caching;redis;resilience;circuit-breaker;retry;polly;middleware;rate-limiting;health-checks;aspnetcore;enterprise</PackageTags>
+    <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>Initial release with caching, resilience patterns, middleware pipeline, HTTP client resilience, and comprehensive health checks.</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\icon.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Acontplus.Core" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Polly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+</Project>

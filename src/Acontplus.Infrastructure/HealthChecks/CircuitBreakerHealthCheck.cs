@@ -1,4 +1,4 @@
-namespace Acontplus.Services.HealthChecks;
+namespace Acontplus.Infrastructure.HealthChecks;
 
 /// <summary>
 /// Health check for circuit breaker service.

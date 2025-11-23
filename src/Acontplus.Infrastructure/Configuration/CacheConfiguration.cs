@@ -1,4 +1,4 @@
-namespace Acontplus.Services.Configuration;
+namespace Acontplus.Infrastructure.Configuration;
 
 /// <summary>
 /// Configuration for caching services.

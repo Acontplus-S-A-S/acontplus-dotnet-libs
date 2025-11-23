@@ -1,4 +1,4 @@
-namespace Acontplus.Services.HealthChecks;
+namespace Acontplus.Infrastructure.HealthChecks;
 
 /// <summary>
 /// Health check for cache service.
@@ -27,22 +27,19 @@ public class CacheHealthCheck : IHealthCheck
             // Test Get operation
             var retrieved = await _cacheService.GetAsync<string>(testKey, cancellationToken);
 
-            // Test Exists operation
-            var exists = await _cacheService.ExistsAsync(testKey, cancellationToken);
-
             // Test Remove operation
             await _cacheService.RemoveAsync(testKey, cancellationToken);
 
             // Verify removal
             var removedValue = await _cacheService.GetAsync<string>(testKey, cancellationToken);
 
-            if (retrieved == testValue && exists && removedValue == null)
+            if (retrieved == testValue && removedValue == null)
             {
-                var stats = _cacheService.GetStatistics();
                 var data = new Dictionary<string, object>
                 {
-                    ["totalEntries"] = stats.TotalEntries,
-                    ["hitRatePercentage"] = stats.HitRatePercentage,
+                    ["testKey"] = testKey,
+                    ["retrievedCorrectly"] = true,
+                    ["removedCorrectly"] = true,
                     ["lastTestTime"] = DateTime.UtcNow
                 };
                 return HealthCheckResult.Healthy("Cache service is fully operational", data);
