@@ -1,8 +1,8 @@
-﻿namespace Acontplus.Notifications.Entities;
+namespace Acontplus.Notifications.Entities;
 
 public class WhatsAppMessage : BaseEntity
 {
-    private string _decompressedMessage;
+    private string? _decompressedMessage;
     public int NotificationId { get; set; }
     public required Notification Notification { get; set; }
     public int WhatsAppSenderConfigId { get; set; }
@@ -23,14 +23,10 @@ public class WhatsAppMessage : BaseEntity
     {
         get
         {
-            switch (_decompressedMessage)
+            if (_decompressedMessage == null)
             {
-                case null when true:
-                    {
-                        var decompressedBytes = CompressionUtils.DecompressGZip(CompressedMessage);
-                        _decompressedMessage = Encoding.UTF8.GetString(decompressedBytes);
-                        break;
-                    }
+                var decompressedBytes = CompressionUtils.DecompressGZip(CompressedMessage);
+                _decompressedMessage = Encoding.UTF8.GetString(decompressedBytes);
             }
 
             return _decompressedMessage;

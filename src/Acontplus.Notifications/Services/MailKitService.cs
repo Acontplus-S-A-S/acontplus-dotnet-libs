@@ -257,7 +257,7 @@ public class MailKitService : IMailKitService, IDisposable
 
                 if (!email.IsHtml)
                 {
-                    var pathToHtmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", email.Template);
+                    var pathToHtmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", email.Template ?? string.Empty);
                     if (!File.Exists(pathToHtmlFile))
                     {
                         _logger.LogError("Email template file not found: {PathToHtmlFile}", pathToHtmlFile);
@@ -277,7 +277,7 @@ public class MailKitService : IMailKitService, IDisposable
                     }
                     else
                     {
-                        var pathLogo = Path.Combine(mediaImagesPath, "Logos", email.Logo);
+                        var pathLogo = Path.Combine(mediaImagesPath, "Logos", email.Logo ?? string.Empty);
                         if (File.Exists(pathLogo))
                         {
                             var image = await body.LinkedResources.AddAsync(pathLogo, ct);
