@@ -1,10 +1,10 @@
 # Acontplus.Core
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Core.svg)](https://www.nuget.org/packages/Acontplus.Core)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A cutting-edge .NET 9+ foundational library leveraging the latest C# language features and business patterns. Built with performance, type safety, and developer experience in mind. Focuses on pure domain logic with clean separation from API concerns.
+A cutting-edge .NET foundational library leveraging the latest C# language features and business patterns. Built with performance, type safety, and developer experience in mind. Focuses on pure domain logic with clean separation from API concerns.
 
 ## 🚀 What's New (Latest Version)
 
@@ -43,7 +43,7 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 - **🎯 Success-with-Warnings Helpers** - Enhanced warning pattern support
   - `value.ToSuccessWithWarningsResult(warnings)`
 
-## 🚀 .NET 9 Features
+## 🚀 .NET 10 Features
 
 ### 🎯 Latest C# Language Features
 - **Collection Expressions** - `[]` syntax for efficient collection initialization
@@ -95,17 +95,17 @@ A cutting-edge .NET 9+ foundational library leveraging the latest C# language fe
 
 #### **💰 Financial & Commerce**
 - **`Currency`** - 15 international currencies (USD, EUR + Latin American)
-- **`PaymentMethod`** - 15 payment options (Cards, Digital wallets, BNPL, etc.)
+- **`PaymentMethodType`** - 12 payment method types (Cash, Cards, DigitalWallet, BNPL, etc.)
 
 #### **🔐 Security & Access**
-- **`UserRole`** - 14 role levels (Guest → SuperAdmin → ServiceAccount)
+- **`UserRoleType`** - 7 role levels (Guest → User → Employee → Manager → Administrator → SuperAdmin → ServiceAccount)
 
 #### **🌍 Internationalization**
 - **`Language`** - 20 languages (Major world languages + Latin American Spanish)
 - **`TimeZone`** - 16 time zones (UTC, regional + Latin American zones)
 
 #### **📱 Communication & Content**
-- **`CommunicationChannel`** - 11 channels (Email, SMS, WhatsApp, Teams, etc.)
+- **`CommunicationChannelType`** - 8 channel types (Email, SMS, Phone, Push, InstantMessaging, etc.)
 - **`AddressType`** - 12 address categories (Home, Work, Billing, Shipping, etc.)
 - **`ContentType`** - 20 media types (Text, Images, Videos, Documents, Archives)
 
@@ -117,7 +117,7 @@ public class Customer : BaseEntity
     public Title Title { get; set; }                      // 🌟 Global enum
     public MaritalStatus MaritalStatus { get; set; }      // 🌟 Global enum
     public Language PreferredLanguage { get; set; }       // 🌟 Global enum
-    public CommunicationChannel PreferredChannel { get; set; } // 🌟 Global enum
+    public CommunicationChannelType PreferredChannel { get; set; } // 🌟 Global enum
 }
 
 public class Order : BaseEntity
@@ -125,7 +125,13 @@ public class Order : BaseEntity
     public BusinessStatus Status { get; set; }            // 🌟 Global enum
     public Priority Priority { get; set; }                // 🌟 Global enum
     public Currency Currency { get; set; }                // 🌟 Global enum
-    public PaymentMethod PaymentMethod { get; set; }      // 🌟 Global enum
+    public PaymentMethodType PaymentMethod { get; set; }  // 🌟 Global enum
+}
+
+public class UserAccount : BaseEntity
+{
+    public UserRoleType Role { get; set; }                // 🌟 Global enum
+    public BusinessStatus Status { get; set; }            // 🌟 Global enum
 }
 ```
 
@@ -616,9 +622,8 @@ app.MapGet("/api/products",
 ```
 
 *For detailed repository implementation examples and advanced queries, see the [Acontplus.Persistence.Common](../Acontplus.Persistence.Common/) documentation.*
-```
 
-#### **🎯 Current Best Practices**
+#### **Current Best Practices**
 
 ```csharp
 // ✅ DO: Use Result factory methods or extension helpers
@@ -822,4 +827,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the .NET community using the latest .NET 9 features**
+**Built with ❤️ for the .NET community using the latest .NET features**

@@ -1,9 +1,10 @@
 namespace Acontplus.Core.Enums;
 
 /// <summary>
-/// Payment method enum for e-commerce and financial applications
+/// Payment method type enum for e-commerce and financial applications.
+/// Represents generic payment method categories rather than specific providers.
 /// </summary>
-public enum PaymentMethod
+public enum PaymentMethodType
 {
     /// <summary>
     /// Cash payment
@@ -26,57 +27,42 @@ public enum PaymentMethod
     BankTransfer = 4,
 
     /// <summary>
-    /// PayPal payment
+    /// Digital wallet payment (e.g., PayPal, Apple Pay, Google Pay)
     /// </summary>
-    PayPal = 5,
-
-    /// <summary>
-    /// Apple Pay
-    /// </summary>
-    ApplePay = 6,
-
-    /// <summary>
-    /// Google Pay
-    /// </summary>
-    GooglePay = 7,
-
-    /// <summary>
-    /// Stripe payment
-    /// </summary>
-    Stripe = 8,
+    DigitalWallet = 5,
 
     /// <summary>
     /// Cryptocurrency payment
     /// </summary>
-    Cryptocurrency = 9,
+    Cryptocurrency = 6,
 
     /// <summary>
     /// Check payment
     /// </summary>
-    Check = 10,
+    Check = 7,
 
     /// <summary>
     /// Money order
     /// </summary>
-    MoneyOrder = 11,
+    MoneyOrder = 8,
 
     /// <summary>
     /// Gift card or voucher
     /// </summary>
-    GiftCard = 12,
+    GiftCard = 9,
 
     /// <summary>
     /// Store credit
     /// </summary>
-    StoreCredit = 13,
+    StoreCredit = 10,
 
     /// <summary>
     /// Buy now, pay later (BNPL)
     /// </summary>
-    BuyNowPayLater = 14,
+    BuyNowPayLater = 11,
 
     /// <summary>
     /// Mobile payment (generic)
     /// </summary>
-    MobilePayment = 15
+    MobilePayment = 12
 }
