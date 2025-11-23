@@ -23,7 +23,7 @@ public static class ObjectMapper
     /// <summary>
     /// Maps a source object to a new instance of a target type.
     /// </summary>
-    public static TTarget Map<TSource, TTarget>(TSource source)
+    public static TTarget? Map<TSource, TTarget>(TSource source)
     {
         if (source == null)
             return default;
@@ -41,6 +41,8 @@ public static class ObjectMapper
     /// </summary>
     public static TTarget Map<TSource, TTarget>(TSource source, TTarget target)
     {
+        ArgumentNullException.ThrowIfNull(target);
+        
         if (source == null)
             return target;
 
@@ -67,7 +69,10 @@ public static class ObjectMapper
         var parameterlessCtor = targetType.GetConstructor(Type.EmptyTypes);
         if (parameterlessCtor != null)
         {
-            return (TTarget)Activator.CreateInstance(targetType);
+            var instance = Activator.CreateInstance(targetType);
+            if (instance == null)
+                throw new InvalidOperationException($"Failed to create instance of {targetType.Name}");
+            return (TTarget)instance;
         }
 
         // Find the constructor with the most parameters that we can satisfy
@@ -77,13 +82,20 @@ public static class ObjectMapper
         foreach (var ctor in ctors)
         {
             var parameters = ctor.GetParameters();
-            var paramValues = new object[parameters.Length];
+            var paramValues = new object?[parameters.Length];
             var canSatisfyAllParams = true;
 
             for (var i = 0; i < parameters.Length; i++)
             {
                 var param = parameters[i];
-                var sourceProp = sourceType.GetProperty(param.Name,
+                var paramName = param.Name;
+                if (paramName == null)
+                {
+                    canSatisfyAllParams = false;
+                    break;
+                }
+                
+                var sourceProp = sourceType.GetProperty(paramName,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
                 if (sourceProp != null)
@@ -104,14 +116,14 @@ public static class ObjectMapper
                             {
                                 // Try to create and map the complex parameter
                                 var mappingMethod = typeof(ObjectMapper).GetMethod("Map",
-                                    new[] { sourceProp.PropertyType });
+                                    [sourceProp.PropertyType]);
 
                                 if (mappingMethod != null)
                                 {
                                     try
                                     {
                                         var genericMethod = mappingMethod.MakeGenericMethod(sourceProp.PropertyType, param.ParameterType);
-                                        sourceValue = genericMethod.Invoke(null, new[] { sourceValue });
+                                        sourceValue = genericMethod.Invoke(null, [sourceValue]);
                                     }
                                     catch
                                     {
@@ -153,7 +165,9 @@ public static class ObjectMapper
             {
                 try
                 {
-                    return (TTarget)ctor.Invoke(paramValues);
+                    var instance = ctor.Invoke(paramValues);
+                    if (instance != null)
+                        return (TTarget)instance;
                 }
                 catch
                 {
@@ -198,7 +212,7 @@ public static class ObjectMapper
             // Handle collections
             if (IsCollection(sourceProp.PropertyType) && IsCollection(targetProp.PropertyType))
             {
-                MapCollection(sourceValue, target, targetProp);
+                MapCollection(sourceValue, target!, targetProp);
                 continue;
             }
 
@@ -212,10 +226,12 @@ public static class ObjectMapper
                     try
                     {
                         var createInstanceMethod = typeof(ObjectMapper).GetMethod("CreateInstance",
-                            BindingFlags.NonPublic | BindingFlags.Static)
-                            .MakeGenericMethod(sourceProp.PropertyType, targetProp.PropertyType);
-
-                        nestedTargetValue = createInstanceMethod.Invoke(null, new[] { sourceValue });
+                            BindingFlags.NonPublic | BindingFlags.Static);
+                        if (createInstanceMethod != null)
+                        {
+                            var genericMethod = createInstanceMethod.MakeGenericMethod(sourceProp.PropertyType, targetProp.PropertyType);
+                            nestedTargetValue = genericMethod.Invoke(null, [sourceValue]);
+                        }
                     }
                     catch
                     {
@@ -224,11 +240,16 @@ public static class ObjectMapper
                     }
                 }
 
-                var nestedMappedValue = typeof(ObjectMapper)
-                    .GetMethod("Map", new[] { sourceProp.PropertyType, targetProp.PropertyType })
-                    .Invoke(null, new[] { sourceValue, nestedTargetValue });
-
-                targetProp.SetValue(target, nestedMappedValue);
+                if (nestedTargetValue != null)
+                {
+                    var mapMethod = typeof(ObjectMapper)
+                        .GetMethod("Map", [sourceProp.PropertyType, targetProp.PropertyType]);
+                    if (mapMethod != null)
+                    {
+                        var nestedMappedValue = mapMethod.Invoke(null, [sourceValue, nestedTargetValue]);
+                        targetProp.SetValue(target, nestedMappedValue);
+                    }
+                }
                 continue;
             }
 
@@ -260,7 +281,12 @@ public static class ObjectMapper
         {
             var concreteType = typeof(List<>).MakeGenericType(targetElementType);
             var targetCollection = Activator.CreateInstance(concreteType);
+            if (targetCollection == null)
+                return;
+                
             var addMethod = concreteType.GetMethod("Add");
+            if (addMethod == null)
+                return;
 
             foreach (var sourceItem in (IEnumerable)sourceCollection)
             {
@@ -272,19 +298,22 @@ public static class ObjectMapper
                 // Map simple types directly
                 if (IsSimpleType(sourceItemType) && targetElementType.IsAssignableFrom(sourceItemType))
                 {
-                    addMethod.Invoke(targetCollection, new[] { sourceItem });
+                    addMethod.Invoke(targetCollection, [sourceItem]);
                 }
                 // Map complex types
                 else if (!IsSimpleType(sourceItemType))
                 {
                     // Create a new instance of target element type, handling constructor params if needed
-                    object targetItem;
+                    object? targetItem;
                     try
                     {
                         var createInstanceMethod = typeof(ObjectMapper).GetMethod("CreateInstance",
                             BindingFlags.NonPublic | BindingFlags.Static);
+                        if (createInstanceMethod == null)
+                            continue;
+                            
                         var genericMethod = createInstanceMethod.MakeGenericMethod(sourceItemType, targetElementType);
-                        targetItem = genericMethod.Invoke(null, new[] { sourceItem });
+                        targetItem = genericMethod.Invoke(null, [sourceItem]);
                     }
                     catch
                     {
@@ -292,11 +321,17 @@ public static class ObjectMapper
                         targetItem = Activator.CreateInstance(targetElementType);
                     }
 
-                    var mappedItem = typeof(ObjectMapper)
-                        .GetMethod("Map", new[] { sourceItemType, targetElementType })
-                        .Invoke(null, new[] { sourceItem, targetItem });
+                    if (targetItem == null)
+                        continue;
 
-                    addMethod.Invoke(targetCollection, new[] { mappedItem });
+                    var mapMethod = typeof(ObjectMapper)
+                        .GetMethod("Map", [sourceItemType, targetElementType]);
+                    if (mapMethod == null)
+                        continue;
+                        
+                    var mappedItem = mapMethod.Invoke(null, [sourceItem, targetItem]);
+                    if (mappedItem != null)
+                        addMethod.Invoke(targetCollection, [mappedItem]);
                 }
             }
 
@@ -306,6 +341,9 @@ public static class ObjectMapper
         else if (!targetCollectionType.IsAbstract)
         {
             var targetCollection = Activator.CreateInstance(targetCollectionType);
+            if (targetCollection == null)
+                return;
+                
             var addMethod = targetCollectionType.GetMethod("Add");
 
             if (addMethod != null)
@@ -320,19 +358,22 @@ public static class ObjectMapper
                     // Map simple types directly
                     if (IsSimpleType(sourceItemType) && targetElementType.IsAssignableFrom(sourceItemType))
                     {
-                        addMethod.Invoke(targetCollection, new[] { sourceItem });
+                        addMethod.Invoke(targetCollection, [sourceItem]);
                     }
                     // Map complex types
                     else if (!IsSimpleType(sourceItemType))
                     {
                         // Create a new instance of target element type, handling constructor params if needed
-                        object targetItem;
+                        object? targetItem;
                         try
                         {
                             var createInstanceMethod = typeof(ObjectMapper).GetMethod("CreateInstance",
                                 BindingFlags.NonPublic | BindingFlags.Static);
+                            if (createInstanceMethod == null)
+                                continue;
+                                
                             var genericMethod = createInstanceMethod.MakeGenericMethod(sourceItemType, targetElementType);
-                            targetItem = genericMethod.Invoke(null, new[] { sourceItem });
+                            targetItem = genericMethod.Invoke(null, [sourceItem]);
                         }
                         catch
                         {
@@ -340,11 +381,17 @@ public static class ObjectMapper
                             targetItem = Activator.CreateInstance(targetElementType);
                         }
 
-                        var mappedItem = typeof(ObjectMapper)
-                            .GetMethod("Map", new[] { sourceItemType, targetElementType })
-                            .Invoke(null, new[] { sourceItem, targetItem });
+                        if (targetItem == null)
+                            continue;
 
-                        addMethod.Invoke(targetCollection, new[] { mappedItem });
+                        var mapMethod = typeof(ObjectMapper)
+                            .GetMethod("Map", [sourceItemType, targetElementType]);
+                        if (mapMethod == null)
+                            continue;
+                            
+                        var mappedItem = mapMethod.Invoke(null, [sourceItem, targetItem]);
+                        if (mappedItem != null)
+                            addMethod.Invoke(targetCollection, [mappedItem]);
                     }
                 }
 
@@ -358,7 +405,7 @@ public static class ObjectMapper
         return type != typeof(string) && typeof(IEnumerable).IsAssignableFrom(type);
     }
 
-    private static Type GetElementType(Type collectionType)
+    private static Type? GetElementType(Type collectionType)
     {
         if (collectionType.IsArray)
             return collectionType.GetElementType();
@@ -386,8 +433,11 @@ public static class ObjectMapper
         return null;
     }
 
-    private static bool IsSimpleType(Type type)
+    private static bool IsSimpleType(Type? type)
     {
+        if (type == null)
+            return false;
+            
         return type.IsPrimitive
             || type == typeof(string)
             || type == typeof(decimal)
@@ -396,7 +446,7 @@ public static class ObjectMapper
             || type == typeof(TimeSpan)
             || type == typeof(Guid)
             || type.IsEnum
-            || Nullable.GetUnderlyingType(type) != null && IsSimpleType(Nullable.GetUnderlyingType(type));
+            || (Nullable.GetUnderlyingType(type) is Type underlyingType && IsSimpleType(underlyingType));
     }
 
     private static string GetMappingKey(Type sourceType, Type targetType)
@@ -430,7 +480,8 @@ public static class ObjectMapper
             Expression<Func<TSource, TProperty>> sourceMember)
         {
             var memberName = GetMemberName(destinationMember);
-            _customMappings[memberName] = sourceMember;
+            if (memberName != null)
+                _customMappings[memberName] = sourceMember;
             return this;
         }
 
@@ -443,10 +494,12 @@ public static class ObjectMapper
         {
             _mappingActions.Add((source, target) =>
             {
-                var memberExp = destinationMember.Body as MemberExpression;
-                var property = memberExp.Member as PropertyInfo;
-                var value = mappingFunction(source);
-                property.SetValue(target, value);
+                if (destinationMember.Body is MemberExpression memberExp &&
+                    memberExp.Member is PropertyInfo property)
+                {
+                    var value = mappingFunction(source);
+                    property.SetValue(target, value);
+                }
             });
             return this;
         }
@@ -468,7 +521,8 @@ public static class ObjectMapper
             Expression<Func<TSource, TProperty>> sourceMember)
         {
             var memberName = GetMemberNameFromSource(sourceMember);
-            _constructorParameterMappings[paramName] = memberName;
+            if (memberName != null)
+                _constructorParameterMappings[paramName] = memberName;
             return this;
         }
 
@@ -479,7 +533,8 @@ public static class ObjectMapper
             Expression<Func<TTarget, TProperty>> destinationMember)
         {
             var memberName = GetMemberName(destinationMember);
-            _customMappings[memberName] = null; // null indicates ignore
+            if (memberName != null)
+                _customMappings[memberName] = null!; // null indicates ignore
             return this;
         }
 
@@ -542,7 +597,7 @@ public static class ObjectMapper
                     // Handle collections
                     if (IsCollection(sourceProp.PropertyType) && IsCollection(targetProp.PropertyType))
                     {
-                        MapCollection(sourceValue, typedTarget, targetProp);
+                        MapCollection(sourceValue, typedTarget!, targetProp);
                         continue;
                     }
 
@@ -556,10 +611,12 @@ public static class ObjectMapper
                             try
                             {
                                 var createInstanceMethod = typeof(ObjectMapper).GetMethod("CreateInstance",
-                                    BindingFlags.NonPublic | BindingFlags.Static)
-                                    .MakeGenericMethod(sourceProp.PropertyType, targetProp.PropertyType);
-
-                                nestedTargetValue = createInstanceMethod.Invoke(null, new[] { sourceValue });
+                                    BindingFlags.NonPublic | BindingFlags.Static);
+                                if (createInstanceMethod != null)
+                                {
+                                    var genericMethod = createInstanceMethod.MakeGenericMethod(sourceProp.PropertyType, targetProp.PropertyType);
+                                    nestedTargetValue = genericMethod.Invoke(null, [sourceValue]);
+                                }
                             }
                             catch
                             {
@@ -568,11 +625,16 @@ public static class ObjectMapper
                             }
                         }
 
-                        var nestedMappedValue = typeof(ObjectMapper)
-                            .GetMethod("Map", new[] { sourceProp.PropertyType, targetProp.PropertyType })
-                            .Invoke(null, new[] { sourceValue, nestedTargetValue });
-
-                        targetProp.SetValue(typedTarget, nestedMappedValue);
+                        if (nestedTargetValue != null)
+                        {
+                            var mapMethod = typeof(ObjectMapper)
+                                .GetMethod("Map", [sourceProp.PropertyType, targetProp.PropertyType]);
+                            if (mapMethod != null)
+                            {
+                                var nestedMappedValue = mapMethod.Invoke(null, [sourceValue, nestedTargetValue]);
+                                targetProp.SetValue(typedTarget, nestedMappedValue);
+                            }
+                        }
                         continue;
                     }
 
@@ -597,19 +659,23 @@ public static class ObjectMapper
             return typedTarget;
         }
 
-        private string GetMemberName<TProperty>(Expression<Func<TTarget, TProperty>> expression)
+        private string? GetMemberName<TProperty>(Expression<Func<TTarget, TProperty>> expression)
         {
-            var memberExp = expression.Body as MemberExpression;
-            return memberExp == null ? throw new ArgumentException("Expression must be a member expression") : memberExp.Member.Name;
+            if (expression.Body is not MemberExpression memberExp)
+                throw new ArgumentException("Expression must be a member expression");
+                
+            return memberExp.Member.Name;
         }
 
-        private string GetMemberNameFromSource<TProperty>(Expression<Func<TSource, TProperty>> expression)
+        private string? GetMemberNameFromSource<TProperty>(Expression<Func<TSource, TProperty>> expression)
         {
-            var memberExp = expression.Body as MemberExpression;
-            return memberExp == null ? throw new ArgumentException("Expression must be a member expression") : memberExp.Member.Name;
+            if (expression.Body is not MemberExpression memberExp)
+                throw new ArgumentException("Expression must be a member expression");
+                
+            return memberExp.Member.Name;
         }
 
-        private static object GetDefaultValue(Type type)
+        private static object? GetDefaultValue(Type type)
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }

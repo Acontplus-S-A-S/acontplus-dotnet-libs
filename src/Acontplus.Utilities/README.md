@@ -1,7 +1,7 @@
 # Acontplus.Utilities
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Utilities.svg)](https://www.nuget.org/packages/Acontplus.Utilities)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A comprehensive .NET utility library providing common functionality for business applications. Async, extension methods, minimal API support, and more.
