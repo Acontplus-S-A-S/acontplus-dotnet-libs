@@ -1,7 +1,7 @@
 # Acontplus.Persistence.SqlServer
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.Persistence.SqlServer.svg)](https://www.nuget.org/packages/Acontplus.Persistence.SqlServer)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 SQL Server implementation of the Acontplus persistence layer. Provides optimized Entity Framework Core integration, ADO.NET repositories, and SQL Server-specific features for high-performance data access.
