@@ -1,3 +1,6 @@
+using Acontplus.Core.Abstractions.Infrastructure.Caching;
+using Acontplus.Core.Abstractions.Infrastructure.Resilience;
+using Acontplus.Core.Abstractions.Services;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Services.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -122,7 +125,6 @@ public class AdvancedUsageController : ControllerBase
     public IActionResult GetIntermediateHealth()
     {
         var circuitBreakerStatus = _circuitBreaker.GetCircuitBreakerState("content-api");
-        var cacheStats = _cache.GetStatistics();
 
         return Ok(new
         {
@@ -131,12 +133,6 @@ public class AdvancedUsageController : ControllerBase
                 Name = "content-api",
                 State = circuitBreakerStatus.ToString(),
                 IsHealthy = circuitBreakerStatus == CircuitBreakerState.Closed
-            },
-            Cache = new
-            {
-                TotalEntries = cacheStats.TotalEntries,
-                HitRate = $"{cacheStats.HitRatePercentage:F1}%",
-                MemoryUsage = $"{cacheStats.TotalMemoryBytes / 1024 / 1024:F1} MB"
             },
             Services = new
             {
@@ -153,23 +149,10 @@ public class AdvancedUsageController : ControllerBase
     [HttpGet("intermediate/cache-stats")]
     public IActionResult GetCacheStats()
     {
-        var stats = _cache.GetStatistics();
-
-        // Calculate additional metrics
-        var efficiency = stats.TotalEntries > 0
-            ? (stats.HitRatePercentage / 100.0) * stats.TotalEntries
-            : 0;
-
         return Ok(new
         {
-            TotalEntries = stats.TotalEntries,
-            HitRatePercentage = stats.HitRatePercentage,
-            MissRatePercentage = stats.MissRatePercentage,
-            MemoryUsageBytes = stats.TotalMemoryBytes,
-            MemoryUsageMB = stats.TotalMemoryBytes / 1024 / 1024,
-            Efficiency = efficiency,
-            LastCleanup = stats.LastCleanup,
-            Evictions = stats.Evictions
+            Message = "Cache statistics feature removed. Use health checks for cache monitoring.",
+            Suggestion = "Check /health endpoint for cache health status"
         });
     }
 

@@ -1,3 +1,5 @@
+using Acontplus.Core.Abstractions.Infrastructure.Caching;
+using Acontplus.Core.Abstractions.Services;
 using Acontplus.Services.Services.Abstractions;
 
 namespace Acontplus.TestApi.Controllers.Infrastructure;
@@ -84,9 +86,6 @@ public class ConfigurationTestController : ControllerBase
             // Test cache get
             var retrievedValue = await _cache.GetAsync<string>(testKey);
 
-            // Test cache statistics
-            var stats = _cache.GetStatistics();
-
             return Ok(new
             {
                 Message = "Cache service test completed successfully",
@@ -96,12 +95,6 @@ public class ConfigurationTestController : ControllerBase
                     SetValue = testValue,
                     RetrievedValue = retrievedValue,
                     CacheHit = retrievedValue == testValue
-                },
-                Statistics = new
-                {
-                    TotalEntries = stats.TotalEntries,
-                    HitRate = $"{stats.HitRatePercentage:F1}%",
-                    MemoryUsage = $"{stats.TotalMemoryBytes / 1024:F1} KB"
                 }
             });
         }

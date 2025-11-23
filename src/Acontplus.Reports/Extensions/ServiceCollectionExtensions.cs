@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
 
         // Register services
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
-        
+
         // Register printer service only on Windows 6.1+
         if (OperatingSystem.IsWindowsVersionAtLeast(6, 1))
         {
@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
 
         // Register services
         services.TryAddScoped<IRdlcReportService, Services.RdlcReportService>();
-        
+
         // Register printer service only on Windows 6.1+
         if (OperatingSystem.IsWindowsVersionAtLeast(6, 1))
         {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Acontplus.ApiDocumentation\Acontplus.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Barcode\Acontplus.Barcode.csproj" />
+    <ProjectReference Include="..\..\..\src\Acontplus.Infrastructure\Acontplus.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Logging\Acontplus.Logging.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Notifications\Acontplus.Notifications.csproj" />
     <ProjectReference Include="..\..\..\src\Acontplus.Reports\Acontplus.Reports.csproj" />

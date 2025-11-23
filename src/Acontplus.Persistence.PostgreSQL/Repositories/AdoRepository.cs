@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using Acontplus.Core.Extensions;
 using Acontplus.Persistence.PostgreSQL.Mapping;
+using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.PostgreSQL.Repositories;
 

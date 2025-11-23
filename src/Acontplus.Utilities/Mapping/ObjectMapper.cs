@@ -42,7 +42,7 @@ public static class ObjectMapper
     public static TTarget Map<TSource, TTarget>(TSource source, TTarget target)
     {
         ArgumentNullException.ThrowIfNull(target);
-        
+
         if (source == null)
             return target;
 
@@ -94,7 +94,7 @@ public static class ObjectMapper
                     canSatisfyAllParams = false;
                     break;
                 }
-                
+
                 var sourceProp = sourceType.GetProperty(paramName,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
@@ -283,7 +283,7 @@ public static class ObjectMapper
             var targetCollection = Activator.CreateInstance(concreteType);
             if (targetCollection == null)
                 return;
-                
+
             var addMethod = concreteType.GetMethod("Add");
             if (addMethod == null)
                 return;
@@ -311,7 +311,7 @@ public static class ObjectMapper
                             BindingFlags.NonPublic | BindingFlags.Static);
                         if (createInstanceMethod == null)
                             continue;
-                            
+
                         var genericMethod = createInstanceMethod.MakeGenericMethod(sourceItemType, targetElementType);
                         targetItem = genericMethod.Invoke(null, [sourceItem]);
                     }
@@ -328,7 +328,7 @@ public static class ObjectMapper
                         .GetMethod("Map", [sourceItemType, targetElementType]);
                     if (mapMethod == null)
                         continue;
-                        
+
                     var mappedItem = mapMethod.Invoke(null, [sourceItem, targetItem]);
                     if (mappedItem != null)
                         addMethod.Invoke(targetCollection, [mappedItem]);
@@ -343,7 +343,7 @@ public static class ObjectMapper
             var targetCollection = Activator.CreateInstance(targetCollectionType);
             if (targetCollection == null)
                 return;
-                
+
             var addMethod = targetCollectionType.GetMethod("Add");
 
             if (addMethod != null)
@@ -371,7 +371,7 @@ public static class ObjectMapper
                                 BindingFlags.NonPublic | BindingFlags.Static);
                             if (createInstanceMethod == null)
                                 continue;
-                                
+
                             var genericMethod = createInstanceMethod.MakeGenericMethod(sourceItemType, targetElementType);
                             targetItem = genericMethod.Invoke(null, [sourceItem]);
                         }
@@ -388,7 +388,7 @@ public static class ObjectMapper
                             .GetMethod("Map", [sourceItemType, targetElementType]);
                         if (mapMethod == null)
                             continue;
-                            
+
                         var mappedItem = mapMethod.Invoke(null, [sourceItem, targetItem]);
                         if (mappedItem != null)
                             addMethod.Invoke(targetCollection, [mappedItem]);
@@ -437,7 +437,7 @@ public static class ObjectMapper
     {
         if (type == null)
             return false;
-            
+
         return type.IsPrimitive
             || type == typeof(string)
             || type == typeof(decimal)
@@ -663,7 +663,7 @@ public static class ObjectMapper
         {
             if (expression.Body is not MemberExpression memberExp)
                 throw new ArgumentException("Expression must be a member expression");
-                
+
             return memberExp.Member.Name;
         }
 
@@ -671,7 +671,7 @@ public static class ObjectMapper
         {
             if (expression.Body is not MemberExpression memberExp)
                 throw new ArgumentException("Expression must be a member expression");
-                
+
             return memberExp.Member.Name;
         }
 

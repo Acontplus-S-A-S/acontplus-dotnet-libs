@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using Acontplus.Core.Extensions;
 using Acontplus.Persistence.SqlServer.Mapping;
+using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
 

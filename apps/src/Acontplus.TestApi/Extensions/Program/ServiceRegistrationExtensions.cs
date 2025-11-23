@@ -1,4 +1,5 @@
 using Acontplus.Core.Domain.Exceptions;
+using Acontplus.Infrastructure.Extensions;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
 using Acontplus.Persistence.SqlServer.Exceptions;
@@ -24,8 +25,11 @@ public static class ServiceRegistrationExtensions
 
     public static IServiceCollection AddTestApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configure Acontplus.Services - Core infrastructure
-        services.AddAcontplusServices(configuration);
+        // Configure Infrastructure Services (v2.0)
+        services.AddInfrastructureServices(configuration);
+
+        // Configure Application Services (v2.0)
+        services.AddApplicationServices(configuration);
 
         // Configure Report Services
         services.AddReportServices(configuration);
@@ -33,12 +37,8 @@ public static class ServiceRegistrationExtensions
         // Configure application services
         services.AddTestServices(configuration);
 
-        services.AddAuthorizationPolicies(new List<string>
-        {
-            "web-app", "mobile-app", "admin-portal", "test-client"
-        });
-
-        services.AddApplicationMvc();
+        // TODO: Implement AddSecurityPolicies or use AddAuthorizationPolicies
+        // services.AddSecurityPolicies();
 
         return services;
     }
