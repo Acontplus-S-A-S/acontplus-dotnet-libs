@@ -1,5 +1,10 @@
 # Acontplus.Logging
 
+[![NuGet](https://img.shields.io/nuget/v/Acontplus.Logging.svg)](https://www.nuget.org/packages/Acontplus.Logging)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+
 ## Description
 `Acontplus.Logging` is an advanced logging library for .NET applications, built on top of Serilog. It provides enterprise-grade logging capabilities with support for multiple sinks (console, file, database, Elasticsearch), structured logging, custom enrichers, and cloud-native observability patterns. Seamlessly integrates with the .NET Generic Host and ASP.NET Core applications.
 
@@ -182,7 +187,7 @@ For more advanced Serilog configuration, add a `Serilog` section to your `appset
 ```
 
 ## Requirements
-- .NET 9.0 or higher
+- .NET 10 or higher
 - Proper write permissions if `EnableLocalFile` is enabled
 - Accessible database if `EnableDatabaseLogging` is enabled
 - Elasticsearch 8.x+ instance if `EnableElasticsearchLogging` is enabled
@@ -236,4 +241,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Company
 [Acontplus](https://www.acontplus.com)
-```

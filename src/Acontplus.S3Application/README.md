@@ -1,7 +1,7 @@
 # Acontplus.S3Application
 
 [![NuGet](https://img.shields.io/nuget/v/Acontplus.S3Application.svg)](https://www.nuget.org/packages/Acontplus.S3Application)
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A .NET library providing a simple, robust, and strongly-typed interface for AWS S3 storage operations. Includes async CRUD, presigned URLs, and business-grade error handling.
@@ -136,7 +136,7 @@ All configuration is injected via `IConfiguration` for seamless integration with
 ---
 
 ## 📚 Dependencies
-- .NET 9+
+- .NET 10+
 - [AWSSDK.Core](https://www.nuget.org/packages/AWSSDK.Core)
 - [AWSSDK.S3](https://www.nuget.org/packages/AWSSDK.S3)
 - [Microsoft.Extensions.Configuration.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions)
