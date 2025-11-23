@@ -103,8 +103,16 @@ public static class DbDataReaderMapper
         if (type.GetConstructor(Type.EmptyTypes) != null)
             return Activator.CreateInstance<T>();
 
-        // Fallback for records and types without parameterless constructors
-        return (T)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+        // For records and types without parameterless constructors, use RuntimeHelpers
+        try
+        {
+            return (T)RuntimeHelpers.GetUninitializedObject(type);
+        }
+        catch
+        {
+            throw new InvalidOperationException(
+                $"Unable to create instance of type {type.Name}. Ensure it has a parameterless constructor.");
+        }
     }
 
     private static object ConvertValue(object value, Type targetType)
@@ -235,7 +243,7 @@ public static class DbDataReaderMapper
             if (ctor == null) return null;
 
             var parameters = ctor.GetParameters();
-            var args = new object[parameters.Length];
+            var args = new object?[parameters.Length];
 
             for (var i = 0; i < parameters.Length; i++)
             {

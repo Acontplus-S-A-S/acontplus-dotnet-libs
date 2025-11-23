@@ -152,7 +152,7 @@ public class AdoRepository : IAdoRepository
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
-            DbConnection connectionToClose = null;
+            DbConnection? connectionToClose = null;
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
