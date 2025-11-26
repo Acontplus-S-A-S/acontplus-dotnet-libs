@@ -66,7 +66,8 @@ public static class ServiceRegistrationExtensions
         [
             "Acontplus.Reports.Services",
             "Acontplus.Core.Security.Services",
-            "Acontplus.TestApplication.Services"
+            "Acontplus.TestApplication.Services",
+            "Acontplus.TestApi.Services"
         ];
 
         services.Scan(scan => scan

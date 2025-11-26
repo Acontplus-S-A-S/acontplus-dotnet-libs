@@ -13,14 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build;</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build;</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Scrutor" />
     <PackageReference Include="Serilog.AspNetCore" />

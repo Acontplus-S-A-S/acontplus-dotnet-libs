@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A comprehensive .NET service library providing business-grade patterns, security, device detection, and request management for ASP.NET Core applications. Built with modern .NET 10 features and best practices.
+A comprehensive .NET service library providing business-grade patterns, security, device detection, request management, and **intelligent exception handling** for ASP.NET Core applications. Built with modern .NET 10 features and best practices.
 
 > **💡 Infrastructure Services**: For caching, circuit breakers, resilience patterns, and HTTP client factory, use **[Acontplus.Infrastructure](https://www.nuget.org/packages/Acontplus.Infrastructure)**
 
@@ -16,6 +16,18 @@ A comprehensive .NET service library providing business-grade patterns, security
 - **Action Filters**: Reusable cross-cutting concerns (validation, logging, security)
 - **Authorization Policies**: Fine-grained access control for multi-tenant scenarios
 - **Middleware Pipeline**: Properly ordered middleware for security and context management
+
+### 🛡️ Advanced Exception Handling **NEW!**
+
+- **Flexible Design**: Works with or without catch blocks - your choice!
+- **Smart Exception Translation**: Preserves custom error codes from business logic
+- **DomainException Support**: Automatic handling of domain exceptions with proper HTTP status codes
+- **Consistent API Responses**: Standardized error format with categories and severity
+- **Intelligent Logging**: Context-aware logging with appropriate severity levels
+- **Distributed Tracing**: Correlation IDs and trace IDs for request tracking
+- **Multi-tenancy Support**: Tenant ID tracking across requests
+
+📖 **[Complete Exception Handling Guide](Middleware/ApiExceptionMiddleware.README.md)**
 
 ### 🔒 Security & Compliance
 
@@ -70,7 +82,7 @@ Install-Package Acontplus.Infrastructure
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-// Add application services (authentication, security, device detection)
+// Add application services (authentication, security, device detection, exception handling)
 builder.Services.AddApplicationServices(builder.Configuration);
 
 // Add infrastructure services (caching, resilience, HTTP clients)
@@ -78,14 +90,73 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Use application middleware pipeline
+// Use application middleware pipeline (includes exception handling)
 app.UseApplicationMiddleware(builder.Environment);
 
 app.MapControllers();
 app.Run();
 ```
 
-### 2. Basic Configuration
+### 2. Exception Handling - No Catch Needed! **NEW!**
+
+```csharp
+// Business Layer - Just throw, middleware handles everything
+public async Task<Customer> GetCustomerAsync(int id)
+{
+    var customer = await _repository.GetByIdAsync(id);
+    
+    if (customer is null)
+    {
+        throw new GenericDomainException(
+            ErrorType.NotFound,
+            "CUSTOMER_NOT_FOUND",
+            "Customer not found");
+    }
+    
+    return customer;
+}
+```
+
+**Automatic Response:**
+```json
+{
+  "success": false,
+  "code": "404",
+  "message": "Customer not found",
+  "errors": [{
+    "code": "CUSTOMER_NOT_FOUND",
+    "message": "Customer not found",
+    "category": "business",
+    "severity": "warning"
+  }],
+  "correlationId": "abc-123"
+}
+```
+
+**Or Use Result Pattern:**
+```csharp
+public async Task<Result<Customer, DomainError>> GetCustomerAsync(int id)
+{
+    try
+    {
+        var customer = await _repository.GetByIdAsync(id);
+        return customer ?? DomainError.NotFound("CUSTOMER_NOT_FOUND", "Not found");
+    }
+    catch (SqlDomainException ex)
+    {
+        return ex.ToDomainError();
+    }
+}
+
+// Controller
+[HttpGet("{id}")]
+public Task<IActionResult> GetCustomer(int id)
+{
+    return _service.GetCustomerAsync(id).ToActionResultAsync();
+}
+```
+
+### 3. Basic Configuration
 
 Add to your `appsettings.json`:
 
@@ -100,13 +171,18 @@ Add to your `appsettings.json`:
       "AllowedConnectSources": ["https://api.yourdomain.com"]
     }
   },
+  "ExceptionHandling": {
+    "IncludeDebugDetailsInResponse": false,
+    "IncludeRequestDetails": true,
+    "LogRequestBody": false
+  },
   "Caching": {
     "UseDistributedCache": false
   }
 }
 ```
 
-### 3. Use in Your Controller
+### 4. Use in Your Controller
 
 ```csharp
 [ApiController]
@@ -753,6 +829,8 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 ### ✅ Do's
 - Use `AddApplicationServices()` for application-level concerns
 - Use `AddInfrastructureServices()` for infrastructure concerns
+- **NEW**: Let DomainExceptions bubble up for simpler code
+- **NEW**: Use Result pattern for complex workflows
 - Always validate client IDs and tenant IDs in multi-tenant scenarios
 - Configure CSP policies carefully to avoid breaking functionality
 - Monitor health check endpoints regularly
@@ -765,3 +843,4 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 - Don't cache sensitive user data
 - Don't ignore health check failures
 - Don't use generic cache keys
+- **NEW**: Don't catch and swallow DomainExceptions (let middleware handle them)

@@ -61,6 +61,7 @@ public class ApiExceptionMiddleware
         var response = ex switch
         {
             ValidationException validationEx => HandleValidationException(validationEx, correlationId, tenantId),
+            DomainException domainEx => HandleDomainException(domainEx, correlationId, tenantId),
             ApiException apiEx => HandleApiException(apiEx, correlationId, tenantId),
             _ => HandleUnhandledException(ex, correlationId, tenantId)
         };
@@ -74,18 +75,40 @@ public class ApiExceptionMiddleware
         var errors = ex.Errors
             .SelectMany(e => e.Value.Select(message =>
                 new ApiError(
-                    Code: "VALIDATION_ERROR",
+                    Code: ex.ErrorCode,
                     Message: message,
                     Target: e.Key,
-                    Category: "validation")))
+                    Category: "validation",
+                    Severity: "warning")))
             .ToList();
 
         return ApiResponse.Failure(
             errors, new ApiResponseOptions
             {
-                Message = "Validation failed",
+                Message = ex.Message,
                 CorrelationId = correlationId,
-                StatusCode = HttpStatusCode.BadRequest,
+                StatusCode = ex.StatusCode,
+                Metadata = CreateStandardMetadata(tenantId)
+            });
+    }
+
+    private static ApiResponse HandleDomainException(DomainException ex, string correlationId, string tenantId)
+    {
+        var httpStatusCode = ex.ErrorType.ToHttpStatusCode();
+        
+        var error = new ApiError(
+            Code: ex.ErrorCode,
+            Message: ex.Message,
+            Category: ex.ErrorType.ToCategoryString(),
+            Severity: ex.ErrorType.ToSeverityString(),
+            TraceId: Activity.Current?.Id);
+
+        return ApiResponse.Failure(
+            error, new ApiResponseOptions
+            {
+                Message = ex.Message,
+                CorrelationId = correlationId,
+                StatusCode = httpStatusCode,
                 Metadata = CreateStandardMetadata(tenantId)
             });
     }
@@ -93,9 +116,11 @@ public class ApiExceptionMiddleware
     private static ApiResponse HandleApiException(ApiException ex, string correlationId, string tenantId)
     {
         var error = new ApiError(
-            Code: ex.StatusCode.ToString(),
+            Code: ex.ErrorCode,
             Message: ex.Message,
-            Category: GetErrorCategory(ex.StatusCode));
+            Category: GetErrorCategory(ex.StatusCode),
+            Severity: GetErrorSeverity(ex.StatusCode),
+            TraceId: Activity.Current?.Id);
 
         return ApiResponse.Failure(
             error, new ApiResponseOptions
@@ -109,15 +134,44 @@ public class ApiExceptionMiddleware
 
     private ApiResponse HandleUnhandledException(Exception ex, string correlationId, string tenantId)
     {
+        // Check if this is actually a DomainException that wasn't caught earlier
+        // This can happen with inheritance hierarchies or wrapper exceptions
+        var innerDomainEx = FindInnerException<DomainException>(ex);
+        if (innerDomainEx != null)
+        {
+            _logger.LogWarning("DomainException found as inner exception in unhandled path: {ErrorCode}", 
+                innerDomainEx.ErrorCode);
+            return HandleDomainException(innerDomainEx, correlationId, tenantId);
+        }
+
+        var innerValidationEx = FindInnerException<ValidationException>(ex);
+        if (innerValidationEx != null)
+        {
+            _logger.LogWarning("ValidationException found as inner exception in unhandled path");
+            return HandleValidationException(innerValidationEx, correlationId, tenantId);
+        }
+
+        var innerApiEx = FindInnerException<ApiException>(ex);
+        if (innerApiEx != null)
+        {
+            _logger.LogWarning("ApiException found as inner exception in unhandled path: {ErrorCode}", 
+                innerApiEx.ErrorCode);
+            return HandleApiException(innerApiEx, correlationId, tenantId);
+        }
+
+        // Truly unhandled exception
         var debugInfo = _options.IncludeDebugDetailsInResponse
             ? GetSafeDebugInfo(ex)
             : null;
 
         var error = new ApiError(
             Code: "UNHANDLED_ERROR",
-            Message: "An unexpected error occurred",
+            Message: _options.IncludeDebugDetailsInResponse 
+                ? ex.Message 
+                : "An unexpected error occurred",
             Category: "system",
-                Details: debugInfo != null
+            Severity: "error",
+            Details: debugInfo != null
                 ? new Dictionary<string, object>
                 {
                     [DebugMetadataKeys.Debug] = debugInfo
@@ -135,14 +189,33 @@ public class ApiExceptionMiddleware
             });
     }
 
+    /// <summary>
+    /// Searches the exception chain for a specific exception type.
+    /// </summary>
+    private static T? FindInnerException<T>(Exception ex) where T : Exception
+    {
+        var current = ex;
+        while (current != null)
+        {
+            if (current is T typedException)
+            {
+                return typedException;
+            }
+            current = current.InnerException;
+        }
+        return null;
+    }
+
     private async Task HandleStatusCodeAsync(HttpContext context, string correlationId, string tenantId)
     {
         var statusCode = (HttpStatusCode)context.Response.StatusCode;
 
         var error = new ApiError(
-            Code: statusCode.ToString(),
+            Code: GetErrorCodeForStatus(statusCode),
             Message: GetStatusMessage(statusCode),
-            Category: GetErrorCategory(statusCode));
+            Category: GetErrorCategory(statusCode),
+            Severity: GetErrorSeverity(statusCode),
+            TraceId: Activity.Current?.Id);
 
         var response = ApiResponse.Failure(
             error, new ApiResponseOptions
@@ -163,6 +236,17 @@ public class ApiExceptionMiddleware
             .AppendLine($"CorrelationId: {correlationId}")
             .AppendLine($"TenantId: {tenantId}");
 
+        if (ex is DomainException domainEx)
+        {
+            logMessage.AppendLine($"ErrorType: {domainEx.ErrorType}")
+                .AppendLine($"ErrorCode: {domainEx.ErrorCode}");
+        }
+        else if (ex is ApiException apiEx)
+        {
+            logMessage.AppendLine($"StatusCode: {apiEx.StatusCode}")
+                .AppendLine($"ErrorCode: {apiEx.ErrorCode}");
+        }
+
         if (_options.IncludeRequestDetails)
         {
             logMessage.AppendLine($"Path: {context.Request.Path}")
@@ -174,7 +258,30 @@ public class ApiExceptionMiddleware
             logMessage.AppendLine($"Request Body: {await ReadRequestBodyAsync(context.Request)}");
         }
 
-        _logger.LogError(ex, logMessage.ToString());
+        var logLevel = GetLogLevel(ex);
+        _logger.Log(logLevel, ex, logMessage.ToString());
+    }
+
+    private static LogLevel GetLogLevel(Exception ex)
+    {
+        return ex switch
+        {
+            ValidationException => LogLevel.Warning,
+            DomainException domainEx => domainEx.ErrorType switch
+            {
+                ErrorType.Validation => LogLevel.Warning,
+                ErrorType.BadRequest => LogLevel.Warning,
+                ErrorType.NotFound => LogLevel.Information,
+                ErrorType.Conflict => LogLevel.Warning,
+                ErrorType.Unauthorized => LogLevel.Warning,
+                ErrorType.Forbidden => LogLevel.Warning,
+                _ => LogLevel.Error
+            },
+            ApiException apiEx => (int)apiEx.StatusCode >= 500 
+                ? LogLevel.Error 
+                : LogLevel.Warning,
+            _ => LogLevel.Error
+        };
     }
 
     private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
@@ -193,6 +300,22 @@ public class ApiExceptionMiddleware
         }
     }
 
+    private static string GetErrorCodeForStatus(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "BAD_REQUEST",
+        HttpStatusCode.Unauthorized => "UNAUTHORIZED",
+        HttpStatusCode.Forbidden => "FORBIDDEN",
+        HttpStatusCode.NotFound => "NOT_FOUND",
+        HttpStatusCode.Conflict => "CONFLICT",
+        HttpStatusCode.MethodNotAllowed => "METHOD_NOT_ALLOWED",
+        HttpStatusCode.UnprocessableEntity => "VALIDATION_ERROR",
+        HttpStatusCode.TooManyRequests => "RATE_LIMITED",
+        HttpStatusCode.InternalServerError => "INTERNAL_ERROR",
+        HttpStatusCode.ServiceUnavailable => "SERVICE_UNAVAILABLE",
+        HttpStatusCode.GatewayTimeout => "TIMEOUT",
+        _ => statusCode.ToString().ToUpperInvariant().Replace(" ", "_")
+    };
+
     private static string GetStatusMessage(HttpStatusCode statusCode) => statusCode switch
     {
         HttpStatusCode.BadRequest => "Invalid request",
@@ -201,18 +324,37 @@ public class ApiExceptionMiddleware
         HttpStatusCode.NotFound => "Resource not found",
         HttpStatusCode.Conflict => "Conflict occurred",
         HttpStatusCode.MethodNotAllowed => "Method not allowed",
+        HttpStatusCode.UnprocessableEntity => "Validation failed",
+        HttpStatusCode.TooManyRequests => "Too many requests",
         HttpStatusCode.InternalServerError => "Internal server error",
+        HttpStatusCode.ServiceUnavailable => "Service unavailable",
+        HttpStatusCode.GatewayTimeout => "Request timeout",
         _ => statusCode.ToString()
     };
 
     private static string GetErrorCategory(HttpStatusCode statusCode) => statusCode switch
     {
         HttpStatusCode.BadRequest => "validation",
+        HttpStatusCode.UnprocessableEntity => "validation",
         HttpStatusCode.Unauthorized => "authentication",
         HttpStatusCode.Forbidden => "authorization",
         HttpStatusCode.NotFound => "not_found",
         HttpStatusCode.Conflict => "conflict",
+        HttpStatusCode.MethodNotAllowed => "validation",
+        HttpStatusCode.TooManyRequests => "performance",
+        HttpStatusCode.RequestTimeout => "performance",
+        HttpStatusCode.GatewayTimeout => "performance",
         _ => (int)statusCode >= 500 ? "server" : "client"
+    };
+
+    private static string GetErrorSeverity(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "warning",
+        HttpStatusCode.UnprocessableEntity => "warning",
+        HttpStatusCode.NotFound => "warning",
+        HttpStatusCode.Conflict => "warning",
+        HttpStatusCode.MethodNotAllowed => "warning",
+        _ => (int)statusCode >= 500 ? "error" : "warning"
     };
 
     private static Dictionary<string, object>? GetSafeDebugInfo(Exception ex)

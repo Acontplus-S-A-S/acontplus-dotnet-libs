@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Services</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Comprehensive library for ASP.NET Core application services: JWT authentication, user context management, exception handling, security headers, authorization policies, and enterprise-ready service patterns. For infrastructure services (caching, resilience), use Acontplus.Infrastructure.</Description>
