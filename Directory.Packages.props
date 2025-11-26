@@ -8,6 +8,7 @@
     <PackageVersion Include="Acontplus.Core" Version="2.0.1" />
     <PackageVersion Include="Acontplus.Persistence.Common" Version="2.0.0" />
     <PackageVersion Include="Acontplus.Utilities" Version="2.0.0" />
+    <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
@@ -46,7 +47,8 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageVersion Include="Polly" Version="8.6.5" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.14.0" />
     <PackageVersion Include="ReportViewerCore.NETCore" Version="15.1.26" />
     <PackageVersion Include="Scriban" Version="6.5.2" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />

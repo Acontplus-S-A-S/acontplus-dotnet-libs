@@ -21,7 +21,7 @@ public static class ApiDocumentationExtensions
     /// <returns>The configured <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddApiVersioningAndDocumentation(this IServiceCollection services)
     {
-        // 1. Configure API Versioning
+        // 1. Configure API Versioning for Controllers
         services.AddApiVersioning(options =>
         {
             options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -41,10 +41,15 @@ public static class ApiDocumentationExtensions
             options.SubstituteApiVersionInUrl = true;
         });
 
-        // 2. Add our custom options configurator for Swagger
+        // 2. Configure API Versioning for Minimal APIs
+        services.AddApiVersioning()
+            .AddMvc() // For controllers
+            .AddApiExplorer();
+
+        // 3. Add our custom options configurator for Swagger
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        // 3. Configure Swagger Generator
+        // 4. Configure Swagger Generator
         services.AddSwaggerGen(options =>
         {
             // Enable JWT Bearer token authentication in the Swagger UI
