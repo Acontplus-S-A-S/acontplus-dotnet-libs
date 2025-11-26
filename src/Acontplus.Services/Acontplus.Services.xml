@@ -311,6 +311,11 @@
             </summary>
             <param name="context">The HTTP context.</param>
         </member>
+        <member name="M:Acontplus.Services.Middleware.ApiExceptionMiddleware.FindInnerException``1(System.Exception)">
+            <summary>
+            Searches the exception chain for a specific exception type.
+            </summary>
+        </member>
         <member name="T:Acontplus.Services.Policies.DeviceTypeRequirement">
             <summary>
             Authorization requirement for device type validation and restrictions.
