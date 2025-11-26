@@ -1,7 +1,6 @@
 using Acontplus.Infrastructure.Caching;
 using Acontplus.Infrastructure.HealthChecks;
 using Acontplus.Infrastructure.Http;
-using Acontplus.Infrastructure.Midleware;
 using Acontplus.Infrastructure.Resilience;
 
 namespace Acontplus.Infrastructure.Extensions;
@@ -155,18 +154,5 @@ public static class InfrastructureServiceExtensions
                 tags: new[] { "ready", "resilience" });
 
         return services;
-    }
-
-    /// <summary>
-    /// Configures middleware pipeline for infrastructure services.
-    /// </summary>
-    public static IApplicationBuilder UseInfrastructureMiddleware(
-        this IApplicationBuilder app,
-        IHostEnvironment environment)
-    {
-        // Add rate limiting middleware (basic implementation)
-        app.UseMiddleware<RateLimitingMiddleware>();
-
-        return app;
     }
 }

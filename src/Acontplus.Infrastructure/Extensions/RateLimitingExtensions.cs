@@ -1,43 +1,4 @@
-namespace Acontplus.Infrastructure.Midleware;
-
-/// <summary>
-/// Advanced rate limiting middleware using .NET 9's built-in rate limiting.
-/// </summary>
-public class RateLimitingMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly ILogger<RateLimitingMiddleware> _logger;
-    private readonly ResilienceConfiguration _config;
-
-    public RateLimitingMiddleware(
-        RequestDelegate next,
-        ILogger<RateLimitingMiddleware> logger,
-        IOptions<ResilienceConfiguration> config)
-    {
-        _next = next;
-        _logger = logger;
-        _config = config.Value;
-    }
-
-    public async Task InvokeAsync(HttpContext context)
-    {
-        if (!_config.RateLimiting.Enabled)
-        {
-            await _next(context);
-            return;
-        }
-
-        try
-        {
-            await _next(context);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in rate limiting middleware");
-            throw;
-        }
-    }
-}
+namespace Acontplus.Infrastructure.Extensions;
 
 /// <summary>
 /// Extension methods for configuring rate limiting.
@@ -97,14 +58,6 @@ public static class RateLimitingExtensions
         });
 
         return services;
-    }
-
-    /// <summary>
-    /// Use advanced rate limiting middleware.
-    /// </summary>
-    public static IApplicationBuilder UseAdvancedRateLimiting(this IApplicationBuilder app)
-    {
-        return app.UseRateLimiter();
     }
 
     private static string GetRateLimitKey(HttpContext context, RateLimitingOptions options)

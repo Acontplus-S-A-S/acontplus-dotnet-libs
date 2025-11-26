@@ -4,7 +4,7 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting, and health checks for .NET applications. Built with modern .NET features and industry best practices.
+Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting, and health checks for .NET applications. Built with modern .NET 10 features and industry best practices.
 
 > **💡 Application Services**: For authentication, authorization policies, security headers, device detection, and request context, use **[Acontplus.Services](https://www.nuget.org/packages/Acontplus.Services)**
 
@@ -36,10 +36,11 @@ Enterprise-grade infrastructure library providing caching, resilience patterns, 
 
 ### 🚦 Rate Limiting
 
-- **Advanced Rate Limiting**: IP-based, client-based, and sliding window support
-- **Configurable Windows**: Flexible time windows and request limits
-- **Multi-Strategy**: Support for fixed and sliding window algorithms
-- **Middleware Integration**: Easy integration with ASP.NET Core pipeline
+- **Advanced Configuration**: Multi-key rate limiting (IP, Client ID, User ID)
+- **Custom Policies**: Pre-configured "api" and "auth" policies
+- **Built-in Middleware**: Uses .NET's built-in rate limiting infrastructure
+- **Custom Responses**: JSON error responses with retry-after headers
+- **Flexible Windows**: Configurable time windows and request limits
 
 ### 🏥 Health Checks
 
@@ -87,7 +88,31 @@ app.MapHealthChecks("/health");
 app.Run();
 ```
 
-### 2. Configuration
+### 2. With Rate Limiting
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add infrastructure services
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// Add rate limiting (optional)
+builder.Services.AddAdvancedRateLimiting(builder.Configuration);
+
+var app = builder.Build();
+
+// Use rate limiting middleware
+app.UseRateLimiter();
+
+// Map health and controllers
+app.MapHealthChecks("/health");
+app.MapControllers();
+
+app.Run();
+```
+
+### 3. Configuration
 
 Add to your `appsettings.json`:
 
@@ -117,9 +142,9 @@ Add to your `appsettings.json`:
       "Enabled": true,
       "WindowSeconds": 60,
       "MaxRequestsPerWindow": 100,
-      "SlidingWindow": true,
       "ByIpAddress": true,
-      "ByClientId": true
+      "ByClientId": true,
+      "ByUserId": false
     },
     "Timeout": {
       "Enabled": true,
@@ -511,37 +536,86 @@ Health check response example:
 }
 ```
 
-## 🏗️ Architecture
+## 🚦 Rate Limiting
 
-### Folder Structure
+### Setup
 
-```
-Acontplus.Infrastructure/
-├── Caching/
-│   ├── MemoryCacheService.cs          # In-memory cache implementation
-│   └── DistributedCacheService.cs     # Redis distributed cache implementation
-├── Resilience/
-│   ├── CircuitBreakerService.cs       # Circuit breaker with pre-configured policies
-│   └── RetryPolicyService.cs          # Retry policy service
-├── Http/
-│   └── ResilientHttpClientFactory.cs  # HTTP client factory with resilience
-├── Middleware/
-│   └── RateLimitingMiddleware.cs      # Advanced rate limiting middleware
-├── HealthChecks/
-│   ├── CacheHealthCheck.cs            # Cache service health check
-│   └── CircuitBreakerHealthCheck.cs   # Circuit breaker health check
-├── Configuration/
-│   ├── CacheConfiguration.cs          # Cache configuration options
-│   └── ResilienceConfiguration.cs     # Resilience configuration options
-└── Extensions/
-    └── InfrastructureServiceExtensions.cs  # DI registration extensions
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure rate limiting
+builder.Services.AddAdvancedRateLimiting(builder.Configuration);
+
+var app = builder.Build();
+
+// Add rate limiting middleware (MUST be before MapControllers)
+app.UseRateLimiter();
+
+app.MapControllers();
+app.Run();
 ```
 
-### Dependencies
+### Configuration
 
-- **Polly**: Resilience and transient-fault-handling library
-- **Microsoft.Extensions.Caching.StackExchangeRedis**: Redis cache provider
-- **Microsoft.Extensions.Http.Resilience**: HTTP resilience patterns
+```json
+{
+  "Resilience": {
+    "RateLimiting": {
+      "Enabled": true,
+      "WindowSeconds": 60,
+      "MaxRequestsPerWindow": 100,
+      "ByIpAddress": true,
+      "ByClientId": true,
+      "ByUserId": false
+    }
+  }
+}
+```
+
+### Apply to Specific Endpoints
+
+```csharp
+using Microsoft.AspNetCore.RateLimiting;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    // Uses global rate limiting (100 requests per 60 seconds)
+    [HttpGet]
+    public IActionResult GetAll() => Ok();
+
+    // Uses "api" policy (50 requests per 60 seconds)
+    [HttpGet("{id}")]
+    [EnableRateLimiting("api")]
+    public IActionResult Get(int id) => Ok();
+
+    // Uses "auth" policy (5 requests per 5 minutes)
+    [HttpPost("login")]
+    [EnableRateLimiting("auth")]
+    public IActionResult Login() => Ok();
+
+    // Disable rate limiting for specific endpoint
+    [HttpGet("health")]
+    [DisableRateLimiting]
+    public IActionResult Health() => Ok();
+}
+```
+
+### Rate Limit Response
+
+When rate limit is exceeded, clients receive:
+
+```json
+{
+  "error": "Too many requests",
+  "message": "Rate limit exceeded. Please try again later.",
+  "retryAfter": 60
+}
+```
+
+HTTP Status: `429 Too Many Requests`
 
 ## 🔧 Granular Setup
 
@@ -554,7 +628,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Register only caching services
 builder.Services.AddCachingServices(builder.Configuration);
 
-// Register only resilience services
+// Register only resilience services (circuit breaker, retry)
 builder.Services.AddResilienceServices(builder.Configuration);
 
 // Register only HTTP client factory
@@ -563,97 +637,101 @@ builder.Services.AddResilientHttpClients(builder.Configuration);
 // Register only health checks
 builder.Services.AddInfrastructureHealthChecks();
 
+// Optionally add rate limiting
+builder.Services.AddAdvancedRateLimiting(builder.Configuration);
+
 var app = builder.Build();
 
-// Use rate limiting middleware if needed
-app.UseMiddleware<RateLimitingMiddleware>();
+// Use rate limiting if configured
+app.UseRateLimiter();
 
+app.MapControllers();
 app.Run();
 ```
 
-## 📊 Monitoring & Observability
+## 📚 API Reference
 
-### Cache Metrics
+### Extension Methods
 
-```csharp
-public class MonitoringService
-{
-    private readonly ICacheService _cache;
-
-    public CacheMetrics GetCacheMetrics()
-    {
-        var stats = _cache.GetStatistics();
-        return new CacheMetrics
-        {
-            TotalEntries = stats.TotalEntries,
-            HitRate = stats.HitRatePercentage,
-            MissRate = stats.MissRatePercentage
-        };
-    }
-}
-```
-
-### Circuit Breaker Monitoring
+#### Service Registration
 
 ```csharp
-public class ResilienceMonitoringService
-{
-    private readonly ICircuitBreakerService _circuitBreaker;
+// Register all infrastructure services
+services.AddInfrastructureServices(configuration);
 
-    public Dictionary<string, string> GetCircuitBreakerStates()
-    {
-        var policies = new[] { "default", "api", "database", "external", "auth" };
-        return policies.ToDictionary(
-            p => p,
-            p => _circuitBreaker.GetCircuitBreakerState(p).ToString()
-        );
-    }
-}
+// Or register individually
+services.AddCachingServices(configuration);
+services.AddResilienceServices(configuration);
+services.AddResilientHttpClients(configuration);
+services.AddInfrastructureHealthChecks();
+services.AddAdvancedRateLimiting(configuration);
 ```
 
-## 🧪 Testing
-
-### Unit Testing with Mocks
+#### Middleware
 
 ```csharp
-public class ProductServiceTests
-{
-    private readonly Mock<ICacheService> _mockCache;
-    private readonly ProductService _service;
-
-    public ProductServiceTests()
-    {
-        _mockCache = new Mock<ICacheService>();
-        _service = new ProductService(_mockCache.Object);
-    }
-
-    [Fact]
-    public async Task GetProduct_CacheHit_ReturnsCachedValue()
-    {
-        // Arrange
-        var product = new Product { Id = 1, Name = "Test" };
-        _mockCache
-            .Setup(x => x.GetAsync<Product>("product:1", default))
-            .ReturnsAsync(product);
-
-        // Act
-        var result = await _service.GetProductAsync(1);
-
-        // Assert
-        Assert.Equal(product, result);
-        _mockCache.Verify(x => x.GetAsync<Product>("product:1", default), Times.Once);
-    }
-}
+// Rate limiting middleware (uses .NET's built-in rate limiter)
+app.UseRateLimiter();
 ```
 
-## 📄 License
+### Core Interfaces
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+```csharp
+// Caching
+ICacheService
+  - GetAsync<T>(string key, CancellationToken cancellationToken = default)
+  - SetAsync<T>(string key, T value, TimeSpan? absoluteExpiration = null, CancellationToken cancellationToken = default)
+  - GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? absoluteExpiration = null, CancellationToken cancellationToken = default)
+  - RemoveAsync(string key, CancellationToken cancellationToken = default)
+  - GetStatistics() // In-memory only
 
-## 🤝 Contributing
+// Circuit Breaker
+ICircuitBreakerService
+  - ExecuteAsync<T>(Func<Task<T>> action, string policy = "default")
+  - GetCircuitBreakerState(string policy = "default")
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+// Retry Policy
+RetryPolicyService
+  - ExecuteAsync<T>(Func<Task<T>> action, int? maxRetries = null, TimeSpan? baseDelay = null)
+  - Execute<T>(Func<T> action, int? maxRetries = null, TimeSpan? baseDelay = null)
 
-## 📞 Support
+// HTTP Client Factory
+ResilientHttpClientFactory
+  - CreateClient()
+  - CreateApiClient()
+  - CreateExternalClient()
+  - CreateLongRunningClient()
+  - CreateClientWithTimeout(string name, TimeSpan timeout)
+```
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/acontplus/acontplus-dotnet-libs).
+## 🏗️ Architecture
+
+### Folder Structure
+
+```
+Acontplus.Infrastructure/
+├── Caching/
+│   ├── MemoryCacheService.cs          # In-memory cache implementation
+│   └── DistributedCacheService.cs     # Redis distributed cache
+├── Resilience/
+│   ├── CircuitBreakerService.cs       # Circuit breaker service
+│   └── RetryPolicyService.cs          # Retry policy service
+├── Http/
+│   └── ResilientHttpClientFactory.cs  # HTTP client factory
+├── HealthChecks/
+│   ├── CacheHealthCheck.cs            # Cache health check
+│   └── CircuitBreakerHealthCheck.cs   # Circuit breaker health check
+├── Configuration/
+│   ├── CacheConfiguration.cs          # Cache config
+│   └── ResilienceConfiguration.cs     # Resilience config
+└── Extensions/
+    ├── InfrastructureServiceExtensions.cs  # DI registration
+    └── RateLimitingExtensions.cs           # Rate limiting configuration
+```
+
+### Dependencies
+
+- **Polly**: Resilience and transient-fault-handling
+- **Microsoft.Extensions.Caching.StackExchangeRedis**: Redis provider
+- **Microsoft.Extensions.Http.Resilience**: HTTP resilience
+- **.NET Rate Limiting**: Built-in ASP.NET Core rate limiting middleware
