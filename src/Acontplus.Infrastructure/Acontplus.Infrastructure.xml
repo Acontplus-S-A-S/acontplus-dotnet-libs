@@ -229,9 +229,14 @@
             Adds health checks for infrastructure services.
             </summary>
         </member>
-        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.UseInfrastructureMiddleware(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostEnvironment)">
+        <member name="T:Acontplus.Infrastructure.Extensions.RateLimitingExtensions">
             <summary>
-            Configures middleware pipeline for infrastructure services.
+            Extension methods for configuring rate limiting.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.RateLimitingExtensions.AddAdvancedRateLimiting(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Configure rate limiting with advanced patterns.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.HealthChecks.CacheHealthCheck">
@@ -272,26 +277,6 @@
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateLongRunningClient">
             <summary>
             Creates an HTTP client for long-running operations.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Infrastructure.Midleware.RateLimitingMiddleware">
-            <summary>
-            Advanced rate limiting middleware using .NET 9's built-in rate limiting.
-            </summary>
-        </member>
-        <member name="T:Acontplus.Infrastructure.Midleware.RateLimitingExtensions">
-            <summary>
-            Extension methods for configuring rate limiting.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Infrastructure.Midleware.RateLimitingExtensions.AddAdvancedRateLimiting(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
-            <summary>
-            Configure rate limiting with advanced patterns.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Infrastructure.Midleware.RateLimitingExtensions.UseAdvancedRateLimiting(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
-            <summary>
-            Use advanced rate limiting middleware.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Resilience.PolicyConfig">

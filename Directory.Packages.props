@@ -48,8 +48,8 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.0" />
     <PackageVersion Include="ReportViewerCore.NETCore" Version="15.1.26" />
-    <PackageVersion Include="Scriban" Version="6.5.1" />
-    <PackageVersion Include="Scrutor" Version="6.1.0" />
+    <PackageVersion Include="Scriban" Version="6.5.2" />
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />

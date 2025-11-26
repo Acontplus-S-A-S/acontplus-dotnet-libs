@@ -288,8 +288,12 @@ app.UseApplicationMiddleware(environment);
 builder.Services.AddInfrastructureServices(configuration);
 builder.Services.AddApplicationServices(configuration);
 
-app.UseInfrastructureMiddleware(environment);
+// Middleware - only application middleware needed
 app.UseApplicationMiddleware(environment);
+
+// Optional: Add rate limiting if needed
+// builder.Services.AddAdvancedRateLimiting(configuration);
+// app.UseRateLimiter();
 ```
 
 **Step 3**: Update Using Statements (if needed)
@@ -327,8 +331,10 @@ builder.Services.AddApplicationHealthChecks(configuration);
 var app = builder.Build();
 
 // Middleware
-app.UseInfrastructureMiddleware(environment);
 app.UseApplicationMiddleware(environment);
+
+// Optional: Add rate limiting if configured
+// app.UseRateLimiter();
 
 app.MapControllers();
 app.Run();
@@ -406,25 +412,26 @@ app.Run();
 
 #### Infrastructure Extensions
 ```csharp
-// All-in-one
-services.AddInfrastructureServices(configuration);
+// Service Registration
+services.AddInfrastructureServices(configuration); // Registers all: caching, resilience, HTTP clients, health checks
 
-// Granular
+// Or register individually
 services.AddCachingServices(configuration);
 services.AddResilienceServices(configuration);
 services.AddResilientHttpClients(configuration);
 services.AddInfrastructureHealthChecks();
 
-// Middleware
-app.UseInfrastructureMiddleware(environment);
+// Rate Limiting (optional - configure separately)
+services.AddAdvancedRateLimiting(configuration);
+app.UseRateLimiter(); // Must be called in middleware pipeline
 ```
 
 #### Services Extensions
 ```csharp
-// All-in-one
-services.AddApplicationServices(configuration);
+// Service Registration
+services.AddApplicationServices(configuration); // Registers all application services
 
-// Granular
+// Or register individually
 services.AddRequestContext(configuration);
 services.AddSecurityHeaders();
 services.AddDeviceDetection();
@@ -493,366 +500,3 @@ using Acontplus.Infrastructure.HealthChecks; // For CacheHealthCheck, CircuitBre
 | `AddResilientHttpClients` | Services | **Infrastructure** |
 | `AddApplicationServices` | Services | Services |
 | `AddJwtAuthentication` | Services | Services |
-
----
-
-## Configuration Examples
-
-### Infrastructure Configuration
-
-```json
-{
-  "Caching": {
-    "UseDistributedCache": false,
-    "RedisConnectionString": "localhost:6379",
-    "RedisInstanceName": "acontplus:",
-    "MemoryCacheSizeLimit": 104857600,
-    "ExpirationScanFrequencyMinutes": 5
-  },
-  "Resilience": {
-    "CircuitBreaker": {
-      "Enabled": true,
-      "ExceptionsAllowedBeforeBreaking": 5,
-      "DurationOfBreakSeconds": 30,
-      "SamplingDurationSeconds": 60,
-      "MinimumThroughput": 10
-    },
-    "RetryPolicy": {
-      "Enabled": true,
-      "MaxRetries": 3,
-      "BaseDelaySeconds": 1,
-      "ExponentialBackoff": true,
-      "MaxDelaySeconds": 30
-    },
-    "Timeout": {
-      "Enabled": true,
-      "DefaultTimeoutSeconds": 30,
-      "DatabaseTimeoutSeconds": 60,
-      "HttpClientTimeoutSeconds": 30,
-      "LongRunningTimeoutSeconds": 300
-    },
-    "RateLimiting": {
-      "Enabled": true,
-      "WindowSeconds": 60,
-      "MaxRequestsPerWindow": 100,
-      "ByIpAddress": true,
-      "ByClientId": true
-    }
-  }
-}
-```
-
-### Services Configuration
-
-```json
-{
-  "RequestContext": {
-    "EnableSecurityHeaders": true,
-    "FrameOptionsDeny": true,
-    "ReferrerPolicy": "strict-origin-when-cross-origin",
-    "RequireClientId": false,
-    "AllowedClientIds": ["web-app", "mobile-app"],
-    "Csp": {
-      "AllowedImageSources": ["https://cdn.example.com"],
-      "AllowedStyleSources": ["https://fonts.googleapis.com"],
-      "AllowedScriptSources": ["https://cdn.example.com"],
-      "AllowedConnectSources": ["https://api.example.com"]
-    }
-  },
-  "JwtSettings": {
-    "Issuer": "https://auth.example.com",
-    "Audience": "api.example.com",
-    "SecurityKey": "your-super-secret-key-at-least-32-characters-long",
-    "ClockSkew": "5",
-    "RequireHttps": "true"
-  }
-}
-```
-
----
-
-## Common Use Cases
-
-### 1. Enterprise Web API
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-// Infrastructure
-builder.Services.AddInfrastructureServices(configuration);
-
-// Application
-builder.Services.AddApplicationServices(configuration);
-builder.Services.AddJwtAuthentication(configuration);
-builder.Services.AddAuthorizationPolicies(new List<string> { 
-    "web-app", "mobile-app", "admin-portal" 
-});
-
-// Health checks
-builder.Services.AddInfrastructureHealthChecks();
-builder.Services.AddApplicationHealthChecks(configuration);
-
-// MVC
-builder.Services.AddApplicationMvc(enableGlobalFilters: true);
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseInfrastructureMiddleware(environment);
-app.UseApplicationMiddleware(environment);
-
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-app.Run();
-```
-
-### 2. Background Worker Service
-
-```csharp
-var builder = Host.CreateDefaultBuilder(args);
-
-builder.ConfigureServices((context, services) =>
-{
-    // Only infrastructure - no web features
-    services.AddCachingServices(context.Configuration);
-    services.AddResilienceServices(context.Configuration);
-    services.AddResilientHttpClients(context.Configuration);
-    
-    // Worker
-    services.AddHostedService<DataProcessingWorker>();
-});
-
-var host = builder.Build();
-await host.RunAsync();
-```
-
-### 3. Minimal API
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-// Infrastructure for caching
-builder.Services.AddCachingServices(configuration);
-
-// Application for auth
-builder.Services.AddApplicationServices(configuration);
-builder.Services.AddJwtAuthentication(configuration);
-
-var app = builder.Build();
-
-app.UseInfrastructureMiddleware(environment);
-app.UseApplicationMiddleware(environment);
-
-app.MapGet("/", () => "Hello World!");
-app.MapGet("/secure", [Authorize] () => "Secure endpoint");
-
-app.Run();
-```
-
-### 4. Microservice with Full Stack
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-// Complete setup
-builder.Services.AddInfrastructureServices(configuration);
-builder.Services.AddApplicationServices(configuration);
-builder.Services.AddJwtAuthentication(configuration);
-
-var app = builder.Build();
-
-app.UseInfrastructureMiddleware(environment);
-app.UseApplicationMiddleware(environment);
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-app.MapHealthChecks("/health");
-app.Run();
-```
-
----
-
-## Testing & Validation
-
-### Build Validation Checklist
-
-- [x] Infrastructure builds successfully
-- [x] Services builds successfully
-- [x] No compilation errors
-- [x] Documentation complete
-- [ ] Unit tests updated
-- [ ] Integration tests updated
-- [ ] Performance tests passed
-
-### Testing Health Checks
-
-```bash
-# Infrastructure health
-curl http://localhost:5000/health/cache
-curl http://localhost:5000/health/circuit-breaker
-
-# Application health
-curl http://localhost:5000/health/request-context
-curl http://localhost:5000/health/security-headers
-curl http://localhost:5000/health/device-detection
-```
-
-### Manual Testing Checklist
-
-#### Infrastructure
-- [ ] Cache service works (in-memory)
-- [ ] Cache service works (Redis)
-- [ ] Circuit breaker trips correctly
-- [ ] Retry policies execute
-- [ ] HTTP client factory creates resilient clients
-- [ ] Rate limiting enforces limits
-
-#### Services
-- [ ] JWT authentication validates tokens
-- [ ] Request context tracks correlation IDs
-- [ ] Security headers are applied
-- [ ] Device detection identifies correctly
-- [ ] Authorization policies enforce access
-- [ ] Exception middleware catches errors
-
----
-
-## Troubleshooting
-
-### Issue: "Type or namespace 'CacheHealthCheck' could not be found"
-
-**Solution**: Update using statement
-```csharp
-// Change from
-using Acontplus.Services.HealthChecks;
-
-// To
-using Acontplus.Infrastructure.HealthChecks;
-```
-
-### Issue: "Method 'AddCachingServices' does not exist"
-
-**Solution**: Add Infrastructure package
-```bash
-dotnet add package Acontplus.Infrastructure --version 1.0.0
-```
-
-Then add using:
-```csharp
-using Acontplus.Infrastructure.Extensions;
-```
-
-### Issue: "Could not load file or assembly 'Polly'"
-
-**Solution**: Polly is now in Infrastructure package
-```bash
-dotnet add package Acontplus.Infrastructure --version 1.0.0
-```
-
-### Issue: Build warnings about package pruning (NU1510)
-
-**Solution**: These are harmless warnings about the `FrameworkReference`. You can ignore them or suppress:
-```xml
-<PropertyGroup>
-  <NoWarn>$(NoWarn);NU1510</NoWarn>
-</PropertyGroup>
-```
-
-### Issue: Obsolete warnings
-
-**Solution**: These are intentional to guide migration:
-```csharp
-// Old method (works but obsolete)
-builder.Services.AddAcontplusServices(configuration);
-
-// New recommended method
-builder.Services.AddInfrastructureServices(configuration);
-builder.Services.AddApplicationServices(configuration);
-```
-
----
-
-## Rollback Plan
-
-If you need to revert to v1.x:
-
-**Step 1**: Revert packages
-```bash
-dotnet remove package Acontplus.Infrastructure
-dotnet remove package Acontplus.Services
-
-dotnet add package Acontplus.Services --version 1.6.3
-```
-
-**Step 2**: Revert code
-```csharp
-// Back to v1.x pattern
-builder.Services.AddAcontplusServices(configuration);
-app.UseApplicationMiddleware(environment);
-```
-
----
-
-## Support
-
-### Resources
-
-- 📧 **Email**: proyectos@acontplus.com
-- 🐛 **Issues**: https://github.com/acontplus/acontplus-dotnet-libs/issues
-- 📖 **Wiki**: https://github.com/acontplus/acontplus-dotnet-libs/wiki
-- 💬 **Discussions**: https://github.com/acontplus/acontplus-dotnet-libs/discussions
-
-### Migration Assistance
-
-If you need help migrating:
-1. Review this guide thoroughly
-2. Check the troubleshooting section
-3. Search existing GitHub issues
-4. Open a new issue with:
-   - Your current setup
-   - Error messages
-   - What you've tried
-
----
-
-## Summary
-
-### What You Get with v2.0
-
-#### Flexibility
-- ✅ Choose exactly what you need
-- ✅ Workers get 56% smaller packages
-- ✅ APIs get explicit dependencies
-- ✅ Console apps can use infrastructure only
-
-#### Maintainability
-- ✅ Clear separation of concerns
-- ✅ Independent package versioning
-- ✅ No code duplication
-- ✅ Better testing isolation
-
-#### Performance
-- ✅ 22% overall size reduction
-- ✅ Faster dependency resolution
-- ✅ Smaller deployment packages
-
-#### Quality
-- ✅ Zero compilation errors
-- ✅ Comprehensive documentation
-- ✅ Smooth migration path
-- ✅ Backward compatibility maintained
-
----
-
-**Version**: 2.0.0  
-**Status**: ✅ Production Ready  
-**Last Updated**: 2024
-
-**Ready to migrate?** Follow the [Migration Guide](#migration-guide) section above!
