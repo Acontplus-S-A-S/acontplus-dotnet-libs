@@ -35,21 +35,25 @@ public class CacheHealthCheck : IHealthCheck
 
             if (retrieved == testValue && removedValue == null)
             {
+                var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
                 var data = new Dictionary<string, object>
                 {
                     ["testKey"] = testKey,
                     ["retrievedCorrectly"] = true,
                     ["removedCorrectly"] = true,
-                    ["lastTestTime"] = DateTime.UtcNow
+                    ["lastTestTime"] = DateTime.UtcNow,
+                    ["application"] = appName
                 };
-                return HealthCheckResult.Healthy("Cache service is fully operational", data);
+                return HealthCheckResult.Healthy($"{appName} - Cache service is fully operational", data);
             }
 
-            return HealthCheckResult.Degraded("Cache service test partially failed - some operations may not be working correctly");
+            var appNameDegraded = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            return HealthCheckResult.Degraded($"{appNameDegraded} - Cache service test partially failed - some operations may not be working correctly");
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy("Cache service failed", ex);
+            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            return HealthCheckResult.Unhealthy($"{appName} - Cache service failed", ex);
         }
     }
 }

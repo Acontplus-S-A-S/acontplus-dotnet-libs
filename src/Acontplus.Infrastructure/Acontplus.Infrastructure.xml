@@ -199,6 +199,18 @@
             Long-running operation timeout in seconds. Default: 300.
             </summary>
         </member>
+        <member name="T:Acontplus.Infrastructure.Extensions.HealthCheckEndpointExtensions">
+            <summary>
+            Extension methods for mapping health check endpoints with consistent formatting.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.HealthCheckEndpointExtensions.MapHealthCheckEndpoints(Microsoft.AspNetCore.Builder.WebApplication,System.String)">
+            <summary>
+            Maps health check endpoints with standardized JSON response formatting including application name.
+            </summary>
+            <param name="app">The web application builder.</param>
+            <param name="basePath">The base path for health check endpoints (default: "/health").</param>
+        </member>
         <member name="T:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions">
             <summary>
             Service collection extensions for registering infrastructure services.
@@ -247,6 +259,11 @@
         <member name="T:Acontplus.Infrastructure.HealthChecks.CircuitBreakerHealthCheck">
             <summary>
             Health check for circuit breaker service.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Infrastructure.HealthChecks.SelfHealthCheck">
+            <summary>
+            Self health check that always returns healthy with application name.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Http.ResilientHttpClientFactory">

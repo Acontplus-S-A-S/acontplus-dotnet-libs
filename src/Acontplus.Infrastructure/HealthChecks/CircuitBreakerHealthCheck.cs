@@ -16,6 +16,7 @@ public class CircuitBreakerHealthCheck : IHealthCheck
     {
         try
         {
+            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
             var defaultState = _circuitBreakerService.GetCircuitBreakerState("default");
             var apiState = _circuitBreakerService.GetCircuitBreakerState("api");
             var databaseState = _circuitBreakerService.GetCircuitBreakerState("database");
@@ -29,7 +30,8 @@ public class CircuitBreakerHealthCheck : IHealthCheck
                 [HealthCheckMetadataKeys.DatabaseCircuit] = databaseState.ToString(),
                 [HealthCheckMetadataKeys.ExternalCircuit] = externalState.ToString(),
                 [HealthCheckMetadataKeys.AuthCircuit] = authState.ToString(),
-                [HealthCheckMetadataKeys.LastCheckTime] = DateTime.UtcNow
+                [HealthCheckMetadataKeys.LastCheckTime] = DateTime.UtcNow,
+                ["application"] = appName
             };
 
             // Check if any critical circuits are open
@@ -38,14 +40,15 @@ public class CircuitBreakerHealthCheck : IHealthCheck
                 .Any(state => state == CircuitBreakerState.Open);
 
             return criticalCircuitsOpen
-                ? Task.FromResult(HealthCheckResult.Unhealthy("Critical circuit breakers are open", data: data))
+                ? Task.FromResult(HealthCheckResult.Unhealthy($"{appName} - Critical circuit breakers are open", data: data))
                 : anyCircuitOpen
-                ? Task.FromResult(HealthCheckResult.Degraded("Some circuit breakers are open", data: data))
-                : Task.FromResult(HealthCheckResult.Healthy("All circuit breakers are operational", data));
+                ? Task.FromResult(HealthCheckResult.Degraded($"{appName} - Some circuit breakers are open", data: data))
+                : Task.FromResult(HealthCheckResult.Healthy($"{appName} - All circuit breakers are operational", data));
         }
         catch (Exception ex)
         {
-            return Task.FromResult(HealthCheckResult.Unhealthy("Circuit breaker service failed", ex));
+            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            return Task.FromResult(HealthCheckResult.Unhealthy($"{appName} - Circuit breaker service failed", ex));
         }
     }
 }
