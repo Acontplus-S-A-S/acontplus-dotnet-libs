@@ -18,9 +18,9 @@ public static class IdentificationEndpoints
     private static async Task<IResult> GetByIdCard(
         string idCard,
         bool sriOnly,
-        ICustomerService customerService,
-        ILogger<Program> logger,
-        IHttpContextAccessor httpContextAccessor)
+        [FromServices] ICustomerService customerService,
+        [FromServices] ILogger<Program> logger,
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
         // Get correlation ID from headers if needed
         var correlationId = httpContextAccessor.HttpContext?

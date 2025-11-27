@@ -4,9 +4,9 @@ using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
 using Acontplus.Persistence.Common.Exceptions;
-using Acontplus.TestApi.Services;
-using Acontplus.TestApi.Models;
 using Acontplus.Utilities.Extensions;
+using Acontplus.TestApplication.Interfaces;
+using Acontplus.TestApplication.Dtos;
 
 public static class BusinessExceptionTestEndpoints
 {
@@ -17,7 +17,7 @@ public static class BusinessExceptionTestEndpoints
 
         #region Direct Service Calls - Result pattern
 
-        group.MapPost("/validation-from-service", async (IBusinessExceptionTestService service, ILogger logger) =>
+        group.MapPost("/validation-from-service", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger) =>
         {
             logger.LogInformation("Calling service that may throw validation exception");
 
@@ -25,7 +25,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Validation completed");
         });
 
-        group.MapGet("/not-found-from-service/{id:int}", async (IBusinessExceptionTestService service, ILogger logger, int id) =>
+        group.MapGet("/not-found-from-service/{id:int}", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger, int id) =>
         {
             logger.LogInformation("Calling service to get customer ID: {Id}", id);
 
@@ -33,7 +33,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Customer retrieved successfully");
         });
 
-        group.MapPost("/conflict-from-service", async (IBusinessExceptionTestService service, ILogger logger, CustomerRequest request) =>
+        group.MapPost("/conflict-from-service", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger, CustomerRequest request) =>
         {
             logger.LogInformation("Calling service to create customer with email: {Email}", request.Email);
 
@@ -41,7 +41,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Customer created successfully");
         });
 
-        group.MapPost("/sql-error-from-service", async (IBusinessExceptionTestService service, ILogger logger) =>
+        group.MapPost("/sql-error-from-service", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger) =>
         {
             logger.LogInformation("Calling service to execute database operation");
 
@@ -49,7 +49,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Database operation completed");
         });
 
-        group.MapGet("/internal-error-from-service", async (IBusinessExceptionTestService service, ILogger logger) =>
+        group.MapGet("/internal-error-from-service", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger) =>
         {
             logger.LogInformation("Calling service to process complex operation");
 
@@ -61,7 +61,7 @@ public static class BusinessExceptionTestEndpoints
 
         #region Wrapped Service Calls - Result pattern responses
 
-        group.MapGet("/wrapped-exception/{id:int}", async (IBusinessExceptionTestService service, ILogger logger, int id) =>
+        group.MapGet("/wrapped-exception/{id:int}", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger, int id) =>
         {
             logger.LogInformation("Calling service with try-catch wrapper");
 
@@ -69,7 +69,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Customer retrieved successfully");
         });
 
-        group.MapPost("/wrapped-with-context", async (IBusinessExceptionTestService service, ILogger logger, CustomerRequest request) =>
+        group.MapPost("/wrapped-with-context", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger, CustomerRequest request) =>
         {
             logger.LogInformation("Calling service and wrapping exception with context");
 
@@ -81,7 +81,7 @@ public static class BusinessExceptionTestEndpoints
 
         #region Multiple Layers - Deep Call Stack
 
-        group.MapGet("/deep-call-stack/{id:int}", async (IBusinessExceptionTestService service, ILogger logger, int id) =>
+        group.MapGet("/deep-call-stack/{id:int}", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger, int id) =>
         {
             logger.LogInformation("Testing deep call stack exception propagation");
 
@@ -93,7 +93,7 @@ public static class BusinessExceptionTestEndpoints
 
         #region Async Exception Handling
 
-        group.MapPost("/async-exception", async (IBusinessExceptionTestService service, ILogger logger) =>
+        group.MapPost("/async-exception", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger) =>
         {
             logger.LogInformation("Testing async exception handling");
 
@@ -101,7 +101,7 @@ public static class BusinessExceptionTestEndpoints
             return result.ToMinimalApiResult("Async operation completed");
         });
 
-        group.MapGet("/task-run-exception", async (IBusinessExceptionTestService service, ILogger logger) =>
+        group.MapGet("/task-run-exception", async ([FromServices] IBusinessExceptionTestService service, [FromServices] ILogger logger) =>
         {
             logger.LogInformation("Testing exception from Task.Run");
 

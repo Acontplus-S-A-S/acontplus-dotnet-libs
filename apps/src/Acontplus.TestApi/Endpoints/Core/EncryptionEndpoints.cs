@@ -10,40 +10,46 @@ public static class EncryptionEndpoints
         var group = app.MapGroup("/encryption")
             .WithTags("Encryption");
 
-        group.MapPost("/encrypt", async (ISensitiveDataEncryptionService sensitiveDataEncryptionService, EncryptRequest request) =>
+        group.MapPost("/encrypt", async (HttpContext httpContext, EncryptRequest request) =>
         {
+            var sensitiveDataEncryptionService = httpContext.RequestServices.GetRequiredService<ISensitiveDataEncryptionService>();
             var encryptedBytes = await sensitiveDataEncryptionService.EncryptToBytesAsync("ivan", request.PlainText!);
             return Results.Ok(ApiResponse.Success(Convert.ToBase64String(encryptedBytes)));
         });
 
-        group.MapPost("/decrypt", async (ISensitiveDataEncryptionService sensitiveDataEncryptionService, DecryptRequest request) =>
+        group.MapPost("/decrypt", async (HttpContext httpContext, DecryptRequest request) =>
         {
+            var sensitiveDataEncryptionService = httpContext.RequestServices.GetRequiredService<ISensitiveDataEncryptionService>();
             var encryptedBytes = Convert.FromBase64String(request.EncryptedData!);
             var decryptedData = await sensitiveDataEncryptionService.DecryptFromBytesAsync("ivan", encryptedBytes);
             return Results.Ok(ApiResponse.Success(decryptedData));
         });
 
-        group.MapPost("/hash", (IPasswordSecurityService passwordHashingService, HashRequest request) =>
+        group.MapPost("/hash", (HttpContext httpContext, HashRequest request) =>
         {
+            var passwordHashingService = httpContext.RequestServices.GetRequiredService<IPasswordSecurityService>();
             var hashedPassword = passwordHashingService.HashPassword(request.Password!);
             return Results.Ok(ApiResponse.Success(hashedPassword));
         });
 
-        group.MapPost("/setpassword", (IPasswordSecurityService dataSecurityService, SetPasswordRequest request) =>
+        group.MapPost("/setpassword", (HttpContext httpContext, SetPasswordRequest request) =>
         {
+            var dataSecurityService = httpContext.RequestServices.GetRequiredService<IPasswordSecurityService>();
             var result = dataSecurityService.SetPassword(request.Password!);
             return Results.Ok(ApiResponse.Success(new { EncryptedPassword = Convert.ToBase64String(result.EncryptedPassword), result.PasswordHash }));
         });
 
-        group.MapPost("/decryptpassword", (IPasswordSecurityService dataSecurityService, EncryptedPasswordRequest request) =>
+        group.MapPost("/decryptpassword", (HttpContext httpContext, EncryptedPasswordRequest request) =>
         {
+            var dataSecurityService = httpContext.RequestServices.GetRequiredService<IPasswordSecurityService>();
             var encryptedPasswordBytes = Convert.FromBase64String(request.EncryptedPassword!);
             var decryptedPassword = dataSecurityService.GetDecryptedPassword(encryptedPasswordBytes);
             return Results.Ok(ApiResponse.Success(decryptedPassword));
         });
 
-        group.MapPost("/verifypassword", (IPasswordSecurityService dataSecurityService, VerifyPasswordRequest request) =>
+        group.MapPost("/verifypassword", (HttpContext httpContext, VerifyPasswordRequest request) =>
         {
+            var dataSecurityService = httpContext.RequestServices.GetRequiredService<IPasswordSecurityService>();
             var isValid = dataSecurityService.VerifyPassword(request.Password!, request.PasswordHash!);
             return Results.Ok(ApiResponse.Success(isValid));
         });

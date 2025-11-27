@@ -11,8 +11,7 @@ public static class UsuarioEndpoints
     public static void MapUsuarioEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/usuario")
-            .WithTags("Usuario")
-            .WithOpenApi();
+            .WithTags("Usuario");
 
         group.MapGet("/{id:int}", GetUsuario)
             .WithName("GetUsuario")

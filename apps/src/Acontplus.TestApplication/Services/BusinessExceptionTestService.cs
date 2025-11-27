@@ -1,10 +1,9 @@
 using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
-using Acontplus.Persistence.Common.Exceptions;
-using Acontplus.TestApi.Models;
+using Microsoft.Extensions.Logging;
 
-namespace Acontplus.TestApi.Services;
+namespace Acontplus.TestApplication.Services;
 
 /// <summary>
 /// Service implementation that returns domain Results instead of throwing.
@@ -201,17 +200,17 @@ public class BusinessExceptionTestService : IBusinessExceptionTestService
         _logger.LogDebug("Database: Executing query for customer {Id}", id);
 
         // Simulate database operation that might fail
-        if (id > 1000)
-        {
-            var sqlErrorInfo = new SqlErrorInfo(
-                ErrorType.Timeout,
-                "SQL_TIMEOUT",
-                "Database query timed out after 30 seconds",
-                new TimeoutException("SQL Server timeout")
-            );
+        //if (id > 1000)
+        //{
+        //    var sqlErrorInfo = new SqlErrorInfo(
+        //        ErrorType.Timeout,
+        //        "SQL_TIMEOUT",
+        //        "Database query timed out after 30 seconds",
+        //        new TimeoutException("SQL Server timeout")
+        //    );
 
-            throw new SqlDomainException(sqlErrorInfo);
-        }
+        //    throw new SqlDomainException(sqlErrorInfo);
+        //}
 
         return Task.CompletedTask;
     }

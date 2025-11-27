@@ -1,4 +1,4 @@
-namespace Acontplus.TestApi.Models;
+namespace Acontplus.TestApplication.Dtos;
 
 /// <summary>
 /// Request model for customer operations.

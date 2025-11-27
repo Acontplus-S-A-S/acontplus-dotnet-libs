@@ -10,8 +10,10 @@ public static class ReportsEndpoints
         var group = app.MapGroup("/reports")
             .WithTags("Reports");
 
-        group.MapGet("/sample-invoice", async (IRdlcReportService reportService, ILogger logger, CancellationToken cancellationToken) =>
+        group.MapGet("/sample-invoice", async (HttpContext httpContext, CancellationToken cancellationToken) =>
         {
+            var reportService = httpContext.RequestServices.GetRequiredService<IRdlcReportService>();
+            var logger = httpContext.RequestServices.GetRequiredService<ILogger>();
             try
             {
                 logger.LogInformation("Generating sample invoice report");
@@ -93,8 +95,10 @@ public static class ReportsEndpoints
             }
         });
 
-        group.MapGet("/sample-customers", async (IRdlcReportService reportService, ILogger logger, string format = "PDF", CancellationToken cancellationToken = default) =>
+        group.MapGet("/sample-customers", async (HttpContext httpContext, string format = "PDF", CancellationToken cancellationToken = default) =>
         {
+            var reportService = httpContext.RequestServices.GetRequiredService<IRdlcReportService>();
+            var logger = httpContext.RequestServices.GetRequiredService<ILogger>();
             try
             {
                 logger.LogInformation("Generating sample customer list report in {Format} format", format);
@@ -169,8 +173,10 @@ public static class ReportsEndpoints
             });
         });
 
-        group.MapPost("/test-print", async (IRdlcPrinterService printerService, ILogger logger, string? printerName = null, CancellationToken cancellationToken = default) =>
+        group.MapPost("/test-print", async (HttpContext httpContext, string? printerName = null, CancellationToken cancellationToken = default) =>
         {
+            var printerService = httpContext.RequestServices.GetRequiredService<IRdlcPrinterService>();
+            var logger = httpContext.RequestServices.GetRequiredService<ILogger>();
             try
             {
                 logger.LogInformation("Testing thermal printer with sample invoice");

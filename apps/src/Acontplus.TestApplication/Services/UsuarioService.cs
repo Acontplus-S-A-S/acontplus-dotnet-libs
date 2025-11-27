@@ -569,15 +569,29 @@ namespace Acontplus.TestApplication.Services
         /// </summary>
         public async Task<Result<Usuario, DomainError>> GetUserWithCustomErrorAsync(int id)
         {
-            return DomainError.Internal(
-                code: "CUSTOM_TEST_ERROR",
-                message: "This is a custom test error from the service",
-                details: new Dictionary<string, object>
+            try
+            {
+                var t = 4 / (id - 3); // Will throw DivideByZeroException if id == 3
+                return new Usuario
                 {
-                    ["userId"] = id,
-                    ["testType"] = "custom_error"
-                }
-            );
+                    Id = id,
+                    Username = "testuser",
+                    Email = ""
+                };
+            }
+            catch (Exception ex)
+            {
+                return DomainError.Internal(
+               code: "CUSTOM_TEST_ERROR",
+               message: "This is a custom test error from the service" + ex.Message ?? "",
+               details: new Dictionary<string, object>
+               {
+                   ["userId"] = id,
+                   ["testType"] = "custom_error"
+               }
+           );
+            }
+
         }
 
         #endregion
