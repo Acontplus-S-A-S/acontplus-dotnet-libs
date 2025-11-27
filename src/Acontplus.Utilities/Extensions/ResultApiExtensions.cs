@@ -1129,31 +1129,31 @@ public static class ResultApiExtensions
 
             // Client Errors (4xx)
             HttpStatusCode.BadRequest => TypedResults.BadRequest(response),
-            HttpStatusCode.Unauthorized => TypedResults.Unauthorized(),
-            HttpStatusCode.Forbidden => TypedResults.Forbid(),
+            HttpStatusCode.Unauthorized => TypedResults.Json(response, statusCode: 401),
+            HttpStatusCode.Forbidden => TypedResults.Json(response, statusCode: 403),
             HttpStatusCode.NotFound => TypedResults.NotFound(response),
             HttpStatusCode.Conflict => TypedResults.Conflict(response),
             HttpStatusCode.UnprocessableEntity => TypedResults.UnprocessableEntity(response),
-            HttpStatusCode.TooManyRequests => TypedResults.StatusCode((int)HttpStatusCode.TooManyRequests),
-            HttpStatusCode.RequestEntityTooLarge => TypedResults.StatusCode((int)HttpStatusCode.RequestEntityTooLarge),
-            HttpStatusCode.RequestUriTooLong => TypedResults.StatusCode((int)HttpStatusCode.RequestUriTooLong),
-            HttpStatusCode.UnsupportedMediaType => TypedResults.StatusCode((int)HttpStatusCode.UnsupportedMediaType),
-            (HttpStatusCode)428 => TypedResults.StatusCode(428), // PreconditionRequired
-            (HttpStatusCode)431 => TypedResults.StatusCode(431), // RequestHeaderFieldsTooLarge
-            (HttpStatusCode)451 => TypedResults.StatusCode(451), // UnavailableForLegalReasons
+            HttpStatusCode.TooManyRequests => TypedResults.Json(response, statusCode: 429),
+            HttpStatusCode.RequestEntityTooLarge => TypedResults.Json(response, statusCode: 413),
+            HttpStatusCode.RequestUriTooLong => TypedResults.Json(response, statusCode: 414),
+            HttpStatusCode.UnsupportedMediaType => TypedResults.Json(response, statusCode: 415),
+            (HttpStatusCode)428 => TypedResults.Json(response, statusCode: 428), // PreconditionRequired
+            (HttpStatusCode)431 => TypedResults.Json(response, statusCode: 431), // RequestHeaderFieldsTooLarge
+            (HttpStatusCode)451 => TypedResults.Json(response, statusCode: 451), // UnavailableForLegalReasons
 
             // Server Errors (5xx)
-            HttpStatusCode.InternalServerError => TypedResults.StatusCode((int)HttpStatusCode.InternalServerError),
-            HttpStatusCode.NotImplemented => TypedResults.StatusCode((int)HttpStatusCode.NotImplemented),
-            HttpStatusCode.BadGateway => TypedResults.StatusCode((int)HttpStatusCode.BadGateway),
-            HttpStatusCode.ServiceUnavailable => TypedResults.StatusCode((int)HttpStatusCode.ServiceUnavailable),
-            HttpStatusCode.GatewayTimeout => TypedResults.StatusCode((int)HttpStatusCode.GatewayTimeout),
-            (HttpStatusCode)507 => TypedResults.StatusCode(507), // InsufficientStorage
-            (HttpStatusCode)508 => TypedResults.StatusCode(508), // LoopDetected
-            (HttpStatusCode)510 => TypedResults.StatusCode(510), // NotExtended
-            (HttpStatusCode)511 => TypedResults.StatusCode(511), // NetworkAuthenticationRequired
+            HttpStatusCode.InternalServerError => TypedResults.Json(response, statusCode: 500),
+            HttpStatusCode.NotImplemented => TypedResults.Json(response, statusCode: 501),
+            HttpStatusCode.BadGateway => TypedResults.Json(response, statusCode: 502),
+            HttpStatusCode.ServiceUnavailable => TypedResults.Json(response, statusCode: 503),
+            HttpStatusCode.GatewayTimeout => TypedResults.Json(response, statusCode: 504),
+            (HttpStatusCode)507 => TypedResults.Json(response, statusCode: 507), // InsufficientStorage
+            (HttpStatusCode)508 => TypedResults.Json(response, statusCode: 508), // LoopDetected
+            (HttpStatusCode)510 => TypedResults.Json(response, statusCode: 510), // NotExtended
+            (HttpStatusCode)511 => TypedResults.Json(response, statusCode: 511), // NetworkAuthenticationRequired
 
-            _ => TypedResults.StatusCode((int)HttpStatusCode.InternalServerError)
+            _ => TypedResults.Json(response, statusCode: 500)
         };
     }
 

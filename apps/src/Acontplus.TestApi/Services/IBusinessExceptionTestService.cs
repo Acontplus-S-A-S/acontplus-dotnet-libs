@@ -2,7 +2,7 @@ using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Domain.Enums;
 using Acontplus.Core.Domain.Exceptions;
 using Acontplus.Persistence.Common.Exceptions;
-using Acontplus.TestApi.Controllers.Demo;
+using Acontplus.TestApi.Models;
 
 namespace Acontplus.TestApi.Services;
 

@@ -15,7 +15,6 @@ global using Acontplus.Logging;
 global using Acontplus.Notifications.Abstractions;
 global using Acontplus.Persistence.SqlServer.Utilities;
 global using Acontplus.Reports.Interfaces;
-global using Acontplus.TestApi.Endpoints.Api;
 global using Acontplus.TestApi.Endpoints.Business.Customer;
 global using Acontplus.TestApplication.Dtos;
 global using Acontplus.TestApplication.Interfaces;
