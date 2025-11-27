@@ -174,12 +174,9 @@ public static class InfrastructureServiceExtensions
         // This ensures the health endpoint always returns something valid
         if (!anyCheckAdded)
         {
-            var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
-            var appName = entryAssembly?.GetName().Name ?? "Unknown";
-
-            healthChecksBuilder.AddCheck("self", () =>
-                HealthCheckResult.Healthy($"{appName} is running"),
-                ["live", "ready"]);
+            healthChecksBuilder.AddCheck<SelfHealthCheck>(
+                "self",
+                tags: new[] { "live", "ready" });
         }
 
         return services;

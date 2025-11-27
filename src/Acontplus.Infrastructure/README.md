@@ -440,54 +440,69 @@ public class ApiIntegrationService
 }
 ```
 
-### Health Checks
+## 🏥 Health Checks (2025+ Modern Approach)
+
+### Unified Health Endpoints with Tags
+
+Acontplus.Infrastructure now provides a single extension to map all health check endpoints with consistent JSON formatting and tag-based filtering:
 
 ```csharp
 // Program.cs
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddInfrastructureServices(builder.Configuration);
 var app = builder.Build();
 
-// Map health check endpoints
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/ready", new HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
-app.MapHealthChecks("/health/live", new HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("live")
-});
+// One line to map all health endpoints (with apiName, tags, and full details)
+app.MapHealthCheckEndpoints();
+
+app.Run();
 ```
 
-Health check response example:
+This creates:
+- `/health` (all checks)
+- `/health/ready` (checks tagged `ready`)
+- `/health/live` (checks tagged `live`)
+- `/health/cache` (checks tagged `cache`)
+- `/health/resilience` (checks tagged `resilience`)
+
+**Behavior:**
+- If no cache or circuit breaker is registered, endpoints still work and return a self-check with the app name.
+- If a tag endpoint (like `/health/cache`) has no checks, it returns an empty array but a valid response.
+- All responses include `apiName`, `status`, `checks`, and `totalDuration`.
+
+#### Example Response
 
 ```json
 {
+  "apiName": "Acontplus.TestApi",
   "status": "Healthy",
-  "results": {
-    "cache": {
+  "checks": [
+    {
+      "name": "self",
       "status": "Healthy",
-      "description": "Cache service is fully operational",
+      "description": "Acontplus.TestApi is running",
       "data": {
-        "totalEntries": 42,
-        "hitRatePercentage": 87.5,
-        "lastTestTime": "2024-11-23T10:30:00Z"
-      }
-    },
-    "circuit-breaker": {
-      "status": "Healthy",
-      "description": "All circuit breakers are operational",
-      "data": {
-        "default": "Closed",
-        "api": "Closed",
-        "database": "Closed",
-        "external": "Closed",
-        "auth": "Closed"
+        "application": "Acontplus.TestApi",
+        "tags": "live, ready",
+        "lastCheckTime": "2025-11-27T12:00:00Z"
       }
     }
-  }
+  ],
+  "totalDuration": "00:00:00.0054321"
 }
 ```
 
+#### Customization
+- You can override the base path: `app.MapHealthCheckEndpoints("/myhealth")`
+- You can still add custom health checks and tags as before.
+
+#### Migration
+- **Old:** Multiple `app.MapHealthChecks` with custom response writers
+- **New:** Just call `app.MapHealthCheckEndpoints()` for all endpoints and formatting
+
+See `Extensions/HealthCheckEndpointExtensions.cs` for details.
+
+---
 ## ⚙️ Configuration Reference
 
 ### Complete Configuration Example
