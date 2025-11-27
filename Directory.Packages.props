@@ -7,7 +7,7 @@
     <PackageVersion Include="Acontplus.Barcode" Version="1.1.0" />
     <PackageVersion Include="Acontplus.Core" Version="2.0.1" />
     <PackageVersion Include="Acontplus.Persistence.Common" Version="2.0.0" />
-    <PackageVersion Include="Acontplus.Utilities" Version="2.0.0" />
+    <PackageVersion Include="Acontplus.Utilities" Version="2.0.1" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
@@ -54,7 +54,7 @@
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />

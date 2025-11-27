@@ -11,8 +11,7 @@ public static class UsuarioEndpoints
     public static void MapUsuarioEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/usuario")
-            .WithTags("Usuario")
-            .WithOpenApi();
+            .WithTags("Usuario");
 
         group.MapGet("/{id:int}", GetUsuario)
             .WithName("GetUsuario")
@@ -107,6 +106,19 @@ public static class UsuarioEndpoints
             .WithSummary("Executes batch operations (updates) in a single transaction")
             .Produces<ApiResponse<int>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        // Test endpoints for exception handling
+        group.MapGet("/test-exception/{id:int}", GetUserWithException)
+            .WithName("GetUserWithException")
+            .WithSummary("Test endpoint that triggers an exception in the service layer")
+            .Produces<ApiResponse<UsuarioDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+        group.MapGet("/test-custom-error/{id:int}", GetUserWithCustomError)
+            .WithName("GetUserWithCustomError")
+            .WithSummary("Test endpoint that returns a custom domain error")
+            .Produces<ApiResponse<UsuarioDto>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse>(StatusCodes.Status500InternalServerError);
     }
 
     private static async Task<IResult> GetUsuario(int id, IUsuarioService usuarioService)
@@ -278,6 +290,20 @@ public static class UsuarioEndpoints
         IUsuarioService usuarioService)
     {
         return await usuarioService.ExecuteBatchOperationsAsync(userIds).ToMinimalApiResultAsync("Operaciones batch ejecutadas exitosamente.");
+    }
+
+    #endregion
+
+    #region Test Endpoints for Exception Handling
+
+    private static async Task<IResult> GetUserWithException(int id, IUsuarioService usuarioService)
+    {
+        return await usuarioService.GetUserWithExceptionAsync(id).ToGetMinimalApiResultAsync();
+    }
+
+    private static async Task<IResult> GetUserWithCustomError(int id, IUsuarioService usuarioService)
+    {
+        return await usuarioService.GetUserWithCustomErrorAsync(id).ToGetMinimalApiResultAsync();
     }
 
     #endregion

@@ -20,8 +20,8 @@ public static class MiddlewareConfigurationExtensions
         app.UseHttpsRedirection();
         app.UseAuthorization();
 
-        // Map controllers
-        app.MapControllers();
+        // Controllers have been converted to Minimal API endpoints
+        // app.MapControllers();
     }
 }
 

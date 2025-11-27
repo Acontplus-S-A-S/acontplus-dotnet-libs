@@ -1,10 +1,6 @@
 using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
-using Acontplus.Persistence.Common.Exceptions;
-using Acontplus.TestApi.Controllers.Demo;
 
-namespace Acontplus.TestApi.Services;
+namespace Acontplus.TestApplication.Interfaces;
 
 /// <summary>
 /// Service interface for testing exception handling from business layer.

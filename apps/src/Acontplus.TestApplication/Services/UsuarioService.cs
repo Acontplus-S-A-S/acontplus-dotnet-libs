@@ -552,6 +552,49 @@ namespace Acontplus.TestApplication.Services
         }
 
         #endregion
+
+        #region Test Methods for Exception Handling
+
+        /// <summary>
+        /// Test method that throws an exception to verify middleware error handling.
+        /// </summary>
+        public async Task<Result<Usuario, DomainError>> GetUserWithExceptionAsync(int id)
+        {
+            // Simulate an exception in the application layer
+            throw new InvalidOperationException("Test exception from application service");
+        }
+
+        /// <summary>
+        /// Test method that returns a custom domain error.
+        /// </summary>
+        public async Task<Result<Usuario, DomainError>> GetUserWithCustomErrorAsync(int id)
+        {
+            try
+            {
+                var t = 4 / (id - 3); // Will throw DivideByZeroException if id == 3
+                return new Usuario
+                {
+                    Id = id,
+                    Username = "testuser",
+                    Email = ""
+                };
+            }
+            catch (Exception ex)
+            {
+                return DomainError.Internal(
+               code: "CUSTOM_TEST_ERROR",
+               message: "This is a custom test error from the service" + ex.Message ?? "",
+               details: new Dictionary<string, object>
+               {
+                   ["userId"] = id,
+                   ["testType"] = "custom_error"
+               }
+           );
+            }
+
+        }
+
+        #endregion
     }
 }
 

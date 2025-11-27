@@ -18,31 +18,17 @@ public static class IdentificationEndpoints
     private static async Task<IResult> GetByIdCard(
         string idCard,
         bool sriOnly,
-        ICustomerService customerService,
-        ILogger<Program> logger,
-        IHttpContextAccessor httpContextAccessor)
+        [FromServices] ICustomerService customerService,
+        [FromServices] ILogger<Program> logger,
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        try
-        {
-            // Get correlation ID from headers if needed
-            var correlationId = httpContextAccessor.HttpContext?
-                .Request.Headers["X-Correlation-Id"].FirstOrDefault();
+        // Get correlation ID from headers if needed
+        var correlationId = httpContextAccessor.HttpContext?
+            .Request.Headers["X-Correlation-Id"].FirstOrDefault();
 
-            // Use the extension method directly
-            return await customerService.GetByIdCardAsync(idCard, sriOnly)
-                .ToGetMinimalApiResultAsync(correlationId);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unexpected error while processing ID card: {IdCard}", idCard);
-            return Results.Problem(
-                new ProblemDetails
-                {
-                    Title = "Internal Server Error",
-                    Status = StatusCodes.Status500InternalServerError,
-                    Detail = "An unexpected error occurred"
-                });
-        }
+        // Use the extension method directly
+        return await customerService.GetByIdCardAsync(idCard, sriOnly)
+            .ToGetMinimalApiResultAsync(correlationId);
     }
 }
 

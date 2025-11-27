@@ -24,5 +24,9 @@ public interface IUsuarioService
     Task<Result<PagedResult<Usuario>, DomainError>> GetPagedUsersFromStoredProcAsync(PaginationRequest pagination);
     Task<Result<int, DomainError>> BulkInsertUsersAsync(List<UsuarioDto> users);
     Task<Result<int, DomainError>> ExecuteBatchOperationsAsync(List<int> userIds);
+
+    // Test methods for exception handling
+    Task<Result<Usuario, DomainError>> GetUserWithExceptionAsync(int id);
+    Task<Result<Usuario, DomainError>> GetUserWithCustomErrorAsync(int id);
 }
 

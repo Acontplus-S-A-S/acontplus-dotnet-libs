@@ -141,3 +141,11 @@ X-Tenant-ID: test-tenant
 GET {{Acontplus.TestApi_HostAddress}}/api/customer/by-id-card?idCard={{idCard}}&sriOnly={{sriOnly}}
 
 ###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/usuario/test-exception/1
+
+###
+
+GET {{Acontplus.TestApi_HostAddress}}/api/usuario/test-custom-error/3
+
+###
