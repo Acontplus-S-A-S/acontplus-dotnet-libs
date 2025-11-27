@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Infrastructure</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
     <Description>Infrastructure library providing caching (in-memory and Redis), resilience patterns (circuit breaker, retry, timeout), middleware (request context, exception handling, rate limiting, CSP), HTTP client factory, and health checks for ASP.NET Core applications.</Description>

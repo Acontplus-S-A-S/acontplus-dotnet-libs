@@ -204,7 +204,7 @@
             Service collection extensions for registering infrastructure services.
             </summary>
         </member>
-        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
             <summary>
             Adds all infrastructure services (caching, resilience, HTTP client factory, health checks).
             </summary>
@@ -226,7 +226,7 @@
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureHealthChecks(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds health checks for infrastructure services.
+            Adds health checks for infrastructure services (only if the services are registered).
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Extensions.RateLimitingExtensions">

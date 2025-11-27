@@ -30,6 +30,7 @@ public class CircuitBreakerService : ICircuitBreakerService
         IOptions<ResilienceConfiguration> config)
     {
         _logger = logger;
+        _logger.LogInformation("Initializing Infrastructure CircuitBreakerService from namespace {Namespace}", typeof(CircuitBreakerService).Namespace);
         _config = config.Value;
         _policies = new Dictionary<string, IAsyncPolicy>();
         _circuitStates = new Dictionary<string, CircuitBreakerState>();
@@ -94,39 +95,39 @@ public class CircuitBreakerService : ICircuitBreakerService
         // Default policy
         _policies["default"] = CreatePolicy("default", new PolicyConfig
         {
-            CircuitBreakerExceptions = _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking,
-            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds,
-            RetryCount = _config.RetryPolicy.MaxRetries,
-            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
-            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking),
+            CircuitBreakerDuration = Math.Max(10, _config.CircuitBreaker.DurationOfBreakSeconds),
+            RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries),
+            RetryBaseDelay = Math.Max(1, _config.RetryPolicy.BaseDelaySeconds),
+            RetryMaxDelay = Math.Max(5, _config.RetryPolicy.MaxDelaySeconds),
             RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
-            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds
+            TimeoutSeconds = Math.Max(10, _config.Timeout.DefaultTimeoutSeconds)
         });
 
         // API policy - more lenient
         _policies["api"] = CreatePolicy("api", new PolicyConfig
         {
-            CircuitBreakerExceptions = _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking + 2,
-            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds - 30,
-            RetryCount = _config.RetryPolicy.MaxRetries + 1,
-            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
-            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking + 2),
+            CircuitBreakerDuration = Math.Max(10, _config.CircuitBreaker.DurationOfBreakSeconds),
+            RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries + 1),
+            RetryBaseDelay = Math.Max(1, _config.RetryPolicy.BaseDelaySeconds),
+            RetryMaxDelay = Math.Max(5, _config.RetryPolicy.MaxDelaySeconds),
             RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
             RetryBackoffMultiplier = 1.5,
-            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds + 30
+            TimeoutSeconds = Math.Max(10, _config.Timeout.DefaultTimeoutSeconds + 30)
         });
 
         // Database policy - strict
         _policies["database"] = CreatePolicy("database", new PolicyConfig
         {
             CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1),
-            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds + 60,
+            CircuitBreakerDuration = Math.Max(10, _config.CircuitBreaker.DurationOfBreakSeconds + 60),
             RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries - 1),
-            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
-            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryBaseDelay = Math.Max(1, _config.RetryPolicy.BaseDelaySeconds),
+            RetryMaxDelay = Math.Max(5, _config.RetryPolicy.MaxDelaySeconds),
             RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
             RetryBackoffMultiplier = 3.0,
-            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds - 15
+            TimeoutSeconds = Math.Max(10, _config.Timeout.DefaultTimeoutSeconds - 15)
         });
 
         // External service policy - very strict
@@ -145,13 +146,13 @@ public class CircuitBreakerService : ICircuitBreakerService
         _policies["auth"] = CreatePolicy("auth", new PolicyConfig
         {
             CircuitBreakerExceptions = Math.Max(1, _config.CircuitBreaker.ExceptionsAllowedBeforeBreaking - 1),
-            CircuitBreakerDuration = _config.CircuitBreaker.DurationOfBreakSeconds + 30,
+            CircuitBreakerDuration = Math.Max(10, _config.CircuitBreaker.DurationOfBreakSeconds + 30),
             RetryCount = Math.Max(1, _config.RetryPolicy.MaxRetries - 1),
-            RetryBaseDelay = _config.RetryPolicy.BaseDelaySeconds,
-            RetryMaxDelay = _config.RetryPolicy.MaxDelaySeconds,
+            RetryBaseDelay = Math.Max(1, _config.RetryPolicy.BaseDelaySeconds),
+            RetryMaxDelay = Math.Max(5, _config.RetryPolicy.MaxDelaySeconds),
             RetryExponentialBackoff = _config.RetryPolicy.ExponentialBackoff,
             RetryBackoffMultiplier = 2.5,
-            TimeoutSeconds = _config.Timeout.DefaultTimeoutSeconds - 10
+            TimeoutSeconds = Math.Max(10, _config.Timeout.DefaultTimeoutSeconds - 10)
         });
     }
 
