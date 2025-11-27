@@ -26,7 +26,10 @@ public static class ServiceRegistrationExtensions
     public static IServiceCollection AddTestApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Configure Infrastructure Services (v2.0)
-        services.AddInfrastructureServices(configuration);
+        services.AddInfrastructureServices(configuration, true);
+
+        // Add Infrastructure Health Checks (only cache - no circuit breaker dependency)
+        // services.AddInfrastructureHealthChecks();
 
         // Configure Application Services (v2.0)
         services.AddApplicationServices(configuration);

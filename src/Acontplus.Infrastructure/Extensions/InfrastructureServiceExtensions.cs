@@ -15,7 +15,8 @@ public static class InfrastructureServiceExtensions
     /// </summary>
     public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool addHealthChecks = false)
     {
         // Add caching services
         services.AddCachingServices(configuration);
@@ -26,8 +27,11 @@ public static class InfrastructureServiceExtensions
         // Add HTTP client factory with resilience
         services.AddResilientHttpClients(configuration);
 
-        // Add health checks
-        services.AddInfrastructureHealthChecks();
+        // Optionally add health checks
+        if (addHealthChecks)
+        {
+            services.AddInfrastructureHealthChecks();
+        }
 
         return services;
     }
@@ -140,18 +144,38 @@ public static class InfrastructureServiceExtensions
     }
 
     /// <summary>
-    /// Adds health checks for infrastructure services.
+    /// Adds health checks for infrastructure services (only if the services are registered).
     /// </summary>
     public static IServiceCollection AddInfrastructureHealthChecks(
         this IServiceCollection services)
     {
-        services.AddHealthChecks()
-            .AddCheck<CacheHealthCheck>(
+        var healthChecksBuilder = services.AddHealthChecks();
+        bool anyCheckAdded = false;
+
+        // Add cache health check only if ICacheService is registered
+        if (services.Any(d => d.ServiceType == typeof(ICacheService)))
+        {
+            healthChecksBuilder.AddCheck<CacheHealthCheck>(
                 "cache",
-                tags: new[] { "ready", "cache" })
-            .AddCheck<CircuitBreakerHealthCheck>(
+                tags: new[] { "ready", "cache" });
+            anyCheckAdded = true;
+        }
+
+        // Add circuit breaker health check only if ICircuitBreakerService is registered
+        if (services.Any(d => d.ServiceType == typeof(ICircuitBreakerService)))
+        {
+            healthChecksBuilder.AddCheck<CircuitBreakerHealthCheck>(
                 "circuit-breaker",
                 tags: new[] { "ready", "resilience" });
+            anyCheckAdded = true;
+        }
+
+        // If no specific infrastructure checks were added, add a simple self check
+        // This ensures the health endpoint always returns something valid
+        if (!anyCheckAdded)
+        {
+            healthChecksBuilder.AddCheck("self", () => HealthCheckResult.Healthy(), ["live", "ready"]);
+        }
 
         return services;
     }
