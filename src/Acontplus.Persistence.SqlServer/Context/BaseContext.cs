@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Linq.Expressions;
-
-namespace Acontplus.Persistence.SqlServer.Context;
+﻿namespace Acontplus.Persistence.SqlServer.Context;
 
 public class SqlServerModelBuilderOptions
 {
@@ -11,8 +8,8 @@ public class SqlServerModelBuilderOptions
 
 public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 {
-    private readonly SqlServerModelBuilderOptions _sqlServerOptions = new();
     private readonly IDomainEventDispatcher? _eventDispatcher;
+    private readonly SqlServerModelBuilderOptions _sqlServerOptions = new();
 
     protected BaseContext(DbContextOptions options, IDomainEventDispatcher eventDispatcher)
         : this(options)
@@ -42,7 +39,10 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
 
     private async Task DispatchDomainEventsAsync()
     {
-        if (_eventDispatcher == null) return;
+        if (_eventDispatcher == null)
+        {
+            return;
+        }
 
         var entitiesWithEvents = ChangeTracker
             .Entries<IEntityWithDomainEvents>()
@@ -174,9 +174,9 @@ public abstract class BaseContext(DbContextOptions options) : DbContext(options)
                         .Property<DateTime?>(property.Name)
                         .HasConversion(
                             v => v.HasValue
-                                ? (v.Value.Kind == DateTimeKind.Unspecified
+                                ? v.Value.Kind == DateTimeKind.Unspecified
                                     ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc)
-                                    : v.Value.ToUniversalTime())
+                                    : v.Value.ToUniversalTime()
                                 : (DateTime?)null,
                             v => v
                         );

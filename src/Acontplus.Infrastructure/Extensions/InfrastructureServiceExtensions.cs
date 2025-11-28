@@ -1,22 +1,18 @@
-using Acontplus.Infrastructure.Caching;
-using Acontplus.Infrastructure.HealthChecks;
-using Acontplus.Infrastructure.Http;
-using Acontplus.Infrastructure.Resilience;
-
 namespace Acontplus.Infrastructure.Extensions;
 
 /// <summary>
-/// Service collection extensions for registering infrastructure services.
+///     Service collection extensions for registering infrastructure services.
 /// </summary>
 public static class InfrastructureServiceExtensions
 {
     /// <summary>
-    /// Adds all infrastructure services (caching, resilience, HTTP client factory, health checks).
+    ///     Adds all infrastructure services (caching, resilience, HTTP client factory, health checks, response compression).
     /// </summary>
     public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
         IConfiguration configuration,
-        bool addHealthChecks = false)
+        bool addHealthChecks = false,
+        bool addResponseCompression = false)
     {
         // Add caching services
         services.AddCachingServices(configuration);
@@ -33,18 +29,24 @@ public static class InfrastructureServiceExtensions
             services.AddInfrastructureHealthChecks();
         }
 
+        // Optionally add response compression
+        if (addResponseCompression)
+        {
+            services.AddResponseCompression(configuration);
+        }
+
         return services;
     }
 
     /// <summary>
-    /// Adds caching services (in-memory or distributed with Redis).
+    ///     Adds caching services (in-memory or distributed with Redis).
     /// </summary>
     public static IServiceCollection AddCachingServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         var cacheConfig = configuration.GetSection("Caching").Get<CacheConfiguration>()
-            ?? new CacheConfiguration();
+                          ?? new CacheConfiguration();
 
         services.Configure<CacheConfiguration>(configuration.GetSection("Caching"));
 
@@ -75,7 +77,7 @@ public static class InfrastructureServiceExtensions
     }
 
     /// <summary>
-    /// Adds resilience services (circuit breaker, retry policies).
+    ///     Adds resilience services (circuit breaker, retry policies).
     /// </summary>
     public static IServiceCollection AddResilienceServices(
         this IServiceCollection services,
@@ -90,14 +92,14 @@ public static class InfrastructureServiceExtensions
     }
 
     /// <summary>
-    /// Adds HTTP client factory with resilience patterns.
+    ///     Adds HTTP client factory with resilience patterns.
     /// </summary>
     public static IServiceCollection AddResilientHttpClients(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         var resilienceConfig = configuration.GetSection("Resilience").Get<ResilienceConfiguration>()
-            ?? new ResilienceConfiguration();
+                               ?? new ResilienceConfiguration();
 
         // Register HTTP client factory
         services.AddHttpClient();
@@ -106,18 +108,23 @@ public static class InfrastructureServiceExtensions
         services.AddHttpClient("default")
             .AddStandardResilienceHandler(options =>
             {
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
+                options.CircuitBreaker.SamplingDuration =
+                    TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
                 options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.DefaultTimeoutSeconds);
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.DefaultTimeoutSeconds * 2);
+                options.TotalRequestTimeout.Timeout =
+                    TimeSpan.FromSeconds(resilienceConfig.Timeout.DefaultTimeoutSeconds * 2);
             });
 
         // Register API HTTP client with more lenient settings
         services.AddHttpClient("api")
             .AddStandardResilienceHandler(options =>
             {
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
-                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.HttpClientTimeoutSeconds);
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.HttpClientTimeoutSeconds * 2);
+                options.CircuitBreaker.SamplingDuration =
+                    TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
+                options.AttemptTimeout.Timeout =
+                    TimeSpan.FromSeconds(resilienceConfig.Timeout.HttpClientTimeoutSeconds);
+                options.TotalRequestTimeout.Timeout =
+                    TimeSpan.FromSeconds(resilienceConfig.Timeout.HttpClientTimeoutSeconds * 2);
             });
 
         // Register external HTTP client with strict settings
@@ -133,9 +140,12 @@ public static class InfrastructureServiceExtensions
         services.AddHttpClient("long-running")
             .AddStandardResilienceHandler(options =>
             {
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
-                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.LongRunningTimeoutSeconds);
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(resilienceConfig.Timeout.LongRunningTimeoutSeconds * 2);
+                options.CircuitBreaker.SamplingDuration =
+                    TimeSpan.FromSeconds(resilienceConfig.CircuitBreaker.SamplingDurationSeconds);
+                options.AttemptTimeout.Timeout =
+                    TimeSpan.FromSeconds(resilienceConfig.Timeout.LongRunningTimeoutSeconds);
+                options.TotalRequestTimeout.Timeout =
+                    TimeSpan.FromSeconds(resilienceConfig.Timeout.LongRunningTimeoutSeconds * 2);
             });
 
         services.AddSingleton<ResilientHttpClientFactory>();
@@ -144,13 +154,13 @@ public static class InfrastructureServiceExtensions
     }
 
     /// <summary>
-    /// Adds health checks for infrastructure services (only if the services are registered).
+    ///     Adds health checks for infrastructure services (only if the services are registered).
     /// </summary>
     public static IServiceCollection AddInfrastructureHealthChecks(
         this IServiceCollection services)
     {
         var healthChecksBuilder = services.AddHealthChecks();
-        bool anyCheckAdded = false;
+        var anyCheckAdded = false;
 
         // Add cache health check only if ICacheService is registered
         if (services.Any(d => d.ServiceType == typeof(ICacheService)))
@@ -178,6 +188,70 @@ public static class InfrastructureServiceExtensions
                 "self",
                 tags: new[] { "live", "ready" });
         }
+
+        return services;
+    }
+
+    /// <summary>
+    ///     Adds response compression services with configurable options.
+    /// </summary>
+    public static IServiceCollection AddResponseCompression(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var compressionConfig = configuration.GetSection("ResponseCompression").Get<ResponseCompressionConfiguration>()
+                                ?? new ResponseCompressionConfiguration();
+
+        services.Configure<ResponseCompressionConfiguration>(configuration.GetSection("ResponseCompression"));
+
+        services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = compressionConfig.EnableForHttps;
+
+            // Set default MIME types if none specified
+            if (compressionConfig.MimeTypes.Count == 0)
+            {
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+                {
+                    "application/json",
+                    "application/xml",
+                    "text/plain",
+                    "text/css",
+                    "application/javascript",
+                    "text/javascript",
+                    "application/json-patch+json"
+                }).ToList();
+            }
+            else
+            {
+                options.MimeTypes = compressionConfig.MimeTypes;
+            }
+
+            // Add compression providers in order of preference (Brotli first for better compression)
+            if (compressionConfig.EnableBrotli)
+            {
+                var brotliLevel = compressionConfig.BrotliLevel switch
+                {
+                    "Fastest" => CompressionLevel.Fastest,
+                    "NoCompression" => CompressionLevel.NoCompression,
+                    _ => CompressionLevel.Optimal
+                };
+                options.Providers.Add(new BrotliCompressionProvider(Options.Create(new BrotliCompressionProviderOptions
+                    { Level = brotliLevel })));
+            }
+
+            if (compressionConfig.EnableGzip)
+            {
+                var gzipLevel = compressionConfig.GzipLevel switch
+                {
+                    "Fastest" => CompressionLevel.Fastest,
+                    "NoCompression" => CompressionLevel.NoCompression,
+                    _ => CompressionLevel.Optimal
+                };
+                options.Providers.Add(new GzipCompressionProvider(Options.Create(new GzipCompressionProviderOptions
+                    { Level = gzipLevel })));
+            }
+        });
 
         return services;
     }

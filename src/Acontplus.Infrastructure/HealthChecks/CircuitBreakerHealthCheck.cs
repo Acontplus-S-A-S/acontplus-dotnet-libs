@@ -1,7 +1,9 @@
+using System.Reflection;
+
 namespace Acontplus.Infrastructure.HealthChecks;
 
 /// <summary>
-/// Health check for circuit breaker service.
+///     Health check for circuit breaker service.
 /// </summary>
 public class CircuitBreakerHealthCheck : IHealthCheck
 {
@@ -12,12 +14,13 @@ public class CircuitBreakerHealthCheck : IHealthCheck
         _circuitBreakerService = circuitBreakerService;
     }
 
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
-            var defaultState = _circuitBreakerService.GetCircuitBreakerState("default");
+            var appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            var defaultState = _circuitBreakerService.GetCircuitBreakerState();
             var apiState = _circuitBreakerService.GetCircuitBreakerState("api");
             var databaseState = _circuitBreakerService.GetCircuitBreakerState("database");
             var externalState = _circuitBreakerService.GetCircuitBreakerState("external");
@@ -35,19 +38,23 @@ public class CircuitBreakerHealthCheck : IHealthCheck
             };
 
             // Check if any critical circuits are open
-            var criticalCircuitsOpen = new[] { databaseState, authState }.Any(state => state == CircuitBreakerState.Open);
+            var criticalCircuitsOpen =
+                new[] { databaseState, authState }.Any(state => state == CircuitBreakerState.Open);
             var anyCircuitOpen = new[] { defaultState, apiState, databaseState, externalState, authState }
                 .Any(state => state == CircuitBreakerState.Open);
 
             return criticalCircuitsOpen
-                ? Task.FromResult(HealthCheckResult.Unhealthy($"{appName} - Critical circuit breakers are open", data: data))
+                ? Task.FromResult(HealthCheckResult.Unhealthy($"{appName} - Critical circuit breakers are open",
+                    data: data))
                 : anyCircuitOpen
-                ? Task.FromResult(HealthCheckResult.Degraded($"{appName} - Some circuit breakers are open", data: data))
-                : Task.FromResult(HealthCheckResult.Healthy($"{appName} - All circuit breakers are operational", data));
+                    ? Task.FromResult(HealthCheckResult.Degraded($"{appName} - Some circuit breakers are open",
+                        data: data))
+                    : Task.FromResult(HealthCheckResult.Healthy($"{appName} - All circuit breakers are operational",
+                        data));
         }
         catch (Exception ex)
         {
-            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            var appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
             return Task.FromResult(HealthCheckResult.Unhealthy($"{appName} - Circuit breaker service failed", ex));
         }
     }

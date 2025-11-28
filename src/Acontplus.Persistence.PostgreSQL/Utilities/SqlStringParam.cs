@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace Acontplus.Persistence.PostgreSQL.Utilities;
 
 public static class SqlStringParam

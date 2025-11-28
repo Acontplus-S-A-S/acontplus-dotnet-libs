@@ -7,13 +7,12 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
     where TContext : DbContext
 {
     private readonly TContext _context;
-    private readonly IAdoRepository _adoRepository;
     private readonly ILogger<UnitOfWork<TContext>>? _logger;
     private readonly ConcurrentDictionary<Type, object> _repositories = new();
     private readonly SemaphoreSlim _transactionSemaphore = new(1, 1);
+    private bool _disposed;
 
     private IDbContextTransaction? _efTransaction;
-    private bool _disposed;
 
     public UnitOfWork(
         TContext context,
@@ -21,13 +20,14 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         ILogger<UnitOfWork<TContext>>? logger = null)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _adoRepository = adoRepository ?? throw new ArgumentNullException(nameof(adoRepository));
+        AdoRepository = adoRepository ?? throw new ArgumentNullException(nameof(adoRepository));
         _logger = logger;
     }
 
     public DbTransaction? CurrentDbTransaction => _efTransaction?.GetDbTransaction();
     public DbConnection CurrentDbConnection => _context.Database.GetDbConnection();
-    public IAdoRepository AdoRepository => _adoRepository;
+    public IAdoRepository AdoRepository { get; }
+
     public bool HasActiveTransaction => _efTransaction is not null;
 
     // Explicit interface implementation to handle nullability
@@ -53,21 +53,25 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         try
         {
             if (_efTransaction is not null)
+            {
                 throw new InvalidOperationException("A transaction is already active.");
+            }
 
             var connection = CurrentDbConnection;
             if (connection.State != ConnectionState.Open)
+            {
                 await connection.OpenAsync(cancellationToken);
+            }
 
             _efTransaction = await _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
 
             // Configure ADO repository with transaction context
-            _adoRepository.SetTransaction(CurrentDbTransaction!);
-            _adoRepository.SetConnection(connection);
+            AdoRepository.SetTransaction(CurrentDbTransaction!);
+            AdoRepository.SetConnection(connection);
 
             _logger?.LogInformation("Transaction started with isolation level: {IsolationLevel}", isolationLevel);
 
-            return new EfTransaction(_efTransaction, _adoRepository, _logger, OnTransactionDisposed);
+            return new EfTransaction(_efTransaction, AdoRepository, _logger, OnTransactionDisposed);
         }
         finally
         {
@@ -102,11 +106,6 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         }
     }
 
-    private void OnTransactionDisposed()
-    {
-        _efTransaction = null;
-    }
-
     public void Dispose()
     {
         Dispose(true);
@@ -119,6 +118,8 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         Dispose(false);
         GC.SuppressFinalize(this);
     }
+
+    private void OnTransactionDisposed() => _efTransaction = null;
 
     private void Dispose(bool disposing)
     {
@@ -136,7 +137,9 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         if (!_disposed)
         {
             if (_efTransaction is not null)
+            {
                 await _efTransaction.DisposeAsync();
+            }
 
             _transactionSemaphore.Dispose();
             await _context.DisposeAsync();
@@ -146,11 +149,10 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
 
     private sealed class EfTransaction : ITransaction
     {
-        private readonly IDbContextTransaction _transaction;
         private readonly IAdoRepository _adoRepository;
         private readonly ILogger<UnitOfWork<TContext>>? _logger;
         private readonly Action _onDisposed;
-        private bool _isCompleted;
+        private readonly IDbContextTransaction _transaction;
         private bool _disposed;
 
         public EfTransaction(
@@ -165,19 +167,21 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
             _onDisposed = onDisposed ?? throw new ArgumentNullException(nameof(onDisposed));
         }
 
-        public bool IsCompleted => _isCompleted;
+        public bool IsCompleted { get; private set; }
 
         public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
 
-            if (_isCompleted)
+            if (IsCompleted)
+            {
                 throw new InvalidOperationException("Transaction has already been completed.");
+            }
 
             try
             {
                 await _transaction.CommitAsync(cancellationToken);
-                _isCompleted = true;
+                IsCompleted = true;
                 _logger?.LogInformation("Transaction committed successfully");
             }
             catch (Exception ex)
@@ -192,13 +196,15 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
 
-            if (_isCompleted)
+            if (IsCompleted)
+            {
                 return; // Already completed, nothing to rollback
+            }
 
             try
             {
                 await _transaction.RollbackAsync(cancellationToken);
-                _isCompleted = true;
+                IsCompleted = true;
                 _logger?.LogWarning("Transaction rolled back");
             }
             catch (Exception ex)
@@ -215,7 +221,7 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork
                 try
                 {
                     // Auto-rollback if not completed
-                    if (!_isCompleted)
+                    if (!IsCompleted)
                     {
                         _logger?.LogWarning(
                             "Transaction disposed without explicit commit/rollback - performing automatic rollback");

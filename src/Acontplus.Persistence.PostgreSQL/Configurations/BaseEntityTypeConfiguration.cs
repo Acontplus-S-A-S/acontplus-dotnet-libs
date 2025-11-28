@@ -1,5 +1,3 @@
-using Acontplus.Persistence.PostgreSQL.Utilities;
-
 namespace Acontplus.Persistence.PostgreSQL.Configurations;
 
 public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>

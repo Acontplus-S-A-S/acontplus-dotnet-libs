@@ -1,8 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Core;
 
-using Acontplus.Core.Dtos;
-using Acontplus.Utilities.Security.Interfaces;
-
 public static class EncryptionEndpoints
 {
     public static void MapEncryptionEndpoints(this WebApplication app)

@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Acontplus.TestApplication.Services;
 
 public class SomeAuditingService

@@ -1,14 +1,12 @@
-﻿using Acontplus.Persistence.SqlServer.UnitOfWork;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Acontplus.Persistence.SqlServer.DependencyInjection;
 
 public static class SqlServerServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a SQL Server DbContext and its corresponding UnitOfWork implementation,
-    /// optionally with a service key using .NET 8+ keyed DI.
+    ///     Registers a SQL Server DbContext and its corresponding UnitOfWork implementation,
+    ///     optionally with a service key using .NET 8+ keyed DI.
     /// </summary>
     /// <typeparam name="TContext">The DbContext type to register.</typeparam>
     /// <param name="services">The IServiceCollection.</param>
@@ -18,10 +16,10 @@ public static class SqlServerServiceCollectionExtensions
     public static IServiceCollection AddSqlServerPersistence<TContext>(
         this IServiceCollection services,
         Action<DbContextOptionsBuilder> sqlServerOptions,
-        object serviceKey = null)
+        object? serviceKey = null)
         where TContext : DbContext
     {
-        services.AddDbContextPool<TContext>(sqlServerOptions, poolSize: 128);
+        services.AddDbContextPool<TContext>(sqlServerOptions, 128);
 
         if (serviceKey is not null)
         {

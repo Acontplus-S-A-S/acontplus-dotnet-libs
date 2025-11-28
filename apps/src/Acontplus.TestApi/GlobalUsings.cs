@@ -25,4 +25,18 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using System;
 global using System.Data;
+global using Acontplus.ApiDocumentation;
+global using Acontplus.Barcode;
+global using Acontplus.Billing;
+global using Acontplus.Core.Abstractions.Infrastructure.Caching;
+global using Acontplus.Core.Domain.Common.Results;
+global using Acontplus.Core.Domain.Enums;
+global using Acontplus.Core.Domain.Exceptions;
+global using Acontplus.Core.Dtos;
+global using Acontplus.Core.Extensions;
+global using Acontplus.Persistence.Common.Exceptions;
+global using Acontplus.Reports.DTOs;
+global using Acontplus.TestApi.Extensions;
+global using Microsoft.Extensions.DependencyInjection;
+global using Serilog;
 

@@ -4,9 +4,12 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-SQL Server implementation of the Acontplus persistence layer. Provides optimized Entity Framework Core integration, ADO.NET repositories, and SQL Server-specific features for high-performance data access.
+SQL Server implementation of the Acontplus persistence layer. Provides optimized Entity Framework Core integration,
+ADO.NET repositories, and SQL Server-specific features for high-performance data access.
 
-> **Note:** This package implements the abstractions defined in [**Acontplus.Persistence.Common**](https://www.nuget.org/packages/Acontplus.Persistence.Common). For general persistence patterns and repository interfaces, see the common package.
+> **Note:** This package implements the abstractions defined in [**Acontplus.Persistence.Common
+**](https://www.nuget.org/packages/Acontplus.Persistence.Common). For general persistence patterns and repository
+> interfaces, see the common package.
 
 ## 🚀 SQL Server-Specific Features
 
@@ -22,16 +25,19 @@ SQL Server implementation of the Acontplus persistence layer. Provides optimized
 ## 📦 Installation
 
 ### NuGet Package Manager
+
 ```bash
 Install-Package Acontplus.Persistence.SqlServer
 ```
 
 ### .NET CLI
+
 ```bash
 dotnet add package Acontplus.Persistence.SqlServer
 ```
 
 ### PackageReference
+
 ```xml
 <ItemGroup>
   <PackageReference Include="Acontplus.Persistence.SqlServer" Version="1.5.12" />
@@ -42,6 +48,7 @@ dotnet add package Acontplus.Persistence.SqlServer
 ## 🎯 Quick Start
 
 ### 1. Configure SQL Server Context
+
 ```csharp
 services.AddDbContext<BaseContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
@@ -56,6 +63,7 @@ services.AddScoped<IAdoRepository, AdoRepository>();
 ```
 
 ### 2. Entity Framework Repository Pattern
+
 ```csharp
 public class UserService
 {
@@ -79,6 +87,7 @@ public class UserService
 ### 3. High-Performance ADO.NET Operations
 
 #### Scalar Queries
+
 ```csharp
 public class OrderService
 {
@@ -113,6 +122,7 @@ public class OrderService
 ```
 
 #### Pagination with Security
+
 ```csharp
 // Using PaginationDto from Acontplus.Core
 public async Task<PagedResult<Order>> GetPagedOrdersAsync(PaginationDto pagination)
@@ -160,6 +170,7 @@ public async Task<PagedResult<User>> GetPagedUsersFromStoredProcAsync(
 ```
 
 #### Bulk Operations (10,000+ records/sec)
+
 ```csharp
 // SqlBulkCopy with DataTable
 public async Task<int> BulkInsertOrdersAsync(List<Order> orders)
@@ -204,6 +215,7 @@ public async Task<int> BulkInsertProductsAsync(IEnumerable<Product> products)
 ```
 
 #### Streaming Large Datasets
+
 ```csharp
 // Memory-efficient CSV export with IAsyncEnumerable
 public async Task ExportOrdersToCsvAsync(StreamWriter writer)
@@ -242,6 +254,7 @@ public async Task ProcessLargeOrderBatchAsync()
 ```
 
 #### Batch and Multi-Result Queries
+
 ```csharp
 // Execute multiple commands in one transaction
 public async Task<int> ExecuteBatchUpdatesAsync(List<int> orderIds)
@@ -271,6 +284,7 @@ public async Task<List<List<dynamic>>> GetDashboardDataAsync()
 ```
 
 ### 4. Advanced EF Core Query Operations
+
 ```csharp
 // Complex queries with SQL Server optimizations
 public async Task<IReadOnlyList<OrderSummary>> GetOrderSummariesAsync(
@@ -298,6 +312,7 @@ public async Task<IReadOnlyList<OrderSummary>> GetOrderSummariesAsync(
 ## 🔧 SQL Server Configuration
 
 ### Connection String Best Practices
+
 ```json
 {
   "ConnectionStrings": {
@@ -307,6 +322,7 @@ public async Task<IReadOnlyList<OrderSummary>> GetOrderSummariesAsync(
 ```
 
 ### Performance Tuning
+
 ```csharp
 services.AddDbContext<BaseContext>(options =>
 {
@@ -332,26 +348,30 @@ services.AddDbContext<BaseContext>(options =>
 ## 📚 SQL Server API Reference
 
 ### Entity Framework Repositories
+
 - `BaseContext` - Optimized EF Core context for SQL Server
 - `IRepository<TEntity>` - Generic repository pattern with change tracking
 - `BaseRepository<TEntity>` - EF Core implementation with query optimization
 
 ### ADO.NET High-Performance Repositories
+
 - `IAdoRepository` - Interface for direct ADO.NET operations
 - `AdoRepository` - SQL Server optimized implementation with:
-  - **Scalar Queries**: `ExecuteScalarAsync<T>`, `ExistsAsync`, `CountAsync`, `LongCountAsync`
-  - **Pagination**: `GetPagedAsync<T>` with OFFSET-FETCH optimization
-  - **Bulk Operations**: `BulkInsertAsync` using SqlBulkCopy (10,000+ records/sec)
-  - **Streaming**: `QueryAsyncEnumerable<T>` for memory-efficient processing
-  - **Batch Operations**: `ExecuteBatchNonQueryAsync`, `QueryMultipleAsync<T>`
-  - **Stored Procedures**: `GetPagedFromStoredProcedureAsync<T>` with OUTPUT parameters
+    - **Scalar Queries**: `ExecuteScalarAsync<T>`, `ExistsAsync`, `CountAsync`, `LongCountAsync`
+    - **Pagination**: `GetPagedAsync<T>` with OFFSET-FETCH optimization
+    - **Bulk Operations**: `BulkInsertAsync` using SqlBulkCopy (10,000+ records/sec)
+    - **Streaming**: `QueryAsyncEnumerable<T>` for memory-efficient processing
+    - **Batch Operations**: `ExecuteBatchNonQueryAsync`, `QueryMultipleAsync<T>`
+    - **Stored Procedures**: `GetPagedFromStoredProcedureAsync<T>` with OUTPUT parameters
 
 ### Security & Error Handling
+
 - `SqlServerExceptionHandler` - Maps SQL Server error codes to domain exceptions
 - `ValidateAndSanitizeSortColumn` - SQL injection prevention (regex `^[a-zA-Z0-9_\.]+$` + keyword blacklist)
 - `AsyncRetryPolicy` - Polly integration with 3 retries and exponential backoff
 
 ### Utilities
+
 - `DbDataReaderMapper` - Fast mapping from DbDataReader to entities/DTOs
 - `CommandParameterBuilder` - Type-safe SQL parameter builder
 - `PaginationMetadataKeys` - Standardized metadata constants
@@ -360,6 +380,7 @@ services.AddDbContext<BaseContext>(options =>
 ## 🔐 Security Features
 
 ### SQL Injection Prevention
+
 ```csharp
 // Automatic validation of sort columns
 var pagination = new PaginationDto
@@ -373,6 +394,7 @@ var pagination = new PaginationDto
 ```
 
 ### Metadata Exposure Control
+
 ```csharp
 // PaginationMetadataOptions controls what metadata is exposed
 services.Configure<PaginationMetadataOptions>(options =>
@@ -384,17 +406,18 @@ services.Configure<PaginationMetadataOptions>(options =>
 
 ## ⚡ Performance Benchmarks
 
-| Operation | EF Core | ADO.NET | Performance Gain |
-|-----------|---------|---------|------------------|
-| Simple Query (1,000 rows) | 45ms | 12ms | **3.75x faster** |
-| Pagination (10,000 rows) | 180ms | 35ms | **5.14x faster** |
-| Bulk Insert (10,000 rows) | 8,500ms | 850ms | **10x faster** |
-| Bulk Insert (100,000 rows) | 95,000ms | 7,200ms | **13.2x faster** |
-| Streaming Export (1M rows) | OutOfMemory | 4.5s | **Memory efficient** |
+| Operation                  | EF Core     | ADO.NET | Performance Gain     |
+|----------------------------|-------------|---------|----------------------|
+| Simple Query (1,000 rows)  | 45ms        | 12ms    | **3.75x faster**     |
+| Pagination (10,000 rows)   | 180ms       | 35ms    | **5.14x faster**     |
+| Bulk Insert (10,000 rows)  | 8,500ms     | 850ms   | **10x faster**       |
+| Bulk Insert (100,000 rows) | 95,000ms    | 7,200ms | **13.2x faster**     |
+| Streaming Export (1M rows) | OutOfMemory | 4.5s    | **Memory efficient** |
 
 ### When to Use Each Approach
 
 **Use EF Core (`IRepository<T>`) when:**
+
 - ✅ Complex object graphs with navigation properties
 - ✅ Change tracking is needed
 - ✅ LINQ query composition
@@ -402,6 +425,7 @@ services.Configure<PaginationMetadataOptions>(options =>
 - ✅ Developer productivity is priority
 
 **Use ADO.NET (`IAdoRepository`) when:**
+
 - ✅ High-volume bulk operations (10,000+ records)
 - ✅ Simple DTOs or read-only queries
 - ✅ Custom SQL optimization required
@@ -414,6 +438,7 @@ services.Configure<PaginationMetadataOptions>(options =>
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ### Development Setup
+
 ```bash
 git clone https://github.com/acontplus/acontplus-dotnet-libs.git
 cd acontplus-dotnet-libs

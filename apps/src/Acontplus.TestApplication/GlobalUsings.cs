@@ -10,4 +10,13 @@ global using Acontplus.TestApplication.Dtos;
 global using Acontplus.TestApplication.Interfaces;
 global using Acontplus.TestDomain.Entities;
 global using System.Data;
+global using System.Data.Common;
+global using System.Linq.Expressions;
+global using Acontplus.Billing.Interfaces.Services;
+global using Acontplus.Core.Domain.Common.Results;
+global using Acontplus.Utilities.Adapters;
+global using Acontplus.Utilities.Extensions;
+global using Acontplus.Utilities.Mapping;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
 

@@ -1,13 +1,13 @@
 namespace Acontplus.Infrastructure.Http;
 
 /// <summary>
-/// Factory for creating HTTP clients with resilience patterns (circuit breaker, retry, timeout).
+///     Factory for creating HTTP clients with resilience patterns (circuit breaker, retry, timeout).
 /// </summary>
 public class ResilientHttpClientFactory
 {
+    private readonly ResilienceConfiguration _config;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<ResilientHttpClientFactory> _logger;
-    private readonly ResilienceConfiguration _config;
 
     public ResilientHttpClientFactory(
         IHttpClientFactory httpClientFactory,
@@ -20,15 +20,12 @@ public class ResilientHttpClientFactory
     }
 
     /// <summary>
-    /// Creates an HTTP client with standard resilience policies.
+    ///     Creates an HTTP client with standard resilience policies.
     /// </summary>
-    public HttpClient CreateClient(string name = "default")
-    {
-        return _httpClientFactory.CreateClient(name);
-    }
+    public HttpClient CreateClient(string name = "default") => _httpClientFactory.CreateClient(name);
 
     /// <summary>
-    /// Creates an HTTP client with custom timeout.
+    ///     Creates an HTTP client with custom timeout.
     /// </summary>
     public HttpClient CreateClientWithTimeout(string name, TimeSpan timeout)
     {
@@ -38,23 +35,17 @@ public class ResilientHttpClientFactory
     }
 
     /// <summary>
-    /// Creates an HTTP client for API calls with appropriate resilience settings.
+    ///     Creates an HTTP client for API calls with appropriate resilience settings.
     /// </summary>
-    public HttpClient CreateApiClient()
-    {
-        return CreateClient("api");
-    }
+    public HttpClient CreateApiClient() => CreateClient("api");
 
     /// <summary>
-    /// Creates an HTTP client for external service calls with strict resilience settings.
+    ///     Creates an HTTP client for external service calls with strict resilience settings.
     /// </summary>
-    public HttpClient CreateExternalClient()
-    {
-        return CreateClient("external");
-    }
+    public HttpClient CreateExternalClient() => CreateClient("external");
 
     /// <summary>
-    /// Creates an HTTP client for long-running operations.
+    ///     Creates an HTTP client for long-running operations.
     /// </summary>
     public HttpClient CreateLongRunningClient()
     {

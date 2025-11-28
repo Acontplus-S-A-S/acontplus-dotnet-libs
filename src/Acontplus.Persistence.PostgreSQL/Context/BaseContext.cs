@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Linq.Expressions;
-
 namespace Acontplus.Persistence.PostgreSQL.Context;
 
 public abstract class BaseContext(DbContextOptions options) : DbContext(options)

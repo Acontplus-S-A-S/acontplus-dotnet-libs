@@ -5,34 +5,6 @@ namespace Acontplus.Persistence.SqlServer.Exceptions;
 
 public static class SqlServerExceptionHandler
 {
-    private static class ErrorRanges
-    {
-        // SQL Server valid ranges
-        public const int RaiserrorMin = 13000; // Minimum for RAISERROR custom errors
-        public const int ThrowMin = 50001; // Minimum for THROW custom errors (50000 is reserved)
-        public const int MaxError = int.MaxValue; // Maximum for both
-
-        // Standard transient errors
-        public static readonly ImmutableHashSet<int> TransientErrors = ImmutableHashSet.Create(
-            /* Previous transient error numbers remain the same */
-            2, 53, 64, 233, 10053, 10054, 10060, 11001,
-            4060, 40197, 40501, 40613, 40143, 40149, 40544, 40549,
-            49918, 49919, 49920, 8645, 8651, 1205
-        );
-
-        // Error classification ranges
-        public static class CustomErrors
-        {
-            // For RAISERROR (13000+)
-            public const int RaiserrorValidationStart = 13000;
-            public const int RaiserrorBusinessStart = 14000;
-
-            // For THROW (50000+)
-            public const int ThrowValidationStart = 50001;
-            public const int ThrowBusinessStart = 51000;
-        }
-    }
-
     private static readonly ImmutableDictionary<int, SqlErrorInfo> ErrorMappings = new Dictionary<int, SqlErrorInfo>
     {
         // Timeout errors
@@ -71,13 +43,13 @@ public static class SqlServerExceptionHandler
 
         // Resource
         [8645] = new(ErrorType.ServiceUnavailable, "SQL_RESOURCE_UNAVAILABLE",
-            "Memory resources temporarily unavailable"),
+            "Memory resources temporarily unavailable")
     }.ToImmutableDictionary();
 
     public static bool IsTransientException(SqlException ex)
     {
         // Special case for transient authentication errors
-        return ex.Number == 18456 && ex.Class == 14 || ErrorRanges.TransientErrors.Contains(ex.Number);
+        return (ex.Number == 18456 && ex.Class == 14) || ErrorRanges.TransientErrors.Contains(ex.Number);
     }
 
     public static SqlErrorInfo MapSqlException(SqlException ex)
@@ -101,10 +73,10 @@ public static class SqlServerExceptionHandler
         return IsCustomStoredProcedureError(ex.Number)
             ? HandleCustomStoredProcedureError(ex)
             : new SqlErrorInfo(
-            ErrorType.Internal,
-            $"SQL_ERROR_{ex.Number}",
-            ex.Message,
-            ex);
+                ErrorType.Internal,
+                $"SQL_ERROR_{ex.Number}",
+                ex.Message,
+                ex);
     }
 
     private static bool IsCustomStoredProcedureError(int errorNumber)
@@ -187,4 +159,32 @@ public static class SqlServerExceptionHandler
         ErrorType.Timeout or ErrorType.ServiceUnavailable => LogLevel.Warning,
         _ => LogLevel.Error
     };
+
+    private static class ErrorRanges
+    {
+        // SQL Server valid ranges
+        public const int RaiserrorMin = 13000; // Minimum for RAISERROR custom errors
+        public const int ThrowMin = 50001; // Minimum for THROW custom errors (50000 is reserved)
+        public const int MaxError = int.MaxValue; // Maximum for both
+
+        // Standard transient errors
+        public static readonly ImmutableHashSet<int> TransientErrors = ImmutableHashSet.Create(
+            /* Previous transient error numbers remain the same */
+            2, 53, 64, 233, 10053, 10054, 10060, 11001,
+            4060, 40197, 40501, 40613, 40143, 40149, 40544, 40549,
+            49918, 49919, 49920, 8645, 8651, 1205
+        );
+
+        // Error classification ranges
+        public static class CustomErrors
+        {
+            // For RAISERROR (13000+)
+            public const int RaiserrorValidationStart = 13000;
+            public const int RaiserrorBusinessStart = 14000;
+
+            // For THROW (50000+)
+            public const int ThrowValidationStart = 50001;
+            public const int ThrowBusinessStart = 51000;
+        }
+    }
 }

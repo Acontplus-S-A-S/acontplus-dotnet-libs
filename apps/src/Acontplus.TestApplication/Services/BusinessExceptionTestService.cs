@@ -1,8 +1,3 @@
-using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
-using Microsoft.Extensions.Logging;
-
 namespace Acontplus.TestApplication.Services;
 
 /// <summary>

@@ -4,9 +4,12 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting, and health checks for .NET applications. Built with modern .NET 10 features and industry best practices.
+Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting,
+health checks, and response compression for .NET applications. Built with modern .NET 10 features and industry best
+practices.
 
-> **💡 Application Services**: For authentication, authorization policies, security headers, device detection, and request context, use **[Acontplus.Services](https://www.nuget.org/packages/Acontplus.Services)**
+> **💡 Application Services**: For authentication, authorization policies, security headers, device detection, and
+> request context, use **[Acontplus.Services](https://www.nuget.org/packages/Acontplus.Services)**
 
 ## 🚀 Features
 
@@ -48,6 +51,14 @@ Enterprise-grade infrastructure library providing caching, resilience patterns, 
 - **Circuit Breaker Health Check**: Monitors circuit breaker states
 - **Ready/Live Probes**: Kubernetes-compatible health endpoints
 - **Detailed Metrics**: Rich health check data for monitoring
+
+### 🗜️ Response Compression
+
+- **Brotli & Gzip**: Modern compression algorithms with Brotli preferred
+- **Configurable MIME Types**: Customize compressed content types
+- **HTTPS Security**: Optional HTTPS-only compression
+- **Performance Boost**: Reduce bandwidth and improve response times
+- **Client-Aware**: Automatic compression based on client capabilities
 
 ## 📦 Installation
 
@@ -444,7 +455,8 @@ public class ApiIntegrationService
 
 ### Unified Health Endpoints with Tags
 
-Acontplus.Infrastructure now provides a single extension to map all health check endpoints with consistent JSON formatting and tag-based filtering:
+Acontplus.Infrastructure now provides a single extension to map all health check endpoints with consistent JSON
+formatting and tag-based filtering:
 
 ```csharp
 // Program.cs
@@ -459,6 +471,7 @@ app.Run();
 ```
 
 This creates:
+
 - `/health` (all checks)
 - `/health/ready` (checks tagged `ready`)
 - `/health/live` (checks tagged `live`)
@@ -466,6 +479,7 @@ This creates:
 - `/health/resilience` (checks tagged `resilience`)
 
 **Behavior:**
+
 - If no cache or circuit breaker is registered, endpoints still work and return a self-check with the app name.
 - If a tag endpoint (like `/health/cache`) has no checks, it returns an empty array but a valid response.
 - All responses include `apiName`, `status`, `checks`, and `totalDuration`.
@@ -493,16 +507,115 @@ This creates:
 ```
 
 #### Customization
+
 - You can override the base path: `app.MapHealthCheckEndpoints("/myhealth")`
 - You can still add custom health checks and tags as before.
 
 #### Migration
+
 - **Old:** Multiple `app.MapHealthChecks` with custom response writers
 - **New:** Just call `app.MapHealthCheckEndpoints()` for all endpoints and formatting
 
 See `Extensions/HealthCheckEndpointExtensions.cs` for details.
 
 ---
+
+## 🗜️ Response Compression
+
+Optimize API performance with automatic response compression using Brotli and Gzip algorithms. Configurable MIME types
+and HTTPS-only compression for modern web applications.
+
+### Setup
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add response compression
+builder.Services.AddResponseCompression(builder.Configuration);
+
+var app = builder.Build();
+
+// Use response compression middleware (MUST be before MapControllers)
+app.UseResponseCompression();
+
+app.MapControllers();
+app.Run();
+```
+
+### Configuration
+
+Add to your `appsettings.json`:
+
+```json
+{
+  "ResponseCompression": {
+    "EnableForHttps": true,
+    "MimeTypes": [],
+    "EnableBrotli": true,
+    "BrotliLevel": "Optimal",
+    "EnableGzip": true,
+    "GzipLevel": "Optimal"
+  }
+}
+```
+
+### Compression Levels
+
+- **Fastest**: Prioritizes speed over compression ratio
+- **Optimal**: Balances speed and compression ratio (default)
+- **NoCompression**: Disables compression (not recommended)
+
+### Features
+
+- **Dual Compression**: Brotli (preferred) and Gzip support
+- **HTTPS Only**: Optional HTTPS-only compression for security
+- **Configurable MIME Types**: Customize which content types to compress
+- **Default Types**: Automatically includes JSON, XML, CSS, JS, and more
+- **Performance Optimized**: Brotli provides better compression ratios
+
+### Default MIME Types
+
+When no custom MIME types are specified, the following are compressed:
+
+- `text/plain`
+- `text/css`
+- `application/json`
+- `application/xml`
+- `application/javascript`
+- `text/javascript`
+- `application/json-patch+json`
+- All `text/*` types
+
+### Usage with Infrastructure Services
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add all infrastructure services including response compression
+builder.Services.AddInfrastructureServices(builder.Configuration, addResponseCompression: true);
+
+var app = builder.Build();
+
+// Use response compression middleware
+app.UseResponseCompression();
+
+app.MapControllers();
+app.Run();
+```
+
+### Client Support
+
+Modern browsers automatically send `Accept-Encoding: gzip, deflate, br` headers. The middleware responds with compressed
+content when supported.
+
+```bash
+# Example compressed response
+curl -H "Accept-Encoding: gzip" https://api.example.com/data
+# Response includes: Content-Encoding: gzip
+```
+
 ## ⚙️ Configuration Reference
 
 ### Complete Configuration Example

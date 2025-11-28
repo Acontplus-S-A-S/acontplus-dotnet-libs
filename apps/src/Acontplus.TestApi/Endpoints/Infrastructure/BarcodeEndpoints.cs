@@ -1,7 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Infrastructure;
 
-using Acontplus.Barcode;
-
 public static class BarcodeEndpoints
 {
     public static void MapBarcodeEndpoints(this WebApplication app)

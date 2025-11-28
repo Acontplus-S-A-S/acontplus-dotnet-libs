@@ -1,11 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Business;
 
-using Acontplus.Billing;
-using Acontplus.Core.Dtos;
-using Acontplus.Billing.Interfaces.Services;
-using Acontplus.Core.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-
 public static class DocumentoElectronicoEndpoints
 {
     public static void MapDocumentoElectronicoEndpoints(this WebApplication app)

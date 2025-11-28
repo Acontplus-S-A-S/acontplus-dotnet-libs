@@ -1,7 +1,7 @@
 namespace Acontplus.Infrastructure.Resilience;
 
 /// <summary>
-/// Configuration for policy creation.
+///     Configuration for policy creation.
 /// </summary>
 internal record PolicyConfig
 {
@@ -16,21 +16,22 @@ internal record PolicyConfig
 }
 
 /// <summary>
-/// Circuit breaker service implementation using Polly policies.
+///     Circuit breaker service implementation using Polly policies.
 /// </summary>
 public class CircuitBreakerService : ICircuitBreakerService
 {
-    private readonly ILogger<CircuitBreakerService> _logger;
-    private readonly ResilienceConfiguration _config;
-    private readonly Dictionary<string, IAsyncPolicy> _policies;
     private readonly Dictionary<string, CircuitBreakerState> _circuitStates;
+    private readonly ResilienceConfiguration _config;
+    private readonly ILogger<CircuitBreakerService> _logger;
+    private readonly Dictionary<string, IAsyncPolicy> _policies;
 
     public CircuitBreakerService(
         ILogger<CircuitBreakerService> logger,
         IOptions<ResilienceConfiguration> config)
     {
         _logger = logger;
-        _logger.LogInformation("Initializing Infrastructure CircuitBreakerService from namespace {Namespace}", typeof(CircuitBreakerService).Namespace);
+        _logger.LogInformation("Initializing Infrastructure CircuitBreakerService from namespace {Namespace}",
+            typeof(CircuitBreakerService).Namespace);
         _config = config.Value;
         _policies = new Dictionary<string, IAsyncPolicy>();
         _circuitStates = new Dictionary<string, CircuitBreakerState>();
@@ -70,10 +71,8 @@ public class CircuitBreakerService : ICircuitBreakerService
         retryPolicy.Execute(action);
     }
 
-    public CircuitBreakerState GetCircuitBreakerState(string policyName = "default")
-    {
-        return _circuitStates.GetValueOrDefault(policyName, CircuitBreakerState.Closed);
-    }
+    public CircuitBreakerState GetCircuitBreakerState(string policyName = "default") =>
+        _circuitStates.GetValueOrDefault(policyName, CircuitBreakerState.Closed);
 
     public void OpenCircuit(string policyName = "default")
     {
@@ -90,7 +89,9 @@ public class CircuitBreakerService : ICircuitBreakerService
     private void InitializePolicies()
     {
         if (!_config.CircuitBreaker.Enabled)
+        {
             return;
+        }
 
         // Default policy
         _policies["default"] = CreatePolicy("default", new PolicyConfig
@@ -161,19 +162,20 @@ public class CircuitBreakerService : ICircuitBreakerService
         var circuitBreakerPolicy = Policy
             .Handle<Exception>()
             .CircuitBreakerAsync(
-                exceptionsAllowedBeforeBreaking: config.CircuitBreakerExceptions,
-                durationOfBreak: TimeSpan.FromSeconds(config.CircuitBreakerDuration),
-                onBreak: (exception, duration) =>
+                config.CircuitBreakerExceptions,
+                TimeSpan.FromSeconds(config.CircuitBreakerDuration),
+                (exception, duration) =>
                 {
                     _circuitStates[policyName] = CircuitBreakerState.Open;
-                    _logger.LogWarning(exception, "Circuit breaker opened for {PolicyName} policy. Duration: {Duration}", policyName, duration);
+                    _logger.LogWarning(exception,
+                        "Circuit breaker opened for {PolicyName} policy. Duration: {Duration}", policyName, duration);
                 },
-                onReset: () =>
+                () =>
                 {
                     _circuitStates[policyName] = CircuitBreakerState.Closed;
                     _logger.LogInformation("Circuit breaker reset for {PolicyName} policy", policyName);
                 },
-                onHalfOpen: () =>
+                () =>
                 {
                     _circuitStates[policyName] = CircuitBreakerState.HalfOpen;
                     _logger.LogInformation("Circuit breaker half-open for {PolicyName} policy", policyName);
@@ -182,21 +184,24 @@ public class CircuitBreakerService : ICircuitBreakerService
         var retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
-                retryCount: config.RetryCount,
-                sleepDurationProvider: retryAttempt =>
+                config.RetryCount,
+                retryAttempt =>
                 {
                     if (config.RetryExponentialBackoff)
                     {
-                        var delay = TimeSpan.FromSeconds(config.RetryBaseDelay * Math.Pow(config.RetryBackoffMultiplier, retryAttempt - 1));
+                        var delay = TimeSpan.FromSeconds(config.RetryBaseDelay *
+                                                         Math.Pow(config.RetryBackoffMultiplier, retryAttempt - 1));
                         return delay > TimeSpan.FromSeconds(config.RetryMaxDelay)
                             ? TimeSpan.FromSeconds(config.RetryMaxDelay)
                             : delay;
                     }
+
                     return TimeSpan.FromSeconds(config.RetryBaseDelay * retryAttempt);
                 },
-                onRetry: (exception, timeSpan, retryCount, context) =>
+                (exception, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for {PolicyName} policy", retryCount, timeSpan.TotalMilliseconds, policyName);
+                    _logger.LogWarning(exception, "Retry {RetryCount} after {Delay}ms for {PolicyName} policy",
+                        retryCount, timeSpan.TotalMilliseconds, policyName);
                 });
 
         var timeoutPolicy = Policy
@@ -213,6 +218,7 @@ public class CircuitBreakerService : ICircuitBreakerService
             _logger.LogWarning("Policy {PolicyName} not found, using default", name);
             name = "default";
         }
+
         return _policies[name];
     }
 }

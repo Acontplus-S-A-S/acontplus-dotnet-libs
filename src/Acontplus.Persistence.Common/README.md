@@ -4,11 +4,14 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with business-ready abstractions.
+Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection
+string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with business-ready
+abstractions.
 
 ## 🚀 Features
 
 ### 🏗️ Core Abstractions
+
 - **Generic Repository Pattern** - Type-safe data access with C# features
 - **Context Factory** - Flexible database context creation and management
 - **Connection String Provider** - Hierarchical and environment-based connection management
@@ -16,6 +19,7 @@ Advanced persistence abstractions and infrastructure. Includes generic repositor
 - **Business Patterns** - Unit of work, specification pattern, and audit trail support
 
 ### 🔧 Contemporary Architecture
+
 - **.NET 10+ Compatible** - Latest C# features and performance optimizations
 - **Async/Await Support** - Full asynchronous operation support
 - **Dependency Injection** - Seamless integration with Microsoft DI container
@@ -25,16 +29,19 @@ Advanced persistence abstractions and infrastructure. Includes generic repositor
 ## 📦 Installation
 
 ### NuGet Package Manager
+
 ```bash
 Install-Package Acontplus.Persistence.Common
 ```
 
 ### .NET CLI
+
 ```bash
 dotnet add package Acontplus.Persistence.Common
 ```
 
 ### PackageReference
+
 ```xml
 <PackageReference Include="Acontplus.Persistence.Common" Version="1.1.0" />
 ```
@@ -83,7 +90,7 @@ public class ProductService
     {
         var context = _contextFactory.GetContext(contextName ?? "Default");
         var repository = new BaseRepository<Product>(context);
-        
+
         return await repository.FindAsync(p => p.IsActive);
     }
 }
@@ -108,7 +115,7 @@ public class MultiTenantService
         // Get context for specific context
         var context = _contextFactory.GetContext(contextName);
         var repository = new BaseRepository<Product>(context);
-        
+
         return await repository.GetByIdAsync(productId);
     }
 
@@ -150,7 +157,7 @@ public class CustomConnectionStringProvider : IConnectionStringProvider
     {
         // Get tenant from HTTP context
         var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("TenantId")?.Value;
-        
+
         if (!string.IsNullOrEmpty(tenant))
         {
             return _configuration.GetConnectionString($"{name}_{tenant}");
@@ -183,12 +190,12 @@ public class ProductRepository : BaseRepository<Product>
 
     // Pagination with filtering and sorting
     public async Task<PagedResult<Product>> GetProductsByCategoryAsync(
-        PaginationDto pagination, 
+        PaginationDto pagination,
         int categoryId)
     {
         Expression<Func<Product, bool>> filter = p => p.CategoryId == categoryId;
         Expression<Func<Product, object>> orderBy = p => p.Name;
-        
+
         return await GetPagedAsync(pagination, filter, orderBy: orderBy);
     }
 
@@ -225,16 +232,16 @@ public class ProductService
     public async Task<PagedResult<Product>> SearchProductsAsync(string searchTerm, int page = 1)
     {
         var pagination = PaginationExtensions.CreateWithSearch(searchTerm, page);
-        Expression<Func<Product, bool>> searchFilter = p => 
+        Expression<Func<Product, bool>> searchFilter = p =>
             p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm);
-        
+
         return await _productRepository.GetPagedAsync(pagination, searchFilter);
     }
 
     // 3. Pagination with filters using fluent API
     public async Task<PagedResult<Product>> GetFilteredProductsAsync(
-        int? categoryId = null, 
-        bool? isActive = null, 
+        int? categoryId = null,
+        bool? isActive = null,
         decimal? minPrice = null,
         int page = 1)
     {
@@ -244,16 +251,16 @@ public class ProductService
         // Add filters if provided
         if (categoryId.HasValue)
             pagination = pagination.WithFilter("CategoryId", categoryId.Value);
-        
+
         if (isActive.HasValue)
             pagination = pagination.WithFilter("IsActive", isActive.Value);
-        
+
         if (minPrice.HasValue)
             pagination = pagination.WithFilter("MinPrice", minPrice.Value);
 
         // Convert filters to predicate
         var predicate = pagination.Filters?.ToPredicate<Product>() ?? (p => true);
-        
+
         return await _productRepository.GetPagedAsync(pagination, predicate);
     }
 
@@ -270,15 +277,15 @@ public class ProductService
             {
                 predicate = filter.Key switch
                 {
-                    "categoryId" when filter.Value is int categoryId => 
+                    "categoryId" when filter.Value is int categoryId =>
                         CombinePredicates(predicate, p => p.CategoryId == categoryId),
-                    "isActive" when filter.Value is bool isActive => 
+                    "isActive" when filter.Value is bool isActive =>
                         CombinePredicates(predicate, p => p.IsActive == isActive),
-                    "minPrice" when filter.Value is decimal minPrice => 
+                    "minPrice" when filter.Value is decimal minPrice =>
                         CombinePredicates(predicate, p => p.Price >= minPrice),
-                    "maxPrice" when filter.Value is decimal maxPrice => 
+                    "maxPrice" when filter.Value is decimal maxPrice =>
                         CombinePredicates(predicate, p => p.Price <= maxPrice),
-                    "searchTerm" when filter.Value is string searchTerm => 
+                    "searchTerm" when filter.Value is string searchTerm =>
                         CombinePredicates(predicate, p => p.Name.Contains(searchTerm)),
                     _ => predicate
                 };
@@ -304,7 +311,7 @@ public class ProductService
     }
 
     private Expression<Func<Product, bool>> CombinePredicates(
-        Expression<Func<Product, bool>> existing, 
+        Expression<Func<Product, bool>> existing,
         Expression<Func<Product, bool>> newPredicate)
     {
         var parameter = Expression.Parameter(typeof(Product), "p");
@@ -333,7 +340,7 @@ public class ProductsController : ControllerBase
     // Basic pagination endpoint
     [HttpGet]
     public async Task<ActionResult<PagedResult<Product>>> GetProducts(
-        [FromQuery] int page = 1, 
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
         var result = await _productService.GetProductsAsync(page, pageSize);
@@ -388,7 +395,7 @@ public class ProductRepository : BaseRepository<Product>
                 combined => combined.Order.Id,
                 item => item.OrderId,
                 (combined, item) => new { combined.Order, combined.Customer, Item = item })
-            .Where(combined => 
+            .Where(combined =>
                 (!customerId.HasValue || combined.Order.CustomerId == customerId.Value) &&
                 (!fromDate.HasValue || combined.Order.OrderDate >= fromDate.Value))
             .GroupBy(combined => new
@@ -439,8 +446,8 @@ public class ProductRepository : BaseRepository<Product>
     {
         return await ExecutePagedQueryAsync<CustomerOrderHistoryDto>(
             query => query
-                .Where(c => string.IsNullOrEmpty(searchTerm) || 
-                           c.FirstName.Contains(searchTerm) || 
+                .Where(c => string.IsNullOrEmpty(searchTerm) ||
+                           c.FirstName.Contains(searchTerm) ||
                            c.LastName.Contains(searchTerm))
                 .Select(customer => new CustomerOrderHistoryDto
                 {
@@ -478,7 +485,7 @@ public class ProductRepository : BaseRepository<Product>
 
 public class ActiveProductsByCategorySpecification : BaseSpecification<Product>
 {
-    public ActiveProductsByCategorySpecification(int categoryId) 
+    public ActiveProductsByCategorySpecification(int categoryId)
         : base(p => p.IsActive && p.CategoryId == categoryId)
     {
         AddInclude(p => p.Category);
@@ -488,14 +495,14 @@ public class ActiveProductsByCategorySpecification : BaseSpecification<Product>
 
 public class ProductPaginationSpecification : BaseSpecification<Product>
 {
-    public ProductPaginationSpecification(PaginationDto pagination) 
+    public ProductPaginationSpecification(PaginationDto pagination)
         : base(BuildCriteria(pagination))
     {
         ApplyPaging(pagination);
         AddInclude(p => p.Category);
         AddOrderBy(p => p.Name);
     }
-    
+
     private static Expression<Func<Product, bool>> BuildCriteria(PaginationDto pagination)
     {
         // Convert filters to criteria
@@ -587,17 +594,17 @@ var customPredicate = FilterPredicateExtensions.CreatePredicate<Product>("Catego
 
 ### When to Use Each Method
 
-| Scenario | Recommended Method | Example |
-|----------|-------------------|---------|
-| **Simple CRUD** | Standard methods | `GetByIdAsync()`, `FindAsync()` |
-| **Basic filtering** | Standard methods with predicates | `FindAsync(p => p.IsActive)` |
-| **Include navigation properties** | Standard methods with includes | `GetAllAsync(p => p.Category)` |
-| **Pagination** | `GetPagedAsync()` | `GetPagedAsync(pagination, filter)` |
-| **Custom projections** | `GetProjectionAsync()` | `GetProjectionAsync(p => new { p.Name, p.Price })` |
-| **Complex business logic** | Specification pattern | `FindWithSpecificationAsync(spec)` |
-| **Multi-table joins** | `GetQueryable()` | `GetQueryable().Join(...)` |
-| **Complex aggregations** | `ExecuteQueryToListAsync()` | `ExecuteQueryToListAsync(q => q.GroupBy(...))` |
-| **Custom SQL** | ADO.NET methods | `QueryAsync<Result>("SELECT ...")` |
+| Scenario                          | Recommended Method               | Example                                            |
+|-----------------------------------|----------------------------------|----------------------------------------------------|
+| **Simple CRUD**                   | Standard methods                 | `GetByIdAsync()`, `FindAsync()`                    |
+| **Basic filtering**               | Standard methods with predicates | `FindAsync(p => p.IsActive)`                       |
+| **Include navigation properties** | Standard methods with includes   | `GetAllAsync(p => p.Category)`                     |
+| **Pagination**                    | `GetPagedAsync()`                | `GetPagedAsync(pagination, filter)`                |
+| **Custom projections**            | `GetProjectionAsync()`           | `GetProjectionAsync(p => new { p.Name, p.Price })` |
+| **Complex business logic**        | Specification pattern            | `FindWithSpecificationAsync(spec)`                 |
+| **Multi-table joins**             | `GetQueryable()`                 | `GetQueryable().Join(...)`                         |
+| **Complex aggregations**          | `ExecuteQueryToListAsync()`      | `ExecuteQueryToListAsync(q => q.GroupBy(...))`     |
+| **Custom SQL**                    | ADO.NET methods                  | `QueryAsync<Result>("SELECT ...")`                 |
 
 ### Performance Guidelines
 
@@ -717,8 +724,8 @@ public async Task<Result<Product>> GetProductSafelyAsync(int id)
         var context = _contextFactory.GetContext();
         var repository = new BaseRepository<Product>(context);
         var product = await repository.GetByIdAsync(id);
-        
-        return product is not null 
+
+        return product is not null
             ? Result<Product>.Success(product)
             : Result<Product>.Failure(DomainError.NotFound("PRODUCT_NOT_FOUND", $"Product {id} not found"));
     }
@@ -755,7 +762,7 @@ public interface IDbContextFactory<TContext> where TContext : DbContext
 public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     public BaseRepository(DbContext context);
-    
+
     // Async operations
     public Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     public Task<TEntity?> GetByIdOrDefaultAsync(int id, CancellationToken cancellationToken = default);
@@ -763,7 +770,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : clas
     public Task<TEntity> AddAsync(TEntity entity);
     public Task UpdateAsync(TEntity entity);
     public Task DeleteAsync(TEntity entity);
-    
+
     // Specification pattern
     public Task<IReadOnlyList<TEntity>> FindWithSpecificationAsync(ISpecification<TEntity> spec);
     public Task<PagedResult<TEntity>> GetPagedAsync(ISpecification<TEntity> spec);
@@ -782,6 +789,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : clas
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ### Development Setup
+
 ```bash
 git clone https://github.com/acontplus/acontplus-dotnet-libs.git
 cd acontplus-dotnet-libs
@@ -809,4 +817,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the .NET community using cutting-edge .NET features** 
+**Built with ❤️ for the .NET community using cutting-edge .NET features**

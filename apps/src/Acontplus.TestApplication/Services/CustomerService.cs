@@ -1,6 +1,3 @@
-using Acontplus.Billing.Interfaces.Services;
-using Acontplus.Core.Domain.Common.Results;
-
 namespace Acontplus.TestApplication.Services;
 
 public class CustomerService(

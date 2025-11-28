@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-
 namespace Acontplus.Infrastructure.Extensions;
 
 /// <summary>
-/// Extension methods for mapping health check endpoints with consistent formatting.
+///     Extension methods for mapping health check endpoints with consistent formatting.
 /// </summary>
 public static class HealthCheckEndpointExtensions
 {
     /// <summary>
-    /// Maps health check endpoints with standardized JSON response formatting including application name.
+    ///     Maps health check endpoints with standardized JSON response formatting including application name.
     /// </summary>
     /// <param name="app">The web application builder.</param>
     /// <param name="basePath">The base path for health check endpoints (default: "/health").</param>
@@ -54,7 +49,7 @@ public static class HealthCheckEndpointExtensions
         });
     }
 
-    private static Task WriteHealthCheckResponse(HttpContext context, Microsoft.Extensions.Diagnostics.HealthChecks.HealthReport report, string appName)
+    private static Task WriteHealthCheckResponse(HttpContext context, HealthReport report, string appName)
     {
         context.Response.ContentType = "application/json";
 

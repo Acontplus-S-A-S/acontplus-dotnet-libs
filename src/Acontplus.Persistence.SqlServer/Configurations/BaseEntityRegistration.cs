@@ -6,7 +6,7 @@ namespace Acontplus.Persistence.SqlServer.Configurations;
 public static class BaseEntityRegistration
 {
     /// <summary>
-    /// Gets the primary key type for an entity that inherits from BaseEntity
+    ///     Gets the primary key type for an entity that inherits from BaseEntity
     /// </summary>
     private static Type GetPrimaryKeyType(Type entityType)
     {
@@ -19,15 +19,17 @@ public static class BaseEntityRegistration
             {
                 return currentType.GetGenericArguments()[0]; // Return TKey
             }
+
             currentType = currentType.BaseType;
         }
+
         // Fallback to int since BaseEntity uses Entity<int>
         return typeof(int);
     }
 
     /// <summary>
-    /// Registers auditable entities with the ModelBuilder, applying base configurations,
-    /// custom schema/table names, and optional specific entity configurations.
+    ///     Registers auditable entities with the ModelBuilder, applying base configurations,
+    ///     custom schema/table names, and optional specific entity configurations.
     /// </summary>
     public static void RegisterEntities(
         ModelBuilder modelBuilder,
@@ -40,11 +42,12 @@ public static class BaseEntityRegistration
         {
             // Check if entity inherits from BaseEntity (non-generic)
             var isValidEntity = entityType.IsClass &&
-                               !entityType.IsAbstract &&
-                               typeof(BaseEntity).IsAssignableFrom(entityType);
+                                !entityType.IsAbstract &&
+                                typeof(BaseEntity).IsAssignableFrom(entityType);
             if (!isValidEntity)
             {
-                Console.WriteLine($"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
+                Console.WriteLine(
+                    $"Skipping type {entityType.Name} as it's not a valid entity (must be a concrete class inheriting from AuditableEntity<>).");
                 continue;
             }
 
@@ -62,6 +65,7 @@ public static class BaseEntityRegistration
                     determinedTableName = mapConfig.table;
                     isTableNameExplicitlyProvided = true;
                 }
+
                 if (mapConfig.schema != null)
                 {
                     determinedSchemaName = mapConfig.schema;
@@ -78,6 +82,7 @@ public static class BaseEntityRegistration
                     determinedTableName = tableAttribute.Name;
                     isTableNameExplicitlyProvided = true;
                 }
+
                 if (!isSchemaNameExplicitlyProvided && tableAttribute.Schema != null)
                 {
                     determinedSchemaName = tableAttribute.Schema;
@@ -91,14 +96,15 @@ public static class BaseEntityRegistration
                 if (dbContextType != null && typeof(DbContext).IsAssignableFrom(dbContextType))
                 {
                     var dbSetProperty = dbContextType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                                     .FirstOrDefault(p => p.PropertyType.IsGenericType &&
-                                                                          p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
-                                                                          p.PropertyType.GetGenericArguments()[0] == entityType);
+                        .FirstOrDefault(p => p.PropertyType.IsGenericType &&
+                                             p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>) &&
+                                             p.PropertyType.GetGenericArguments()[0] == entityType);
                     if (dbSetProperty != null)
                     {
                         determinedTableName = dbSetProperty.Name;
                     }
                 }
+
                 determinedTableName ??= entityType.Name;
             }
 
@@ -122,7 +128,8 @@ public static class BaseEntityRegistration
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Could not apply base configuration for entity {entityType.Name}: {ex.Message}");
+                Console.WriteLine(
+                    $"Warning: Could not apply base configuration for entity {entityType.Name}: {ex.Message}");
             }
 
             // 5. Apply any specific custom configuration for this entity
@@ -130,7 +137,8 @@ public static class BaseEntityRegistration
             {
                 if (!typeof(IEntityTypeConfiguration<>).MakeGenericType(entityType).IsAssignableFrom(customConfigType))
                 {
-                    Console.WriteLine($"Warning: Custom configuration type {customConfigType.Name} for entity {entityType.Name} does not implement IEntityTypeConfiguration<{entityType.Name}>. Skipping custom configuration for this entity.");
+                    Console.WriteLine(
+                        $"Warning: Custom configuration type {customConfigType.Name} for entity {entityType.Name} does not implement IEntityTypeConfiguration<{entityType.Name}>. Skipping custom configuration for this entity.");
                 }
                 else
                 {
@@ -141,7 +149,8 @@ public static class BaseEntityRegistration
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Warning: Could not apply custom configuration for entity {entityType.Name}: {ex.Message}");
+                        Console.WriteLine(
+                            $"Warning: Could not apply custom configuration for entity {entityType.Name}: {ex.Message}");
                     }
                 }
             }
@@ -149,7 +158,7 @@ public static class BaseEntityRegistration
     }
 
     /// <summary>
-    /// Helper method to check if a type is assignable to a generic type definition
+    ///     Helper method to check if a type is assignable to a generic type definition
     /// </summary>
     private static bool IsAssignableToGenericType(Type givenType, Type genericType)
     {
@@ -157,24 +166,28 @@ public static class BaseEntityRegistration
         foreach (var it in interfaceTypes)
         {
             if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
+            {
                 return true;
+            }
         }
+
         if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
+        {
             return true;
-        Type baseType = givenType.BaseType;
+        }
+
+        var baseType = givenType.BaseType;
         return baseType != null && IsAssignableToGenericType(baseType, genericType);
     }
 
     /// <summary>
-    /// Registers entities with default conventions and base configuration.
+    ///     Registers entities with default conventions and base configuration.
     /// </summary>
-    public static void RegisterEntities(ModelBuilder modelBuilder, Type dbContextType, params Type[] entityTypes)
-    {
+    public static void RegisterEntities(ModelBuilder modelBuilder, Type dbContextType, params Type[] entityTypes) =>
         RegisterEntities(modelBuilder, dbContextType, null!, null!, entityTypes);
-    }
 
     /// <summary>
-    /// Registers entities, explicitly setting schemas for specified types.
+    ///     Registers entities, explicitly setting schemas for specified types.
     /// </summary>
     public static void RegisterEntitiesWithSchemas(
         ModelBuilder modelBuilder,
@@ -189,7 +202,7 @@ public static class BaseEntityRegistration
     }
 
     /// <summary>
-    /// Registers entities, explicitly setting schema and/or table names for specified types.
+    ///     Registers entities, explicitly setting schema and/or table names for specified types.
     /// </summary>
     public static void RegisterEntitiesWithNames(
         ModelBuilder modelBuilder,
@@ -204,14 +217,12 @@ public static class BaseEntityRegistration
     }
 
     /// <summary>
-    /// Registers entities with specific custom configurations.
+    ///     Registers entities with specific custom configurations.
     /// </summary>
     public static void RegisterEntitiesWithCustomConfigurations(
         ModelBuilder modelBuilder,
         Type dbContextType,
         Dictionary<Type, Type> customConfigurations,
-        params Type[] entityTypes)
-    {
+        params Type[] entityTypes) =>
         RegisterEntities(modelBuilder, dbContextType, null!, customConfigurations, entityTypes);
-    }
 }
