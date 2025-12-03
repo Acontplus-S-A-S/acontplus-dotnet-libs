@@ -1,5 +1,3 @@
-using Acontplus.Persistence.Common.Repositories;
-
 namespace Acontplus.TestInfrastructure.Persistence.Repositories.Implementations;
 
 public class UserRepository : BaseRepository<Usuario>, IUserRepository

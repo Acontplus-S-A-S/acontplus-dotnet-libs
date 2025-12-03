@@ -1,7 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Infrastructure;
 
-using Acontplus.Persistence.Common;
-
 public static class PrintEndpoints
 {
     public static void MapPrintEndpoints(this WebApplication app)

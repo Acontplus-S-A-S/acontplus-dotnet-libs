@@ -1,22 +1,24 @@
 namespace Acontplus.Infrastructure.Extensions;
 
 /// <summary>
-/// Extension methods for configuring rate limiting.
+///     Extension methods for configuring rate limiting.
 /// </summary>
 public static class RateLimitingExtensions
 {
     /// <summary>
-    /// Configure rate limiting with advanced patterns.
+    ///     Configure rate limiting with advanced patterns.
     /// </summary>
     public static IServiceCollection AddAdvancedRateLimiting(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         var resilienceConfig = configuration.GetSection("Resilience").Get<ResilienceConfiguration>()
-            ?? new ResilienceConfiguration();
+                               ?? new ResilienceConfiguration();
 
         if (!resilienceConfig.RateLimiting.Enabled)
+        {
             return services;
+        }
 
         // Configure rate limiting policies
         services.AddRateLimiter(options =>

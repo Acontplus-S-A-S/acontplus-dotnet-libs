@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
 /// <summary>
-/// Base configuration for simple entities that don't inherit from BaseEntity.
+///     Base configuration for simple entities that don't inherit from BaseEntity.
 /// </summary>
 public class SimpleEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : class

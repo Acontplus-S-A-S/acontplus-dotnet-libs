@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Acontplus.Persistence.SqlServer.Configurations;
 
 /// <summary>
-/// Base configuration for non-auditable entities.
+///     Base configuration for non-auditable entities.
 /// </summary>
 public class EntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : BaseEntity

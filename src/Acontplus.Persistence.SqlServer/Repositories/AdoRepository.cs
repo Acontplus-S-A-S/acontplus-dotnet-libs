@@ -1,19 +1,19 @@
+using Acontplus.Core.Enums;
 using Acontplus.Core.Extensions;
 using Acontplus.Persistence.SqlServer.Mapping;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Acontplus.Persistence.SqlServer.Repositories;
 
 /// <summary>
-/// Provides ADO.NET data access operations with retry policy and optional transaction sharing.
-/// Enhanced with SQL Server error handling, domain error mapping, and flexible filter parameter strategies.
+///     Provides ADO.NET data access operations with retry policy and optional transaction sharing.
+///     Enhanced with SQL Server error handling, domain error mapping, and flexible filter parameter strategies.
 /// </summary>
 public class AdoRepository : IAdoRepository
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<AdoRepository> _logger;
-    private readonly ConcurrentDictionary<string, string> _connectionStrings = new();
-
     // Polly retry policy for transient SQL errors and timeouts
     private static readonly AsyncRetryPolicy RetryPolicy = Policy
         .Handle<SqlException>(SqlServerExceptionHandler.IsTransientException)
@@ -25,12 +25,16 @@ public class AdoRepository : IAdoRepository
                 // context.GetLogger()?.LogWarning(ex, "Retry {RetryCount} for ADO.NET operation.", retryCount);
             });
 
-    // Fields for sharing connection/transaction with UnitOfWork
-    private DbTransaction? _currentTransaction;
+    private readonly IConfiguration _configuration;
+    private readonly ConcurrentDictionary<string, string> _connectionStrings = new();
+    private readonly ILogger<AdoRepository> _logger;
     private DbConnection? _currentConnection;
 
+    // Fields for sharing connection/transaction with UnitOfWork
+    private DbTransaction? _currentTransaction;
+
     /// <summary>
-    /// Constructor for AdoRepository.
+    ///     Constructor for AdoRepository.
     /// </summary>
     public AdoRepository(IConfiguration configuration, ILogger<AdoRepository> logger)
     {
@@ -39,23 +43,17 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Sets the current database transaction from the Unit of Work.
+    ///     Sets the current database transaction from the Unit of Work.
     /// </summary>
-    public void SetTransaction(DbTransaction transaction)
-    {
-        _currentTransaction = transaction;
-    }
+    public void SetTransaction(DbTransaction transaction) => _currentTransaction = transaction;
 
     /// <summary>
-    /// Sets the current database connection from the Unit of Work.
+    ///     Sets the current database connection from the Unit of Work.
     /// </summary>
-    public void SetConnection(DbConnection connection)
-    {
-        _currentConnection = connection;
-    }
+    public void SetConnection(DbConnection connection) => _currentConnection = connection;
 
     /// <summary>
-    /// Clears the current transaction and connection.
+    ///     Clears the current transaction and connection.
     /// </summary>
     public void ClearTransaction()
     {
@@ -64,82 +62,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Retrieves a connection string from configuration, caching it for subsequent calls.
-    /// </summary>
-    private string GetConnectionString(string name)
-    {
-        var key = string.IsNullOrEmpty(name) ? "DefaultConnection" : name;
-
-        return _connectionStrings.GetOrAdd(key, k =>
-        {
-            var connString = _configuration.GetConnectionString(k);
-            if (!string.IsNullOrEmpty(connString)) return connString;
-            _logger.LogError("Connection string '{ConnectionName}' not found.", k);
-            throw new InvalidOperationException($"Connection string '{k}' not found");
-        });
-    }
-
-    /// <summary>
-    /// Creates and opens a new SqlConnection.
-    /// </summary>
-    private async Task<DbConnection> GetOpenConnectionAsync(string? connectionStringName,
-        CancellationToken cancellationToken)
-    {
-        if (_currentConnection != null && _currentConnection.State == ConnectionState.Open)
-        {
-            return _currentConnection;
-        }
-
-        if (_currentConnection != null && _currentConnection.State != ConnectionState.Open)
-        {
-            await _currentConnection.OpenAsync(cancellationToken);
-            return _currentConnection;
-        }
-
-        try
-        {
-            var connection = new SqlConnection(GetConnectionString(connectionStringName ?? string.Empty));
-            await connection.OpenAsync(cancellationToken);
-            return connection;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating and opening connection for '{ConnectionName}'.", connectionStringName);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Creates and configures a SqlCommand.
-    /// </summary>
-    private SqlCommand CreateCommand(
-        DbConnection connection,
-        string commandText,
-        Dictionary<string, object> parameters,
-        CommandOptionsDto? options)
-    {
-        var cmd = connection.CreateCommand();
-        cmd.CommandText = commandText;
-
-        options ??= new CommandOptionsDto();
-        cmd.CommandTimeout = options.CommandTimeout ?? 30;
-        cmd.CommandType = options.CommandType;
-
-        if (_currentTransaction != null)
-        {
-            cmd.Transaction = (SqlTransaction)_currentTransaction;
-        }
-
-        foreach (var parameter in parameters.Where(p => !string.IsNullOrEmpty(p.Key)))
-        {
-            CommandParameterBuilder.AddParameter(cmd, parameter.Key, parameter.Value ?? DBNull.Value);
-        }
-
-        return (SqlCommand)cmd;
-    }
-
-    /// <summary>
-    /// Executes a SQL query and maps results to a list of objects.
+    ///     Executes a SQL query and maps results to a list of objects.
     /// </summary>
     public async Task<List<T>> QueryAsync<T>(
         string sql,
@@ -156,11 +79,13 @@ public class AdoRepository : IAdoRepository
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
                 if (_currentConnection == null)
+                {
                     connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                return await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                return await reader.ToListAsync<T>(cancellationToken);
             }
             catch (SqlException ex)
             {
@@ -180,7 +105,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a SQL query and returns a DataSet.
+    ///     Executes a SQL query and returns a DataSet.
     /// </summary>
     public async Task<DataSet> GetDataSetAsync(
         string sql,
@@ -197,7 +122,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
 
@@ -236,7 +164,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a non-query SQL command.
+    ///     Executes a non-query SQL command.
     /// </summary>
     public async Task<int> ExecuteNonQueryAsync(
         string sql,
@@ -252,7 +180,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 return await cmd.ExecuteNonQueryAsync(cancellationToken);
@@ -275,7 +206,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a SQL query designed to return a single row.
+    ///     Executes a SQL query designed to return a single row.
     /// </summary>
     public async Task<T?> QuerySingleOrDefaultAsync<T>(
         string sql,
@@ -292,7 +223,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -319,7 +253,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a SQL query and returns the first row or null.
+    ///     Executes a SQL query and returns the first row or null.
     /// </summary>
     public async Task<T?> QueryFirstOrDefaultAsync<T>(
         string sql,
@@ -336,7 +270,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -362,10 +299,192 @@ public class AdoRepository : IAdoRepository
         });
     }
 
+    #region Streaming Methods
+
+    /// <summary>
+    ///     Streams query results as an async enumerable for memory-efficient processing.
+    /// </summary>
+    public async IAsyncEnumerable<T> QueryAsyncEnumerable<T>(
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        CommandOptionsDto? options = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        parameters ??= new Dictionary<string, object>();
+        DbConnection? connectionToClose = null;
+        SqlCommand? cmd = null;
+        DbDataReader? reader = null;
+
+        try
+        {
+            var connection = await GetOpenConnectionAsync(null, cancellationToken);
+            if (_currentConnection == null)
+            {
+                connectionToClose = connection;
+            }
+
+            cmd = CreateCommand(connection, sql, parameters, options);
+            reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken);
+
+            var type = typeof(T);
+            var isRecord = type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any()
+                           && type.BaseType == typeof(object);
+
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanWrite || (isRecord && p.CanRead))
+                .ToArray();
+
+            var columnMap = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                var columnName = reader.GetName(i);
+                if (string.IsNullOrEmpty(columnName))
+                {
+                    continue;
+                }
+
+                var property = properties.FirstOrDefault(p =>
+                    string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
+                if (property != null)
+                {
+                    columnMap[columnName] = property;
+                }
+            }
+
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var instance = Activator.CreateInstance<T>();
+
+                foreach (var kvp in columnMap)
+                {
+                    var ordinal = reader.GetOrdinal(kvp.Key);
+                    if (await reader.IsDBNullAsync(ordinal, cancellationToken))
+                    {
+                        continue;
+                    }
+
+                    var value = reader.GetValue(ordinal);
+                    var property = kvp.Value;
+                    var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                    try
+                    {
+                        var convertedValue = propertyType.IsEnum ? Enum.ToObject(propertyType, value) :
+                            propertyType == typeof(Guid) ? value is string strGuid ? Guid.Parse(strGuid) : (Guid)value :
+                            Convert.ChangeType(value, propertyType);
+                        property.SetValue(instance, convertedValue);
+                    }
+                    catch
+                    {
+                        /* Skip properties that fail to map */
+                    }
+                }
+
+                yield return instance;
+            }
+        }
+        finally
+        {
+            if (reader != null)
+            {
+                await reader.DisposeAsync();
+            }
+
+            if (cmd != null)
+            {
+                await cmd.DisposeAsync();
+            }
+
+            connectionToClose?.Close();
+        }
+    }
+
+    #endregion
+
+    /// <summary>
+    ///     Retrieves a connection string from configuration, caching it for subsequent calls.
+    /// </summary>
+    private string GetConnectionString(string name)
+    {
+        var key = string.IsNullOrEmpty(name) ? "DefaultConnection" : name;
+
+        return _connectionStrings.GetOrAdd(key, k =>
+        {
+            var connString = _configuration.GetConnectionString(k);
+            if (!string.IsNullOrEmpty(connString))
+            {
+                return connString;
+            }
+
+            _logger.LogError("Connection string '{ConnectionName}' not found.", k);
+            throw new InvalidOperationException($"Connection string '{k}' not found");
+        });
+    }
+
+    /// <summary>
+    ///     Creates and opens a new SqlConnection.
+    /// </summary>
+    private async Task<DbConnection> GetOpenConnectionAsync(string? connectionStringName,
+        CancellationToken cancellationToken)
+    {
+        if (_currentConnection != null && _currentConnection.State == ConnectionState.Open)
+        {
+            return _currentConnection;
+        }
+
+        if (_currentConnection != null && _currentConnection.State != ConnectionState.Open)
+        {
+            await _currentConnection.OpenAsync(cancellationToken);
+            return _currentConnection;
+        }
+
+        try
+        {
+            var connection = new SqlConnection(GetConnectionString(connectionStringName ?? string.Empty));
+            await connection.OpenAsync(cancellationToken);
+            return connection;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating and opening connection for '{ConnectionName}'.", connectionStringName);
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Creates and configures a SqlCommand.
+    /// </summary>
+    private SqlCommand CreateCommand(
+        DbConnection connection,
+        string commandText,
+        Dictionary<string, object> parameters,
+        CommandOptionsDto? options)
+    {
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = commandText;
+
+        options ??= new CommandOptionsDto();
+        cmd.CommandTimeout = options.CommandTimeout ?? 30;
+        cmd.CommandType = options.CommandType;
+
+        if (_currentTransaction != null)
+        {
+            cmd.Transaction = (SqlTransaction)_currentTransaction;
+        }
+
+        foreach (var parameter in parameters.Where(p => !string.IsNullOrEmpty(p.Key)))
+        {
+            CommandParameterBuilder.AddParameter(cmd, parameter.Key, parameter.Value ?? DBNull.Value);
+        }
+
+        return (SqlCommand)cmd;
+    }
+
     #region Scalar Query Methods
 
     /// <summary>
-    /// Executes a query and returns a single scalar value.
+    ///     Executes a query and returns a single scalar value.
     /// </summary>
     public async Task<TScalar?> ExecuteScalarAsync<TScalar>(
         string sql,
@@ -381,13 +500,18 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 var result = await cmd.ExecuteScalarAsync(cancellationToken);
 
                 if (result == null || result == DBNull.Value)
+                {
                     return default;
+                }
 
                 return (TScalar)Convert.ChangeType(result, typeof(TScalar));
             }
@@ -409,7 +533,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Checks if any rows exist for the given query.
+    ///     Checks if any rows exist for the given query.
     /// </summary>
     public async Task<bool> ExistsAsync(
         string sql,
@@ -422,7 +546,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Gets the count of rows for the given query.
+    ///     Gets the count of rows for the given query.
     /// </summary>
     public async Task<int> CountAsync(
         string sql,
@@ -435,7 +559,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Gets the long count of rows for the given query.
+    ///     Gets the long count of rows for the given query.
     /// </summary>
     public async Task<long> LongCountAsync(
         string sql,
@@ -452,9 +576,9 @@ public class AdoRepository : IAdoRepository
     #region Paged Query Methods
 
     /// <summary>
-    /// Executes a paginated SQL query with automatic count query.
-    /// Uses SQL Server OFFSET-FETCH with optimized query plans.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a paginated SQL query with automatic count query.
+    ///     Uses SQL Server OFFSET-FETCH with optimized query plans.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
@@ -468,8 +592,8 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a paginated SQL query with custom count query.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a paginated SQL query with custom count query.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedAsync<T>(
         string sql,
@@ -487,7 +611,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Build parameters using flexible strategy
                 var parameters = BuildFilterParameters(pagination, options);
@@ -505,7 +632,7 @@ public class AdoRepository : IAdoRepository
                 // Execute paged query
                 await using var cmd = CreateCommand(connection, pagedSql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                var items = await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                var items = await reader.ToListAsync<T>(cancellationToken);
 
                 // Build result with metadata
                 var metadata = BuildPaginationMetadata(pagination, options);
@@ -530,8 +657,8 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a paginated stored procedure.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a paginated stored procedure.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<PagedResult<T>> GetPagedFromStoredProcedureAsync<T>(
         string storedProcedureName,
@@ -548,7 +675,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Build stored procedure parameters using flexible strategy
                 var spParameters = BuildStoredProcedureParameters(pagination, options);
@@ -559,7 +689,7 @@ public class AdoRepository : IAdoRepository
                 CommandParameterBuilder.AddOutputParameter(cmd, "@TotalCount", SqlDbType.Int, 0);
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                var items = await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                var items = await reader.ToListAsync<T>(cancellationToken);
 
                 // Close reader to get output parameters
                 await reader.CloseAsync();
@@ -580,7 +710,9 @@ public class AdoRepository : IAdoRepository
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error executing GetPagedFromStoredProcedureAsync for '{storedProcedureName}'.", storedProcedureName);
+                _logger.LogError(ex,
+                    "Unexpected error executing GetPagedFromStoredProcedureAsync for '{storedProcedureName}'.",
+                    storedProcedureName);
                 throw;
             }
             finally
@@ -595,9 +727,9 @@ public class AdoRepository : IAdoRepository
     #region Filtered Query Methods (Non-Paginated)
 
     /// <summary>
-    /// Executes a filtered SQL query with sorting and search capabilities (non-paginated).
-    /// Automatically builds parameters from FilterRequest and applies ORDER BY clause.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+    ///     Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<List<T>> GetFilteredAsync<T>(
         string sql,
@@ -614,7 +746,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Build parameters using flexible strategy
                 var parameters = BuildFilterParameters(filter, options);
@@ -625,7 +760,7 @@ public class AdoRepository : IAdoRepository
                 // Execute query
                 await using var cmd = CreateCommand(connection, filteredSql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                return await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                return await reader.ToListAsync<T>(cancellationToken);
             }
             catch (SqlException ex)
             {
@@ -645,9 +780,9 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a filtered stored procedure (non-paginated).
-    /// Passes filter criteria to the stored procedure without pagination parameters.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a filtered stored procedure (non-paginated).
+    ///     Passes filter criteria to the stored procedure without pagination parameters.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<List<T>> GetFilteredFromStoredProcedureAsync<T>(
         string storedProcedureName,
@@ -664,14 +799,17 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Build stored procedure parameters using flexible strategy
                 var spParameters = BuildStoredProcedureParameters(filter, options);
 
                 await using var cmd = CreateCommand(connection, storedProcedureName, spParameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                return await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                return await reader.ToListAsync<T>(cancellationToken);
             }
             catch (SqlException ex)
             {
@@ -680,7 +818,9 @@ public class AdoRepository : IAdoRepository
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error executing GetFilteredFromStoredProcedureAsync for '{storedProcedureName}'.", storedProcedureName);
+                _logger.LogError(ex,
+                    "Unexpected error executing GetFilteredFromStoredProcedureAsync for '{storedProcedureName}'.",
+                    storedProcedureName);
                 throw;
             }
             finally
@@ -691,9 +831,9 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes a filtered query and returns a DataSet (non-paginated).
-    /// Useful for reports that need multiple result sets with filtering and sorting.
-    /// Supports flexible filter parameter strategy via CommandOptionsDto.
+    ///     Executes a filtered query and returns a DataSet (non-paginated).
+    ///     Useful for reports that need multiple result sets with filtering and sorting.
+    ///     Supports flexible filter parameter strategy via CommandOptionsDto.
     /// </summary>
     public async Task<DataSet> GetFilteredDataSetAsync(
         string sql,
@@ -710,7 +850,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Build parameters using flexible strategy
                 var parameters = BuildFilterParameters(filter, options);
@@ -759,7 +902,7 @@ public class AdoRepository : IAdoRepository
     #region Batch Operations
 
     /// <summary>
-    /// Executes multiple queries in a single batch.
+    ///     Executes multiple queries in a single batch.
     /// </summary>
     public async Task<List<List<T>>> QueryMultipleAsync<T>(
         string sql,
@@ -775,7 +918,10 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 await using var cmd = CreateCommand(connection, sql, parameters, options);
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
@@ -784,7 +930,7 @@ public class AdoRepository : IAdoRepository
 
                 do
                 {
-                    var resultSet = await DbDataReaderMapper.ToListAsync<T>(reader, cancellationToken);
+                    var resultSet = await reader.ToListAsync<T>(cancellationToken);
                     results.Add(resultSet);
                 } while (await reader.NextResultAsync(cancellationToken));
 
@@ -808,7 +954,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Executes multiple non-query commands in a batch.
+    ///     Executes multiple non-query commands in a batch.
     /// </summary>
     public async Task<int> ExecuteBatchNonQueryAsync(
         IEnumerable<(string Sql, Dictionary<string, object>? Parameters)> commands,
@@ -817,7 +963,9 @@ public class AdoRepository : IAdoRepository
     {
         var commandList = commands.ToList();
         if (!commandList.Any())
+        {
             return 0;
+        }
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -826,11 +974,16 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
                 // Start transaction if not already in one
                 if (_currentTransaction == null)
+                {
                     transaction = await connection.BeginTransactionAsync(cancellationToken);
+                }
 
                 var totalAffected = 0;
 
@@ -839,20 +992,26 @@ public class AdoRepository : IAdoRepository
                     var cmdParams = parameters ?? new Dictionary<string, object>();
                     await using var cmd = CreateCommand(connection, sql, cmdParams, options);
                     if (transaction != null)
+                    {
                         cmd.Transaction = (SqlTransaction)transaction;
+                    }
 
                     totalAffected += await cmd.ExecuteNonQueryAsync(cancellationToken);
                 }
 
                 if (transaction != null)
+                {
                     await transaction.CommitAsync(cancellationToken);
+                }
 
                 return totalAffected;
             }
             catch (SqlException ex)
             {
                 if (transaction != null)
+                {
                     await transaction.RollbackAsync(cancellationToken);
+                }
 
                 SqlServerExceptionHandler.HandleSqlException(ex, _logger, nameof(ExecuteBatchNonQueryAsync));
                 throw;
@@ -860,7 +1019,9 @@ public class AdoRepository : IAdoRepository
             catch (Exception ex)
             {
                 if (transaction != null)
+                {
                     await transaction.RollbackAsync(cancellationToken);
+                }
 
                 _logger.LogError(ex, "Unexpected error executing ExecuteBatchNonQueryAsync.");
                 throw;
@@ -874,7 +1035,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Bulk insert using SqlBulkCopy for optimal performance.
+    ///     Bulk insert using SqlBulkCopy for optimal performance.
     /// </summary>
     public async Task<int> BulkInsertAsync<T>(
         IEnumerable<T> data,
@@ -888,7 +1049,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Bulk insert from DataTable using SqlBulkCopy.
+    ///     Bulk insert from DataTable using SqlBulkCopy.
     /// </summary>
     public async Task<int> BulkInsertAsync(
         DataTable dataTable,
@@ -898,7 +1059,9 @@ public class AdoRepository : IAdoRepository
         CancellationToken cancellationToken = default)
     {
         if (dataTable == null || dataTable.Rows.Count == 0)
+        {
             return 0;
+        }
 
         return await RetryPolicy.ExecuteAsync(async () =>
         {
@@ -906,9 +1069,13 @@ public class AdoRepository : IAdoRepository
             try
             {
                 var connection = await GetOpenConnectionAsync(null, cancellationToken);
-                if (_currentConnection == null) connectionToClose = connection;
+                if (_currentConnection == null)
+                {
+                    connectionToClose = connection;
+                }
 
-                using var bulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default, (SqlTransaction?)_currentTransaction)
+                using var bulkCopy = new SqlBulkCopy((SqlConnection)connection, SqlBulkCopyOptions.Default,
+                    (SqlTransaction?)_currentTransaction)
                 {
                     DestinationTableName = tableName,
                     BatchSize = batchSize,
@@ -955,93 +1122,13 @@ public class AdoRepository : IAdoRepository
 
     #endregion
 
-    #region Streaming Methods
-
-    /// <summary>
-    /// Streams query results as an async enumerable for memory-efficient processing.
-    /// </summary>
-    public async IAsyncEnumerable<T> QueryAsyncEnumerable<T>(
-        string sql,
-        Dictionary<string, object>? parameters = null,
-        CommandOptionsDto? options = null,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        parameters ??= new Dictionary<string, object>();
-        DbConnection? connectionToClose = null;
-        SqlCommand? cmd = null;
-        DbDataReader? reader = null;
-
-        try
-        {
-            var connection = await GetOpenConnectionAsync(null, cancellationToken);
-            if (_currentConnection == null) connectionToClose = connection;
-
-            cmd = CreateCommand(connection, sql, parameters, options);
-            reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken);
-
-            var type = typeof(T);
-            var isRecord = type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Any()
-                           && type.BaseType == typeof(object);
-
-            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                               .Where(p => p.CanWrite || (isRecord && p.CanRead))
-                               .ToArray();
-
-            var columnMap = new Dictionary<string, System.Reflection.PropertyInfo>(StringComparer.OrdinalIgnoreCase);
-            for (var i = 0; i < reader.FieldCount; i++)
-            {
-                var columnName = reader.GetName(i);
-                if (string.IsNullOrEmpty(columnName)) continue;
-                var property = properties.FirstOrDefault(p => string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
-                if (property != null) columnMap[columnName] = property;
-            }
-
-            while (await reader.ReadAsync(cancellationToken))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var instance = Activator.CreateInstance<T>();
-
-                foreach (var kvp in columnMap)
-                {
-                    var ordinal = reader.GetOrdinal(kvp.Key);
-                    if (await reader.IsDBNullAsync(ordinal, cancellationToken)) continue;
-
-                    var value = reader.GetValue(ordinal);
-                    var property = kvp.Value;
-                    var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-
-                    try
-                    {
-                        var convertedValue = propertyType.IsEnum ? Enum.ToObject(propertyType, value) :
-                                           propertyType == typeof(Guid) ? (value is string strGuid ? Guid.Parse(strGuid) : (Guid)value) :
-                                           Convert.ChangeType(value, propertyType);
-                        property.SetValue(instance, convertedValue);
-                    }
-                    catch { /* Skip properties that fail to map */ }
-                }
-
-                yield return instance;
-            }
-        }
-        finally
-        {
-            if (reader != null)
-                await reader.DisposeAsync();
-            if (cmd != null)
-                await cmd.DisposeAsync();
-            connectionToClose?.Close();
-        }
-    }
-
-    #endregion
-
     #region Flexible Filter Parameter Builders
 
     /// <summary>
-    /// Builds query parameters from FilterRequest using flexible strategy.
-    /// Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
-    /// - UseJsonFilters = false (default): Individual parameters for raw SQL queries
-    /// - UseJsonFilters = true: JSON serialized parameters for stored procedures
+    ///     Builds query parameters from FilterRequest using flexible strategy.
+    ///     Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+    ///     - UseJsonFilters = false (default): Individual parameters for raw SQL queries
+    ///     - UseJsonFilters = true: JSON serialized parameters for stored procedures
     /// </summary>
     private Dictionary<string, object> BuildFilterParameters(FilterRequest filter, CommandOptionsDto options)
     {
@@ -1057,14 +1144,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for stored procedures
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                result["@Filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["@Filters"] = DBNull.Value;
-            }
+            result["@Filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1083,8 +1165,8 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Builds query parameters from PaginationRequest using flexible strategy.
-    /// Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+    ///     Builds query parameters from PaginationRequest using flexible strategy.
+    ///     Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
     /// </summary>
     private Dictionary<string, object> BuildFilterParameters(PaginationRequest pagination, CommandOptionsDto options)
     {
@@ -1100,14 +1182,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for stored procedures
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                result["@Filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["@Filters"] = DBNull.Value;
-            }
+            result["@Filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1126,8 +1203,8 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Builds stored procedure parameters from FilterRequest.
-    /// Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+    ///     Builds stored procedure parameters from FilterRequest.
+    ///     Automatically uses JSON strategy for stored procedures unless explicitly overridden.
     /// </summary>
     private Dictionary<string, object> BuildStoredProcedureParameters(FilterRequest filter, CommandOptionsDto options)
     {
@@ -1152,14 +1229,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for stored procedures
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                spParameters["@Filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["@Filters"] = DBNull.Value;
-            }
+            spParameters["@Filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1178,10 +1250,11 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Builds stored procedure parameters from PaginationRequest.
-    /// Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+    ///     Builds stored procedure parameters from PaginationRequest.
+    ///     Automatically uses JSON strategy for stored procedures unless explicitly overridden.
     /// </summary>
-    private Dictionary<string, object> BuildStoredProcedureParameters(PaginationRequest pagination, CommandOptionsDto options)
+    private Dictionary<string, object> BuildStoredProcedureParameters(PaginationRequest pagination,
+        CommandOptionsDto options)
     {
         var spParameters = new Dictionary<string, object>
         {
@@ -1208,14 +1281,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for stored procedures
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                spParameters["@Filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["@Filters"] = DBNull.Value;
-            }
+            spParameters["@Filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1234,7 +1302,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Builds pagination metadata for PagedResult.
+    ///     Builds pagination metadata for PagedResult.
     /// </summary>
     private Dictionary<string, object> BuildPaginationMetadata(PaginationRequest pagination, CommandOptionsDto options)
     {
@@ -1263,7 +1331,7 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Builds pagination metadata for FilterRequest (non-paginated).
+    ///     Builds pagination metadata for FilterRequest (non-paginated).
     /// </summary>
     private Dictionary<string, object> BuildFilterMetadata(FilterRequest filter, CommandOptionsDto options)
     {
@@ -1293,11 +1361,11 @@ public class AdoRepository : IAdoRepository
     #region Helper Methods
 
     /// <summary>
-    /// Builds filtered SQL with ORDER BY clause based on FilterRequest.
+    ///     Builds filtered SQL with ORDER BY clause based on FilterRequest.
     /// </summary>
     private string BuildFilteredSql(string sql, FilterRequest filter)
     {
-        var builder = new System.Text.StringBuilder(sql);
+        var builder = new StringBuilder(sql);
 
         // Add ORDER BY if not present and if SortBy is provided
         if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
@@ -1305,7 +1373,7 @@ public class AdoRepository : IAdoRepository
             if (!string.IsNullOrEmpty(filter.SortBy))
             {
                 var safeSortBy = ValidateAndSanitizeSortColumn(filter.SortBy);
-                var direction = filter.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+                var direction = filter.SortDirection == SortDirection.Desc ? "DESC" : "ASC";
                 builder.Append($" ORDER BY [{safeSortBy}] {direction}");
             }
         }
@@ -1316,18 +1384,18 @@ public class AdoRepository : IAdoRepository
     private static string GenerateCountSql(string sql)
     {
         // Simple count SQL generation - removes ORDER BY and wraps in COUNT
-        var cleanSql = System.Text.RegularExpressions.Regex.Replace(
+        var cleanSql = Regex.Replace(
             sql,
             @"\s+ORDER\s+BY\s+[^)]*$",
             string.Empty,
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            RegexOptions.IgnoreCase);
 
         return $"SELECT COUNT(*) FROM ({cleanSql}) AS CountQuery";
     }
 
     private string BuildPagedSql(string sql, PaginationRequest pagination)
     {
-        var builder = new System.Text.StringBuilder(sql);
+        var builder = new StringBuilder(sql);
 
         // Add ORDER BY if not present and if SortBy is provided
         if (!sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase))
@@ -1335,7 +1403,7 @@ public class AdoRepository : IAdoRepository
             if (!string.IsNullOrEmpty(pagination.SortBy))
             {
                 var safeSortBy = ValidateAndSanitizeSortColumn(pagination.SortBy);
-                var direction = pagination.SortDirection == Core.Enums.SortDirection.Desc ? "DESC" : "ASC";
+                var direction = pagination.SortDirection == SortDirection.Desc ? "DESC" : "ASC";
                 builder.Append($" ORDER BY [{safeSortBy}] {direction}");
             }
             else
@@ -1352,14 +1420,16 @@ public class AdoRepository : IAdoRepository
     }
 
     /// <summary>
-    /// Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
-    /// Uses a strict whitelist approach - only allows exact matches from a predefined set.
-    /// Falls back to regex validation with comprehensive keyword blacklist.
+    ///     Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
+    ///     Uses a strict whitelist approach - only allows exact matches from a predefined set.
+    ///     Falls back to regex validation with comprehensive keyword blacklist.
     /// </summary>
     private string ValidateAndSanitizeSortColumn(string columnName)
     {
         if (string.IsNullOrWhiteSpace(columnName))
+        {
             throw new ArgumentException("Column name cannot be empty", nameof(columnName));
+        }
 
         // Trim and normalize
         columnName = columnName.Trim();
@@ -1368,17 +1438,20 @@ public class AdoRepository : IAdoRepository
 
         // Layer 1: Strict pattern matching - only allow safe characters
         var pattern = @"^[a-zA-Z0-9_\.]+$";
-        if (!System.Text.RegularExpressions.Regex.IsMatch(columnName, pattern))
+        if (!Regex.IsMatch(columnName, pattern))
         {
             _logger.LogWarning("Potential SQL injection attempt detected in sort column: {ColumnName}", columnName);
-            throw new ArgumentException($"Invalid column name: {columnName}. Only alphanumeric characters, underscores, and dots are allowed.", nameof(columnName));
+            throw new ArgumentException(
+                $"Invalid column name: {columnName}. Only alphanumeric characters, underscores, and dots are allowed.",
+                nameof(columnName));
         }
 
         // Layer 2: Length validation - prevent buffer overflow attempts
         if (columnName.Length > 128)
         {
             _logger.LogWarning("Column name exceeds maximum length: {ColumnName}", columnName);
-            throw new ArgumentException($"Column name exceeds maximum length of 128 characters: {columnName}", nameof(columnName));
+            throw new ArgumentException($"Column name exceeds maximum length of 128 characters: {columnName}",
+                nameof(columnName));
         }
 
         // Layer 3: Enhanced keyword blacklist - prevent common SQL injection patterns
@@ -1399,11 +1472,13 @@ public class AdoRepository : IAdoRepository
 
         foreach (var keyword in dangerousKeywords)
         {
-            var keywordPattern = $"\\b{System.Text.RegularExpressions.Regex.Escape(keyword)}\\b";
-            if (System.Text.RegularExpressions.Regex.IsMatch(upperColumn, keywordPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            var keywordPattern = $"\\b{Regex.Escape(keyword)}\\b";
+            if (Regex.IsMatch(upperColumn, keywordPattern, RegexOptions.IgnoreCase))
             {
-                _logger.LogWarning("SQL keyword detected in sort column: {ColumnName} contains {Keyword}", columnName, keyword);
-                throw new ArgumentException($"Column name contains restricted SQL keyword '{keyword}': {columnName}", nameof(columnName));
+                _logger.LogWarning("SQL keyword detected in sort column: {ColumnName} contains {Keyword}", columnName,
+                    keyword);
+                throw new ArgumentException($"Column name contains restricted SQL keyword '{keyword}': {columnName}",
+                    nameof(columnName));
             }
         }
 
@@ -1415,15 +1490,16 @@ public class AdoRepository : IAdoRepository
             @"'\s*AND\s*'",
             @"=\s*'",
             @"\|\|",
-            @"@@",
+            @"@@"
         };
 
         foreach (var injectionPattern in injectionPatterns)
         {
-            if (System.Text.RegularExpressions.Regex.IsMatch(upperColumn, injectionPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(upperColumn, injectionPattern, RegexOptions.IgnoreCase))
             {
                 _logger.LogWarning("SQL injection pattern detected in sort column: {ColumnName}", columnName);
-                throw new ArgumentException($"Column name contains suspicious SQL pattern: {columnName}", nameof(columnName));
+                throw new ArgumentException($"Column name contains suspicious SQL pattern: {columnName}",
+                    nameof(columnName));
             }
         }
 
@@ -1434,9 +1510,14 @@ public class AdoRepository : IAdoRepository
     {
         ArgumentNullException.ThrowIfNull(pagination);
         if (pagination.PageIndex < 1)
+        {
             throw new ArgumentException("PageIndex must be greater than 0", nameof(pagination));
+        }
+
         if (pagination.PageSize < 1 || pagination.PageSize > 10000)
+        {
             throw new ArgumentException("PageSize must be between 1 and 10000", nameof(pagination));
+        }
     }
 
     private DataTable ConvertToDataTable<T>(IEnumerable<T> data, Dictionary<string, string>? columnMappings)
@@ -1468,6 +1549,7 @@ public class AdoRepository : IAdoRepository
                 var value = prop.GetValue(item);
                 row[columnName] = value ?? DBNull.Value;
             }
+
             dataTable.Rows.Add(row);
         }
 

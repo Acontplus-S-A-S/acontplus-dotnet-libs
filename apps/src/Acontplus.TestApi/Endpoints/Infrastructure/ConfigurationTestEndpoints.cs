@@ -1,6 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Infrastructure;
 
-using Acontplus.Core.Abstractions.Infrastructure.Caching;
 using Acontplus.Core.Abstractions.Services;
 using Acontplus.Services.Services.Abstractions;
 

@@ -1,12 +1,12 @@
 namespace Acontplus.Infrastructure.Resilience;
 
 /// <summary>
-/// Retry policy service providing retry patterns for operations.
+///     Retry policy service providing retry patterns for operations.
 /// </summary>
 public class RetryPolicyService
 {
-    private readonly ILogger<RetryPolicyService> _logger;
     private readonly ResilienceConfiguration _config;
+    private readonly ILogger<RetryPolicyService> _logger;
 
     public RetryPolicyService(
         ILogger<RetryPolicyService> _logger,
@@ -17,7 +17,7 @@ public class RetryPolicyService
     }
 
     /// <summary>
-    /// Executes an async action with retry policy.
+    ///     Executes an async action with retry policy.
     /// </summary>
     public async Task<TResult> ExecuteAsync<TResult>(
         Func<Task<TResult>> action,
@@ -30,8 +30,8 @@ public class RetryPolicyService
         var retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
-                retryCount: retries,
-                sleepDurationProvider: retryAttempt =>
+                retries,
+                retryAttempt =>
                 {
                     if (_config.RetryPolicy.ExponentialBackoff)
                     {
@@ -42,9 +42,10 @@ public class RetryPolicyService
                             ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
                             : calculatedDelay;
                     }
+
                     return delay;
                 },
-                onRetry: (exception, timeSpan, retryCount, context) =>
+                (exception, timeSpan, retryCount, context) =>
                 {
                     _logger.LogWarning(
                         exception,
@@ -57,7 +58,7 @@ public class RetryPolicyService
     }
 
     /// <summary>
-    /// Executes an async action with retry policy.
+    ///     Executes an async action with retry policy.
     /// </summary>
     public async Task ExecuteAsync(
         Func<Task> action,
@@ -70,8 +71,8 @@ public class RetryPolicyService
         var retryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
-                retryCount: retries,
-                sleepDurationProvider: retryAttempt =>
+                retries,
+                retryAttempt =>
                 {
                     if (_config.RetryPolicy.ExponentialBackoff)
                     {
@@ -82,9 +83,10 @@ public class RetryPolicyService
                             ? TimeSpan.FromSeconds(_config.RetryPolicy.MaxDelaySeconds)
                             : calculatedDelay;
                     }
+
                     return delay;
                 },
-                onRetry: (exception, timeSpan, retryCount, context) =>
+                (exception, timeSpan, retryCount, context) =>
                 {
                     _logger.LogWarning(
                         exception,
@@ -97,7 +99,7 @@ public class RetryPolicyService
     }
 
     /// <summary>
-    /// Executes a sync action with retry policy.
+    ///     Executes a sync action with retry policy.
     /// </summary>
     public TResult Execute<TResult>(
         Func<TResult> action,
@@ -108,8 +110,8 @@ public class RetryPolicyService
         var retryPolicy = Policy
             .Handle<Exception>()
             .Retry(
-                retryCount: retries,
-                onRetry: (exception, retryCount) =>
+                retries,
+                (exception, retryCount) =>
                 {
                     _logger.LogWarning(
                         exception,
@@ -121,7 +123,7 @@ public class RetryPolicyService
     }
 
     /// <summary>
-    /// Executes a sync action with retry policy.
+    ///     Executes a sync action with retry policy.
     /// </summary>
     public void Execute(
         Action action,
@@ -132,8 +134,8 @@ public class RetryPolicyService
         var retryPolicy = Policy
             .Handle<Exception>()
             .Retry(
-                retryCount: retries,
-                onRetry: (exception, retryCount) =>
+                retries,
+                (exception, retryCount) =>
                 {
                     _logger.LogWarning(
                         exception,

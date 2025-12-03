@@ -1,6 +1,5 @@
-﻿namespace Acontplus.Persistence.SqlServer.Configurations
+﻿namespace Acontplus.Persistence.SqlServer.Configurations;
+
+internal class DatabaseConfiguration
 {
-    internal class DatabaseConfiguration
-    {
-    }
 }

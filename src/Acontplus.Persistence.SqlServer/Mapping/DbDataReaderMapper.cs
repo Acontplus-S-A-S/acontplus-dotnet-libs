@@ -6,9 +6,10 @@ namespace Acontplus.Persistence.SqlServer.Mapping;
 public static class DbDataReaderMapper
 {
     /// <summary>
-    /// Maps a DbDataReader to a List of entities of type T with support for records and init-only properties
+    ///     Maps a DbDataReader to a List of entities of type T with support for records and init-only properties
     /// </summary>
-    public static async Task<List<T>> ToListAsync<T>(this DbDataReader reader, CancellationToken cancellationToken = default)
+    public static async Task<List<T>> ToListAsync<T>(this DbDataReader reader,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(reader);
 
@@ -18,8 +19,8 @@ public static class DbDataReaderMapper
 
         // Get all public instance properties including init-only
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                           .Where(p => IsWritable(p, isRecord))
-                           .ToArray();
+            .Where(p => IsWritable(p, isRecord))
+            .ToArray();
 
         var columnMap = BuildColumnMapping(reader, properties);
 
@@ -48,7 +49,9 @@ public static class DbDataReaderMapper
             {
                 var ordinal = reader.GetOrdinal(columnName);
                 if (await reader.IsDBNullAsync(ordinal, cancellationToken))
+                {
                     continue;
+                }
 
                 var value = reader.GetValue(ordinal);
                 var property = columnMap[columnName];
@@ -79,7 +82,10 @@ public static class DbDataReaderMapper
         for (var i = 0; i < reader.FieldCount; i++)
         {
             var columnName = reader.GetName(i);
-            if (string.IsNullOrEmpty(columnName)) continue;
+            if (string.IsNullOrEmpty(columnName))
+            {
+                continue;
+            }
 
             var property = properties.FirstOrDefault(p =>
                 string.Equals(p.Name, columnName, StringComparison.OrdinalIgnoreCase));
@@ -98,10 +104,14 @@ public static class DbDataReaderMapper
         var type = typeof(T);
 
         if (type.IsValueType)
+        {
             return default!;
+        }
 
         if (type.GetConstructor(Type.EmptyTypes) != null)
+        {
             return Activator.CreateInstance<T>();
+        }
 
         // For records and types without parameterless constructors, use RuntimeHelpers
         try
@@ -122,10 +132,10 @@ public static class DbDataReaderMapper
             return targetType.IsEnum
                 ? Enum.ToObject(targetType, value)
                 : targetType == typeof(Guid)
-                ? value is string s ? Guid.Parse(s) : (Guid)value
-                : targetType == typeof(DateTimeOffset)
-                ? value is DateTime dt ? new DateTimeOffset(dt) : (DateTimeOffset)value
-                : Convert.ChangeType(value, targetType);
+                    ? value is string s ? Guid.Parse(s) : (Guid)value
+                    : targetType == typeof(DateTimeOffset)
+                        ? value is DateTime dt ? new DateTimeOffset(dt) : (DateTimeOffset)value
+                        : Convert.ChangeType(value, targetType);
         }
         catch (Exception ex)
         {
@@ -146,7 +156,7 @@ public static class DbDataReaderMapper
         // For records, we consider init-only properties as writable during construction
         if (isRecord)
         {
-            var setMethod = prop.GetSetMethod(nonPublic: true);
+            var setMethod = prop.GetSetMethod(true);
             return setMethod != null && (setMethod.IsPublic || setMethod.IsAssembly);
         }
 
@@ -163,8 +173,8 @@ public static class DbDataReaderMapper
         var isRecord = IsRecordType(type);
 
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                           .Where(p => IsWritable(p, isRecord))
-                           .ToArray();
+            .Where(p => IsWritable(p, isRecord))
+            .ToArray();
 
         var columnMap = BuildColumnMapping(reader, properties);
 
@@ -176,7 +186,9 @@ public static class DbDataReaderMapper
             {
                 var ordinal = reader.GetOrdinal(columnName);
                 if (reader.IsDBNull(ordinal))
+                {
                     continue;
+                }
 
                 var value = reader.GetValue(ordinal);
                 var property = columnMap[columnName];
@@ -199,6 +211,7 @@ public static class DbDataReaderMapper
 
         return result;
     }
+
     private static Task<T> MapProperties<T>(SqlDataReader reader, T instance) where T : class
     {
         // Pre-cache column ordinals
@@ -210,7 +223,11 @@ public static class DbDataReaderMapper
 
         foreach (var property in typeof(T).GetProperties())
         {
-            if (!columnOrdinals.TryGetValue(property.Name, out var index) || reader.IsDBNull(index)) continue;
+            if (!columnOrdinals.TryGetValue(property.Name, out var index) || reader.IsDBNull(index))
+            {
+                continue;
+            }
+
             var value = reader.GetValue(index);
             try
             {
@@ -226,13 +243,10 @@ public static class DbDataReaderMapper
         return Task.FromResult(instance);
     }
 
-    private static object? GetDefaultValue(Type type)
-    {
-        return type.IsValueType ? Activator.CreateInstance(type) : null;
-    }
+    private static object? GetDefaultValue(Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
 
     /// <summary>
-    /// Maps a single row from a SqlDataReader to an object of type T using reflection.
+    ///     Maps a single row from a SqlDataReader to an object of type T using reflection.
     /// </summary>
     public static async Task<T?> MapToObject<T>(SqlDataReader reader) where T : class
     {
@@ -240,7 +254,10 @@ public static class DbDataReaderMapper
         {
             // Try to get the first constructor and its parameters
             var ctor = typeof(T).GetConstructors().FirstOrDefault();
-            if (ctor == null) return null;
+            if (ctor == null)
+            {
+                return null;
+            }
 
             var parameters = ctor.GetParameters();
             var args = new object?[parameters.Length];
@@ -248,7 +265,10 @@ public static class DbDataReaderMapper
             for (var i = 0; i < parameters.Length; i++)
             {
                 var paramName = parameters[i].Name;
-                if (paramName == null) continue;
+                if (paramName == null)
+                {
+                    continue;
+                }
 
                 try
                 {
@@ -264,7 +284,10 @@ public static class DbDataReaderMapper
             }
 
             var instance = (T?)ctor.Invoke(args);
-            if (instance == null) return null;
+            if (instance == null)
+            {
+                return null;
+            }
 
             // Map remaining properties that weren't set via constructor
             return await MapProperties(reader, instance);

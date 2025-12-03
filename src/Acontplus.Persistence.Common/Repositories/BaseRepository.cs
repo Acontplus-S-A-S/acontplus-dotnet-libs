@@ -6,7 +6,7 @@
 namespace Acontplus.Persistence.Common.Repositories;
 
 /// <summary>
-/// A generic repository implementation for Entity Framework Core, targeting .NET 9+.
+///     A generic repository implementation for Entity Framework Core, targeting .NET 9+.
 /// </summary>
 /// TEntity: The type of the entity.
 /// int: The type of the entity's primary key, must be not null.
@@ -15,8 +15,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
-    protected readonly ILogger<BaseRepository<TEntity>>? _logger;
     private readonly string? _idPropertyName;
+    protected readonly ILogger<BaseRepository<TEntity>>? _logger;
 
     public BaseRepository(DbContext context, ILogger<BaseRepository<TEntity>>? logger = null)
     {
@@ -31,8 +31,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         // Look for common Id property names
         var type = typeof(TEntity);
         var idProperty = type.GetProperty("Id") ??
-                        type.GetProperty("ID") ??
-                        type.GetProperty($"{type.Name}Id");
+                         type.GetProperty("ID") ??
+                         type.GetProperty($"{type.Name}Id");
         return idProperty?.Name;
     }
 
@@ -77,14 +77,21 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         {
             ArgumentNullException.ThrowIfNull(ids);
             var idList = ids.ToList();
-            if (!idList.Any()) return Array.Empty<TEntity>();
+            if (!idList.Any())
+            {
+                return Array.Empty<TEntity>();
+            }
 
             var query = BuildQuery(includeProperties: includeProperties);
             if (_idPropertyName == null)
-                throw new InvalidOperationException($"Entity {typeof(TEntity).Name} does not have a recognizable Id property");
+            {
+                throw new InvalidOperationException(
+                    $"Entity {typeof(TEntity).Name} does not have a recognizable Id property");
+            }
 
             // Use dynamic property access
-            return await query.Where(e => idList.Contains(EF.Property<int>(e, _idPropertyName))).ToListAsync(cancellationToken).ConfigureAwait(false);
+            return await query.Where(e => idList.Contains(EF.Property<int>(e, _idPropertyName)))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -208,10 +215,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         PaginationRequest pagination,
         CancellationToken cancellationToken = default,
         Expression<Func<TEntity, object>>? orderBy = null,
-        bool orderByDescending = false)
-    {
-        return GetPagedAsync(pagination, null!, cancellationToken, orderBy, orderByDescending);
-    }
+        bool orderByDescending = false) =>
+        GetPagedAsync(pagination, null!, cancellationToken, orderBy, orderByDescending);
 
     public virtual async Task<PagedResult<TEntity>> GetPagedAsync(
         PaginationRequest pagination,
@@ -225,7 +230,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         try
         {
             ValidatePagination(pagination);
-            var query = BuildQuery(tracking: false, includeProperties: includeProperties);
+            var query = BuildQuery(false, includeProperties);
 
             if (predicate != null)
             {
@@ -241,7 +246,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             else // Default sorting by ID if not specified
             {
                 if (_idPropertyName != null)
+                {
                     query = query.OrderBy(e => EF.Property<object>(e, _idPropertyName));
+                }
             }
 
             var items = await query
@@ -289,7 +296,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             else // Default sorting by ID if not specified
             {
                 if (_idPropertyName != null)
+                {
                     query = query.OrderBy(e => EF.Property<object>(e, _idPropertyName));
+                }
             }
 
             var items = await query
@@ -526,7 +535,10 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         {
             ArgumentNullException.ThrowIfNull(entities);
             var entityList = entities.ToList();
-            if (!entityList.Any()) return Task.FromResult(Enumerable.Empty<TEntity>());
+            if (!entityList.Any())
+            {
+                return Task.FromResult(Enumerable.Empty<TEntity>());
+            }
 
             _dbSet.UpdateRange(entityList);
             return Task.FromResult<IEnumerable<TEntity>>(entityList);
@@ -706,7 +718,10 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         {
             ArgumentNullException.ThrowIfNull(entities);
             var entityList = entities.ToList();
-            if (entityList.Count == 0) return 0;
+            if (entityList.Count == 0)
+            {
+                return 0;
+            }
 
             await _dbSet.AddRangeAsync(entityList, cancellationToken).ConfigureAwait(false);
             // Bulk insert is typically a "unit of work" in itself, so SaveChanges might be called here
@@ -747,7 +762,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in BulkUpdateAsync with expression for entity {EntityType}", typeof(TEntity).Name);
+            _logger?.LogError(ex, "Error in BulkUpdateAsync with expression for entity {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error performing bulk update with expression", ex);
         }
     }
@@ -804,7 +820,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
             ArgumentNullException.ThrowIfNull(specification);
             ValidatePagination(specification.Pagination);
 
-            var query = BuildSpecificationQuery(specification, ignorePaging: true);
+            var query = BuildSpecificationQuery(specification, true);
             var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
 
             var pagedQuery = ApplyPaging(query, specification);
@@ -851,7 +867,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         try
         {
             ArgumentNullException.ThrowIfNull(specification);
-            var query = BuildSpecificationQuery(specification, ignorePaging: true, ignoreOrdering: true);
+            var query = BuildSpecificationQuery(specification, true, true);
             return await query.CountAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -867,10 +883,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
 
     public virtual IQueryable<TEntity> GetQueryable(
         bool tracking = false,
-        params Expression<Func<TEntity, object>>[] includeProperties)
-    {
-        return BuildQuery(tracking, includeProperties);
-    }
+        params Expression<Func<TEntity, object>>[] includeProperties) =>
+        BuildQuery(tracking, includeProperties);
 
     public virtual Task<TResult> ExecuteQueryAsync<TResult>(
         Expression<Func<IQueryable<TEntity>, TResult>> queryExpression,
@@ -1037,7 +1051,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         try
         {
             ArgumentNullException.ThrowIfNull(projection);
-            var query = BuildQuery(tracking: false, includeProperties: includeProperties);
+            var query = BuildQuery(false, includeProperties);
 
             if (predicate != null)
             {
@@ -1059,11 +1073,12 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         CancellationToken cancellationToken = default,
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
-        using var activity = DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetFirstProjectionOrDefaultAsync)}");
+        using var activity =
+            DiagnosticConfig.ActivitySource.StartActivity($"{nameof(GetFirstProjectionOrDefaultAsync)}");
         try
         {
             ArgumentNullException.ThrowIfNull(projection);
-            var query = BuildQuery(tracking: false, includeProperties: includeProperties);
+            var query = BuildQuery(false, includeProperties);
 
             if (predicate != null)
             {
@@ -1074,7 +1089,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error in GetFirstProjectionOrDefaultAsync for entity {EntityType}", typeof(TEntity).Name);
+            _logger?.LogError(ex, "Error in GetFirstProjectionOrDefaultAsync for entity {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error retrieving first projected result", ex);
         }
     }
@@ -1134,9 +1150,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     {
         if (orderExpressions is null || orderExpressions.Length == 0)
         {
-            return _idPropertyName != null ?
-                query.OrderBy(e => EF.Property<object>(e, _idPropertyName)) :
-                query; // Default order
+            return _idPropertyName != null
+                ? query.OrderBy(e => EF.Property<object>(e, _idPropertyName))
+                : query; // Default order
         }
 
         IOrderedQueryable<TEntity>? orderedQuery = null;
@@ -1158,13 +1174,17 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
     {
         ArgumentNullException.ThrowIfNull(pagination);
         if (pagination.PageIndex < 1)
+        {
             throw new ArgumentException("Page index must be greater than 0.", nameof(pagination.PageIndex));
+        }
+
         if (pagination.PageSize < 1 || pagination.PageSize > 500) // Max page size guard
+        {
             throw new ArgumentException("Page size must be between 1 and 500.", nameof(pagination.PageSize));
+        }
     }
 
     #endregion
-
 
 
     #region Transaction Support
@@ -1178,7 +1198,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         {
             ArgumentNullException.ThrowIfNull(operation);
 
-            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 var result = await operation().ConfigureAwait(false);
@@ -1193,7 +1214,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error executing operation in transaction for entity {EntityType}", typeof(TEntity).Name);
+            _logger?.LogError(ex, "Error executing operation in transaction for entity {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error executing operation in transaction", ex);
         }
     }
@@ -1207,7 +1229,8 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         {
             ArgumentNullException.ThrowIfNull(operation);
 
-            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 await operation().ConfigureAwait(false);
@@ -1221,11 +1244,11 @@ public class BaseRepository<TEntity> : IRepository<TEntity>
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error executing operation in transaction for entity {EntityType}", typeof(TEntity).Name);
+            _logger?.LogError(ex, "Error executing operation in transaction for entity {EntityType}",
+                typeof(TEntity).Name);
             throw new RepositoryException("Error executing operation in transaction", ex);
         }
     }
 
     #endregion
 }
-

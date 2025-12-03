@@ -1,5 +1,3 @@
-using Acontplus.Core.Domain.Common.Results;
-
 namespace Acontplus.TestApplication.Interfaces;
 
 public interface ICustomerService

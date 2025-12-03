@@ -13,6 +13,7 @@ A comprehensive .NET service library providing business-grade patterns, security
 ### 🏗️ Service Architecture Patterns
 
 - **Service Layer**: Clean separation of concerns with dependency injection
+- **Lookup Service**: Cached lookup/reference data management with flexible SQL mapping
 - **Action Filters**: Reusable cross-cutting concerns (validation, logging, security)
 - **Authorization Policies**: Fine-grained access control for multi-tenant scenarios
 - **Middleware Pipeline**: Properly ordered middleware for security and context management
@@ -104,7 +105,7 @@ app.Run();
 public async Task<Customer> GetCustomerAsync(int id)
 {
     var customer = await _repository.GetByIdAsync(id);
-    
+
     if (customer is null)
     {
         throw new GenericDomainException(
@@ -112,7 +113,7 @@ public async Task<Customer> GetCustomerAsync(int id)
             "CUSTOMER_NOT_FOUND",
             "Customer not found");
     }
-    
+
     return customer;
 }
 ```
@@ -511,6 +512,7 @@ app.Run();
 - `IRequestContextService` - Request context management and correlation
 - `ISecurityHeaderService` - HTTP security headers and CSP management
 - `IDeviceDetectionService` - Device type detection and capabilities
+- `ILookupService` - Cached lookup/reference data management (NEW!)
 
 ✅ **Action Filters**
 - `ValidationActionFilter` - Model validation
@@ -545,6 +547,110 @@ app.Run();
 - `CircuitBreakerHealthCheck` - Circuit breaker health
 
 ## 🚀 Features Examples
+
+### Lookup Service (NEW!)
+
+Manage cached lookup/reference data from database queries with automatic caching.
+
+```csharp
+// 1. Register in Program.cs
+builder.Services.AddLookupService();
+
+// 2. Use in controller
+public class LookupsController : ControllerBase
+{
+    private readonly ILookupService _lookupService;
+
+    public LookupsController(ILookupService lookupService)
+    {
+        _lookupService = lookupService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetLookups(
+        [FromQuery] string? module = null,
+        [FromQuery] string? context = null)
+    {
+        var filterRequest = new FilterRequest
+        {
+            Filters = new Dictionary<string, object>
+            {
+                ["module"] = module ?? "default",
+                ["context"] = context ?? "general"
+            }
+        };
+
+        var result = await _lookupService.GetLookupsAsync(
+            "YourSchema.GetLookups", // Stored procedure name
+            filterRequest);
+
+        return result.Match(
+            success => Ok(ApiResponse.Success(success)),
+            error => BadRequest(ApiResponse.Failure(error)));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshLookups()
+    {
+        var result = await _lookupService.RefreshLookupsAsync(
+            "YourSchema.GetLookups",
+            new FilterRequest());
+
+        return result.Match(
+            success => Ok(ApiResponse.Success(success)),
+            error => BadRequest(ApiResponse.Failure(error)));
+    }
+}
+```
+
+**Features:**
+- ✅ Automatic caching (30-minute TTL)
+- ✅ Works with SQL Server and PostgreSQL
+- ✅ Flexible SQL query mapping (all nullable properties)
+- ✅ Supports hierarchical data (ParentId)
+- ✅ Grouped results by table name
+- ✅ Cache refresh on demand
+
+**SQL Stored Procedure Example:**
+```sql
+CREATE PROCEDURE [YourSchema].[GetLookups]
+    @Module NVARCHAR(100) = NULL,
+    @Context NVARCHAR(100) = NULL
+AS
+BEGIN
+    SELECT
+        'Countries' AS TableName,
+        Id, Code, [Name] AS [Value], DisplayOrder,
+        NULL AS ParentId, IsDefault, IsActive,
+        Description, NULL AS Metadata
+    FROM Countries
+    WHERE IsActive = 1
+    ORDER BY DisplayOrder;
+END
+```
+
+**Response Format:**
+```json
+{
+  "status": "Success",
+  "data": {
+    "countries": [
+      {
+        "id": 1,
+        "code": "US",
+        "value": "United States",
+        "displayOrder": 1,
+        "isDefault": true,
+        "isActive": true,
+        "description": "United States of America",
+        "metadata": null
+      }
+    ]
+  }
+}
+```
+
+📖 **[Complete Lookup Service Guide](../../docs/lookup-service-quick-reference.md)**
 
 ### Caching Service
 

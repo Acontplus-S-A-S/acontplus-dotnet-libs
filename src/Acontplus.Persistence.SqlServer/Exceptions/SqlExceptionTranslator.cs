@@ -4,7 +4,10 @@ public class SqlExceptionTranslator : ISqlExceptionTranslator
 {
     public bool IsTransient(Exception ex)
     {
-        if (ex == null) return false;
+        if (ex == null)
+        {
+            return false;
+        }
 
         // Check if it's directly a SqlException
         if (ex is SqlException sqlEx)
@@ -24,8 +27,7 @@ public class SqlExceptionTranslator : ISqlExceptionTranslator
             return new GenericDomainException(
                 ErrorType.Internal,
                 "NULL_EXCEPTION",
-                "Cannot translate null exception",
-                null);
+                "Cannot translate null exception");
         }
 
         try
@@ -64,11 +66,14 @@ public class SqlExceptionTranslator : ISqlExceptionTranslator
     }
 
     /// <summary>
-    /// Recursively searches for SqlException in the exception chain
+    ///     Recursively searches for SqlException in the exception chain
     /// </summary>
-    private static SqlException FindSqlException(Exception ex)
+    private static SqlException? FindSqlException(Exception? ex)
     {
-        if (ex == null) return null;
+        if (ex == null)
+        {
+            return null;
+        }
 
         if (ex is SqlException sqlEx)
         {

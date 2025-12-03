@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Acontplus.Persistence.PostgreSQL.Utilities;
 
 // Extension method for PostgreSQL snake_case naming convention

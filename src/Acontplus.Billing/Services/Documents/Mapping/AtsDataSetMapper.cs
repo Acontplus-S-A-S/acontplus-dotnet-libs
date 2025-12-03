@@ -29,7 +29,7 @@ public class AtsDataSetMapper
         };
     }
 
-    private static AtsHeader MapHeader(DataTable dt)
+    private static AtsHeader MapHeader(DataTable? dt)
     {
         if (dt == null || dt.Rows.Count == 0)
         {
@@ -51,7 +51,7 @@ public class AtsDataSetMapper
         };
     }
 
-    private IEnumerable<Purchase> MapPurchases(DataTable dt)
+    private IEnumerable<Purchase> MapPurchases(DataTable? dt)
     {
         return dt == null || dt.Rows.Count == 0
             ? []
@@ -83,7 +83,7 @@ public class AtsDataSetMapper
                                           ValRetServ100 = dr["valRetServ100"].ToString() ?? string.Empty,
                                           TotbasesImpReemb = dr["totbasesImpReemb"].ToString() ?? string.Empty,
                                           PagoLocExt = dr["pagoLocExt"].ToString() ?? string.Empty,
-                                          TipoRegi = GetColumnValueOrDefault(dr, "tipoRegi"), // Conditionally present
+                                          TipoRegi = GetColumnValueOrDefault(dr, "tipoRegi") ?? string.Empty, // Conditionally present
                                           DenopagoRegFis = dr["denopagoRegFis"].ToString() ?? string.Empty,
                                           PaisEfecPago = dr["paisEfecPago"].ToString() ?? string.Empty,
                                           AplicConvDobTrib = dr["aplicConvDobTrib"].ToString() ?? string.Empty,
@@ -103,7 +103,7 @@ public class AtsDataSetMapper
                                       }).ToList();
     }
 
-    private IEnumerable<WithholdingTax> MapWithholdingTaxes(DataTable dt)
+    private IEnumerable<WithholdingTax> MapWithholdingTaxes(DataTable? dt)
     {
         return dt == null || dt.Rows.Count == 0
             ? []
@@ -120,7 +120,7 @@ public class AtsDataSetMapper
                                             }).ToList();
     }
 
-    private IEnumerable<Sale> MapSales(DataTable dt)
+    private IEnumerable<Sale> MapSales(DataTable? dt)
     {
         return dt == null || dt.Rows.Count == 0
             ? []
@@ -148,7 +148,7 @@ public class AtsDataSetMapper
                                   }).ToList();
     }
 
-    private IEnumerable<EstablishmentSale> MapEstablishmentSales(DataTable dt)
+    private IEnumerable<EstablishmentSale> MapEstablishmentSales(DataTable? dt)
     {
         return dt == null || dt.Rows.Count == 0
             ? Enumerable.Empty<EstablishmentSale>()
@@ -161,7 +161,7 @@ public class AtsDataSetMapper
                }).ToList();
     }
 
-    private IEnumerable<CanceledDocument> MapCanceledDocuments(DataTable dt)
+    private IEnumerable<CanceledDocument> MapCanceledDocuments(DataTable? dt)
     {
         return dt == null || dt.Rows.Count == 0
             ? []
@@ -179,7 +179,7 @@ public class AtsDataSetMapper
 
     // Helper method to safely get a string value from a DataRow column
     // Handles cases where the column might not exist or the value is DBNull
-    private string GetColumnValueOrDefault(DataRow dr, string columnName)
+    private string? GetColumnValueOrDefault(DataRow dr, string columnName)
     {
         return dr.Table.Columns.Contains(columnName) && dr[columnName] != DBNull.Value ? dr[columnName].ToString() : null;
     }

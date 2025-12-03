@@ -6,329 +6,374 @@
     <members>
         <member name="T:Acontplus.Infrastructure.Caching.DistributedCacheService">
             <summary>
-            Distributed cache service implementation using Redis or other distributed cache.
+                Distributed cache service implementation using Redis or other distributed cache.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Caching.MemoryCacheService">
             <summary>
-            In-memory cache service implementation using IMemoryCache.
+                In-memory cache service implementation using IMemoryCache.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.CacheConfiguration">
             <summary>
-            Configuration for caching services.
+                Configuration for caching services.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CacheConfiguration.UseDistributedCache">
             <summary>
-            Use distributed cache (Redis) instead of in-memory cache.
+                Use distributed cache (Redis) instead of in-memory cache.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CacheConfiguration.RedisConnectionString">
             <summary>
-            Redis connection string.
+                Redis connection string.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CacheConfiguration.RedisInstanceName">
             <summary>
-            Redis instance name.
+                Redis instance name.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CacheConfiguration.MemoryCacheSizeLimit">
             <summary>
-            Memory cache size limit in bytes.
+                Memory cache size limit in bytes.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CacheConfiguration.ExpirationScanFrequencyMinutes">
             <summary>
-            Expiration scan frequency in minutes.
+                Expiration scan frequency in minutes.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.ResilienceConfiguration">
             <summary>
-            Configuration for resilience patterns including rate limiting and circuit breakers.
+                Configuration for resilience patterns including rate limiting and circuit breakers.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.ResilienceConfiguration.RateLimiting">
             <summary>
-            Rate limiting configuration.
+                Rate limiting configuration.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.ResilienceConfiguration.CircuitBreaker">
             <summary>
-            Circuit breaker configuration.
+                Circuit breaker configuration.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.ResilienceConfiguration.RetryPolicy">
             <summary>
-            Retry policy configuration.
+                Retry policy configuration.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.ResilienceConfiguration.Timeout">
             <summary>
-            Timeout configuration.
+                Timeout configuration.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.RateLimitingOptions">
             <summary>
-            Rate limiting configuration options.
+                Rate limiting configuration options.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.Enabled">
             <summary>
-            Enable rate limiting. Default: true.
+                Enable rate limiting. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.WindowSeconds">
             <summary>
-            Rate limit window in seconds. Default: 60.
+                Rate limit window in seconds. Default: 60.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.MaxRequestsPerWindow">
             <summary>
-            Maximum requests per window. Default: 100.
+                Maximum requests per window. Default: 100.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.SlidingWindow">
             <summary>
-            Enable sliding window. Default: true.
+                Enable sliding window. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.ByIpAddress">
             <summary>
-            Rate limit by IP address. Default: true.
+                Rate limit by IP address. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.ByUserId">
             <summary>
-            Rate limit by user ID. Default: false.
+                Rate limit by user ID. Default: false.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RateLimitingOptions.ByClientId">
             <summary>
-            Rate limit by client ID. Default: true.
+                Rate limit by client ID. Default: true.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions">
             <summary>
-            Circuit breaker configuration options.
+                Circuit breaker configuration options.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions.Enabled">
             <summary>
-            Enable circuit breaker. Default: true.
+                Enable circuit breaker. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions.ExceptionsAllowedBeforeBreaking">
             <summary>
-            Number of exceptions before opening circuit. Default: 5.
+                Number of exceptions before opening circuit. Default: 5.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions.DurationOfBreakSeconds">
             <summary>
-            Duration of break in seconds. Default: 30.
+                Duration of break in seconds. Default: 30.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions.SamplingDurationSeconds">
             <summary>
-            Sampling duration in seconds. Default: 60.
+                Sampling duration in seconds. Default: 60.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.CircuitBreakerOptions.MinimumThroughput">
             <summary>
-            Minimum throughput before circuit can open. Default: 10.
+                Minimum throughput before circuit can open. Default: 10.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.RetryPolicyOptions">
             <summary>
-            Retry policy configuration options.
+                Retry policy configuration options.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RetryPolicyOptions.Enabled">
             <summary>
-            Enable retry policy. Default: true.
+                Enable retry policy. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RetryPolicyOptions.MaxRetries">
             <summary>
-            Maximum number of retries. Default: 3.
+                Maximum number of retries. Default: 3.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RetryPolicyOptions.BaseDelaySeconds">
             <summary>
-            Base delay between retries in seconds. Default: 1.
+                Base delay between retries in seconds. Default: 1.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RetryPolicyOptions.ExponentialBackoff">
             <summary>
-            Enable exponential backoff. Default: true.
+                Enable exponential backoff. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.RetryPolicyOptions.MaxDelaySeconds">
             <summary>
-            Maximum delay between retries in seconds. Default: 30.
+                Maximum delay between retries in seconds. Default: 30.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Configuration.TimeoutOptions">
             <summary>
-            Timeout configuration options.
+                Timeout configuration options.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.TimeoutOptions.Enabled">
             <summary>
-            Enable timeout policies. Default: true.
+                Enable timeout policies. Default: true.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.TimeoutOptions.DefaultTimeoutSeconds">
             <summary>
-            Default timeout in seconds. Default: 30.
+                Default timeout in seconds. Default: 30.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.TimeoutOptions.DatabaseTimeoutSeconds">
             <summary>
-            Database operation timeout in seconds. Default: 60.
+                Database operation timeout in seconds. Default: 60.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.TimeoutOptions.HttpClientTimeoutSeconds">
             <summary>
-            HTTP client timeout in seconds. Default: 30.
+                HTTP client timeout in seconds. Default: 30.
             </summary>
         </member>
         <member name="P:Acontplus.Infrastructure.Configuration.TimeoutOptions.LongRunningTimeoutSeconds">
             <summary>
-            Long-running operation timeout in seconds. Default: 300.
+                Long-running operation timeout in seconds. Default: 300.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration">
+            <summary>
+                Configuration for response compression middleware.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.EnableForHttps">
+            <summary>
+                Enable response compression for HTTPS requests only.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.MinimumResponseSize">
+            <summary>
+                Minimum response size in bytes to compress. Responses smaller than this will not be compressed.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.MimeTypes">
+            <summary>
+                List of MIME types to compress. If empty, defaults to common compressible types.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.EnableBrotli">
+            <summary>
+                Enable Brotli compression provider.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.BrotliLevel">
+            <summary>
+                Brotli compression level. Options: Fastest, Optimal, NoCompression.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.EnableGzip">
+            <summary>
+                Enable Gzip compression provider.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Configuration.ResponseCompressionConfiguration.GzipLevel">
+            <summary>
+                Gzip compression level. Options: Fastest, Optimal, NoCompression.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Extensions.HealthCheckEndpointExtensions">
             <summary>
-            Extension methods for mapping health check endpoints with consistent formatting.
+                Extension methods for mapping health check endpoints with consistent formatting.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.HealthCheckEndpointExtensions.MapHealthCheckEndpoints(Microsoft.AspNetCore.Builder.WebApplication,System.String)">
             <summary>
-            Maps health check endpoints with standardized JSON response formatting including application name.
+                Maps health check endpoints with standardized JSON response formatting including application name.
             </summary>
             <param name="app">The web application builder.</param>
             <param name="basePath">The base path for health check endpoints (default: "/health").</param>
         </member>
         <member name="T:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions">
             <summary>
-            Service collection extensions for registering infrastructure services.
+                Service collection extensions for registering infrastructure services.
             </summary>
         </member>
-        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
+        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration,System.Boolean,System.Boolean)">
             <summary>
-            Adds all infrastructure services (caching, resilience, HTTP client factory, health checks).
+                Adds all infrastructure services (caching, resilience, HTTP client factory, health checks, response compression).
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddCachingServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Adds caching services (in-memory or distributed with Redis).
+                Adds caching services (in-memory or distributed with Redis).
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddResilienceServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Adds resilience services (circuit breaker, retry policies).
+                Adds resilience services (circuit breaker, retry policies).
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddResilientHttpClients(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Adds HTTP client factory with resilience patterns.
+                Adds HTTP client factory with resilience patterns.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddInfrastructureHealthChecks(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds health checks for infrastructure services (only if the services are registered).
+                Adds health checks for infrastructure services (only if the services are registered).
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.InfrastructureServiceExtensions.AddResponseCompression(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+                Adds response compression services with configurable options.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Extensions.RateLimitingExtensions">
             <summary>
-            Extension methods for configuring rate limiting.
+                Extension methods for configuring rate limiting.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Extensions.RateLimitingExtensions.AddAdvancedRateLimiting(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Configure rate limiting with advanced patterns.
+                Configure rate limiting with advanced patterns.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.HealthChecks.CacheHealthCheck">
             <summary>
-            Health check for cache service.
+                Health check for cache service.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.HealthChecks.CircuitBreakerHealthCheck">
             <summary>
-            Health check for circuit breaker service.
+                Health check for circuit breaker service.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.HealthChecks.SelfHealthCheck">
             <summary>
-            Self health check that always returns healthy with application name.
+                Self health check that always returns healthy with application name.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Http.ResilientHttpClientFactory">
             <summary>
-            Factory for creating HTTP clients with resilience patterns (circuit breaker, retry, timeout).
+                Factory for creating HTTP clients with resilience patterns (circuit breaker, retry, timeout).
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateClient(System.String)">
             <summary>
-            Creates an HTTP client with standard resilience policies.
+                Creates an HTTP client with standard resilience policies.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateClientWithTimeout(System.String,System.TimeSpan)">
             <summary>
-            Creates an HTTP client with custom timeout.
+                Creates an HTTP client with custom timeout.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateApiClient">
             <summary>
-            Creates an HTTP client for API calls with appropriate resilience settings.
+                Creates an HTTP client for API calls with appropriate resilience settings.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateExternalClient">
             <summary>
-            Creates an HTTP client for external service calls with strict resilience settings.
+                Creates an HTTP client for external service calls with strict resilience settings.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateLongRunningClient">
             <summary>
-            Creates an HTTP client for long-running operations.
+                Creates an HTTP client for long-running operations.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Resilience.PolicyConfig">
             <summary>
-            Configuration for policy creation.
+                Configuration for policy creation.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Resilience.CircuitBreakerService">
             <summary>
-            Circuit breaker service implementation using Polly policies.
+                Circuit breaker service implementation using Polly policies.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Resilience.RetryPolicyService">
             <summary>
-            Retry policy service providing retry patterns for operations.
+                Retry policy service providing retry patterns for operations.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Resilience.RetryPolicyService.ExecuteAsync``1(System.Func{System.Threading.Tasks.Task{``0}},System.Nullable{System.Int32},System.Nullable{System.TimeSpan})">
             <summary>
-            Executes an async action with retry policy.
+                Executes an async action with retry policy.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Resilience.RetryPolicyService.ExecuteAsync(System.Func{System.Threading.Tasks.Task},System.Nullable{System.Int32},System.Nullable{System.TimeSpan})">
             <summary>
-            Executes an async action with retry policy.
+                Executes an async action with retry policy.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Resilience.RetryPolicyService.Execute``1(System.Func{``0},System.Nullable{System.Int32})">
             <summary>
-            Executes a sync action with retry policy.
+                Executes a sync action with retry policy.
             </summary>
         </member>
         <member name="M:Acontplus.Infrastructure.Resilience.RetryPolicyService.Execute(System.Action,System.Nullable{System.Int32})">
             <summary>
-            Executes a sync action with retry policy.
+                Executes a sync action with retry policy.
             </summary>
         </member>
     </members>

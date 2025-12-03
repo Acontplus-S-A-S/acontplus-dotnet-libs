@@ -1,11 +1,3 @@
-using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Utilities.Adapters;
-using Acontplus.Utilities.Extensions;
-using Acontplus.Utilities.Mapping;
-using Microsoft.Extensions.Logging;
-using System.Data.Common;
-using System.Linq.Expressions;
-
 namespace Acontplus.TestApplication.Services
 {
     public class UsuarioService : IUsuarioService

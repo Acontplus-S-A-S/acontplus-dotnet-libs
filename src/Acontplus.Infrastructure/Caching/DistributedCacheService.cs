@@ -1,7 +1,7 @@
 namespace Acontplus.Infrastructure.Caching;
 
 /// <summary>
-/// Distributed cache service implementation using Redis or other distributed cache.
+///     Distributed cache service implementation using Redis or other distributed cache.
 /// </summary>
 public class DistributedCacheService : ICacheService
 {
@@ -50,7 +50,9 @@ public class DistributedCacheService : ICacheService
             var options = new DistributedCacheEntryOptions();
 
             if (expiration.HasValue)
+            {
                 options.SetAbsoluteExpiration(expiration.Value);
+            }
 
             _cache.SetString(key, jsonValue, options);
         }
@@ -60,7 +62,8 @@ public class DistributedCacheService : ICacheService
         }
     }
 
-    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -68,7 +71,9 @@ public class DistributedCacheService : ICacheService
             var options = new DistributedCacheEntryOptions();
 
             if (expiration.HasValue)
+            {
                 options.SetAbsoluteExpiration(expiration.Value);
+            }
 
             await _cache.SetStringAsync(key, jsonValue, options, cancellationToken);
         }
@@ -128,18 +133,23 @@ public class DistributedCacheService : ICacheService
     {
         var value = Get<T>(key);
         if (value != null)
+        {
             return value;
+        }
 
         value = factory();
         Set(key, value, expiration);
         return value;
     }
 
-    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
+    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? expiration = null,
+        CancellationToken cancellationToken = default)
     {
         var value = await GetAsync<T>(key, cancellationToken);
         if (value != null)
+        {
             return value;
+        }
 
         value = await factory();
         await SetAsync(key, value, expiration, cancellationToken);

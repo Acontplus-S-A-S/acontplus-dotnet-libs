@@ -78,6 +78,10 @@ Accept: application/json
 ### 7c. Stored procedure pagination - With search term only
 GET {{apiBase}}/paged-sp?pageIndex=1&pageSize=10&searchTerm=test
 Accept: application/json
+###
+
+GET {{apiBase}}/paged-filtered?role=Admin&isActive=true&createdAfter=2024-01-01
+Accept: application/json
 
 ###
 

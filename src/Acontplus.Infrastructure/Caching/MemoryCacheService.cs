@@ -1,18 +1,16 @@
-using System.Collections.Concurrent;
-
 namespace Acontplus.Infrastructure.Caching;
 
 /// <summary>
-/// In-memory cache service implementation using IMemoryCache.
+///     In-memory cache service implementation using IMemoryCache.
 /// </summary>
 public sealed class MemoryCacheService : ICacheService
 {
-    private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<MemoryCacheService> _logger;
     private readonly CacheConfiguration _config;
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
-    private long _hits = 0;
-    private long _misses = 0;
+    private readonly ILogger<MemoryCacheService> _logger;
+    private readonly IMemoryCache _memoryCache;
+    private long _hits;
+    private long _misses;
 
     public MemoryCacheService(
         IMemoryCache memoryCache,
@@ -50,7 +48,8 @@ public sealed class MemoryCacheService : ICacheService
         {
             var cacheOptions = new MemoryCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(_config.ExpirationScanFrequencyMinutes),
+                AbsoluteExpirationRelativeToNow =
+                    expiration ?? TimeSpan.FromMinutes(_config.ExpirationScanFrequencyMinutes),
                 Size = 1
             };
 
@@ -127,10 +126,7 @@ public sealed class MemoryCacheService : ICacheService
     }
 
     // Async versions
-    public Task<T?> GetAsync<T>(string key, CancellationToken ct = default)
-    {
-        return Task.FromResult(Get<T>(key));
-    }
+    public Task<T?> GetAsync<T>(string key, CancellationToken ct = default) => Task.FromResult(Get<T>(key));
 
     public Task SetAsync<T>(string key, T value, TimeSpan? expiration = null, CancellationToken ct = default)
     {
@@ -144,7 +140,8 @@ public sealed class MemoryCacheService : ICacheService
         return Task.CompletedTask;
     }
 
-    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? expiration = null, CancellationToken ct = default)
+    public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? expiration = null,
+        CancellationToken ct = default)
     {
         if (_memoryCache.TryGetValue(key, out T? cached))
         {
@@ -190,21 +187,16 @@ public sealed class MemoryCacheService : ICacheService
         return Task.CompletedTask;
     }
 
-    public bool Exists(string key)
-    {
-        return _memoryCache.TryGetValue(key, out _);
-    }
+    public bool Exists(string key) => _memoryCache.TryGetValue(key, out _);
 
-    public Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult(Exists(key));
-    }
+    public Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Exists(key));
 
     public CacheStatistics GetStatistics()
     {
         var totalRequests = _hits + _misses;
-        var hitRate = totalRequests > 0 ? (_hits * 100.0) / totalRequests : 0;
-        var missRate = totalRequests > 0 ? (_misses * 100.0) / totalRequests : 0;
+        var hitRate = totalRequests > 0 ? _hits * 100.0 / totalRequests : 0;
+        var missRate = totalRequests > 0 ? _misses * 100.0 / totalRequests : 0;
 
         return new CacheStatistics
         {

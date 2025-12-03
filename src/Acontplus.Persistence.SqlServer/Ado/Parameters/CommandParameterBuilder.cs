@@ -20,8 +20,6 @@ public static class CommandParameterBuilder
         cmd.Parameters.Add(param);
     }
 
-    public static object GetParameter(SqlCommand command, string parameterName)
-    {
-        return command.Parameters[parameterName].Value;
-    }
+    public static object GetParameter(SqlCommand command, string parameterName) =>
+        command.Parameters[parameterName].Value;
 }

@@ -1,7 +1,9 @@
+using System.Reflection;
+
 namespace Acontplus.Infrastructure.HealthChecks;
 
 /// <summary>
-/// Health check for cache service.
+///     Health check for cache service.
 /// </summary>
 public class CacheHealthCheck : IHealthCheck
 {
@@ -12,7 +14,8 @@ public class CacheHealthCheck : IHealthCheck
         _cacheService = cacheService;
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -35,7 +38,7 @@ public class CacheHealthCheck : IHealthCheck
 
             if (retrieved == testValue && removedValue == null)
             {
-                var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+                var appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
                 var data = new Dictionary<string, object>
                 {
                     ["testKey"] = testKey,
@@ -47,12 +50,13 @@ public class CacheHealthCheck : IHealthCheck
                 return HealthCheckResult.Healthy($"{appName} - Cache service is fully operational", data);
             }
 
-            var appNameDegraded = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
-            return HealthCheckResult.Degraded($"{appNameDegraded} - Cache service test partially failed - some operations may not be working correctly");
+            var appNameDegraded = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            return HealthCheckResult.Degraded(
+                $"{appNameDegraded} - Cache service test partially failed - some operations may not be working correctly");
         }
         catch (Exception ex)
         {
-            var appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
+            var appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "Unknown";
             return HealthCheckResult.Unhealthy($"{appName} - Cache service failed", ex);
         }
     }

@@ -1,3 +1,5 @@
+namespace Acontplus.Persistence.Common.Exceptions;
+
 public static class SqlExceptionExtensions
 {
     private static readonly
@@ -26,7 +28,7 @@ public static class SqlExceptionExtensions
                 [ErrorType.ServiceUnavailable] = DomainError.ServiceUnavailable,
                 [ErrorType.Timeout] = DomainError.Timeout,
                 [ErrorType.RequestTimeout] = (code, msg, target, details) =>
-                    new DomainError(ErrorType.RequestTimeout, code, msg, target, details),
+                    new DomainError(ErrorType.RequestTimeout, code, msg, target, details)
             }.ToImmutableDictionary();
 
     public static DomainError ToDomainError(
@@ -43,16 +45,21 @@ public static class SqlExceptionExtensions
         return sqlDomainException.ErrorType switch
         {
             // Additional client error mappings
-            ErrorType.UriTooLong => new DomainError(ErrorType.UriTooLong, sqlDomainException.ErrorCode, sqlDomainException.Message, target, details),
-            ErrorType.UnsupportedMediaType => new DomainError(ErrorType.UnsupportedMediaType, sqlDomainException.ErrorCode, sqlDomainException.Message,
+            ErrorType.UriTooLong => new DomainError(ErrorType.UriTooLong, sqlDomainException.ErrorCode,
+                sqlDomainException.Message, target, details),
+            ErrorType.UnsupportedMediaType => new DomainError(ErrorType.UnsupportedMediaType,
+                sqlDomainException.ErrorCode, sqlDomainException.Message,
                 target, details),
-            ErrorType.PreconditionFailed => new DomainError(ErrorType.PreconditionFailed, sqlDomainException.ErrorCode, sqlDomainException.Message,
+            ErrorType.PreconditionFailed => new DomainError(ErrorType.PreconditionFailed, sqlDomainException.ErrorCode,
+                sqlDomainException.Message,
                 target, details),
 
             // Additional server error mappings
-            ErrorType.NotImplemented => new DomainError(ErrorType.NotImplemented, sqlDomainException.ErrorCode, sqlDomainException.Message, target,
+            ErrorType.NotImplemented => new DomainError(ErrorType.NotImplemented, sqlDomainException.ErrorCode,
+                sqlDomainException.Message, target,
                 details),
-            ErrorType.HttpVersionNotSupported => new DomainError(ErrorType.HttpVersionNotSupported, sqlDomainException.ErrorCode,
+            ErrorType.HttpVersionNotSupported => new DomainError(ErrorType.HttpVersionNotSupported,
+                sqlDomainException.ErrorCode,
                 sqlDomainException.Message, target, details),
 
             _ => DomainError.Internal(
@@ -68,7 +75,7 @@ public static class SqlExceptionExtensions
     }
 
     /// <summary>
-    /// Converts multiple SqlDomainExceptions to a DomainErrors collection
+    ///     Converts multiple SqlDomainExceptions to a DomainErrors collection
     /// </summary>
     /// <param name="exceptions">Collection of SQL domain exceptions</param>
     /// <param name="target">Optional target of the errors</param>

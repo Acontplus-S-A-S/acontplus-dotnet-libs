@@ -8,7 +8,7 @@ namespace Acontplus.Billing.Services.Documents
         private const string TagFechaEmision = "fechaEmision";
         private const string TagVersionComp = "version";
 
-        public async Task<XmlSriFileModel> GetAsync(IFormFile file)
+        public async Task<XmlSriFileModel?> GetAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty", nameof(file));
@@ -66,7 +66,7 @@ namespace Acontplus.Billing.Services.Documents
 
             // Generar nuevo documento final
             var xmlFinal = new XmlDocument();
-            xmlFinal.LoadXml(nodeAuth.OuterXml);
+            xmlFinal.LoadXml(nodeAuth!.OuterXml);
 
             return new XmlSriFileModel
             {

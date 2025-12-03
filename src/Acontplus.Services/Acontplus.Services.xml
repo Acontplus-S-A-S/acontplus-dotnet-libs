@@ -285,6 +285,12 @@
             Add security header service.
             </summary>
         </member>
+        <member name="M:Acontplus.Services.Extensions.ServiceExtensions.AddLookupService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add lookup service with caching support.
+            Requires IUnitOfWork and ICacheService to be registered.
+            </summary>
+        </member>
         <member name="T:Acontplus.Services.Filters.RequestLoggingActionFilter">
             <summary>
             Action filter for logging request details and performance metrics.
@@ -404,6 +410,30 @@
             Represents device capabilities and characteristics.
             </summary>
         </member>
+        <member name="T:Acontplus.Services.Services.Abstractions.ILookupService">
+            <summary>
+            Service for managing and caching lookup data from database queries.
+            Supports flexible filtering and automatic cache management.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Services.Services.Abstractions.ILookupService.GetLookupsAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,System.Threading.CancellationToken)">
+            <summary>
+            Gets lookup data with caching support.
+            </summary>
+            <param name="storedProcedureName">Name of the stored procedure to execute.</param>
+            <param name="filterRequest">Filter parameters for the query.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Dictionary of lookup items grouped by table name.</returns>
+        </member>
+        <member name="M:Acontplus.Services.Services.Abstractions.ILookupService.RefreshLookupsAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,System.Threading.CancellationToken)">
+            <summary>
+            Refreshes lookup data by clearing cache and fetching fresh data.
+            </summary>
+            <param name="storedProcedureName">Name of the stored procedure to execute.</param>
+            <param name="filterRequest">Filter parameters for the query.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Dictionary of lookup items grouped by table name.</returns>
+        </member>
         <member name="T:Acontplus.Services.Services.Abstractions.ISecurityHeaderService">
             <summary>
             Service for managing security headers and policies.
@@ -439,6 +469,12 @@
         <member name="T:Acontplus.Services.Services.Implementations.DeviceDetectionService">
             <summary>
             Implementation of device detection service for identifying device types and capabilities.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Services.Services.Implementations.LookupService">
+            <summary>
+            Service for managing and caching lookup data from database queries.
+            Works with both ADO.NET and Entity Framework Core through IUnitOfWork abstraction.
             </summary>
         </member>
         <member name="T:Acontplus.Services.Services.Implementations.RequestContextService">

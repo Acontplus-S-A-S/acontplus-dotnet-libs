@@ -970,6 +970,20 @@
             Number of items to take in the query (same as PageSize).
             </summary>
         </member>
+        <member name="T:Acontplus.Core.Dtos.Responses.LookupItem">
+            <summary>
+            Represents a lookup item for dropdown lists, select boxes, and other UI components.
+            Supports hierarchical structures via ParentId and custom ordering via DisplayOrder.
+            All properties are nullable to support flexible SQL query mapping.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Dtos.Responses.LookupItem.#ctor(System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.String)">
+            <summary>
+            Represents a lookup item for dropdown lists, select boxes, and other UI components.
+            Supports hierarchical structures via ParentId and custom ordering via DisplayOrder.
+            All properties are nullable to support flexible SQL query mapping.
+            </summary>
+        </member>
         <member name="T:Acontplus.Core.Enums.AddressType">
             <summary>
             Address type enum for different types of addresses in business applications
@@ -2258,6 +2272,15 @@
             <param name="obj">The object to serialize.</param>
             <param name="pretty">Whether to format the JSON with indentation.</param>
             <returns>The JSON string representation of the object.</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.JsonExtensions.SerializeWithCamelCaseKeys(System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object},System.Boolean)">
+            <summary>
+            Serializes a dictionary to JSON string, converting all keys to camelCase.
+            Useful for ensuring consistent JSON property naming when working with dynamic dictionaries.
+            </summary>
+            <param name="dictionary">The dictionary to serialize.</param>
+            <param name="pretty">Whether to format the JSON with indentation.</param>
+            <returns>The JSON string representation with camelCase keys.</returns>
         </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.CloneDeep``1(``0)">
             <summary>

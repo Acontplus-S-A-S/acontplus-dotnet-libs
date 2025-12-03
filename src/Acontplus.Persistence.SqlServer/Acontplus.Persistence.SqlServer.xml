@@ -6,95 +6,95 @@
     <members>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.GetPrimaryKeyType(System.Type)">
             <summary>
-            Gets the primary key type for an entity that inherits from BaseEntity
+                Gets the primary key type for an entity that inherits from BaseEntity
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
-            Registers auditable entities with the ModelBuilder, applying base configurations,
-            custom schema/table names, and optional specific entity configurations.
+                Registers auditable entities with the ModelBuilder, applying base configurations,
+                custom schema/table names, and optional specific entity configurations.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.IsAssignableToGenericType(System.Type,System.Type)">
             <summary>
-            Helper method to check if a type is assignable to a generic type definition
+                Helper method to check if a type is assignable to a generic type definition
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
             <summary>
-            Registers entities with default conventions and base configuration.
+                Registers entities with default conventions and base configuration.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithSchemas(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String}[])">
             <summary>
-            Registers entities, explicitly setting schemas for specified types.
+                Registers entities, explicitly setting schemas for specified types.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String,System.String}[])">
             <summary>
-            Registers entities, explicitly setting schema and/or table names for specified types.
+                Registers entities, explicitly setting schema and/or table names for specified types.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.BaseEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
-            Registers entities with specific custom configurations.
+                Registers entities with specific custom configurations.
             </summary>
         </member>
         <member name="T:Acontplus.Persistence.SqlServer.Configurations.EntityTypeConfiguration`1">
             <summary>
-            Base configuration for non-auditable entities.
+                Base configuration for non-auditable entities.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetPrimaryKeyType(System.Type)">
             <summary>
-            Gets the primary key type for an entity that inherits from Entity&lt;TKey&gt;
+                Gets the primary key type for an entity that inherits from Entity&lt;TKey&gt;
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.ValueTuple{System.String,System.String}},System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
-            Registers non-auditable entities with the ModelBuilder, applying base configurations,
-            custom schema/table names, and optional specific entity configurations.
+                Registers non-auditable entities with the ModelBuilder, applying base configurations,
+                custom schema/table names, and optional specific entity configurations.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.HasIdProperty(System.Type)">
             <summary>
-            Helper method to check if a type has an Id property (for simple entities)
+                Helper method to check if a type has an Id property (for simple entities)
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.GetIdPropertyType(System.Type)">
             <summary>
-            Helper method to get the type of the Id property
+                Helper method to get the type of the Id property
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntities(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Type[])">
             <summary>
-            Registers entities with default conventions and base configuration.
+                Registers entities with default conventions and base configuration.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntitiesWithSchemas(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String}[])">
             <summary>
-            Registers entities, explicitly setting schemas for specified types.
+                Registers entities, explicitly setting schemas for specified types.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntitiesWithNames(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.ValueTuple{System.Type,System.String,System.String}[])">
             <summary>
-            Registers entities, explicitly setting schema and/or table names for specified types.
+                Registers entities, explicitly setting schema and/or table names for specified types.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityRegistration.RegisterEntitiesWithCustomConfigurations(Microsoft.EntityFrameworkCore.ModelBuilder,System.Type,System.Collections.Generic.Dictionary{System.Type,System.Type},System.Type[])">
             <summary>
-            Registers entities with specific custom configurations.
+                Registers entities with specific custom configurations.
             </summary>
         </member>
         <member name="T:Acontplus.Persistence.SqlServer.Configurations.SimpleEntityTypeConfiguration`1">
             <summary>
-            Base configuration for simple entities that don't inherit from BaseEntity.
+                Base configuration for simple entities that don't inherit from BaseEntity.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.DependencyInjection.SqlServerServiceCollectionExtensions.AddSqlServerPersistence``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.EntityFrameworkCore.DbContextOptionsBuilder},System.Object)">
             <summary>
-            Registers a SQL Server DbContext and its corresponding UnitOfWork implementation,
-            optionally with a service key using .NET 8+ keyed DI.
+                Registers a SQL Server DbContext and its corresponding UnitOfWork implementation,
+                optionally with a service key using .NET 8+ keyed DI.
             </summary>
             <typeparam name="TContext">The DbContext type to register.</typeparam>
             <param name="services">The IServiceCollection.</param>
@@ -104,261 +104,263 @@
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.SqlExceptionTranslator.FindSqlException(System.Exception)">
             <summary>
-            Recursively searches for SqlException in the exception chain
+                Recursively searches for SqlException in the exception chain
             </summary>
         </member>
         <member name="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException">
             <summary>
-            Exception thrown when an error occurs within the UnitOfWork operations.
+                Exception thrown when an error occurs within the UnitOfWork operations.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException"/> class.
+                Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException" /> class.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException"/> class with a specified error message.
+                Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException" /> class with a specified error message.
             </summary>
             <param name="message">The message that describes the error.</param>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException.#ctor(System.String,System.Exception)">
             <summary>
-            Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException"/> class with a specified error message
-            and a reference to the inner exception that is the cause of this exception.
+                Initializes a new instance of the <see cref="T:Acontplus.Persistence.SqlServer.Exceptions.UnitOfWorkException" /> class with a specified error message
+                and a reference to the inner exception that is the cause of this exception.
             </summary>
             <param name="message">The error message that explains the reason for the exception.</param>
-            <param name="innerException">The exception that is the cause of the current exception, or a null reference
-            (Nothing in Visual Basic) if no inner exception is specified.</param>
+            <param name="innerException">
+                The exception that is the cause of the current exception, or a null reference
+                (Nothing in Visual Basic) if no inner exception is specified.
+            </param>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Mapping.DbDataReaderMapper.ToListAsync``1(System.Data.Common.DbDataReader,System.Threading.CancellationToken)">
             <summary>
-            Maps a DbDataReader to a List of entities of type T with support for records and init-only properties
+                Maps a DbDataReader to a List of entities of type T with support for records and init-only properties
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Mapping.DbDataReaderMapper.MapToObject``1(Microsoft.Data.SqlClient.SqlDataReader)">
             <summary>
-            Maps a single row from a SqlDataReader to an object of type T using reflection.
+                Maps a single row from a SqlDataReader to an object of type T using reflection.
             </summary>
         </member>
         <member name="T:Acontplus.Persistence.SqlServer.Repositories.AdoRepository">
             <summary>
-            Provides ADO.NET data access operations with retry policy and optional transaction sharing.
-            Enhanced with SQL Server error handling, domain error mapping, and flexible filter parameter strategies.
+                Provides ADO.NET data access operations with retry policy and optional transaction sharing.
+                Enhanced with SQL Server error handling, domain error mapping, and flexible filter parameter strategies.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Acontplus.Persistence.SqlServer.Repositories.AdoRepository})">
             <summary>
-            Constructor for AdoRepository.
+                Constructor for AdoRepository.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.SetTransaction(System.Data.Common.DbTransaction)">
             <summary>
-            Sets the current database transaction from the Unit of Work.
+                Sets the current database transaction from the Unit of Work.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.SetConnection(System.Data.Common.DbConnection)">
             <summary>
-            Sets the current database connection from the Unit of Work.
+                Sets the current database connection from the Unit of Work.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ClearTransaction">
             <summary>
-            Clears the current transaction and connection.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetConnectionString(System.String)">
-            <summary>
-            Retrieves a connection string from configuration, caching it for subsequent calls.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetOpenConnectionAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Creates and opens a new SqlConnection.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CreateCommand(System.Data.Common.DbConnection,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
-            <summary>
-            Creates and configures a SqlCommand.
+                Clears the current transaction and connection.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Executes a SQL query and maps results to a list of objects.
+                Executes a SQL query and maps results to a list of objects.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetDataSetAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Executes a SQL query and returns a DataSet.
+                Executes a SQL query and returns a DataSet.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteNonQueryAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Executes a non-query SQL command.
+                Executes a non-query SQL command.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QuerySingleOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Executes a SQL query designed to return a single row.
+                Executes a SQL query designed to return a single row.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryFirstOrDefaultAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Executes a SQL query and returns the first row or null.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a query and returns a single scalar value.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Checks if any rows exist for the given query.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Gets the count of rows for the given query.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Gets the long count of rows for the given query.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a paginated SQL query with automatic count query.
-            Uses SQL Server OFFSET-FETCH with optimized query plans.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a paginated SQL query with custom count query.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a paginated stored procedure.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a filtered SQL query with sorting and search capabilities (non-paginated).
-            Automatically builds parameters from FilterRequest and applies ORDER BY clause.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a filtered stored procedure (non-paginated).
-            Passes filter criteria to the stored procedure without pagination parameters.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes a filtered query and returns a DataSet (non-paginated).
-            Useful for reports that need multiple result sets with filtering and sorting.
-            Supports flexible filter parameter strategy via CommandOptionsDto.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes multiple queries in a single batch.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
-            <summary>
-            Executes multiple non-query commands in a batch.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Bulk insert using SqlBulkCopy for optimal performance.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync(System.Data.DataTable,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Bulk insert from DataTable using SqlBulkCopy.
+                Executes a SQL query and returns the first row or null.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryAsyncEnumerable``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
             <summary>
-            Streams query results as an async enumerable for memory-efficient processing.
+                Streams query results as an async enumerable for memory-efficient processing.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetConnectionString(System.String)">
+            <summary>
+                Retrieves a connection string from configuration, caching it for subsequent calls.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetOpenConnectionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+                Creates and opens a new SqlConnection.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CreateCommand(System.Data.Common.DbConnection,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
+            <summary>
+                Creates and configures a SqlCommand.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteScalarAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a query and returns a single scalar value.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExistsAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Checks if any rows exist for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.CountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Gets the count of rows for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.LongCountAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Gets the long count of rows for the given query.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a paginated SQL query with automatic count query.
+                Uses SQL Server OFFSET-FETCH with optimized query plans.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedAsync``1(System.String,System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a paginated SQL query with custom count query.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetPagedFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a paginated stored procedure.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a filtered SQL query with sorting and search capabilities (non-paginated).
+                Automatically builds parameters from FilterRequest and applies ORDER BY clause.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredFromStoredProcedureAsync``1(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a filtered stored procedure (non-paginated).
+                Passes filter criteria to the stored procedure without pagination parameters.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.GetFilteredDataSetAsync(System.String,Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes a filtered query and returns a DataSet (non-paginated).
+                Useful for reports that need multiple result sets with filtering and sorting.
+                Supports flexible filter parameter strategy via CommandOptionsDto.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.QueryMultipleAsync``1(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes multiple queries in a single batch.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ExecuteBatchNonQueryAsync(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.Dictionary{System.String,System.Object}}},Acontplus.Core.Dtos.Requests.CommandOptionsDto,System.Threading.CancellationToken)">
+            <summary>
+                Executes multiple non-query commands in a batch.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+                Bulk insert using SqlBulkCopy for optimal performance.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BulkInsertAsync(System.Data.DataTable,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+                Bulk insert from DataTable using SqlBulkCopy.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds query parameters from FilterRequest using flexible strategy.
-            Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
-            - UseJsonFilters = false (default): Individual parameters for raw SQL queries
-            - UseJsonFilters = true: JSON serialized parameters for stored procedures
+                Builds query parameters from FilterRequest using flexible strategy.
+                Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+                - UseJsonFilters = false (default): Individual parameters for raw SQL queries
+                - UseJsonFilters = true: JSON serialized parameters for stored procedures
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterParameters(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds query parameters from PaginationRequest using flexible strategy.
-            Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
+                Builds query parameters from PaginationRequest using flexible strategy.
+                Strategy is determined by CommandOptionsDto.UseJsonFilters flag.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildStoredProcedureParameters(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds stored procedure parameters from FilterRequest.
-            Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+                Builds stored procedure parameters from FilterRequest.
+                Automatically uses JSON strategy for stored procedures unless explicitly overridden.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildStoredProcedureParameters(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds stored procedure parameters from PaginationRequest.
-            Automatically uses JSON strategy for stored procedures unless explicitly overridden.
+                Builds stored procedure parameters from PaginationRequest.
+                Automatically uses JSON strategy for stored procedures unless explicitly overridden.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildPaginationMetadata(Acontplus.Core.Dtos.Requests.PaginationRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds pagination metadata for PagedResult.
+                Builds pagination metadata for PagedResult.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilterMetadata(Acontplus.Core.Dtos.Requests.FilterRequest,Acontplus.Core.Dtos.Requests.CommandOptionsDto)">
             <summary>
-            Builds pagination metadata for FilterRequest (non-paginated).
+                Builds pagination metadata for FilterRequest (non-paginated).
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.BuildFilteredSql(System.String,Acontplus.Core.Dtos.Requests.FilterRequest)">
             <summary>
-            Builds filtered SQL with ORDER BY clause based on FilterRequest.
+                Builds filtered SQL with ORDER BY clause based on FilterRequest.
             </summary>
         </member>
         <member name="M:Acontplus.Persistence.SqlServer.Repositories.AdoRepository.ValidateAndSanitizeSortColumn(System.String)">
             <summary>
-            Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
-            Uses a strict whitelist approach - only allows exact matches from a predefined set.
-            Falls back to regex validation with comprehensive keyword blacklist.
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
-            <summary>
-            OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
-            </summary>
-        </member>
-        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
-            <summary>
-            Convertir de zona horaria local a UTC (para guardar en BD)
+                Validates and sanitizes sort column names to prevent SQL injection (CWE-89).
+                Uses a strict whitelist approach - only allows exact matches from a predefined set.
+                Falls back to regex validation with comprehensive keyword blacklist.
             </summary>
         </member>
         <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInEcuador">
             <summary>
-            Obtener la hora actual en Ecuador
+                Obtener la hora actual en Ecuador
             </summary>
         </member>
         <member name="P:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.NowInServer">
             <summary>
-            Obtener la hora actual del servidor
+                Obtener la hora actual del servidor
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.ToEcuadorTime(System.DateTime)">
+            <summary>
+                OPCIÓN 1 (RECOMENDADA): Convertir UTC a zona horaria específica
+            </summary>
+        </member>
+        <member name="M:Acontplus.Persistence.SqlServer.Utilities.TimeZoneHelper.FromEcuadorTimeToUtc(System.DateTime)">
+            <summary>
+                Convertir de zona horaria local a UTC (para guardar en BD)
             </summary>
         </member>
     </members>

@@ -1,7 +1,3 @@
-using Acontplus.Persistence.PostgreSQL.UnitOfWork;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace Acontplus.Persistence.PostgreSQL.DependencyInjection;
 
 public static class PostgresServiceCollectionExtensions

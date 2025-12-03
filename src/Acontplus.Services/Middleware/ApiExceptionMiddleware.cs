@@ -95,7 +95,7 @@ public class ApiExceptionMiddleware
     private static ApiResponse HandleDomainException(DomainException ex, string correlationId, string tenantId)
     {
         var httpStatusCode = ex.ErrorType.ToHttpStatusCode();
-        
+
         var error = new ApiError(
             Code: ex.ErrorCode,
             Message: ex.Message,
@@ -139,7 +139,7 @@ public class ApiExceptionMiddleware
         var innerDomainEx = FindInnerException<DomainException>(ex);
         if (innerDomainEx != null)
         {
-            _logger.LogWarning("DomainException found as inner exception in unhandled path: {ErrorCode}", 
+            _logger.LogWarning("DomainException found as inner exception in unhandled path: {ErrorCode}",
                 innerDomainEx.ErrorCode);
             return HandleDomainException(innerDomainEx, correlationId, tenantId);
         }
@@ -154,7 +154,7 @@ public class ApiExceptionMiddleware
         var innerApiEx = FindInnerException<ApiException>(ex);
         if (innerApiEx != null)
         {
-            _logger.LogWarning("ApiException found as inner exception in unhandled path: {ErrorCode}", 
+            _logger.LogWarning("ApiException found as inner exception in unhandled path: {ErrorCode}",
                 innerApiEx.ErrorCode);
             return HandleApiException(innerApiEx, correlationId, tenantId);
         }
@@ -166,8 +166,8 @@ public class ApiExceptionMiddleware
 
         var error = new ApiError(
             Code: "UNHANDLED_ERROR",
-            Message: _options.IncludeDebugDetailsInResponse 
-                ? ex.Message 
+            Message: _options.IncludeDebugDetailsInResponse
+                ? ex.Message
                 : "An unexpected error occurred",
             Category: "system",
             Severity: "error",
@@ -277,8 +277,8 @@ public class ApiExceptionMiddleware
                 ErrorType.Forbidden => LogLevel.Warning,
                 _ => LogLevel.Error
             },
-            ApiException apiEx => (int)apiEx.StatusCode >= 500 
-                ? LogLevel.Error 
+            ApiException apiEx => (int)apiEx.StatusCode >= 500
+                ? LogLevel.Error
                 : LogLevel.Warning,
             _ => LogLevel.Error
         };

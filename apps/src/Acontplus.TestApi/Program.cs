@@ -1,6 +1,4 @@
-using Acontplus.ApiDocumentation;
-using Acontplus.TestApi.Extensions.Program;
-using Serilog;
+
 
 // 1. Optional: Create a bootstrap logger for early startup issues
 //    This captures logs from WebApplication.CreateBuilder() itself.
@@ -33,8 +31,7 @@ try
 
     // Configure all services using organized extension methods
     builder.Services
-        .AddTestApiServices(builder.Configuration)
-        .AddTestApplicationServices(builder.Configuration)
+        .AddAllTestServices(builder.Configuration)
         .AddDatabaseServices(builder.Configuration)
         .AddBusinessServices();
 

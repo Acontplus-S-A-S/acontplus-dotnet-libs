@@ -1,11 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Demo;
 
-using Acontplus.Core.Domain.Common.Results;
-using Acontplus.Core.Domain.Enums;
-using Acontplus.Core.Domain.Exceptions;
-using Acontplus.Persistence.Common.Exceptions;
-using Acontplus.Utilities.Extensions;
-
 public static class ExceptionTestEndpoints
 {
     public static void MapExceptionTestEndpoints(this WebApplication app)
@@ -15,7 +9,7 @@ public static class ExceptionTestEndpoints
 
         #region Client Errors (4xx) - DomainException Examples
 
-        group.MapPost("/validation-error", ([FromServices] ILogger logger) =>
+        group.MapPost("/validation-error", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating validation error");
 
@@ -25,7 +19,7 @@ public static class ExceptionTestEndpoints
                 "The email address format is invalid");
         });
 
-        group.MapPost("/validation-error-result", ([FromServices] ILogger logger) =>
+        group.MapPost("/validation-error-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating validation error using Result pattern");
 
@@ -38,7 +32,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapPost("/bad-request", ([FromServices] ILogger logger) =>
+        group.MapPost("/bad-request", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating bad request error");
 
@@ -48,7 +42,7 @@ public static class ExceptionTestEndpoints
                 "The request body contains invalid JSON syntax");
         });
 
-        group.MapPost("/bad-request-result", ([FromServices] ILogger logger) =>
+        group.MapPost("/bad-request-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating bad request using Result pattern");
 
@@ -60,7 +54,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/not-found/{id:int}", ([FromServices] ILogger logger, int id) =>
+        group.MapGet("/not-found/{id:int}", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger, int id) =>
         {
             logger.LogInformation("Simulating not found error for ID: {Id}", id);
 
@@ -70,7 +64,7 @@ public static class ExceptionTestEndpoints
                 $"Customer with ID {id} was not found");
         });
 
-        group.MapGet("/not-found-result/{id:int}", ([FromServices] ILogger logger, int id) =>
+        group.MapGet("/not-found-result/{id:int}", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger, int id) =>
         {
             logger.LogInformation("Simulating not found using Result pattern for ID: {Id}", id);
 
@@ -83,7 +77,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapPost("/conflict", ([FromServices] ILogger logger) =>
+        group.MapPost("/conflict", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating conflict error");
 
@@ -93,7 +87,7 @@ public static class ExceptionTestEndpoints
                 "A user with this email address already exists");
         });
 
-        group.MapPost("/conflict-result", ([FromServices] ILogger logger) =>
+        group.MapPost("/conflict-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating conflict using Result pattern");
 
@@ -106,7 +100,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/unauthorized", ([FromServices] ILogger logger) =>
+        group.MapGet("/unauthorized", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating unauthorized error");
 
@@ -116,7 +110,7 @@ public static class ExceptionTestEndpoints
                 "The authentication token is invalid or expired");
         });
 
-        group.MapGet("/unauthorized-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/unauthorized-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating unauthorized using Result pattern");
 
@@ -128,7 +122,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/forbidden", ([FromServices] ILogger logger) =>
+        group.MapGet("/forbidden", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating forbidden error");
 
@@ -138,7 +132,7 @@ public static class ExceptionTestEndpoints
                 "You do not have permission to access this resource");
         });
 
-        group.MapGet("/forbidden-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/forbidden-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating forbidden using Result pattern");
 
@@ -150,7 +144,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/rate-limited", ([FromServices] ILogger logger) =>
+        group.MapGet("/rate-limited", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating rate limit error");
 
@@ -160,7 +154,7 @@ public static class ExceptionTestEndpoints
                 "Rate limit exceeded. Please try again in 60 seconds");
         });
 
-        group.MapGet("/rate-limited-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/rate-limited-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating rate limit using Result pattern");
 
@@ -178,7 +172,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapPost("/payload-too-large", ([FromServices] ILogger logger) =>
+        group.MapPost("/payload-too-large", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating payload too large error");
 
@@ -192,7 +186,7 @@ public static class ExceptionTestEndpoints
 
         #region Server Errors (5xx) - DomainException Examples
 
-        group.MapGet("/internal-error", ([FromServices] ILogger logger) =>
+        group.MapGet("/internal-error", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating internal server error");
 
@@ -202,7 +196,7 @@ public static class ExceptionTestEndpoints
                 "An unexpected error occurred while processing your request");
         });
 
-        group.MapGet("/internal-error-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/internal-error-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating internal error using Result pattern");
 
@@ -214,7 +208,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/service-unavailable", ([FromServices] ILogger logger) =>
+        group.MapGet("/service-unavailable", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating service unavailable error");
 
@@ -224,7 +218,7 @@ public static class ExceptionTestEndpoints
                 "The service is temporarily unavailable. Please try again later");
         });
 
-        group.MapGet("/service-unavailable-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/service-unavailable-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating service unavailable using Result pattern");
 
@@ -241,7 +235,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/timeout", ([FromServices] ILogger logger) =>
+        group.MapGet("/timeout", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating timeout error");
 
@@ -251,7 +245,7 @@ public static class ExceptionTestEndpoints
                 "The external payment service did not respond within the expected time");
         });
 
-        group.MapGet("/timeout-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/timeout-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating timeout using Result pattern");
 
@@ -269,7 +263,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapGet("/not-implemented", ([FromServices] ILogger logger) =>
+        group.MapGet("/not-implemented", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating not implemented error");
 
@@ -279,7 +273,7 @@ public static class ExceptionTestEndpoints
                 "This feature is not yet implemented");
         });
 
-        group.MapGet("/external-error", ([FromServices] ILogger logger) =>
+        group.MapGet("/external-error", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating external service error");
 
@@ -289,7 +283,7 @@ public static class ExceptionTestEndpoints
                 "The external payment gateway returned an error");
         });
 
-        group.MapGet("/external-error-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/external-error-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating external error using Result pattern");
 
@@ -311,7 +305,7 @@ public static class ExceptionTestEndpoints
 
         #region SQL Exception Examples
 
-        group.MapDelete("/sql/foreign-key-violation", ([FromServices] ILogger logger) =>
+        group.MapDelete("/sql/foreign-key-violation", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating SQL foreign key violation");
 
@@ -325,7 +319,7 @@ public static class ExceptionTestEndpoints
             throw new SqlDomainException(sqlErrorInfo);
         });
 
-        group.MapPost("/sql/unique-violation", ([FromServices] ILogger logger) =>
+        group.MapPost("/sql/unique-violation", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating SQL unique constraint violation");
 
@@ -339,7 +333,7 @@ public static class ExceptionTestEndpoints
             throw new SqlDomainException(sqlErrorInfo);
         });
 
-        group.MapGet("/sql/timeout", ([FromServices] ILogger logger) =>
+        group.MapGet("/sql/timeout", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating SQL timeout error");
 
@@ -353,7 +347,7 @@ public static class ExceptionTestEndpoints
             throw new SqlDomainException(sqlErrorInfo);
         });
 
-        group.MapPost("/sql/deadlock", ([FromServices] ILogger logger) =>
+        group.MapPost("/sql/deadlock", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating SQL deadlock error");
 
@@ -367,7 +361,7 @@ public static class ExceptionTestEndpoints
             throw new SqlDomainException(sqlErrorInfo);
         });
 
-        group.MapGet("/sql/connection-error", ([FromServices] ILogger logger) =>
+        group.MapGet("/sql/connection-error", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating SQL connection error");
 
@@ -385,35 +379,35 @@ public static class ExceptionTestEndpoints
 
         #region Standard .NET Exceptions
 
-        group.MapPost("/standard/argument-null", ([FromServices] ILogger logger) =>
+        group.MapPost("/standard/argument-null", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating ArgumentNullException");
 
             throw new ArgumentNullException("customerId", "Customer ID cannot be null");
         });
 
-        group.MapPost("/standard/argument-invalid", ([FromServices] ILogger logger) =>
+        group.MapPost("/standard/argument-invalid", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating ArgumentException");
 
             throw new ArgumentException("Age must be between 0 and 150", "age");
         });
 
-        group.MapPost("/standard/invalid-operation", ([FromServices] ILogger logger) =>
+        group.MapPost("/standard/invalid-operation", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating InvalidOperationException");
 
             throw new InvalidOperationException("Cannot process payment for an order that is already cancelled");
         });
 
-        group.MapGet("/standard/timeout", ([FromServices] ILogger logger) =>
+        group.MapGet("/standard/timeout", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating TimeoutException");
 
             throw new TimeoutException("The operation timed out after 30 seconds");
         });
 
-        group.MapGet("/standard/null-reference", ([FromServices] ILogger logger) =>
+        group.MapGet("/standard/null-reference", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating NullReferenceException");
 
@@ -421,7 +415,7 @@ public static class ExceptionTestEndpoints
             return Results.Ok(nullString!.Length);
         });
 
-        group.MapGet("/standard/divide-by-zero", ([FromServices] ILogger logger) =>
+        group.MapGet("/standard/divide-by-zero", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating DivideByZeroException");
 
@@ -434,7 +428,7 @@ public static class ExceptionTestEndpoints
 
         #region Complex Scenarios
 
-        group.MapGet("/complex/nested", ([FromServices] ILogger logger) =>
+        group.MapGet("/complex/nested", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating nested exception");
 
@@ -463,7 +457,7 @@ public static class ExceptionTestEndpoints
             }
         });
 
-        group.MapGet("/complex/aggregate", async ([FromServices] ILogger logger) =>
+        group.MapGet("/complex/aggregate", async ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating aggregate exception");
 
@@ -478,7 +472,7 @@ public static class ExceptionTestEndpoints
             return Results.Ok();
         });
 
-        group.MapPost("/complex/multiple-validation", ([FromServices] ILogger logger) =>
+        group.MapPost("/complex/multiple-validation", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating multiple validation errors");
 
@@ -492,7 +486,7 @@ public static class ExceptionTestEndpoints
             throw new ValidationException(errors);
         });
 
-        group.MapPost("/complex/multiple-validation-result", ([FromServices] ILogger logger) =>
+        group.MapPost("/complex/multiple-validation-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating multiple validation errors using Result pattern");
 
@@ -511,7 +505,7 @@ public static class ExceptionTestEndpoints
             return result.ToMinimalApiResult();
         });
 
-        group.MapPost("/complex/business-rule", ([FromServices] ILogger logger) =>
+        group.MapPost("/complex/business-rule", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating business rule violation");
 
@@ -521,7 +515,7 @@ public static class ExceptionTestEndpoints
                 "Cannot create order: Customer credit limit exceeded and payment method requires preauthorization");
         });
 
-        group.MapPost("/complex/business-rule-result", ([FromServices] ILogger logger) =>
+        group.MapPost("/complex/business-rule-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             logger.LogInformation("Simulating business rule violation using Result pattern");
 
@@ -629,7 +623,7 @@ public static class ExceptionTestEndpoints
 
         #region Random Exception Generator
 
-        group.MapGet("/random", ([FromServices] ILogger logger) =>
+        group.MapGet("/random", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             var random = Random.Shared.Next(1, 16);
 
@@ -656,7 +650,7 @@ public static class ExceptionTestEndpoints
             };
         });
 
-        group.MapGet("/random-result", ([FromServices] ILogger logger) =>
+        group.MapGet("/random-result", ([FromServices] Microsoft.Extensions.Logging.ILogger<object> logger) =>
         {
             var random = Random.Shared.Next(1, 11);
 
