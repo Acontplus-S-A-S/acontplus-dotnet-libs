@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Acontplus.TestApi.Endpoints.Demo;
 
 public static class ExceptionTestEndpoints

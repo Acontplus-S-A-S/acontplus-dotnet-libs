@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Acontplus.TestApi.Endpoints.Business;
 
 public static class ReportsEndpoints

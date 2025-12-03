@@ -231,7 +231,7 @@ public static class UsuarioEndpoints
         // ✅ Example: Add extra filter using WithFilter extension
         // Filter to only show non-deleted users
         PaginationRequest = PaginationRequest.WithFilter("IsDeleted", false);
-        
+
         // Add another filter for active users (example)
         PaginationRequest = PaginationRequest.WithFilter("Status", "Active");
 

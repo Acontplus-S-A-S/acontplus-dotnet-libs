@@ -1,6 +1,5 @@
 using Acontplus.Core.Domain.Common.Results;
 using Acontplus.Core.Validation;
-using Humanizer;
 using System.Globalization;
 using System.Text.Json;
 
@@ -101,7 +100,7 @@ public class LookupService : ILookupService
             .SelectMany(dt => dt.AsEnumerable())
             .GroupBy(row => row.Field<string>("TableName"))
             .ToDictionary(
-                group => (string.IsNullOrWhiteSpace(group.Key) ? "default" : group.Key).Camelize(),
+                group => JsonNamingPolicy.CamelCase.ConvertName(string.IsNullOrWhiteSpace(group.Key) ? "default" : group.Key),
                 group => (IEnumerable<LookupItem>)group.Select(row => new LookupItem(
                     row.Field<int?>("Id"),
                     row.Field<string?>("Code"),

@@ -1,3 +1,4 @@
+using Acontplus.Core.Extensions;
 using System.Runtime.CompilerServices;
 
 namespace Acontplus.Persistence.PostgreSQL.Repositories;

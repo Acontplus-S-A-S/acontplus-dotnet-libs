@@ -237,7 +237,7 @@ public static class InfrastructureServiceExtensions
                     _ => CompressionLevel.Optimal
                 };
                 options.Providers.Add(new BrotliCompressionProvider(Options.Create(new BrotliCompressionProviderOptions
-                    { Level = brotliLevel })));
+                { Level = brotliLevel })));
             }
 
             if (compressionConfig.EnableGzip)
@@ -249,7 +249,7 @@ public static class InfrastructureServiceExtensions
                     _ => CompressionLevel.Optimal
                 };
                 options.Providers.Add(new GzipCompressionProvider(Options.Create(new GzipCompressionProviderOptions
-                    { Level = gzipLevel })));
+                { Level = gzipLevel })));
             }
         });
 

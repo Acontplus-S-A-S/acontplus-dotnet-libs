@@ -1,4 +1,3 @@
-using Acontplus.Billing.Models.Documents;
 using Acontplus.Infrastructure.Extensions;
 using Acontplus.Notifications.Services;
 using Acontplus.Persistence.SqlServer.DependencyInjection;
