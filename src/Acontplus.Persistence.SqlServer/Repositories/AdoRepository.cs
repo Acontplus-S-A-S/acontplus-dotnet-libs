@@ -1144,14 +1144,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for stored procedures
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                result["@Filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["@Filters"] = DBNull.Value;
-            }
+            result["@Filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1187,14 +1182,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for stored procedures
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                result["@Filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["@Filters"] = DBNull.Value;
-            }
+            result["@Filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1239,14 +1229,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for stored procedures
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                spParameters["@Filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["@Filters"] = DBNull.Value;
-            }
+            spParameters["@Filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1296,14 +1281,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for stored procedures
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                spParameters["@Filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["@Filters"] = DBNull.Value;
-            }
+            spParameters["@Filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {

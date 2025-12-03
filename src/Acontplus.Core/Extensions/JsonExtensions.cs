@@ -99,6 +99,25 @@ public static class JsonExtensions
     }
 
     /// <summary>
+    /// Serializes a dictionary to JSON string, converting all keys to camelCase.
+    /// Useful for ensuring consistent JSON property naming when working with dynamic dictionaries.
+    /// </summary>
+    /// <param name="dictionary">The dictionary to serialize.</param>
+    /// <param name="pretty">Whether to format the JSON with indentation.</param>
+    /// <returns>The JSON string representation with camelCase keys.</returns>
+    public static string SerializeWithCamelCaseKeys(this IReadOnlyDictionary<string, object>? dictionary, bool pretty = false)
+    {
+        if (dictionary == null || !dictionary.Any())
+            return "null";
+
+        var camelCaseDictionary = dictionary.ToDictionary(
+            k => JsonNamingPolicy.CamelCase.ConvertName(k.Key),
+            v => v.Value);
+
+        return SerializeOptimized(camelCaseDictionary, pretty);
+    }
+
+    /// <summary>
     /// Creates a deep clone of an object via JSON serialization and deserialization.
     /// </summary>
     /// <typeparam name="T">The type of object to clone.</typeparam>

@@ -1,0 +1,71 @@
+### Lookup Service Test Endpoints
+### Base URL
+@baseUrl = https://localhost:7111
+@apiUrl = {{baseUrl}}/api/lookups
+
+### 1. Get Lookups (Cached) - No filters
+GET {{apiUrl}}
+Accept: application/json
+
+### 2. Get Lookups with filters (using query string)
+GET {{apiUrl}}?filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 3. Get Lookups with search term
+GET {{apiUrl}}?searchTerm=admin
+Accept: application/json
+
+### 4. Get Lookups with sorting
+GET {{apiUrl}}?sortBy=displayOrder&sortDirection=asc
+Accept: application/json
+
+### 5. Get Lookups with multiple filters
+GET {{apiUrl}}?filters[module]=test&filters[context]=general&filters[category]=users
+Accept: application/json
+
+### 6. Get Lookups with search and filters
+GET {{apiUrl}}?searchTerm=admin&filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 7. Get Lookups with all parameters
+GET {{apiUrl}}?searchTerm=user&sortBy=value&sortDirection=desc&filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 8. Refresh Lookups - No filters
+POST {{apiUrl}}/refresh
+Accept: application/json
+
+### 9. Refresh Lookups with filters
+POST {{apiUrl}}/refresh?filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 10. Refresh Lookups with complex filters
+POST {{apiUrl}}/refresh?filters[module]=test&filters[context]=admin&filters[includeInactive]=false
+Accept: application/json
+
+### 11. Test cache behavior - Call GET twice to see cache in action
+# First call - hits database
+GET {{apiUrl}}?filters[module]=test&filters[context]=general
+Accept: application/json
+
+###
+# Second call - should be faster (from cache)
+GET {{apiUrl}}?filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 12. Refresh and verify cache was cleared
+POST {{apiUrl}}/refresh?filters[module]=test&filters[context]=general
+Accept: application/json
+
+###
+# This should hit database again
+GET {{apiUrl}}?filters[module]=test&filters[context]=general
+Accept: application/json
+
+### 13. Test different contexts (different cache keys)
+GET {{apiUrl}}?filters[module]=test&filters[context]=admin
+Accept: application/json
+
+###
+GET {{apiUrl}}?filters[module]=test&filters[context]=general
+Accept: application/json

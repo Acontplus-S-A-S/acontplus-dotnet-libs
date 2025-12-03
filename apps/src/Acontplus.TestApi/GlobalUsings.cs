@@ -10,6 +10,7 @@ global using Acontplus.Billing.Services.Validation;
 global using Acontplus.Core.Abstractions.Persistence;
 global using Acontplus.Core.Dtos.Requests;
 global using Acontplus.Core.Dtos.Responses;
+global using Acontplus.Services.Services.Abstractions;
 global using Acontplus.Core.Validation;
 global using Acontplus.Logging;
 global using Acontplus.Notifications.Abstractions;

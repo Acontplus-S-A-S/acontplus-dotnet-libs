@@ -54,6 +54,16 @@ public static class ServiceExtensions
         services.AddScoped<ISecurityHeaderService, SecurityHeaderService>();
         return services;
     }
+
+    /// <summary>
+    /// Add lookup service with caching support.
+    /// Requires IUnitOfWork and ICacheService to be registered.
+    /// </summary>
+    public static IServiceCollection AddLookupService(this IServiceCollection services)
+    {
+        services.AddScoped<ILookupService, LookupService>();
+        return services;
+    }
 }
 
 

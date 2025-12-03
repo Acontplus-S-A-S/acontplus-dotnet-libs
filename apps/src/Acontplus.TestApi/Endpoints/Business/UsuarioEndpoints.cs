@@ -228,6 +228,13 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
+        // ✅ Example: Add extra filter using WithFilter extension
+        // Filter to only show non-deleted users
+        PaginationRequest = PaginationRequest.WithFilter("IsDeleted", false);
+        
+        // Add another filter for active users (example)
+        PaginationRequest = PaginationRequest.WithFilter("Status", "Active");
+
         return await usuarioService.GetPagedUsersAdoAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }
 
@@ -245,6 +252,12 @@ public static class UsuarioEndpoints
             SearchTerm = pagination.SearchTerm,
             Filters = pagination.Filters
         };
+
+        // ✅ Example: Chain multiple WithFilter calls for complex filtering
+        PaginationRequest = PaginationRequest
+            .WithFilter("IsDeleted", false)
+            .WithFilter("CreatedAfter", DateTime.UtcNow.AddDays(-30))
+            .WithFilter("MinimumRole", "User");
 
         return await usuarioService.GetPagedUsersComplexAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }

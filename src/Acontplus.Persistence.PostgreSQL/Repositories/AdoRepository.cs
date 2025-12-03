@@ -1050,14 +1050,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for PostgreSQL functions
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                result["filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["filters"] = DBNull.Value;
-            }
+            result["filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1093,14 +1088,9 @@ public class AdoRepository : IAdoRepository
         if (options.UseJsonFilters ?? true)
         {
             // JSON approach - single parameter for PostgreSQL functions
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                result["filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                result["filters"] = DBNull.Value;
-            }
+            result["filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1146,14 +1136,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for PostgreSQL functions (JSONB type)
-            if (filter.Filters != null && filter.Filters.Any())
-            {
-                spParameters["filters"] = filter.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["filters"] = DBNull.Value;
-            }
+            spParameters["filters"] = (filter.Filters != null && filter.Filters.Any())
+                ? filter.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {
@@ -1204,14 +1189,9 @@ public class AdoRepository : IAdoRepository
         if (useJsonForSp)
         {
             // JSON approach - recommended for PostgreSQL functions (JSONB type)
-            if (pagination.Filters != null && pagination.Filters.Any())
-            {
-                spParameters["filters"] = pagination.Filters.SerializeOptimized();
-            }
-            else
-            {
-                spParameters["filters"] = DBNull.Value;
-            }
+            spParameters["filters"] = (pagination.Filters != null && pagination.Filters.Any())
+                ? pagination.Filters.SerializeWithCamelCaseKeys()
+                : DBNull.Value;
         }
         else
         {

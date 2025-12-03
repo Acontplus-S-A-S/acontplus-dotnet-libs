@@ -39,6 +39,9 @@ public static class ProgramExtensions
         // Configure Application Services (v2.0)
         services.AddApplicationServices(configuration);
 
+        // Configure Lookup Service
+        services.AddLookupService();
+
         // Configure Report Services
         services.AddReportServices(configuration);
 
@@ -140,6 +143,7 @@ public static class ProgramExtensions
 
         // Map core endpoints
         app.MapEncryptionEndpoints();
+        app.MapLookupEndpoints();
 
         // Map infrastructure endpoints
         app.MapBarcodeEndpoints();
