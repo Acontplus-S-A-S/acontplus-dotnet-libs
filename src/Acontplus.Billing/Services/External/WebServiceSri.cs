@@ -12,7 +12,7 @@ public class WebServiceSri : IWebServiceSri
         try
         {
             var xml =
-                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">                         
+                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">
                             <soapenv:Body>
                                 <ec:autorizacionComprobante>
                                    <claveAccesoComprobante>{claveAcceso}</claveAccesoComprobante>
@@ -33,18 +33,20 @@ public class WebServiceSri : IWebServiceSri
 
             var nlNroCompAuth = doc.GetElementsByTagName("numeroComprobantes");
 
-            var nroComp = nlNroCompAuth[0] != null ? nlNroCompAuth[0].InnerText : string.Empty;
+            var nroCompNode = nlNroCompAuth.Count > 0 ? nlNroCompAuth[0] : null;
+            var nroComp = nroCompNode?.InnerText ?? string.Empty;
 
-            responseSri.Estado = nroComp == "0" ? "NO AUTORIZADO" : estadoComp[0] != null ? estadoComp[0].InnerText : string.Empty;
+            var estadoCompNode = estadoComp.Count > 0 ? estadoComp[0] : null;
+            responseSri.Estado = nroComp == "0" ? "NO AUTORIZADO" : estadoCompNode?.InnerText ?? string.Empty;
 
             switch (responseSri.Estado)
             {
                 case "AUTORIZADO":
                     {
                         var codAutorizacion = doc.GetElementsByTagName("numeroAutorizacion");
-                        responseSri.CodigoAutorizacion = codAutorizacion[0]?.InnerText;
+                        responseSri.CodigoAutorizacion = codAutorizacion.Count > 0 ? codAutorizacion[0]?.InnerText : null;
                         var xFecha = doc.GetElementsByTagName("fechaAutorizacion");
-                        responseSri.FechaAutorizacion = xFecha[0]?.InnerText;
+                        responseSri.FechaAutorizacion = xFecha.Count > 0 ? xFecha[0]?.InnerText : null;
                         responseSri.Message = "EL COMPROBANTE FUE AUTORIZADO CON ÉXITO";
                         break;
                     }
@@ -60,7 +62,8 @@ public class WebServiceSri : IWebServiceSri
                         var xmessage = doc.GetElementsByTagName("mensaje");
                         if (xmessage.Count > 0)
                         {
-                            var nodos = ((XmlElement)xmessage[0])?.ChildNodes;
+                            var messageNode = xmessage[0] as XmlElement;
+                            var nodos = messageNode?.ChildNodes;
                             if (nodos != null)
                                 foreach (XmlElement nodo in nodos)
                                     switch (nodo.Name)
@@ -101,7 +104,7 @@ public class WebServiceSri : IWebServiceSri
         try
         {
             var xml =
-                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">                         
+                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">
                             <soapenv:Body>
                                 <ec:autorizacionComprobanteLote>
                                    <claveAccesoLote>{claveAcceso}</claveAccesoLote>
@@ -135,7 +138,7 @@ public class WebServiceSri : IWebServiceSri
         try
         {
             var xml =
-                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">                         
+                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">
                             <soapenv:Body>
                                 <ec:autorizacionComprobante>
                                    <claveAccesoComprobante>{claveAcceso}</claveAccesoComprobante>
@@ -159,26 +162,28 @@ public class WebServiceSri : IWebServiceSri
                 if (numeroComprobantes[0]?.InnerText == "1")
                 {
                     var xEstado = doc.GetElementsByTagName("estado");
+                    var estadoNode = xEstado.Count > 0 ? xEstado[0] : null;
 
-                    switch (xEstado[0]?.InnerText)
+                    switch (estadoNode?.InnerText)
                     {
                         case "AUTORIZADO":
                             {
-                                responseSri.Estado = xEstado[0].InnerText;
+                                responseSri.Estado = estadoNode?.InnerText;
                                 responseSri.Message = "EL COMPROBANTE  YA FUE AUTORIZADO";
                                 var xNumAuto = doc.GetElementsByTagName("numeroAutorizacion");
-                                responseSri.CodigoAutorizacion = xNumAuto[0]?.InnerText;
+                                responseSri.CodigoAutorizacion = xNumAuto.Count > 0 ? xNumAuto[0]?.InnerText : null;
                                 var xFecha = doc.GetElementsByTagName("fechaAutorizacion");
-                                responseSri.FechaAutorizacion = xFecha[0]?.InnerText;
+                                responseSri.FechaAutorizacion = xFecha.Count > 0 ? xFecha[0]?.InnerText : null;
                                 break;
                             }
                         default:
                             {
-                                responseSri.Estado = xEstado[0]?.InnerText;
+                                responseSri.Estado = estadoNode?.InnerText;
                                 var xmessage = doc.GetElementsByTagName("mensaje");
                                 if (xmessage.Count > 0)
                                 {
-                                    var nodos = ((XmlElement)xmessage[0])?.ChildNodes;
+                                    var messageNode = xmessage[0] as XmlElement;
+                                    var nodos = messageNode?.ChildNodes;
                                     if (nodos != null)
                                         foreach (XmlElement nodo in nodos)
                                             switch (nodo.Name)
@@ -229,7 +234,7 @@ public class WebServiceSri : IWebServiceSri
         try
         {
             var xmlRequest = string.Format(
-                @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">                         
+                @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.autorizacion"">
                             <soapenv:Body>
                                 <ec:autorizacionComprobante>
                                    <claveAccesoComprobante>{0}</claveAccesoComprobante>
@@ -252,15 +257,15 @@ public class WebServiceSri : IWebServiceSri
         return xmlSri;
     }
 
-    //SRI RECIBE EL XML DE LOS COMPROBANTES 
+    //SRI RECIBE EL XML DE LOS COMPROBANTES
     public async Task<ResponseSri> ReceptionAsync(string xmlSigned, string url)
     {
         var responseSri = new ResponseSri();
         try
         {
             var xml =
-                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.recepcion"">                         
-                            <soapenv:Header/>                            
+                $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:ec=""http://ec.gob.sri.ws.recepcion"">
+                            <soapenv:Header/>
                             <soapenv:Body>
                                <ec:validarComprobante>
                                    <xml>{Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlSigned))}</xml>
@@ -278,37 +283,43 @@ public class WebServiceSri : IWebServiceSri
 
             if (DataValidation.IsXml(responseSri.XmlSri))
             {
-                //OBTIENE DATO DEL XML RESPONSE                    
+                //OBTIENE DATO DEL XML RESPONSE
                 var xdoc = new XmlDocument();
                 xdoc.LoadXml(responseSri.XmlSri);
 
                 var xEstado = xdoc.GetElementsByTagName("estado");
-                responseSri.Estado = xEstado[0] != null ? xEstado[0].InnerText : string.Empty;
+                var estadoNode = xEstado.Count > 0 ? xEstado[0] : null;
+                responseSri.Estado = estadoNode?.InnerText ?? string.Empty;
 
                 var identificador = xdoc.GetElementsByTagName("identificador");
-                responseSri.Identificador = identificador[0] != null ? identificador[0].InnerText : string.Empty;
+                var idNode = identificador.Count > 0 ? identificador[0] : null;
+                responseSri.Identificador = idNode?.InnerText ?? string.Empty;
 
                 if (responseSri.Estado == "DEVUELTA")
                 {
                     xEstado = xdoc.GetElementsByTagName("mensaje");
-                    var nodos = ((XmlElement)xEstado[0])?.ChildNodes;
-                    if (nodos != null)
-                        foreach (XmlElement nodo in nodos)
-                            switch (nodo.Name)
-                            {
-                                case "identificador":
-                                    responseSri.Identificador = nodo.InnerText;
-                                    break;
-                                case "mensaje":
-                                    responseSri.Message = nodo.InnerText;
-                                    break;
-                                case "informacionAdicional":
-                                    responseSri.InformacionAdicional = nodo.InnerText;
-                                    break;
-                                case "tipo":
-                                    responseSri.Tipo = nodo.InnerText;
-                                    break;
-                            }
+                    if (xEstado.Count > 0)
+                    {
+                        var messageNode = xEstado[0] as XmlElement;
+                        var nodos = messageNode?.ChildNodes;
+                        if (nodos != null)
+                            foreach (XmlElement nodo in nodos)
+                                switch (nodo.Name)
+                                {
+                                    case "identificador":
+                                        responseSri.Identificador = nodo.InnerText;
+                                        break;
+                                    case "mensaje":
+                                        responseSri.Message = nodo.InnerText;
+                                        break;
+                                    case "informacionAdicional":
+                                        responseSri.InformacionAdicional = nodo.InnerText;
+                                        break;
+                                    case "tipo":
+                                        responseSri.Tipo = nodo.InnerText;
+                                        break;
+                                }
+                    }
                 }
             }
             else
