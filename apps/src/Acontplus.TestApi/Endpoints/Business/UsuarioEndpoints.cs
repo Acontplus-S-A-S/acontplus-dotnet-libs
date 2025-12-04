@@ -1,6 +1,3 @@
-using Acontplus.Core.Enums;
-using Acontplus.Utilities.Dtos;
-using Acontplus.Utilities.Mapping;
 using System.Security.Claims;
 
 namespace Acontplus.TestApi.Endpoints.Business;
@@ -228,12 +225,28 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
-        // ✅ Example: Add extra filter using WithFilter extension
-        // Filter to only show non-deleted users
-        PaginationRequest = PaginationRequest.WithFilter("IsDeleted", false);
+        // ✅ Example: Use GetFilterValue to extract and validate filter values
+        var showDeleted = PaginationRequest.GetFilterValue<bool>("showDeleted", false);
+        var minAge = PaginationRequest.GetFilterValue<int>("minAge", 0);
+        var role = PaginationRequest.GetFilterValue<string>("role", "User");
 
-        // Add another filter for active users (example)
-        PaginationRequest = PaginationRequest.WithFilter("Status", "Active");
+        // ✅ Example: Use TryGetFilterValue for conditional logic
+        if (PaginationRequest.TryGetFilterValue<DateTime>("createdAfter", out var createdAfter))
+        {
+            // Additional validation or processing for date filter
+            PaginationRequest = PaginationRequest.WithFilter("CreatedAfter", createdAfter);
+        }
+
+        // ✅ Example: Add extra filters using WithFilter extension
+        if (!showDeleted)
+        {
+            PaginationRequest = PaginationRequest.WithFilter("IsDeleted", false);
+        }
+
+        PaginationRequest = PaginationRequest
+            .WithFilter("Status", "Active")
+            .WithFilter("MinAge", minAge)
+            .WithFilter("Role", role);
 
         return await usuarioService.GetPagedUsersAdoAsync(PaginationRequest).ToGetMinimalApiResultAsync();
     }

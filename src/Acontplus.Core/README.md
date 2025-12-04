@@ -29,6 +29,8 @@ A cutting-edge .NET foundational library leveraging the latest C# language featu
   - Internal DTOs (like `CommandOptionsDto`) retain "Dto" suffix for infrastructure concerns
 - **📄 Enhanced Request Extensions** - Fluent APIs for request management
   - **FilterRequestExtensions**: `WithSearch()`, `WithSort()`, `WithFilters()`, `WithFilter()` for building filter requests
+    - `GetFilterValue<T>()` - Type-safe filter value extraction with automatic conversion and default values
+    - `TryGetFilterValue<T>()` - Safe filter retrieval with out parameter pattern
   - **PaginationExtensions**: `WithSearch()`, `WithSort()`, `WithFilters()` for building pagination requests
   - `Create()`, `CreateWithSearch()`, `CreateWithSort()`, `CreateWithFilters()` factory methods
   - `Validate()`, `NextPage()`, `PreviousPage()`, `ToPage()` for pagination navigation

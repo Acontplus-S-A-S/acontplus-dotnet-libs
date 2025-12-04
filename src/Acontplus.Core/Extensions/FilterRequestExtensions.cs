@@ -53,4 +53,53 @@ public static class FilterRequestExtensions
         existingFilters[key] = value;
         return filter with { Filters = existingFilters };
     }
+
+    /// <summary>
+    /// Gets a filter value by key with type safety and conversion support.
+    /// </summary>
+    /// <typeparam name="T">The expected type of the filter value</typeparam>
+    /// <param name="filter">The filter request</param>
+    /// <param name="key">The filter key to retrieve</param>
+    /// <param name="defaultValue">Default value if key not found or conversion fails</param>
+    /// <returns>The filter value converted to type T, or the default value</returns>
+    public static T? GetFilterValue<T>(this FilterRequest filter, string key, T? defaultValue = default)
+    {
+        if (filter.Filters == null || !filter.Filters.TryGetValue(key, out var value))
+            return defaultValue;
+
+        try
+        {
+            return value is T typed ? typed : (T?)Convert.ChangeType(value, typeof(T));
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
+
+    /// <summary>
+    /// Tries to get a filter value by key with type safety and conversion support.
+    /// </summary>
+    /// <typeparam name="T">The expected type of the filter value</typeparam>
+    /// <param name="filter">The filter request</param>
+    /// <param name="key">The filter key to retrieve</param>
+    /// <param name="value">The output value if found and successfully converted</param>
+    /// <returns>True if the value was found and successfully converted; otherwise, false</returns>
+    public static bool TryGetFilterValue<T>(this FilterRequest filter, string key, out T? value)
+    {
+        value = default;
+
+        if (filter.Filters == null || !filter.Filters.TryGetValue(key, out var rawValue))
+            return false;
+
+        try
+        {
+            value = rawValue is T typed ? typed : (T?)Convert.ChangeType(rawValue, typeof(T));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

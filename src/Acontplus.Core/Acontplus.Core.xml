@@ -2245,6 +2245,26 @@
             <param name="value">The filter value</param>
             <returns>A new FilterRequest with the additional filter</returns>
         </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.GetFilterValue``1(Acontplus.Core.Dtos.Requests.FilterRequest,System.String,``0)">
+            <summary>
+            Gets a filter value by key with type safety and conversion support.
+            </summary>
+            <typeparam name="T">The expected type of the filter value</typeparam>
+            <param name="filter">The filter request</param>
+            <param name="key">The filter key to retrieve</param>
+            <param name="defaultValue">Default value if key not found or conversion fails</param>
+            <returns>The filter value converted to type T, or the default value</returns>
+        </member>
+        <member name="M:Acontplus.Core.Extensions.FilterRequestExtensions.TryGetFilterValue``1(Acontplus.Core.Dtos.Requests.FilterRequest,System.String,``0@)">
+            <summary>
+            Tries to get a filter value by key with type safety and conversion support.
+            </summary>
+            <typeparam name="T">The expected type of the filter value</typeparam>
+            <param name="filter">The filter request</param>
+            <param name="key">The filter key to retrieve</param>
+            <param name="value">The output value if found and successfully converted</param>
+            <returns>True if the value was found and successfully converted; otherwise, false</returns>
+        </member>
         <member name="M:Acontplus.Core.Extensions.JsonExtensions.DeserializeOptimized``1(System.String)">
             <summary>
             Deserializes JSON string to the specified type using optimized options.

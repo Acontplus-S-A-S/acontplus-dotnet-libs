@@ -1,8 +1,5 @@
 namespace Acontplus.TestApi.Endpoints.Infrastructure;
 
-using Acontplus.Core.Abstractions.Services;
-using Acontplus.Services.Services.Abstractions;
-
 public static class ConfigurationTestEndpoints
 {
     public static void MapConfigurationTestEndpoints(this WebApplication app)

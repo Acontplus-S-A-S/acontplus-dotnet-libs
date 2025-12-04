@@ -139,6 +139,31 @@
             <param name="parameter">The parameter information (required by the binding contract)</param>
             <returns>A ValueTask containing the bound PaginationQuery or null</returns>
         </member>
+        <member name="T:Acontplus.Utilities.Extensions.FilterQueryExtensions">
+            <summary>
+            Extension methods for FilterQuery to provide helper functionality.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.FilterQueryExtensions.GetFilterValue``1(Acontplus.Utilities.Dtos.FilterQuery,System.String,``0)">
+            <summary>
+            Gets a filter value by key with type safety and conversion support.
+            </summary>
+            <typeparam name="T">The expected type of the filter value</typeparam>
+            <param name="query">The filter query</param>
+            <param name="key">The filter key to retrieve</param>
+            <param name="defaultValue">Default value if key not found or conversion fails</param>
+            <returns>The filter value converted to type T, or the default value</returns>
+        </member>
+        <member name="M:Acontplus.Utilities.Extensions.FilterQueryExtensions.TryGetFilterValue``1(Acontplus.Utilities.Dtos.FilterQuery,System.String,``0@)">
+            <summary>
+            Tries to get a filter value by key with type safety and conversion support.
+            </summary>
+            <typeparam name="T">The expected type of the filter value</typeparam>
+            <param name="query">The filter query</param>
+            <param name="key">The filter key to retrieve</param>
+            <param name="value">The output value if found and successfully converted</param>
+            <returns>True if the value was found and successfully converted; otherwise, false</returns>
+        </member>
         <member name="P:Acontplus.Utilities.Extensions.ResultApiExtensions.ConfigureResponse">
             <summary>
             Allows configuring the ApiResponse before it's returned in success cases.
