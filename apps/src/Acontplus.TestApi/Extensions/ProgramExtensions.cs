@@ -1,14 +1,3 @@
-using Acontplus.Infrastructure.Extensions;
-using Acontplus.Notifications.Services;
-using Acontplus.Persistence.SqlServer.DependencyInjection;
-using Acontplus.Persistence.SqlServer.Exceptions;
-using Acontplus.Persistence.SqlServer.Repositories;
-using Acontplus.Reports.Extensions;
-using Acontplus.Services.Configuration;
-using Acontplus.Services.Extensions;
-using Acontplus.TestApi.Endpoints;
-using Acontplus.TestApi.Endpoints.Business;
-using Acontplus.TestApi.Endpoints.Core;
 using Acontplus.TestApi.Endpoints.Demo;
 using Acontplus.TestApi.Endpoints.Infrastructure;
 using Acontplus.TestInfrastructure.Persistence;

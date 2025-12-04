@@ -10,6 +10,7 @@ A comprehensive .NET utility library providing common functionality for business
 
 - **API Response Extensions** - Comprehensive Result<T> to IActionResult/IResult conversions with domain error handling, pagination, and warnings support
 - **Domain Extensions** - Consolidated domain-to-API conversion logic for clean architectural separation
+- **FilterQuery Extensions** - Type-safe filter value extraction from FilterQuery with `GetFilterValue<T>()` and `TryGetFilterValue<T>()`
 - **Encryption** - Data encryption/decryption utilities with BCrypt support
 - **External Validations** - Third-party validation integrations and data validation helpers
 - **Custom Logging** - Enhanced logging capabilities
@@ -152,6 +153,34 @@ string decrypted = await encryptionService.DecryptFromBytesAsync("password", enc
 var metadata = new Dictionary<string, object>()
     .WithPagination(page: 1, pageSize: 10, totalItems: 100);
 ```
+
+### 6. FilterQuery Extensions - Type-Safe Filter Extraction
+
+```csharp
+using Acontplus.Utilities.Extensions;
+
+app.MapGet("/api/lookups", async (FilterQuery filterQuery, ILookupService service) =>
+{
+    // Extract typed filter values with defaults - never throws
+    var category = filterQuery.GetFilterValue<string>("category");
+    var isActive = filterQuery.GetFilterValue<bool>("isActive", true);
+    var minPriority = filterQuery.GetFilterValue<int>("minPriority", 1);
+
+    // Safe retrieval with try pattern
+    if (filterQuery.TryGetFilterValue<Guid>("entityId", out var entityId))
+    {
+        // entityId successfully converted to Guid
+    }
+
+    return await service.GetLookupsAsync(filterQuery);
+});
+```
+
+**Benefits:**
+- ✅ **Type-safe** - Automatic type conversion with fallback to defaults
+- ✅ **Never throws** - Handles missing keys and conversion failures gracefully
+- ✅ **Clean code** - No manual dictionary checks or type casting
+- ✅ **Flexible** - Works with any type that supports `Convert.ChangeType()`
 
 ## 📄 Core Examples
 
