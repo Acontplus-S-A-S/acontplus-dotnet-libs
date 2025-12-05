@@ -11,3 +11,5 @@ global using Acontplus.TestDomain.Entities;
 global using Acontplus.TestInfrastructure.Persistence.Repositories.Interfaces;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;

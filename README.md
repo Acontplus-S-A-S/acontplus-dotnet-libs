@@ -1,14 +1,14 @@
 # Acontplus .NET Libraries
 
-**Acontplus S.A.S. (Ecuador) – .NET Libraries for Business Solutions**
+**Acontplus (Ecuador) – .NET Libraries for Business Solutions**
 
 ---
 
-Welcome to the official monorepo for Acontplus S.A.S. .NET libraries and applications. This solution provides a comprehensive set of modular, production-ready libraries and sample applications for building robust, scalable business software, with a focus on the Ecuadorian market and global best practices.
+Welcome to the official monorepo for Acontplus .NET libraries and applications. This solution provides a comprehensive set of modular, production-ready libraries and sample applications for building robust, scalable business software, with a focus on the Ecuadorian market and global best practices.
 
-## 🏢 About Acontplus S.A.S.
+## 🏢 About Acontplus
 
-[Acontplus S.A.S.](https://www.acontplus.com) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET.
+[Acontplus](https://www.acontplus.com) is a leading provider of software solutions in Ecuador, specializing in digital transformation, electronic invoicing, secure integrations, and business process automation. Our libraries are designed to accelerate development, ensure compliance, and promote maintainable architectures for .NET.
 
 ---
 
@@ -22,6 +22,7 @@ This repository contains multiple libraries and sample applications, each in its
 - **Acontplus.Billing**: Electronic invoicing and SRI (Ecuadorian Tax Authority) integration. Models, XML, validation, and web service support for Ecuadorian digital documents.
 - **Acontplus.Notifications**: Advanced notification system supporting email (MailKit, Amazon SES), WhatsApp, push, templates, and queueing.
 - **Acontplus.Reports**: RDLC report generation, export (PDF/Excel), and template management for .NET apps.
+- **Acontplus.Analytics**: Comprehensive analytics and statistics library with domain-agnostic metrics, trends, and business intelligence capabilities.
 - **Acontplus.Persistence.SqlServer**: SQL Server persistence with ADO.NET and EF Core, repository/unit-of-work patterns, and advanced error handling.
 - **Acontplus.Services**: API services, authentication, claims, JWT, middleware, and configuration for robust APIs.
 - **Acontplus.Utilities**: Cross-cutting utilities with consolidated domain-to-API conversion extensions: encryption, IO, text, time, comprehensive API helpers, and clean architectural separation.
@@ -87,7 +88,7 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 
 ## 🏢 Company
 
-**[Acontplus S.A.S.](https://www.acontplus.com)** – Software solutions, Ecuador
+**[Acontplus](https://www.acontplus.com)** – Software solutions, Ecuador
 
 ---
 

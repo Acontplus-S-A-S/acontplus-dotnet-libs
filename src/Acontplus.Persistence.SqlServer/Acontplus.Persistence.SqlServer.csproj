@@ -4,9 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.SqlServer</PackageId>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
+    <Copyright>Copyright © 2025 Acontplus</Copyright>
     <Description>Advanced library for SQL Server persistence with Entity Framework Core integration. Includes repositories, context management, ADO.NET support, advanced error handling, and enterprise-ready data access patterns for SQL Server databases.</Description>
     <PackageTags>dotnet;dotnet10;database;ado-net;data-access;sql-server;orm;micro-orm;query;crud;efcore;repository;entity-framework;sql;microsoft-sql</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>

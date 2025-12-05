@@ -239,6 +239,46 @@
                 Gzip compression level. Options: Fastest, Optimal, NoCompression.
             </summary>
         </member>
+        <member name="T:Acontplus.Infrastructure.Extensions.EventBusExtensions">
+            <summary>
+            Extension methods for configuring the in-memory event bus in the dependency injection container.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.EventBusExtensions.AddInMemoryEventBus(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the in-memory event bus as a singleton service to the service collection.
+            Registers IEventBus, IEventPublisher, and IEventSubscriber interfaces.
+            </summary>
+            <param name="services">The service collection to add the event bus to.</param>
+            <returns>The service collection for method chaining.</returns>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.EventBusExtensions.AddInMemoryEventBus(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Acontplus.Infrastructure.Messaging.EventBusOptions})">
+            <summary>
+            Adds the in-memory event bus as a singleton service with configuration options.
+            Registers IEventBus, IEventPublisher, and IEventSubscriber interfaces.
+            </summary>
+            <param name="services">The service collection to add the event bus to.</param>
+            <param name="configureOptions">Action to configure event bus options.</param>
+            <returns>The service collection for method chaining.</returns>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.EventBusExtensions.AddDomainEventDispatcher(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the domain event dispatcher for synchronous domain event handling.
+            Use this for transactional domain events that must run in the same Unit of Work.
+            </summary>
+            <param name="services">The service collection to add the domain event dispatcher to.</param>
+            <returns>The service collection for method chaining.</returns>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Extensions.EventBusExtensions.AddDomainEventHandler``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers a domain event handler for a specific domain event type.
+            Handlers are executed synchronously in the same transaction when events are dispatched.
+            </summary>
+            <typeparam name="TEvent">The domain event type.</typeparam>
+            <typeparam name="THandler">The handler implementation type.</typeparam>
+            <param name="services">The service collection.</param>
+            <returns>The service collection for method chaining.</returns>
+        </member>
         <member name="T:Acontplus.Infrastructure.Extensions.HealthCheckEndpointExtensions">
             <summary>
                 Extension methods for mapping health check endpoints with consistent formatting.
@@ -339,6 +379,88 @@
         <member name="M:Acontplus.Infrastructure.Http.ResilientHttpClientFactory.CreateLongRunningClient">
             <summary>
                 Creates an HTTP client for long-running operations.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Infrastructure.Messaging.ChannelExtensions">
+            <summary>
+            Extension methods for System.Threading.Channels to support type-safe channel transformations.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.ChannelExtensions.Cast``1(System.Threading.Channels.ChannelReader{System.Object})">
+            <summary>
+            Casts a ChannelReader&lt;object&gt; to a ChannelReader&lt;T&gt; by filtering and transforming items.
+            Creates a new unbounded channel that only contains items of type T.
+            </summary>
+            <typeparam name="T">The target type to cast to.</typeparam>
+            <param name="reader">The source channel reader containing objects.</param>
+            <returns>A new ChannelReader&lt;T&gt; that yields only items of type T.</returns>
+        </member>
+        <member name="T:Acontplus.Infrastructure.Messaging.DomainEventDispatcher">
+            <summary>
+            Domain Event Dispatcher for synchronous event handling within transactions.
+            Dispatches domain events to registered handlers (IDomainEventHandler implementations).
+            Runs synchronously in the same transaction/Unit of Work as the operation that raised the event.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.DomainEventDispatcher.Dispatch(Acontplus.Core.Domain.Common.Events.IDomainEvent)">
+            <summary>
+            Dispatches a domain event to all registered handlers synchronously.
+            Runs in the same transaction as the caller - if any handler fails, the transaction can be rolled back.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Infrastructure.Messaging.EventBusOptions">
+            <summary>
+            Configuration options for the in-memory event bus.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Messaging.EventBusOptions.EnableDiagnosticLogging">
+            <summary>
+            Gets or sets whether to enable verbose diagnostic logging for event publishing and subscribing.
+            Default is false.
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Messaging.EventBusOptions.MaxConcurrentHandlers">
+            <summary>
+            Gets or sets the maximum number of concurrent event handlers per event type.
+            Default is unlimited (0).
+            </summary>
+        </member>
+        <member name="P:Acontplus.Infrastructure.Messaging.EventBusOptions.DisposeOnShutdown">
+            <summary>
+            Gets or sets whether to dispose the event bus on application shutdown.
+            Default is true.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Infrastructure.Messaging.InMemoryEventBus">
+            <summary>
+            In-memory event bus implementation using System.Threading.Channels for high-performance,
+            scalable event-driven architecture. Suitable for horizontal and vertical scaling scenarios.
+            Thread-safe and optimized for high workload throughput.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.InMemoryEventBus.#ctor(Microsoft.Extensions.Logging.ILogger{Acontplus.Infrastructure.Messaging.InMemoryEventBus})">
+            <summary>
+            Initializes a new instance of the InMemoryEventBus.
+            </summary>
+            <param name="logger">Logger for diagnostic and troubleshooting information.</param>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.InMemoryEventBus.PublishAsync``1(``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.InMemoryEventBus.SubscribeAsync``1(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.InMemoryEventBus.GetOrCreateChannel``1">
+            <summary>
+            Gets or creates a channel for the specified event type.
+            Uses unbounded channels optimized for multi-producer, multi-consumer scenarios.
+            </summary>
+            <typeparam name="T">The event type.</typeparam>
+            <returns>A channel for the event type.</returns>
+        </member>
+        <member name="M:Acontplus.Infrastructure.Messaging.InMemoryEventBus.Dispose">
+            <summary>
+            Disposes the event bus and completes all active channels.
             </summary>
         </member>
         <member name="T:Acontplus.Infrastructure.Resilience.PolicyConfig">

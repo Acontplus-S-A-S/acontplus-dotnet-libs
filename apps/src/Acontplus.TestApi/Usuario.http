@@ -148,7 +148,7 @@ Content-Type: application/json
 # GET {{baseUrl}}/api/usuario?pageIndex=1&pageSize=10
 
 # ADO Approach
-GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10
+GET {{apiBase}}/paged-ado?pageIndex=1&pageSize=10&filters[minAge]=20
 
 ###
 

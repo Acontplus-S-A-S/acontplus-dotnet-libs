@@ -5,9 +5,10 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Acontplus.Notifications</PackageId>
-    <Version>1.4.5</Version>
+    <Version>1.4.6</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
+    <Copyright>Copyright © 2025 Acontplus</Copyright>
     <Description>Comprehensive library for notification services. Includes email (MailKit, Amazon SES), WhatsApp, push notifications, templating with Scriban, queue management, and enterprise-ready delivery patterns for cloud-native applications.</Description>
     <PackageTags>dotnet;dotnet10;notifications;mailkit;email;whatsapp;push;ses;templates;queue;scriban;amazon-ses;enterprise;cloud-native</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>

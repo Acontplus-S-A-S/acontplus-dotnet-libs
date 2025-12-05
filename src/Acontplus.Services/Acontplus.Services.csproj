@@ -4,9 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Services</PackageId>
-    <Version>2.1.1</Version>
+    <Version>2.1.2</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
+    <Copyright>Copyright © 2025 Acontplus</Copyright>
     <Description>Comprehensive library for ASP.NET Core application services: JWT authentication, user context management, exception handling, security headers, authorization policies, and enterprise-ready service patterns. For infrastructure services (caching, resilience), use Acontplus.Infrastructure.</Description>
     <PackageTags>dotnet;dotnet10;services;authentication;claims;api;jwt;configuration;security-headers;user-context;exception-handling;aspnetcore;enterprise;authorization;middleware</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>

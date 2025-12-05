@@ -4,9 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Acontplus.Persistence.Common</PackageId>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <Authors>Ivan Paz</Authors>
     <Company>Acontplus</Company>
+    <Copyright>Copyright © 2025 Acontplus</Copyright>
     <Description>Advanced persistence abstractions and infrastructure. Includes generic repository patterns, context factory, connection string providers, and multi-provider support for SQL Server, PostgreSQL, and other databases with enterprise-ready abstractions.</Description>
     <PackageTags>dotnet;dotnet10;persistence;database;abstractions;repository;efcore;multi-provider;entity-framework;connection-string;context-factory;enterprise;infrastructure;sql-server;postgresql</PackageTags>
     <RepositoryUrl>https://github.com/acontplus/acontplus-dotnet-libs</RepositoryUrl>
