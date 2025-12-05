@@ -25,6 +25,10 @@ BEGIN
 
     -- Current period metrics
     DECLARE @CurrentRevenue DECIMAL(18,2), @PreviousRevenue DECIMAL(18,2);
+    DECLARE @TotalTransactions INT, @CompletedTransactions INT, @TotalRevenue DECIMAL(18,2);
+    DECLARE @NetRevenue DECIMAL(18,2), @TotalTax DECIMAL(18,2), @AverageTransactionValue DECIMAL(18,2);
+    DECLARE @UniqueCustomers INT, @AverageOrderValue DECIMAL(18,2), @TotalDiscounts DECIMAL(18,2);
+    DECLARE @CancelledOrders INT, @CashSales DECIMAL(18,2), @CreditCardSales DECIMAL(18,2), @TransferSales DECIMAL(18,2);
 
     SELECT
         -- Transaction Metrics (Base DTO properties)
