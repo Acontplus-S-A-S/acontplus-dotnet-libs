@@ -8,6 +8,13 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<WhatsAppUsage> WhatsAppUsages { get; set; }
 
+    // Event Bus Example Entities
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderLineItem> OrderLineItems { get; set; }
+
+    // Analytics Example Entities
+    public DbSet<Sale> Sales { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -18,6 +25,12 @@ public class TestContext(DbContextOptions<TestContext> options) : BaseContext(op
         // Usuario will be mapped to table "Usuarios" (from DbSet name)
         BaseEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Usuario));
         SimpleEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Dia));
+
+        // Register Order and OrderLineItem for event bus examples
+        BaseEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Order), typeof(OrderLineItem));
+
+        // Register Sale for analytics examples
+        BaseEntityRegistration.RegisterEntities(modelBuilder, typeof(TestContext), typeof(Sale));
 
         // 2. Register entities with explicit schema/table names (overrides [Table] attribute)
         //SimpleEntityRegistration.RegisterEntitiesWithNames(modelBuilder, typeof(TestContext),

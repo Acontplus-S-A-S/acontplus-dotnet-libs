@@ -4,17 +4,18 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Acontplus.Analytics" Version="1.0.0" />
     <PackageVersion Include="Acontplus.Barcode" Version="1.1.0" />
-    <PackageVersion Include="Acontplus.Core" Version="2.0.3" />
-    <PackageVersion Include="Acontplus.Persistence.Common" Version="2.0.3" />
-    <PackageVersion Include="Acontplus.Utilities" Version="2.0.3" />
+    <PackageVersion Include="Acontplus.Core" Version="2.1.0" />
+    <PackageVersion Include="Acontplus.Persistence.Common" Version="2.0.4" />
+    <PackageVersion Include="Acontplus.Utilities" Version="2.0.4" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageVersion Include="AWSSDK.Core" Version="4.0.3.3" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.14" />
-    <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.0.7" />
+    <PackageVersion Include="AWSSDK.Core" Version="4.0.3.4" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.14.1" />
+    <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.0.8" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0-rc.2" />
     <PackageVersion Include="Elastic.Serilog.Sinks" Version="9.0.0" />

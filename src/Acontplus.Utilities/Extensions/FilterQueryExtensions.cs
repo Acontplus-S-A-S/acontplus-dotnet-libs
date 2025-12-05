@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Acontplus.Utilities.Dtos;
 
 namespace Acontplus.Utilities.Extensions;
@@ -22,7 +23,14 @@ public static class FilterQueryExtensions
 
         try
         {
-            return value is T typed ? typed : (T?)Convert.ChangeType(value, typeof(T));
+            if (value is T typed)
+                return typed;
+
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            if (converter.CanConvertFrom(value.GetType()))
+                return (T?)converter.ConvertFrom(value);
+
+            return defaultValue;
         }
         catch
         {
@@ -47,8 +55,20 @@ public static class FilterQueryExtensions
 
         try
         {
-            value = rawValue is T typed ? typed : (T?)Convert.ChangeType(rawValue, typeof(T));
-            return true;
+            if (rawValue is T typed)
+            {
+                value = typed;
+                return true;
+            }
+
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            if (converter.CanConvertFrom(rawValue.GetType()))
+            {
+                value = (T?)converter.ConvertFrom(rawValue);
+                return true;
+            }
+
+            return false;
         }
         catch
         {

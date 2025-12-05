@@ -17,18 +17,6 @@ public static class LookupEndpoints
             ILookupService lookupService,
             CancellationToken cancellationToken) =>
         {
-            // ✅ Example: Use GetFilterValue to extract specific filter values with type safety
-            var category = filterQuery.GetFilterValue<string>("category");
-            var isActive = filterQuery.GetFilterValue<bool>("isActive", true); // with default
-            var minPriority = filterQuery.GetFilterValue<int>("minPriority", 1);
-
-            // ✅ Example: Use TryGetFilterValue for safe retrieval
-            if (filterQuery.TryGetFilterValue<Guid>("entityId", out var entityId))
-            {
-                // entityId is available and successfully converted to Guid
-                // You could add additional logic here if needed
-            }
-
             var filterRequest = filterQuery.Adapt<FilterRequest>();
 
             return await lookupService
@@ -46,10 +34,6 @@ public static class LookupEndpoints
             ILookupService lookupService,
             CancellationToken cancellationToken) =>
         {
-            // ✅ Example: Extract filter values before mapping
-            var forceRefresh = filterQuery.GetFilterValue<bool>("forceRefresh", false);
-            var cacheKey = filterQuery.GetFilterValue<string>("cacheKey", "default");
-
             var filterRequest = filterQuery.Adapt<FilterRequest>();
 
             return await lookupService

@@ -225,7 +225,7 @@ public static class UsuarioEndpoints
             Filters = pagination.Filters
         };
 
-        // ✅ Example: Use GetFilterValue to extract and validate filter values
+        // ✅ Example: Use GetFilterValue to extract and validate filter values from original pagination
         var showDeleted = PaginationRequest.GetFilterValue<bool>("showDeleted", false);
         var minAge = PaginationRequest.GetFilterValue<int>("minAge", 0);
         var role = PaginationRequest.GetFilterValue<string>("role", "User");

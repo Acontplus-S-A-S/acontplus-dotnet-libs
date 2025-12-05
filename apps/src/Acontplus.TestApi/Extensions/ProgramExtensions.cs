@@ -1,5 +1,13 @@
+using Acontplus.Core.Domain.Common.Events;
+using Acontplus.Infrastructure.Extensions;
+using Acontplus.TestApi.Endpoints.Business;
+using Acontplus.TestApi.Endpoints.Business.Analytics;
 using Acontplus.TestApi.Endpoints.Demo;
 using Acontplus.TestApi.Endpoints.Infrastructure;
+using Acontplus.TestApplication.Interfaces;
+using Acontplus.TestApplication.Services;
+using Acontplus.TestDomain.Entities;
+using Acontplus.TestInfrastructure.EventHandlers;
 using Acontplus.TestInfrastructure.Persistence;
 using Scrutor;
 
@@ -42,6 +50,8 @@ public static class ProgramExtensions
     public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Registro para la base de datos principal de la aplicación
+        // IUnitOfWork is automatically registered and provides GetRepository<T>() method
+        // No need to register individual repositories - UoW handles it
         services.AddSqlServerPersistence<TestContext>(sqlServerOptions =>
         {
             // Configure SQL Server options
@@ -83,6 +93,40 @@ public static class ProgramExtensions
         services.AddScoped<IMailKitService, AmazonSesService>();
         services.AddTransient<ISqlExceptionTranslator, SqlExceptionTranslator>();
         services.AddDataProtection();
+
+        // ========================================
+        // EVENT SYSTEMS CONFIGURATION
+        // ========================================
+
+        // 1. DOMAIN EVENT DISPATCHER (Transactional, Synchronous)
+        // Use for: Operations where second insert depends on first insert's ID
+        // Runs in same transaction/UoW - if handler fails, entire transaction rolls back
+        services.AddDomainEventDispatcher();
+        services.AddDomainEventHandler<EntityCreatedEvent, EntityAuditHandler>();
+        services.AddDomainEventHandler<EntityCreatedEvent, OrderLineItemsCreationHandler>();
+
+        // 2. APPLICATION EVENT BUS (Async, Background Processing)
+        // Use for: Cross-service communication, notifications, analytics, integration
+        // Runs asynchronously in background - eventual consistency
+        services.AddInMemoryEventBus(options =>
+        {
+            options.EnableDiagnosticLogging = true;
+        });
+
+        // Register Application Event Handlers as Background Services
+        services.AddHostedService<OrderNotificationHandler>();
+        services.AddHostedService<OrderAnalyticsHandler>();
+        services.AddHostedService<OrderWorkflowHandler>();
+
+        // ========================================
+        // APPLICATION SERVICES
+        // ========================================
+        services.AddScoped<IOrderService, OrderService>();
+
+        // ========================================
+        // ANALYTICS SERVICES
+        // ========================================
+        services.AddScoped<ISalesAnalyticsService, SalesAnalyticsService>();
 
         return services;
     }
@@ -141,5 +185,11 @@ public static class ProgramExtensions
         // Map demo endpoints
         app.MapBusinessExceptionTestEndpoints();
         app.MapExceptionTestEndpoints();
+
+        // Map CQRS + Event Bus demo endpoints
+        app.MapOrderEndpoints();
+
+        // Map Analytics demo endpoints
+        app.MapSalesAnalyticsEndpoints();
     }
 }

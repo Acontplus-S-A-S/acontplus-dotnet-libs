@@ -148,6 +148,43 @@
             Circuit is half-open and testing if it should close.
             </summary>
         </member>
+        <member name="T:Acontplus.Core.Abstractions.Messaging.IEventBus">
+            <summary>
+            Unified interface for event bus operations combining publishing and subscribing.
+            Provides a complete abstraction for in-memory event-driven communication.
+            </summary>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Messaging.IEventPublisher">
+            <summary>
+            Defines a publisher for application-level events using in-memory channels.
+            Suitable for high-throughput, scalable event-driven architectures.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Messaging.IEventPublisher.PublishAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            Publishes an event asynchronously to all subscribers of type T.
+            </summary>
+            <typeparam name="T">The event type. Must be a reference type.</typeparam>
+            <param name="eventData">The event data to publish.</param>
+            <param name="cancellationToken">Cancellation token for the operation.</param>
+            <returns>A task representing the asynchronous publish operation.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when eventData is null.</exception>
+        </member>
+        <member name="T:Acontplus.Core.Abstractions.Messaging.IEventSubscriber">
+            <summary>
+            Defines a subscriber for application-level events using in-memory channels.
+            Provides async enumerable streams for reactive event processing.
+            </summary>
+        </member>
+        <member name="M:Acontplus.Core.Abstractions.Messaging.IEventSubscriber.SubscribeAsync``1(System.Threading.CancellationToken)">
+            <summary>
+            Subscribes to events of type T asynchronously.
+            Returns an async enumerable stream that yields events as they are published.
+            </summary>
+            <typeparam name="T">The event type to subscribe to. Must be a reference type.</typeparam>
+            <param name="cancellationToken">Cancellation token to stop the subscription.</param>
+            <returns>An async enumerable stream of events of type T.</returns>
+        </member>
         <member name="T:Acontplus.Core.Abstractions.Persistence.IAdoRepository">
             <summary>
             ADO.NET repository interface for high-performance, raw SQL operations.

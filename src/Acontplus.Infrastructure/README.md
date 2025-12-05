@@ -60,6 +60,18 @@ practices.
 - **Performance Boost**: Reduce bandwidth and improve response times
 - **Client-Aware**: Automatic compression based on client capabilities
 
+### 📡 Application Event Bus (NEW in v1.2.1+)
+
+- **Channel-Based Architecture**: High-performance using `System.Threading.Channels`
+- **Async Background Processing**: Non-blocking event handling for cross-cutting concerns
+- **Pub/Sub Pattern**: In-memory event publishing and subscribing
+- **CQRS Ready**: Perfect for command/query separation with application events
+- **Microservices Communication**: Scalable async event processing
+- **Multiple Subscribers**: Many background handlers can listen to the same event
+- **Thread-Safe**: Concurrent event publishing and consumption
+- **Clean Architecture**: Abstractions in Core, implementation in Infrastructure
+- **⚠️ Note**: For **transactional domain events** (same transaction, DB ID dependencies), use `IDomainEventDispatcher` from Core
+
 ## 📦 Installation
 
 ### NuGet Package Manager
@@ -88,7 +100,7 @@ dotnet add package Acontplus.Infrastructure
 // Program.cs
 var builder = WebApplication.CreateBuilder(args);
 
-// Add all infrastructure services with one line
+// Add all infrastructure services with one line (includes Event Bus)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
@@ -99,7 +111,29 @@ app.MapHealthChecks("/health");
 app.Run();
 ```
 
-### 2. With Rate Limiting
+### 2. With Event Bus
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Add infrastructure services
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// Add in-memory event bus for CQRS/Event-Driven architecture
+builder.Services.AddInMemoryEventBus(options =>
+{
+    options.EnableDiagnosticLogging = true;
+});
+
+// Register event handlers as background services
+builder.Services.AddHostedService<OrderCreatedHandler>();
+
+var app = builder.Build();
+app.Run();
+```
+
+### 3. With Rate Limiting
 
 ```csharp
 // Program.cs
@@ -123,7 +157,7 @@ app.MapControllers();
 app.Run();
 ```
 
-### 3. Configuration
+### 4. Configuration
 
 Add to your `appsettings.json`:
 
@@ -830,7 +864,85 @@ ResilientHttpClientFactory
   - CreateExternalClient()
   - CreateLongRunningClient()
   - CreateClientWithTimeout(string name, TimeSpan timeout)
+
+// Event Bus (Acontplus.Core.Abstractions.Messaging)
+IEventPublisher
+  - PublishAsync<T>(T eventData, CancellationToken cancellationToken = default)
+
+IEventSubscriber
+  - SubscribeAsync<T>(CancellationToken cancellationToken = default)
+
+IEventBus : IEventPublisher, IEventSubscriber
 ```
+
+### 📚 Event Documentation
+
+Acontplus provides **TWO event systems** for different purposes:
+
+#### 1️⃣ Domain Event Dispatcher (from `Acontplus.Core`)
+**Use for**: Transactional operations where second insert needs ID from first insert
+
+```csharp
+// Application Service
+public async Task<Result<Order>> CreateOrderAsync(CreateOrderCommand cmd)
+{
+    var order = await _orderRepository.AddAsync(new Order { ... });
+
+    // Dispatch DOMAIN EVENT (synchronous, same transaction)
+    await _domainEventDispatcher.Dispatch(
+        new EntityCreatedEvent(order.Id, nameof(Order), null));
+
+    await _unitOfWork.SaveChangesAsync(); // Commits BOTH inserts
+    return Result.Success(order);
+}
+
+// Domain Event Handler (runs in SAME transaction)
+public class OrderLineItemsHandler : IDomainEventHandler<EntityCreatedEvent>
+{
+    public async Task HandleAsync(EntityCreatedEvent evt, CancellationToken ct)
+    {
+        if (evt.EntityType == nameof(Order))
+        {
+            // Second insert using Order.Id from first insert
+            await _lineItemRepo.AddAsync(
+                new OrderLineItem { OrderId = evt.EntityId, ... }, ct);
+            // Don't SaveChanges - UoW will commit both together
+        }
+    }
+}
+```
+
+#### 2️⃣ Application Event Bus (from `Acontplus.Infrastructure`)
+**Use for**: Async cross-service communication (notifications, analytics, integration)
+
+```csharp
+// Define application event (NOT inheriting IDomainEvent)
+public record OrderCreatedEvent(int OrderId, string CustomerName, decimal Total);
+
+// Publish application event (async, fire-and-forget)
+await _eventPublisher.PublishAsync(
+    new OrderCreatedEvent(order.Id, "John", 99.99));
+
+// Subscribe in BackgroundService (async handler)
+public class OrderNotificationHandler : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _eventSubscriber.SubscribeAsync<OrderCreatedEvent>(async (evt, ct) =>
+        {
+            // Send email (non-transactional, async)
+            await _emailService.SendAsync(
+                evt.CustomerName,
+                $"Order #{evt.OrderId} confirmed!");
+        }, stoppingToken);
+    }
+}
+```
+
+#### 📖 Documentation
+- **[Event Systems Comparison](../../docs/EVENT_SYSTEMS_COMPARISON.md)** - Which system to use when
+- **[Event Bus Guide](../../docs/EVENT_BUS_GUIDE.md)** - Complete Application Event Bus guide
+- **[TestApi Example](../../apps/src/Acontplus.TestApplication/)** - Full implementation with both systems
 
 ## 🏗️ Architecture
 
@@ -846,6 +958,10 @@ Acontplus.Infrastructure/
 │   └── RetryPolicyService.cs          # Retry policy service
 ├── Http/
 │   └── ResilientHttpClientFactory.cs  # HTTP client factory
+├── Messaging/
+│   ├── InMemoryEventBus.cs            # Channel-based event bus
+│   ├── ChannelExtensions.cs           # Type-safe channel transformations
+│   └── EventBusOptions.cs             # Event bus configuration
 ├── HealthChecks/
 │   ├── CacheHealthCheck.cs            # Cache health check
 │   └── CircuitBreakerHealthCheck.cs   # Circuit breaker health check
@@ -854,7 +970,8 @@ Acontplus.Infrastructure/
 │   └── ResilienceConfiguration.cs     # Resilience config
 └── Extensions/
     ├── InfrastructureServiceExtensions.cs  # DI registration
-    └── RateLimitingExtensions.cs           # Rate limiting configuration
+    ├── RateLimitingExtensions.cs           # Rate limiting configuration
+    └── EventBusExtensions.cs               # Event bus registration
 ```
 
 ### Dependencies
