@@ -49,7 +49,8 @@ public class OrderAnalyticsHandler : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in OrderAnalyticsHandler");
-            throw;
+            // Don't rethrow - this would crash the application
+            // Consider implementing retry logic or circuit breaker pattern
         }
     }
 }
