@@ -40,7 +40,7 @@ public class DocumentConverter : IDocumentConverter
                     }
                     else
                     {
-                         throw new FileNotFoundException($"No se pudo cargar el recurso '{matchingResource}'.");
+                        throw new FileNotFoundException($"No se pudo cargar el recurso '{matchingResource}'.");
                     }
                 }
                 else
@@ -521,7 +521,8 @@ public class DocumentConverter : IDocumentConverter
             case "04":
 
                 break;
-        }        ;
+        }
+        ;
         totals += @"</tbody>
                                 </table>
                             </div>

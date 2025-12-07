@@ -1,8 +1,6 @@
-using System.Collections.Concurrent;
+using Acontplus.Core.Abstractions.Messaging;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
-using Acontplus.Core.Abstractions.Messaging;
-using Microsoft.Extensions.Logging;
 
 namespace Acontplus.Infrastructure.Messaging;
 

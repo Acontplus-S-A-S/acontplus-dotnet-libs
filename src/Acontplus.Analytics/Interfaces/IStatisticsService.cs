@@ -1,5 +1,3 @@
-using Acontplus.Core.Dtos.Requests;
-
 namespace Acontplus.Analytics.Interfaces;
 
 /// <summary>
