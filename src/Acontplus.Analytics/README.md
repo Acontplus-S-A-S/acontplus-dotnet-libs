@@ -81,56 +81,58 @@ public class SalesAggregatedDto : BaseAggregatedStatsDto { }
 public class SalesTrendDto : BaseTrendDto { }
 ```
 
-### 2. Implement the Statistics Service
+### 2. Register the Service
+
+Use the extension method to register the generic service with your specific DTOs and stored procedure names.
+
+```csharp
+using Acontplus.Analytics.Extensions;
+
+// In your Program.cs or DependencyInjection setup
+services.AddStatisticsService<SalesDashboardDto, SalesRealTimeDto, SalesAggregatedDto, SalesTrendDto>(
+    dashboardSpName: "Sales.GetDashboardStats",
+    realTimeSpName: "Sales.GetRealTimeStats",
+    aggregatedSpName: "Sales.GetAggregatedStats",
+    trendsSpName: "Sales.GetTrendStats"
+);
+
+// OR use the module-based convention
+// This assumes SPs are named: Sales.AnalyticsGetDashboard, Sales.AnalyticsGetRealTime, etc.
+services.AddStatisticsService<SalesDashboardDto, SalesRealTimeDto, SalesAggregatedDto, SalesTrendDto>(
+    moduleName: "Sales.Analytics"
+);
+```
+
+### 3. Use the Service
+
+Inject the generic interface into your controllers or endpoints.
 
 ```csharp
 using Acontplus.Analytics.Interfaces;
 using Acontplus.Core.Dtos.Requests;
 
-public class SalesStatisticsService : IStatisticsService<
-    SalesDashboardDto,
-    SalesRealTimeDto,
-    BaseAggregatedStatsDto,
-    BaseTrendDto>
+public class SalesAnalyticsEndpoints
 {
-    private readonly IRepository<Order> _orderRepository;
-
-    public async Task<Result<SalesDashboardDto, DomainError>> GetDashboardStatsAsync(
-        FilterRequest filterRequest,
-        CancellationToken cancellationToken = default)
+    public static void Map(IEndpointRouteBuilder app)
     {
-        // Your implementation using repository, stored procedures, etc.
-        var stats = await CalculateDashboardMetrics(filterRequest);
-        return Result<SalesDashboardDto, DomainError>.Success(stats);
-    }
+        app.MapPost("/api/analytics/dashboard", async (
+            IStatisticsService<SalesDashboardDto, SalesRealTimeDto, SalesAggregatedDto, SalesTrendDto> statsService,
+            FilterRequest filter) =>
+        {
+            var result = await statsService.GetDashboardStatsAsync(filter);
 
-    public async Task<Result<SalesRealTimeDto, DomainError>> GetRealTimeStatsAsync(
-        FilterRequest? filterRequest = null,
-        CancellationToken cancellationToken = default)
-    {
-        var stats = await CalculateRealTimeMetrics();
-        return Result<SalesRealTimeDto, DomainError>.Success(stats);
-    }
+            if (result.IsFailure)
+            {
+                return Results.BadRequest(result.Error);
+            }
 
-    public async Task<Result<List<BaseAggregatedStatsDto>, DomainError>> GetAggregatedStatsAsync(
-        FilterRequest filterRequest,
-        CancellationToken cancellationToken = default)
-    {
-        var stats = await CalculateAggregatedMetrics(filterRequest);
-        return Result<List<BaseAggregatedStatsDto>, DomainError>.Success(stats);
-    }
-
-    public async Task<Result<List<BaseTrendDto>, DomainError>> GetTrendsAsync(
-        FilterRequest filterRequest,
-        CancellationToken cancellationToken = default)
-    {
-        var trends = await CalculateTrends(filterRequest);
-        return Result<List<BaseTrendDto>, DomainError>.Success(trends);
+            return Results.Ok(result.Value);
+        });
     }
 }
 ```
 
-### 3. Use SQL Templates for Stored Procedures
+### 4. Create Stored Procedures with SQL Templates
 
 ```sql
 -- Example stored procedure using the SQL templates
@@ -173,72 +175,11 @@ BEGIN
 END
 ```
 
-### 4. Consume in Your API
+## 📚 Usage & Configuration
 
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class AnalyticsController : ControllerBase
-{
-    private readonly IStatisticsService<SalesDashboardDto, SalesRealTimeDto,
-        BaseAggregatedStatsDto, BaseTrendDto> _statsService;
+### DTO Reference
 
-    [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard(
-        [FromQuery] DateTime? startDate,
-        [FromQuery] DateTime? endDate)
-    {
-        var filter = new FilterRequest
-        {
-            StartDate = startDate,
-            EndDate = endDate
-        };
-
-        var result = await _statsService.GetDashboardStatsAsync(filter);
-
-        return result.Match(
-            success => Ok(success),
-            error => BadRequest(error)
-        );
-    }
-
-    [HttpGet("realtime")]
-    public async Task<IActionResult> GetRealTime()
-    {
-        var result = await _statsService.GetRealTimeStatsAsync();
-
-        return result.Match(
-            success => Ok(success),
-            error => BadRequest(error)
-        );
-    }
-
-    [HttpGet("trends")]
-    public async Task<IActionResult> GetTrends(
-        [FromQuery] DateTime startDate,
-        [FromQuery] DateTime endDate,
-        [FromQuery] string metric = "revenue")
-    {
-        var filter = new FilterRequest
-        {
-            StartDate = startDate,
-            EndDate = endDate,
-            Filters = $"{{\"Metric\": \"{metric}\"}}"
-        };
-
-        var result = await _statsService.GetTrendsAsync(filter);
-
-        return result.Match(
-            success => Ok(success),
-            error => BadRequest(error)
-        );
-    }
-}
-```
-
-## 📊 DTO Reference
-
-### BaseDashboardStatsDto
+#### BaseDashboardStatsDto
 
 Comprehensive business metrics for executive dashboards:
 
@@ -254,7 +195,7 @@ Comprehensive business metrics for executive dashboards:
 
 **40+ properties** covering transactions, revenue, volumes, entities, and comparisons.
 
-### BaseRealTimeStatsDto
+#### BaseRealTimeStatsDto
 
 Live operational metrics:
 
@@ -269,7 +210,7 @@ Live operational metrics:
 
 **25+ properties** for real-time monitoring and capacity planning.
 
-### BaseAggregatedStatsDto
+#### BaseAggregatedStatsDto
 
 Time-series aggregations with statistical analysis:
 
@@ -284,7 +225,7 @@ Time-series aggregations with statistical analysis:
 
 **30+ properties** for comprehensive statistical analysis.
 
-### BaseTrendDto
+#### BaseTrendDto
 
 Advanced trend analysis with forecasting:
 
@@ -299,7 +240,7 @@ Advanced trend analysis with forecasting:
 
 **35+ properties** for deep trend analysis and forecasting.
 
-## 🛠️ SQL Templates
+### SQL Templates
 
 Use `StatsSqlTemplates` for consistent SQL patterns:
 
@@ -326,7 +267,7 @@ StatsSqlTemplates.AnomalyDetection  // Outlier detection
 StatsSqlTemplates.IsWeekend         // Weekend classification
 ```
 
-## 🌍 Localization
+### Localization
 
 All DTOs include an optional `Labels` dictionary property that your application can populate with localized strings:
 
@@ -363,49 +304,218 @@ if (dashboard.IsSuccess)
 
 > **Note**: Localization is intentionally left to the consuming application, allowing you to integrate with your preferred localization system (RESX files, database, JSON, or any i18n framework).
 
-## 🏗️ Architecture Patterns
+## 🏗️ Architecture & Clean Architecture Guide
 
-### Repository Pattern
+### Clean Architecture Implementation
+
+```
+├── API Layer (Acontplus.TestApi)
+│   └── Endpoints/Business/Analytics/SalesAnalyticsEndpoints.cs
+│       → Maps HTTP requests to service calls
+│       → Applies localization at presentation layer
+│
+├── Application Layer (Acontplus.TestApplication)
+│   ├── Interfaces/ISalesAnalyticsService.cs
+│   │   → Domain-specific analytics contract
+│   ├── Services/SalesAnalyticsService.cs
+│   │   → Inherits from StatisticsService<T1,T2,T3,T4>
+│   │   → Configures stored procedure names
+│   ├── Dtos/Analytics/
+│   │   ├── SalesDashboardDto.cs (extends BaseDashboardStatsDto)
+│   │   └── SalesRealTimeDto.cs (extends BaseRealTimeStatsDto)
+│   └── Helpers/SalesAnalyticsLocalization.cs
+│       → Application-specific label provider (Spanish/English)
+│
+├── Domain Layer (Acontplus.TestDomain)
+│   └── Entities/Sale.cs
+│       → Business entity with analytics-relevant properties
+│
+└── Infrastructure Layer (Database)
+    └── StoredProcedures/SalesAnalytics.sql
+        → SQL procedures implementing analytics logic
+```
+
+### Implementation Example
+
+#### 1. Domain Layer - Sale Entity
+
+**File**: `apps/src/Acontplus.TestDomain/Entities/Sale.cs`
 
 ```csharp
-public class SalesAnalyticsRepository : ISalesAnalyticsRepository
+public class Sale : BaseEntity
 {
-    public async Task<SalesDashboardDto> GetDashboardAsync(
-        DateTime startDate,
-        DateTime endDate)
-    {
-        // Use stored procedure with SQL templates
-        var parameters = new[]
-        {
-            new SqlParameter("@StartDate", startDate),
-            new SqlParameter("@EndDate", endDate)
-        };
+    public int CustomerId { get; set; }
+    public DateTime SaleDate { get; set; }
+    public decimal TotalAmount { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
+    public string Status { get; set; } // Pending, Completed, Cancelled
+    public string PaymentMethod { get; set; }
+    public int ItemCount { get; set; }
+}
+```
 
-        return await _context.ExecuteStoredProcedureAsync<SalesDashboardDto>(
-            "sp_GetSalesDashboardStats",
-            parameters);
+#### 2. Application Layer - DTOs
+
+**File**: `apps/src/Acontplus.TestApplication/Dtos/Analytics/SalesDashboardDto.cs`
+
+```csharp
+public class SalesDashboardDto : BaseDashboardStatsDto
+{
+    // Extends base DTO with sales-specific properties
+    public decimal AverageOrderValue { get; set; }
+    public decimal DiscountPercentage { get; set; }
+    public decimal CancellationRate { get; set; }
+    public decimal CashSales { get; set; }
+    public decimal CreditCardSales { get; set; }
+    public int NewCustomers { get; set; }
+    public decimal CustomerRetentionRate { get; set; }
+}
+```
+
+#### 3. Application Layer - Service Implementation
+
+**File**: `apps/src/Acontplus.TestApplication/Services/SalesAnalyticsService.cs`
+
+```csharp
+public class SalesAnalyticsService : StatisticsService<
+    SalesDashboardDto,
+    SalesRealTimeDto,
+    BaseAggregatedStatsDto,
+    BaseTrendDto>,
+    ISalesAnalyticsService
+{
+    public SalesAnalyticsService(IAdoRepository adoRepository)
+        : base(
+            adoRepository,
+            dashboardSpName: "Sales.GetDashboardStats",
+            realTimeSpName: "Sales.GetRealTimeStats",
+            aggregatedSpName: "Sales.GetAggregatedStats",
+            trendsSpName: "Sales.GetTrendStats")
+    {
     }
 }
 ```
 
-### Clean Architecture Integration
+#### 4. API Layer - Endpoints
 
+**File**: `apps/src/Acontplus.TestApi/Endpoints/Business/Analytics/SalesAnalyticsEndpoints.cs`
+
+```csharp
+public static class SalesAnalyticsEndpoints
+{
+    public static IEndpointRouteBuilder MapSalesAnalyticsEndpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/analytics/sales")
+            .WithTags("Sales Analytics");
+
+        // Dashboard endpoint
+        group.MapGet("/dashboard", async (
+            [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate,
+            [FromQuery] string? language,
+            [FromServices] ISalesAnalyticsService analyticsService,
+            CancellationToken cancellationToken) =>
+        {
+            var filter = new FilterRequest
+            {
+                Filters = new Dictionary<string, object>
+                {
+                    { "StartDate", startDate ?? DateTime.UtcNow.AddDays(-30) },
+                    { "EndDate", endDate ?? DateTime.UtcNow }
+                }
+            };
+
+            var result = await analyticsService.GetDashboardStatsAsync(filter, cancellationToken);
+
+            return result.Match(
+                success: data =>
+                {
+                    data.Labels = SalesAnalyticsLocalization.GetLabels(language ?? "en");
+                    return Results.Ok(data);
+                },
+                failure: error => Results.BadRequest(new { error = error.Message, code = error.Code }));
+        });
+
+        return app;
+    }
+}
 ```
-Domain Layer:
-  └── IStatisticsService<TDashboard, TRealTime, TAggregated, TTrend>
 
-Application Layer:
-  └── SalesStatisticsService : IStatisticsService<...>
-      └── Uses domain repositories
+#### 5. Infrastructure Layer - Stored Procedures
 
-Infrastructure Layer:
-  └── SalesAnalyticsRepository
-      └── Stored procedures with StatsSqlTemplates
+**File**: `apps/database/StoredProcedures/SalesAnalytics.sql`
 
-API Layer:
-  └── AnalyticsController
-      └── Injects IStatisticsService
+```sql
+CREATE OR ALTER PROCEDURE [Sales].[GetDashboardStats]
+    @StartDate DATETIME2 = NULL,
+    @EndDate DATETIME2 = NULL
+AS
+BEGIN
+    SET @StartDate = ISNULL(@StartDate, DATEADD(DAY, -30, GETUTCDATE()));
+    SET @EndDate = ISNULL(@EndDate, GETUTCDATE());
+
+    SELECT
+        -- Base properties
+        COUNT(*) AS TotalTransactions,
+        SUM(TotalAmount) AS TotalRevenue,
+        AVG(TotalAmount) AS AverageTransactionValue,
+
+        -- Sales-specific properties
+        AVG(TotalAmount) AS AverageOrderValue,
+        SUM(DiscountAmount) AS TotalDiscounts,
+        SUM(CASE WHEN PaymentMethod = 'Cash' THEN TotalAmount ELSE 0 END) AS CashSales,
+        COUNT(DISTINCT CustomerId) AS NewCustomers
+
+    FROM Sales
+    WHERE SaleDate BETWEEN @StartDate AND @EndDate;
+END
 ```
+
+### Architecture Benefits
+
+#### ✅ Clean Separation of Concerns
+- **Domain**: Defines business entities (Sale)
+- **Application**: Orchestrates business logic, DTOs, and localization
+- **Infrastructure**: Data access via stored procedures
+- **API**: HTTP presentation layer with minimal logic
+
+#### ✅ Reusability
+- `StatisticsService<T1,T2,T3,T4>` can be reused for any domain
+- Just change SP names and DTO types
+- Same pattern works for Products, Orders, Customers, etc.
+
+#### ✅ Type Safety
+- Generic constraints ensure compile-time safety
+- DTOs extend base classes for consistency
+- Interface contracts prevent implementation drift
+
+#### ✅ Testability
+- Services can be mocked via interfaces
+- DTOs are simple POCOs
+- Stored procedures can be tested independently
+
+## 🔗 Dependencies
+
+### Required Packages
+
+- **Acontplus.Core**: Result pattern, FilterRequest, domain abstractions
+- **Acontplus.Utilities**: API conversion extensions
+- **Acontplus.Persistence.Common**: Repository patterns (IAdoRepository)
+
+### Optional Integrations
+
+- **Acontplus.Services**: Expose analytics via API controllers
+- **Acontplus.Infrastructure**: Caching for dashboard data
+
+## 📖 Best Practices
+
+1. **Extend base DTOs** for domain-specific properties
+2. **Use SQL templates** for consistent stored procedures
+3. **Implement caching** for frequently accessed dashboard data
+4. **Return Result<T>** for consistent error handling
+5. **Add localization labels** for international applications
+6. **Use aggregations** for large datasets instead of real-time calculations
 
 ## 📚 Use Cases
 
@@ -441,24 +551,6 @@ public class TransactionDashboardDto : BaseDashboardStatsDto
     public decimal ApprovalRate { get; set; }
 }
 ```
-
-## 🔗 Integration with Acontplus Libraries
-
-Works seamlessly with other Acontplus packages:
-
-- **Acontplus.Core**: Uses `Result<T, TError>` pattern and `FilterRequest`
-- **Acontplus.Utilities**: Leverages API conversion extensions
-- **Acontplus.Persistence**: Compatible with repository patterns
-- **Acontplus.Services**: Can be exposed via API controllers
-
-## 📖 Best Practices
-
-1. **Extend base DTOs** for domain-specific properties
-2. **Use SQL templates** for consistent stored procedures
-3. **Implement caching** for frequently accessed dashboard data
-4. **Return Result<T>** for consistent error handling
-5. **Add localization labels** for international applications
-6. **Use aggregations** for large datasets instead of real-time calculations
 
 ## 🤝 Contributing
 

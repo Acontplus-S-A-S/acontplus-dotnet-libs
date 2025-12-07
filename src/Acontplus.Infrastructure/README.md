@@ -4,12 +4,9 @@
 [![.NET](https://img.shields.io/badge/.NET-10.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting,
-health checks, and response compression for .NET applications. Built with modern .NET 10 features and industry best
-practices.
+Enterprise-grade infrastructure library providing caching, resilience patterns, HTTP client factory, rate limiting, health checks, response compression, and event bus for .NET applications. Built with modern .NET 10 features and industry best practices.
 
-> **💡 Application Services**: For authentication, authorization policies, security headers, device detection, and
-> request context, use **[Acontplus.Services](https://www.nuget.org/packages/Acontplus.Services)**
+> **💡 Application Services**: For authentication, authorization policies, security headers, device detection, and request context, use **[Acontplus.Services](https://www.nuget.org/packages/Acontplus.Services)**
 
 ## 🚀 Features
 
@@ -157,7 +154,7 @@ app.MapControllers();
 app.Run();
 ```
 
-### 4. Configuration
+### 4. Basic Configuration
 
 Add to your `appsettings.json`:
 
@@ -202,64 +199,7 @@ Add to your `appsettings.json`:
 }
 ```
 
-### 3. Basic Usage Example
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class ProductsController : ControllerBase
-{
-    private readonly ICacheService _cache;
-    private readonly ICircuitBreakerService _circuitBreaker;
-    private readonly ResilientHttpClientFactory _httpFactory;
-
-    public ProductsController(
-        ICacheService cache,
-        ICircuitBreakerService circuitBreaker,
-        ResilientHttpClientFactory httpFactory)
-    {
-        _cache = cache;
-        _circuitBreaker = circuitBreaker;
-        _httpFactory = httpFactory;
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetProduct(int id)
-    {
-        // Use caching
-        var product = await _cache.GetOrCreateAsync(
-            $"product:{id}",
-            async () => await FetchProductFromDatabase(id),
-            TimeSpan.FromMinutes(15)
-        );
-
-        return Ok(product);
-    }
-
-    [HttpGet("external/{id}")]
-    public async Task<IActionResult> GetExternalData(int id)
-    {
-        // Use circuit breaker for external calls
-        var data = await _circuitBreaker.ExecuteAsync(async () =>
-        {
-            var client = _httpFactory.CreateExternalClient();
-            var response = await client.GetAsync($"https://api.example.com/data/{id}");
-            return await response.Content.ReadAsStringAsync();
-        }, "external");
-
-        return Ok(data);
-    }
-
-    private async Task<Product> FetchProductFromDatabase(int id)
-    {
-        // Simulate database call
-        await Task.Delay(100);
-        return new Product { Id = id, Name = $"Product {id}" };
-    }
-}
-```
-
-## 📚 Detailed Usage
+## 📚 Usage Guide
 
 ### Caching Service
 
@@ -485,12 +425,92 @@ public class ApiIntegrationService
 }
 ```
 
-## 🏥 Health Checks (2025+ Modern Approach)
+### Rate Limiting
 
-### Unified Health Endpoints with Tags
+#### Setup
 
-Acontplus.Infrastructure now provides a single extension to map all health check endpoints with consistent JSON
-formatting and tag-based filtering:
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure rate limiting
+builder.Services.AddAdvancedRateLimiting(builder.Configuration);
+
+var app = builder.Build();
+
+// Add rate limiting middleware (MUST be before MapControllers)
+app.UseRateLimiter();
+
+app.MapControllers();
+app.Run();
+```
+
+#### Configuration
+
+```json
+{
+  "Resilience": {
+    "RateLimiting": {
+      "Enabled": true,
+      "WindowSeconds": 60,
+      "MaxRequestsPerWindow": 100,
+      "ByIpAddress": true,
+      "ByClientId": true,
+      "ByUserId": false
+    }
+  }
+}
+```
+
+#### Apply to Specific Endpoints
+
+```csharp
+using Microsoft.AspNetCore.RateLimiting;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    // Uses global rate limiting (100 requests per 60 seconds)
+    [HttpGet]
+    public IActionResult GetAll() => Ok();
+
+    // Uses "api" policy (50 requests per 60 seconds)
+    [HttpGet("{id}")]
+    [EnableRateLimiting("api")]
+    public IActionResult Get(int id) => Ok();
+
+    // Uses "auth" policy (5 requests per 5 minutes)
+    [HttpPost("login")]
+    [EnableRateLimiting("auth")]
+    public IActionResult Login() => Ok();
+
+    // Disable rate limiting for specific endpoint
+    [HttpGet("health")]
+    [DisableRateLimiting]
+    public IActionResult Health() => Ok();
+}
+```
+
+#### Rate Limit Response
+
+When rate limit is exceeded, clients receive:
+
+```json
+{
+  "error": "Too many requests",
+  "message": "Rate limit exceeded. Please try again later.",
+  "retryAfter": 60
+}
+```
+
+HTTP Status: `429 Too Many Requests`
+
+### Health Checks (2025+ Modern Approach)
+
+#### Unified Health Endpoints with Tags
+
+Acontplus.Infrastructure now provides a single extension to map all health check endpoints with consistent JSON formatting and tag-based filtering:
 
 ```csharp
 // Program.cs
@@ -552,14 +572,11 @@ This creates:
 
 See `Extensions/HealthCheckEndpointExtensions.cs` for details.
 
----
+### Response Compression
 
-## 🗜️ Response Compression
+Optimize API performance with automatic response compression using Brotli and Gzip algorithms.
 
-Optimize API performance with automatic response compression using Brotli and Gzip algorithms. Configurable MIME types
-and HTTPS-only compression for modern web applications.
-
-### Setup
+#### Setup
 
 ```csharp
 // Program.cs
@@ -577,9 +594,7 @@ app.MapControllers();
 app.Run();
 ```
 
-### Configuration
-
-Add to your `appsettings.json`:
+#### Configuration
 
 ```json
 {
@@ -594,61 +609,13 @@ Add to your `appsettings.json`:
 }
 ```
 
-### Compression Levels
-
-- **Fastest**: Prioritizes speed over compression ratio
-- **Optimal**: Balances speed and compression ratio (default)
-- **NoCompression**: Disables compression (not recommended)
-
-### Features
+#### Features
 
 - **Dual Compression**: Brotli (preferred) and Gzip support
 - **HTTPS Only**: Optional HTTPS-only compression for security
 - **Configurable MIME Types**: Customize which content types to compress
 - **Default Types**: Automatically includes JSON, XML, CSS, JS, and more
 - **Performance Optimized**: Brotli provides better compression ratios
-
-### Default MIME Types
-
-When no custom MIME types are specified, the following are compressed:
-
-- `text/plain`
-- `text/css`
-- `application/json`
-- `application/xml`
-- `application/javascript`
-- `text/javascript`
-- `application/json-patch+json`
-- All `text/*` types
-
-### Usage with Infrastructure Services
-
-```csharp
-// Program.cs
-var builder = WebApplication.CreateBuilder(args);
-
-// Add all infrastructure services including response compression
-builder.Services.AddInfrastructureServices(builder.Configuration, addResponseCompression: true);
-
-var app = builder.Build();
-
-// Use response compression middleware
-app.UseResponseCompression();
-
-app.MapControllers();
-app.Run();
-```
-
-### Client Support
-
-Modern browsers automatically send `Accept-Encoding: gzip, deflate, br` headers. The middleware responds with compressed
-content when supported.
-
-```bash
-# Example compressed response
-curl -H "Accept-Encoding: gzip" https://api.example.com/data
-# Response includes: Content-Encoding: gzip
-```
 
 ## ⚙️ Configuration Reference
 
@@ -698,118 +665,357 @@ curl -H "Accept-Encoding: gzip" https://api.example.com/data
 }
 ```
 
-## 🚦 Rate Limiting
+## 📚 Event Bus - Complete Guide
 
-### Setup
+### Overview
+
+The **Acontplus Event Bus** provides a high-performance, scalable in-memory event-driven architecture using `System.Threading.Channels`. It's designed for **Clean Architecture + DDD + CQRS** patterns with support for horizontal and vertical scaling under high workloads.
+
+### Package Structure
+
+```
+Acontplus.Core (Abstractions)
+├── IEventPublisher          - Publish events
+├── IEventSubscriber         - Subscribe to events
+└── IEventBus                - Combined interface
+
+Acontplus.Infrastructure (Implementation)
+├── InMemoryEventBus         - Channel-based implementation
+├── EventBusOptions          - Configuration options
+└── EventBusExtensions       - DI registration
+```
+
+### Quick Start
+
+#### 1. Register Event Bus
 
 ```csharp
 // Program.cs
-var builder = WebApplication.CreateBuilder(args);
-
-// Configure rate limiting
-builder.Services.AddAdvancedRateLimiting(builder.Configuration);
-
-var app = builder.Build();
-
-// Add rate limiting middleware (MUST be before MapControllers)
-app.UseRateLimiter();
-
-app.MapControllers();
-app.Run();
+services.AddInMemoryEventBus(options =>
+{
+    options.EnableDiagnosticLogging = true;
+});
 ```
 
-### Configuration
+#### 2. Define Events
 
-```json
+```csharp
+// Events are simple POCOs (record types recommended)
+public record OrderCreatedEvent(
+    Guid OrderId,
+    string CustomerName,
+    decimal TotalAmount,
+    DateTime CreatedAt);
+```
+
+#### 3. Publish Events
+
+```csharp
+public class OrderService
 {
-  "Resilience": {
-    "RateLimiting": {
-      "Enabled": true,
-      "WindowSeconds": 60,
-      "MaxRequestsPerWindow": 100,
-      "ByIpAddress": true,
-      "ByClientId": true,
-      "ByUserId": false
+    private readonly IEventPublisher _eventPublisher;
+
+    public async Task CreateOrderAsync(CreateOrderCommand command)
+    {
+        // ... create order logic ...
+
+        // Publish event
+        await _eventPublisher.PublishAsync(new OrderCreatedEvent(
+            orderId,
+            command.CustomerName,
+            totalAmount,
+            DateTime.UtcNow));
     }
-  }
 }
 ```
 
-### Apply to Specific Endpoints
+#### 4. Subscribe to Events
 
 ```csharp
-using Microsoft.AspNetCore.RateLimiting;
-
-[ApiController]
-[Route("api/[controller]")]
-public class ProductsController : ControllerBase
+public class OrderNotificationHandler : BackgroundService
 {
-    // Uses global rate limiting (100 requests per 60 seconds)
-    [HttpGet]
-    public IActionResult GetAll() => Ok();
+    private readonly IEventSubscriber _eventSubscriber;
+    private readonly ILogger<OrderNotificationHandler> _logger;
 
-    // Uses "api" policy (50 requests per 60 seconds)
-    [HttpGet("{id}")]
-    [EnableRateLimiting("api")]
-    public IActionResult Get(int id) => Ok();
-
-    // Uses "auth" policy (5 requests per 5 minutes)
-    [HttpPost("login")]
-    [EnableRateLimiting("auth")]
-    public IActionResult Login() => Ok();
-
-    // Disable rate limiting for specific endpoint
-    [HttpGet("health")]
-    [DisableRateLimiting]
-    public IActionResult Health() => Ok();
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var orderEvent in _eventSubscriber
+            .SubscribeAsync<OrderCreatedEvent>(stoppingToken))
+        {
+            _logger.LogInformation("Sending email for Order {OrderId}", orderEvent.OrderId);
+            await SendEmailAsync(orderEvent);
+        }
+    }
 }
 ```
 
-### Rate Limit Response
-
-When rate limit is exceeded, clients receive:
-
-```json
-{
-  "error": "Too many requests",
-  "message": "Rate limit exceeded. Please try again later.",
-  "retryAfter": 60
-}
-```
-
-HTTP Status: `429 Too Many Requests`
-
-## 🔧 Granular Setup
-
-If you need fine-grained control, register services individually:
+#### 5. Register Event Handlers
 
 ```csharp
-// Program.cs
-var builder = WebApplication.CreateBuilder(args);
-
-// Register only caching services
-builder.Services.AddCachingServices(builder.Configuration);
-
-// Register only resilience services (circuit breaker, retry)
-builder.Services.AddResilienceServices(builder.Configuration);
-
-// Register only HTTP client factory
-builder.Services.AddResilientHttpClients(builder.Configuration);
-
-// Register only health checks
-builder.Services.AddInfrastructureHealthChecks();
-
-// Optionally add rate limiting
-builder.Services.AddAdvancedRateLimiting(builder.Configuration);
-
-var app = builder.Build();
-
-// Use rate limiting if configured
-app.UseRateLimiter();
-
-app.MapControllers();
-app.Run();
+// Register as hosted services
+services.AddHostedService<OrderNotificationHandler>();
+services.AddHostedService<OrderAnalyticsHandler>();
 ```
+
+### Clean Architecture Implementation
+
+#### Layer Organization
+
+```
+📁 Clean Architecture Layers
+├── 🎯 Domain Layer (Acontplus.TestDomain)
+│   ├── Entities/
+│   │   └── Order.cs                 - Aggregate root
+│   └── Events/
+│       └── OrderEvents.cs           - Application events
+│
+├── 📋 Application Layer (Acontplus.TestApplication)
+│   ├── Dtos/
+│   │   └── OrderDtos.cs             - Commands, Queries, Results
+│   ├── Interfaces/
+│   │   └── IOrderService.cs         - Application service contract
+│   └── Services/
+│       └── OrderService.cs          - CQRS Command/Query handlers
+│
+├── 🏗️ Infrastructure Layer (Acontplus.TestInfrastructure)
+│   └── EventHandlers/
+│       ├── OrderNotificationHandler.cs   - Email notifications
+│       ├── OrderAnalyticsHandler.cs      - Analytics tracking
+│       └── OrderWorkflowHandler.cs       - Workflow automation
+│
+└── 🌐 Presentation Layer (Acontplus.TestApi)
+    └── Endpoints/Business/
+        └── OrderEndpoints.cs        - Minimal API endpoints
+```
+
+#### Request Flow
+
+```
+1. HTTP POST /api/orders
+   ↓
+2. OrderEndpoints.MapPost (Presentation)
+   ↓
+3. IOrderService.CreateOrderAsync (Application)
+   ├── Create Order entity (Domain)
+   ├── Save to repository (Infrastructure)
+   └── Publish OrderCreatedEvent (via IEventPublisher)
+   ↓
+4. Event Bus distributes to subscribers:
+   ├── OrderNotificationHandler → Send email
+   ├── OrderAnalyticsHandler → Record analytics
+   └── OrderWorkflowHandler → Auto-process order
+   ↓
+5. Return OrderCreatedResult
+```
+
+### Configuration Options
+
+```csharp
+services.AddInMemoryEventBus(options =>
+{
+    // Enable detailed logging for diagnostics
+    options.EnableDiagnosticLogging = true;
+
+    // Limit concurrent handlers (0 = unlimited)
+    options.MaxConcurrentHandlers = 10;
+
+    // Dispose on application shutdown
+    options.DisposeOnShutdown = true;
+});
+```
+
+### Performance Characteristics
+
+#### Channel Configuration
+
+```csharp
+// Unbounded channels optimized for high throughput
+Channel.CreateUnbounded<object>(new UnboundedChannelOptions
+{
+    SingleWriter = false,                     // Multiple publishers
+    SingleReader = false,                     // Multiple subscribers
+    AllowSynchronousContinuations = false     // Prevent deadlocks
+});
+```
+
+#### Benchmarks (Estimated)
+
+| Operation | Throughput | Latency |
+|-----------|-----------|---------|
+| Publish Event | ~1M ops/sec | <1μs |
+| Subscribe & Process | ~500K ops/sec | <10μs |
+| Concurrent Publishers (8 threads) | ~5M ops/sec | <5μs |
+
+### Scaling Strategies
+
+#### Horizontal Scaling
+
+For distributed systems, replace `InMemoryEventBus` with:
+- **Azure Service Bus**: `services.AddAzureServiceBusEventBus()`
+- **RabbitMQ**: `services.AddRabbitMqEventBus()`
+- **Kafka**: `services.AddKafkaEventBus()`
+
+Interface (`IEventPublisher`, `IEventSubscriber`) remains the same!
+
+#### Vertical Scaling
+
+- Event handlers run as `BackgroundService` instances
+- Increase parallelism with multiple handler instances
+- Use `MaxConcurrentHandlers` to throttle processing
+
+### Best Practices
+
+#### ✅ Do
+
+- Use **record types** for events (immutable, value equality)
+- Keep events **small and focused** (single responsibility)
+- Make events **JSON-serializable** (for future distributed support)
+- Use **cancellation tokens** for graceful shutdown
+- Register handlers as **scoped or transient** for DI injection
+- Log important events for **observability**
+
+#### ❌ Don't
+
+- Throw exceptions in event handlers (use try-catch)
+- Perform long-running blocking operations (use async)
+- Share mutable state between handlers
+- Publish events from constructors or finalizers
+- Use events for request-response patterns (use MediatR instead)
+
+### Event Systems Comparison
+
+Acontplus provides **TWO distinct event systems** for different purposes:
+
+#### 1. Domain Event Dispatcher (DDD Pattern)
+- **Interface**: `IDomainEventDispatcher` + `IDomainEventHandler<T>`
+- **Events**: Generic entity events (`EntityCreatedEvent`, `EntityModifiedEvent`, etc.)
+- **Purpose**: Domain-Driven Design events **within bounded context**
+- **Execution**: **Synchronous** within same transaction/unit of work
+- **Use For**:
+  - Domain invariant enforcement
+  - Updating related aggregates
+  - Audit logging (transactional)
+  - Domain business rules
+
+#### 2. Application Event Bus (Microservices Pattern)
+- **Interface**: `IEventPublisher` + `IEventSubscriber`
+- **Events**: Custom application events (`OrderCreatedEvent`, `PaymentProcessedEvent`, etc.)
+- **Purpose**: **Cross-service** communication and async workflows
+- **Execution**: **Asynchronous** via background handlers (System.Threading.Channels)
+- **Use For**:
+  - Microservices communication
+  - Notifications (email, SMS, push)
+  - Analytics and reporting
+  - Integration with external systems
+  - Background processing
+
+#### When to Use Which?
+
+| Scenario | Use Domain Event Dispatcher | Use Application Event Bus |
+|----------|----------------------------|---------------------------|
+| **Update related aggregate in same transaction** | ✅ Yes | ❌ No |
+| **Send email notification** | ❌ No | ✅ Yes |
+| **Enforce domain invariant** | ✅ Yes | ❌ No |
+| **Publish to external system** | ❌ No | ✅ Yes |
+| **Audit trail (transactional)** | ✅ Yes | ❌ No |
+| **Analytics/metrics** | ❌ No | ✅ Yes |
+| **Workflow automation** | ❌ No | ✅ Yes |
+| **Cross-bounded-context communication** | ❌ No | ✅ Yes |
+
+### Testing
+
+#### Unit Testing
+
+```csharp
+[Fact]
+public async Task CreateOrder_PublishesOrderCreatedEvent()
+{
+    // Arrange
+    var eventBus = new InMemoryEventBus(logger);
+    var service = new OrderService(eventBus, logger);
+    var events = new List<OrderCreatedEvent>();
+
+    // Start subscriber
+    var cts = new CancellationTokenSource();
+    _ = Task.Run(async () =>
+    {
+        await foreach (var evt in eventBus.SubscribeAsync<OrderCreatedEvent>(cts.Token))
+        {
+            events.Add(evt);
+            cts.Cancel(); // Stop after first event
+        }
+    });
+
+    // Act
+    await service.CreateOrderAsync(new CreateOrderCommand(...));
+    await Task.Delay(100); // Allow event processing
+
+    // Assert
+    Assert.Single(events);
+    Assert.Equal("John Doe", events[0].CustomerName);
+}
+```
+
+### Live Demo
+
+Run the TestApi and use HTTP requests to test:
+
+```bash
+cd apps/src/Acontplus.TestApi
+dotnet run
+```
+
+#### Example HTTP Request
+
+```http
+POST https://localhost:7001/api/orders
+Content-Type: application/json
+
+{
+  "customerName": "John Doe",
+  "productName": "Premium Widget",
+  "quantity": 5,
+  "price": 99.99
+}
+```
+
+#### Expected Console Output
+
+```
+[OrderService] Order created: {OrderId} for customer John Doe
+[InMemoryEventBus] Event published: OrderCreatedEvent at 2025-12-05T10:30:00Z
+
+[OrderNotificationHandler] 📧 Sending email for Order {OrderId} - Customer: John Doe, Total: $499.95
+[OrderNotificationHandler] ✅ Email sent successfully
+
+[OrderAnalyticsHandler] 📊 Recording analytics for Order {OrderId} - Product: Premium Widget
+[OrderAnalyticsHandler] ✅ Analytics recorded
+
+[OrderWorkflowHandler] 🔄 Auto-processing Order {OrderId}
+[OrderWorkflowHandler] ✅ Order processed and event published
+[OrderWorkflowHandler] 📦 Preparing shipment for Order {OrderId}
+[OrderWorkflowHandler] 🚚 Order shipped - Tracking: TRACK-{OrderId}
+```
+
+### Troubleshooting
+
+#### Events not received
+
+- Ensure handlers are registered as `HostedService`
+- Check cancellation token is not cancelled
+- Enable diagnostic logging
+
+#### Memory leaks
+
+- Ensure handlers honor `CancellationToken`
+- Check for unhandled exceptions in handlers
+- Monitor channel subscriptions
+
+#### Slow processing
+
+- Check handler logic for blocking operations
+- Review database query performance
+- Consider parallel handler instances
 
 ## 📚 API Reference
 
@@ -875,75 +1081,6 @@ IEventSubscriber
 IEventBus : IEventPublisher, IEventSubscriber
 ```
 
-### 📚 Event Documentation
-
-Acontplus provides **TWO event systems** for different purposes:
-
-#### 1️⃣ Domain Event Dispatcher (from `Acontplus.Core`)
-**Use for**: Transactional operations where second insert needs ID from first insert
-
-```csharp
-// Application Service
-public async Task<Result<Order>> CreateOrderAsync(CreateOrderCommand cmd)
-{
-    var order = await _orderRepository.AddAsync(new Order { ... });
-
-    // Dispatch DOMAIN EVENT (synchronous, same transaction)
-    await _domainEventDispatcher.Dispatch(
-        new EntityCreatedEvent(order.Id, nameof(Order), null));
-
-    await _unitOfWork.SaveChangesAsync(); // Commits BOTH inserts
-    return Result.Success(order);
-}
-
-// Domain Event Handler (runs in SAME transaction)
-public class OrderLineItemsHandler : IDomainEventHandler<EntityCreatedEvent>
-{
-    public async Task HandleAsync(EntityCreatedEvent evt, CancellationToken ct)
-    {
-        if (evt.EntityType == nameof(Order))
-        {
-            // Second insert using Order.Id from first insert
-            await _lineItemRepo.AddAsync(
-                new OrderLineItem { OrderId = evt.EntityId, ... }, ct);
-            // Don't SaveChanges - UoW will commit both together
-        }
-    }
-}
-```
-
-#### 2️⃣ Application Event Bus (from `Acontplus.Infrastructure`)
-**Use for**: Async cross-service communication (notifications, analytics, integration)
-
-```csharp
-// Define application event (NOT inheriting IDomainEvent)
-public record OrderCreatedEvent(int OrderId, string CustomerName, decimal Total);
-
-// Publish application event (async, fire-and-forget)
-await _eventPublisher.PublishAsync(
-    new OrderCreatedEvent(order.Id, "John", 99.99));
-
-// Subscribe in BackgroundService (async handler)
-public class OrderNotificationHandler : BackgroundService
-{
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await _eventSubscriber.SubscribeAsync<OrderCreatedEvent>(async (evt, ct) =>
-        {
-            // Send email (non-transactional, async)
-            await _emailService.SendAsync(
-                evt.CustomerName,
-                $"Order #{evt.OrderId} confirmed!");
-        }, stoppingToken);
-    }
-}
-```
-
-#### 📖 Documentation
-- **[Event Systems Comparison](../../docs/EVENT_SYSTEMS_COMPARISON.md)** - Which system to use when
-- **[Event Bus Guide](../../docs/EVENT_BUS_GUIDE.md)** - Complete Application Event Bus guide
-- **[TestApi Example](../../apps/src/Acontplus.TestApplication/)** - Full implementation with both systems
-
 ## 🏗️ Architecture
 
 ### Folder Structure
@@ -980,3 +1117,25 @@ Acontplus.Infrastructure/
 - **Microsoft.Extensions.Caching.StackExchangeRedis**: Redis provider
 - **Microsoft.Extensions.Http.Resilience**: HTTP resilience
 - **.NET Rate Limiting**: Built-in ASP.NET Core rate limiting middleware
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [Contributing Guidelines](../../CONTRIBUTING.md).
+
+## 📧 Support
+
+- **Email**: proyectos@acontplus.com
+- **Issues**: [GitHub Issues](https://github.com/acontplus/acontplus-dotnet-libs/issues)
+- **Documentation**: [Wiki](https://github.com/acontplus/acontplus-dotnet-libs/wiki)
+
+## 👨‍💻 Author
+
+**Ivan Paz** – [@iferpaz7](https://linktr.ee/iferpaz7)
+
+## 🏢 Company
+
+**[Acontplus](https://www.acontplus.com)** – Software Solutions, Ecuador
+
+---
+
+**Built with ❤️ for enterprise-grade .NET applications**
