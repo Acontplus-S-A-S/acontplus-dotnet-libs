@@ -650,7 +650,515 @@ END
 }
 ```
 
-📖 **[Complete Lookup Service Guide](../../docs/lookup-service-quick-reference.md)**
+## 📚 Lookup Service - Complete Guide
+
+### Overview
+
+The `LookupService` is a reusable, cached service for managing lookup/reference data across all Acontplus APIs. It's located in the `Acontplus.Services` NuGet package and works seamlessly with both PostgreSQL and SQL Server.
+
+### Architecture
+
+#### Package Structure
+
+```
+Acontplus.Services/
+├── Services/
+│   ├── Abstractions/
+│   │   └── ILookupService.cs          # Interface
+│   ├── Implementations/
+│   │   └── LookupService.cs           # Implementation
+│   └── README.md
+├── Extensions/
+│   └── ServiceExtensions.cs           # DI registration
+└── GlobalUsings.cs
+
+Acontplus.Core/
+└── Dtos/
+    └── Responses/
+        └── LookupItem.cs               # Shared DTO
+
+Acontplus.Infrastructure/
+└── Caching/
+    ├── ICacheService.cs                # Cache abstraction
+    ├── MemoryCacheService.cs           # In-memory implementation
+    └── DistributedCacheService.cs      # Redis implementation
+```
+
+#### Design Decisions
+
+**Location**: `Acontplus.Services` Package
+
+**Rationale**:
+- ✅ **Database Agnostic**: Works with both PostgreSQL and SQL Server through `IUnitOfWork` abstraction
+- ✅ **Reusable**: Available to all APIs via NuGet package
+- ✅ **Proper Layer**: Application-level service, not infrastructure or persistence specific
+- ✅ **Dependencies**: Already has access to Core and Infrastructure packages
+
+#### Data Flow
+
+```
+Controller
+    ↓
+ILookupService.GetLookupsAsync()
+    ↓
+Check Cache (ICacheService)
+    ↓ (cache miss)
+IUnitOfWork.AdoRepository.GetFilteredDataSetAsync()
+    ↓
+Stored Procedure Execution
+    ↓
+Map DataSet → Dictionary<string, IEnumerable<LookupItem>>
+    ↓
+Store in Cache
+    ↓
+Return Result<T, DomainError>
+```
+
+### Quick Start
+
+#### 1. Register Services (Program.cs)
+
+```csharp
+// For development/single server
+builder.Services.AddMemoryCache();
+builder.Services.AddMemoryCacheService();
+
+// OR for production/multi-server
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
+builder.Services.AddDistributedCacheService();
+
+// Register persistence (choose your database)
+builder.Services.AddSqlServerPersistence<YourDbContext>(connectionString);
+// OR
+builder.Services.AddPostgresPersistence<YourDbContext>(connectionString);
+
+// Register lookup service
+builder.Services.AddLookupService();
+```
+
+#### 2. Create Stored Procedure
+
+**SQL Server Example:**
+
+```sql
+CREATE PROCEDURE [YourSchema].[GetLookups]
+    @Module NVARCHAR(100) = NULL,
+    @Context NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Return multiple lookup tables
+    SELECT
+        'OrderStatuses' AS TableName,
+        Id,
+        Code,
+        [Name] AS [Value],
+        DisplayOrder,
+        NULL AS ParentId,
+        CAST(0 AS BIT) AS IsDefault,
+        CAST(1 AS BIT) AS IsActive,
+        Description,
+        NULL AS Metadata
+    FROM YourSchema.OrderStatuses
+    WHERE IsActive = 1
+
+    UNION ALL
+
+    SELECT
+        'PaymentMethods' AS TableName,
+        Id,
+        Code,
+        [Name] AS [Value],
+        SortOrder AS DisplayOrder,
+        NULL AS ParentId,
+        IsDefault,
+        IsActive,
+        NULL AS Description,
+        JSON_QUERY((SELECT Icon, Color FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)) AS Metadata
+    FROM YourSchema.PaymentMethods
+    WHERE IsActive = 1
+
+    ORDER BY TableName, DisplayOrder;
+END
+```
+
+**PostgreSQL Example:**
+
+```sql
+CREATE OR REPLACE FUNCTION your_schema.get_lookups(
+    p_module VARCHAR DEFAULT NULL,
+    p_context VARCHAR DEFAULT NULL
+)
+RETURNS TABLE (
+    table_name VARCHAR,
+    id INTEGER,
+    code VARCHAR,
+    value VARCHAR,
+    display_order INTEGER,
+    parent_id INTEGER,
+    is_default BOOLEAN,
+    is_active BOOLEAN,
+    description TEXT,
+    metadata JSONB
+) AS $$
+BEGIN
+    RETURN QUERY
+
+    SELECT
+        'orderStatuses'::VARCHAR AS table_name,
+        os.id,
+        os.code,
+        os.value,
+        os.display_order,
+        NULL::INTEGER AS parent_id,
+        FALSE AS is_default,
+        TRUE AS is_active,
+        os.description,
+        NULL::JSONB AS metadata
+    FROM your_schema.order_statuses os
+    WHERE os.is_active = TRUE
+
+    UNION ALL
+
+    SELECT
+        'paymentMethods'::VARCHAR,
+        pm.id,
+        pm.code,
+        pm.name AS value,
+        pm.sort_order AS display_order,
+        NULL::INTEGER,
+        pm.is_default,
+        pm.is_active,
+        NULL::TEXT,
+        jsonb_build_object('icon', pm.icon, 'color', pm.color) AS metadata
+    FROM your_schema.payment_methods pm
+    WHERE pm.is_active = TRUE
+
+    ORDER BY table_name, display_order;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+#### 3. Use in Controller
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("api/[controller]")]
+public class LookupsController : ControllerBase
+{
+    private readonly ILookupService _lookupService;
+
+    public LookupsController(ILookupService lookupService)
+    {
+        _lookupService = lookupService;
+    }
+
+    /// <summary>
+    /// Get all lookups with caching
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponse<IDictionary<string, IEnumerable<LookupItem>>>), 200)]
+    public async Task<IActionResult> GetLookups(
+        [FromQuery] string? module = null,
+        [FromQuery] string? context = null,
+        CancellationToken cancellationToken = default)
+    {
+        var filterRequest = new FilterRequest
+        {
+            Filters = new Dictionary<string, object>
+            {
+                ["module"] = module ?? "default",
+                ["context"] = context ?? "general"
+            }
+        };
+
+        var result = await _lookupService.GetLookupsAsync(
+            "YourSchema.GetLookups", // SQL Server
+            // OR "your_schema.get_lookups" for PostgreSQL
+            filterRequest,
+            cancellationToken);
+
+        return result.Match(
+            success => Ok(ApiResponse.Success(success)),
+            error => BadRequest(ApiResponse.Failure(error)));
+    }
+
+    /// <summary>
+    /// Refresh lookups cache
+    /// </summary>
+    [HttpPost("refresh")]
+    [ProducesResponseType(typeof(ApiResponse<IDictionary<string, IEnumerable<LookupItem>>>), 200)]
+    public async Task<IActionResult> RefreshLookups(
+        [FromQuery] string? module = null,
+        [FromQuery] string? context = null,
+        CancellationToken cancellationToken = default)
+    {
+        var filterRequest = new FilterRequest
+        {
+            Filters = new Dictionary<string, object>
+            {
+                ["module"] = module ?? "default",
+                ["context"] = context ?? "general"
+            }
+        };
+
+        var result = await _lookupService.RefreshLookupsAsync(
+            "YourSchema.GetLookups",
+            filterRequest,
+            cancellationToken);
+
+        return result.Match(
+            success => Ok(ApiResponse.Success(success)),
+            error => BadRequest(ApiResponse.Failure(error)));
+    }
+}
+```
+
+### LookupItem DTO
+
+All DTO properties are nullable for maximum flexibility:
+
+```csharp
+public record LookupItem
+{
+    public int? Id { get; init; }
+    public string? Code { get; init; }
+    public string? Value { get; init; }
+    public int? DisplayOrder { get; init; }
+    public int? ParentId { get; init; }
+    public bool? IsDefault { get; init; }
+    public bool? IsActive { get; init; }
+    public string? Description { get; init; }
+    public string? Metadata { get; init; }
+}
+```
+
+#### Required Columns
+
+Your stored procedure MUST return these columns:
+
+| Column | Type | Required | Description |
+|--------|------|----------|-------------|
+| `TableName` | string | ✅ Yes | Groups results (e.g., "Countries", "States") |
+| `Id` | int? | No | Unique identifier |
+| `Code` | string? | No | Short code (e.g., "US", "CA") |
+| `Value` | string? | No | Display text |
+| `DisplayOrder` | int? | No | Sort order |
+| `ParentId` | int? | No | For hierarchical data |
+| `IsDefault` | bool? | No | Default selection |
+| `IsActive` | bool? | No | Active/inactive flag |
+| `Description` | string? | No | Tooltip or help text |
+| `Metadata` | string? | No | JSON string for custom data |
+
+### Response Format
+
+```json
+{
+  "status": "Success",
+  "code": "200",
+  "data": {
+    "orderStatuses": [
+      {
+        "id": 1,
+        "code": "PENDING",
+        "value": "Pending",
+        "displayOrder": 1,
+        "parentId": null,
+        "isDefault": true,
+        "isActive": true,
+        "description": "Order is pending confirmation",
+        "metadata": null
+      },
+      {
+        "id": 2,
+        "code": "CONFIRMED",
+        "value": "Confirmed",
+        "displayOrder": 2,
+        "parentId": null,
+        "isDefault": false,
+        "isActive": true,
+        "description": "Order has been confirmed",
+        "metadata": null
+      }
+    ],
+    "paymentMethods": [
+      {
+        "id": 1,
+        "code": "CASH",
+        "value": "Cash",
+        "displayOrder": 1,
+        "parentId": null,
+        "isDefault": true,
+        "isActive": true,
+        "description": null,
+        "metadata": "{\"icon\":\"💵\",\"color\":\"#4CAF50\"}"
+      }
+    ]
+  }
+}
+```
+
+### Caching Strategy
+
+#### Cache Key Format
+
+**Format:** `lookups:{storedProcedure}:{module}:{context}`
+
+**Examples:**
+- `lookups:restaurant.getlookups:restaurant:general`
+- `lookups:inventory.getlookups:warehouse:default`
+- `lookups:hr.getlookups:employees:active`
+
+**Benefits:**
+- Unique per API and context
+- Easy to invalidate specific lookups
+- Supports multi-tenant scenarios
+
+#### Cache Configuration
+
+##### In-Memory Cache (Single Server)
+```csharp
+builder.Services.AddMemoryCache();
+builder.Services.AddMemoryCacheService();
+```
+
+##### Distributed Cache (Multi-Server)
+```csharp
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = configuration.GetConnectionString("Redis");
+});
+builder.Services.AddDistributedCacheService();
+```
+
+#### Caching Behavior
+
+- **Default TTL:** 30 minutes
+- **Cache Type:** Configurable (in-memory or distributed)
+- **Cache Invalidation:** Manual via `RefreshLookupsAsync()` (removes specific cache key)
+- **Cache Miss:** Query hits database and populates cache
+- **Cache Hit:** Returns data from cache (< 1ms)
+
+### Performance Considerations
+
+#### Caching Performance
+- **Cache hit:** < 1ms response time
+- **Cache miss:** SP execution time + mapping time
+- **Cache expiration:** 30 minutes default
+
+#### Database Performance
+- **Query Type:** Stored procedures (optimized)
+- **Connection:** Reuses existing `IUnitOfWork` connection
+- **Result Mapping:** Efficient DataTable → LINQ projection
+
+#### Scalability
+- **In-Memory Cache:** Good for single-server deployments
+- **Distributed Cache:** Required for multi-server/load-balanced scenarios
+- **Cache Warming:** First request per key hits database
+
+### Error Handling
+
+**Strategy:** Return `Result<T, DomainError>` pattern
+
+**Benefits:**
+- ✅ Type-safe error handling
+- ✅ No exceptions for business logic errors
+- ✅ Consistent with Acontplus patterns
+- ✅ Easy to map to HTTP responses
+
+**Error Codes:**
+- `LOOKUPS_GET_ERROR` - Error retrieving lookups
+- `LOOKUPS_REFRESH_ERROR` - Error refreshing cache
+- `LOOKUPS_EMPTY` - No data returned from query
+
+### Migration Checklist
+
+#### From Existing Code
+
+1. ✅ Update Dependencies
+   - Ensure your API references `Acontplus.Services` NuGet package
+   - Ensure your API references `Acontplus.Infrastructure` NuGet package
+   - Ensure your API references `Acontplus.Core` NuGet package
+
+2. ✅ Register Services
+   - Add cache service registration
+   - Add lookup service registration
+
+3. ✅ Update/Create Stored Procedure
+   - Ensure it returns required columns
+   - Test stored procedure returns data correctly
+
+4. ✅ Update Controller
+   - Inject `ILookupService`
+   - Update GET endpoint
+   - Add refresh endpoint
+
+5. ✅ Remove Old Code
+   - Remove old `LookupService` class (if exists in your API)
+   - Remove old `ILookupService` interface (if exists in your API)
+   - Remove old `LookupItem` DTO (if exists in your API)
+   - Remove `ConcurrentDictionary` caching logic
+
+6. ✅ Testing
+   - Unit test: Service registration
+   - Integration test: GET lookups endpoint
+   - Integration test: Refresh lookups endpoint
+   - Integration test: Cache is working
+   - Load test: Multiple concurrent requests
+
+### Security Considerations
+
+#### SQL Injection
+- ✅ Uses parameterized stored procedures
+- ✅ Filter values are passed as parameters
+- ✅ No dynamic SQL construction
+
+#### Data Access
+- ✅ Respects existing `IUnitOfWork` security
+- ✅ No elevation of privileges
+- ✅ Uses application's database context
+
+#### Cache Poisoning
+- ✅ Cache keys are deterministic
+- ✅ No user input in cache keys (normalized)
+- ✅ Cache expiration prevents stale data
+
+### Troubleshooting
+
+#### Cache not working
+- Verify `ICacheService` is registered
+- Check logs for cache errors
+- Ensure Redis is running (if using distributed cache)
+
+#### Missing columns
+- Check stored procedure returns all required columns
+- Verify column names match exactly (case-sensitive in PostgreSQL)
+
+#### Slow performance
+- Add indexes to lookup tables
+- Check stored procedure execution plan
+- Consider cache warming on startup
+
+#### Memory issues
+- Use distributed cache instead of in-memory
+- Reduce cache TTL
+- Limit lookup data size
+
+### Live Demo
+
+See `apps/src/Acontplus.TestApi/Endpoints/Core/LookupEndpoints.cs` for a working example.
+
+### References
+
+- **Live Example**: `apps/src/Acontplus.TestApi` - Complete working implementation
+- **Package**: `Acontplus.Services` - Service implementation
+- **DTO**: `Acontplus.Core/Dtos/Responses/LookupItem.cs` - Shared DTO
 
 ### Caching Service
 

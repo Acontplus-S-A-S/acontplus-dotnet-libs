@@ -62,15 +62,15 @@ public class OrderService : IOrderService
             var orderRepository = _unitOfWork.GetRepository<Order>();
             var createdOrder = await orderRepository.AddAsync(order, cancellationToken);
 
+            // Save changes first to get the database-generated ID
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             // 1. Publish DOMAIN EVENT (DDD pattern - within bounded context)
-            // Handler will create OrderLineItems using createdOrder.Id (same transaction)
+            // Handler will create OrderLineItems using createdOrder.Id (now has valid ID)
             await _domainEventDispatcher.Dispatch(new EntityCreatedEvent(
                 createdOrder.Id,
                 nameof(Order),
                 null));
-
-            // Save changes - commits both Order and OrderLineItems (from domain event handler)
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             // 2. Publish APPLICATION EVENT (Event Bus - cross-cutting concerns)
             await _eventPublisher.PublishAsync(new OrderCreatedEvent(

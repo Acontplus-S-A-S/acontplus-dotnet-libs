@@ -47,7 +47,7 @@ This repository contains multiple libraries and sample applications, each in its
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs.git
+   git clone https://github.com/acontplus/acontplus-dotnet-libs.git
    cd acontplus-dotnet-libs
    ```
 2. **Restore and build:**
@@ -77,8 +77,8 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 ## 🆘 Support
 
 - 📧 Email: proyectos@acontplus.com
-- 🐛 Issues: [GitHub Issues](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/issues)
-- 📖 Documentation: [Wiki](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/acontplus/acontplus-dotnet-libs/issues)
+- 📖 Documentation: [Wiki](https://github.com/acontplus/acontplus-dotnet-libs/wiki)
 
 ---
 

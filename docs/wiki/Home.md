@@ -4,19 +4,21 @@ Welcome to the documentation wiki for the Acontplus .NET Libraries solution. Her
 
 ## 📚 Wiki Navigation
 
-- [Installation Guide](Installation.md)
-- Usage Guides:
-  - [Acontplus.Core](Usage/Core.md)
-  - [Acontplus.Billing](Usage/Billing.md)
-  - [Acontplus.Notifications](Usage/Notifications.md)
-  - [Acontplus.Reports](Usage/Reports.md)
-  - [Acontplus.Persistence.SqlServer](Usage/PersistenceSqlServer.md)
-  - [Acontplus.Services](Usage/Services.md)
-  - [Acontplus.Utilities](Usage/Utilities.md)
-  - [Acontplus.ApiDocumentation](Usage/ApiDocumentation.md)
-  - [Acontplus.Logging](Usage/Logging.md)
-  - [Acontplus.Barcode](Usage/Barcode.md)
-  - [Acontplus.S3Application](Usage/S3Application.md)
+### Package Documentation (READMEs)
+- [Acontplus.Core](../../src/Acontplus.Core/README.md)
+- [Acontplus.Infrastructure](../../src/Acontplus.Infrastructure/README.md)
+- [Acontplus.Services](../../src/Acontplus.Services/README.md)
+- [Acontplus.Analytics](../../src/Acontplus.Analytics/README.md)
+- [Acontplus.Billing](../../src/Acontplus.Billing/README.md)
+- [Acontplus.Notifications](../../src/Acontplus.Notifications/README.md)
+- [Acontplus.Reports](../../src/Acontplus.Reports/README.md)
+- [Acontplus.Persistence.SqlServer](../../src/Acontplus.Persistence.SqlServer/README.md)
+- [Acontplus.Persistence.PostgreSQL](../../src/Acontplus.Persistence.PostgreSQL/README.md)
+- [Acontplus.Utilities](../../src/Acontplus.Utilities/README.md)
+- [Acontplus.ApiDocumentation](../../src/Acontplus.ApiDocumentation/README.md)
+- [Acontplus.Logging](../../src/Acontplus.Logging/README.md)
+- [Acontplus.Barcode](../../src/Acontplus.Barcode/README.md)
+- [Acontplus.S3Application](../../src/Acontplus.S3Application/README.md)
 
 ## 🏢 About Acontplus
 
@@ -24,4 +26,4 @@ Welcome to the documentation wiki for the Acontplus .NET Libraries solution. Her
 
 ---
 
-For more information, visit the [main repository](https://github.com/Acontplus-S-A-S/acontplus-dotnet-libs) or the [company website](https://www.acontplus.com).
+For more information, visit the [main repository](https://github.com/acontplus/acontplus-dotnet-libs) or the [company website](https://www.acontplus.com).

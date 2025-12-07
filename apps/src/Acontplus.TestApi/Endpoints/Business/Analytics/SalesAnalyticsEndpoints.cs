@@ -81,6 +81,17 @@ public static class SalesAnalyticsEndpoints
             [FromServices] ISalesAnalyticsService analyticsService,
             CancellationToken cancellationToken) =>
         {
+            // Input validation
+            if (startDate > endDate)
+            {
+                return Results.BadRequest(new { error = "StartDate cannot be greater than EndDate", code = "INVALID_DATE_RANGE" });
+            }
+            
+            if (startDate < DateTime.UtcNow.AddYears(-10) || endDate > DateTime.UtcNow.AddDays(1))
+            {
+                return Results.BadRequest(new { error = "Date range is outside acceptable bounds", code = "INVALID_DATE_BOUNDS" });
+            }
+
             var filter = new FilterRequest
             {
                 Filters = new Dictionary<string, object>
