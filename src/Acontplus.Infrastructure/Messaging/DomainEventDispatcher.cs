@@ -1,5 +1,4 @@
 using Acontplus.Core.Domain.Common.Events;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Acontplus.Infrastructure.Messaging;
 
