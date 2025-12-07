@@ -1,5 +1,4 @@
 using Acontplus.Core.Abstractions.Persistence;
-using Acontplus.Core.Dtos.Requests;
 
 namespace Acontplus.Analytics.Services;
 

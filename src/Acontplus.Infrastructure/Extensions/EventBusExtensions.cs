@@ -1,7 +1,6 @@
 using Acontplus.Core.Abstractions.Messaging;
 using Acontplus.Core.Domain.Common.Events;
 using Acontplus.Infrastructure.Messaging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Acontplus.Infrastructure.Extensions;
