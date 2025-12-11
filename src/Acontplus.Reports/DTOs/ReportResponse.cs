@@ -1,4 +1,4 @@
-namespace Acontplus.Reports.DTOs;
+namespace Acontplus.Reports.Dtos;
 
 public class ReportResponse : IDisposable
 {
