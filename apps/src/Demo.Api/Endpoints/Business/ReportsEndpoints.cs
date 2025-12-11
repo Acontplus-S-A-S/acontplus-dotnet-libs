@@ -1,3 +1,5 @@
+using Acontplus.Reports.Dtos;
+
 namespace Demo.Api.Endpoints.Business;
 
 public static class ReportsEndpoints

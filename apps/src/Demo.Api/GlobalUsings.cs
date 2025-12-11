@@ -28,7 +28,7 @@ global using Acontplus.Persistence.SqlServer.DependencyInjection;
 global using Acontplus.Persistence.SqlServer.Exceptions;
 global using Acontplus.Persistence.SqlServer.Repositories;
 global using Acontplus.Persistence.SqlServer.Utilities;
-global using Acontplus.Reports.DTOs;
+global using Acontplus.Reports.Dtos;
 global using Acontplus.Reports.Extensions;
 global using Acontplus.Reports.Interfaces;
 global using Acontplus.Services.Configuration;
