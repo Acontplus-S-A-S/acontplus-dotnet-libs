@@ -1,10 +1,10 @@
-﻿// Global using directives
+// Global using directives
 
 global using Acontplus.Barcode.Models;
 global using Acontplus.Barcode.Utils;
 global using Acontplus.Core.Extensions;
 global using Acontplus.Reports.Configuration;
-global using Acontplus.Reports.DTOs;
+global using Acontplus.Reports.Dtos;
 global using Acontplus.Reports.Enums;
 global using Acontplus.Reports.Exceptions;
 global using Acontplus.Reports.Helpers;
